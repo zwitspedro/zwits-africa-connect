@@ -14,6 +14,56 @@ export type Database = {
   }
   public: {
     Tables: {
+      bookings: {
+        Row: {
+          address: string
+          category: string
+          created_at: string
+          customer_id: string
+          description: string | null
+          id: string
+          price: number | null
+          provider_id: string | null
+          scheduled_for: string | null
+          status: Database["public"]["Enums"]["booking_status"]
+          updated_at: string
+        }
+        Insert: {
+          address: string
+          category: string
+          created_at?: string
+          customer_id: string
+          description?: string | null
+          id?: string
+          price?: number | null
+          provider_id?: string | null
+          scheduled_for?: string | null
+          status?: Database["public"]["Enums"]["booking_status"]
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          category?: string
+          created_at?: string
+          customer_id?: string
+          description?: string | null
+          id?: string
+          price?: number | null
+          provider_id?: string | null
+          scheduled_for?: string | null
+          status?: Database["public"]["Enums"]["booking_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           account_type: string
@@ -46,6 +96,102 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      providers: {
+        Row: {
+          available: boolean
+          bio: string | null
+          business_name: string
+          category: string
+          city: string
+          created_at: string
+          hourly_rate: number
+          id: string
+          jobs_completed: number
+          rating_avg: number
+          ratings_count: number
+          updated_at: string
+          user_id: string
+          verified: boolean
+        }
+        Insert: {
+          available?: boolean
+          bio?: string | null
+          business_name: string
+          category: string
+          city: string
+          created_at?: string
+          hourly_rate?: number
+          id?: string
+          jobs_completed?: number
+          rating_avg?: number
+          ratings_count?: number
+          updated_at?: string
+          user_id: string
+          verified?: boolean
+        }
+        Update: {
+          available?: boolean
+          bio?: string | null
+          business_name?: string
+          category?: string
+          city?: string
+          created_at?: string
+          hourly_rate?: number
+          id?: string
+          jobs_completed?: number
+          rating_avg?: number
+          ratings_count?: number
+          updated_at?: string
+          user_id?: string
+          verified?: boolean
+        }
+        Relationships: []
+      }
+      ratings: {
+        Row: {
+          booking_id: string
+          created_at: string
+          customer_id: string
+          id: string
+          provider_id: string
+          rating: number
+          review: string | null
+        }
+        Insert: {
+          booking_id: string
+          created_at?: string
+          customer_id: string
+          id?: string
+          provider_id: string
+          rating: number
+          review?: string | null
+        }
+        Update: {
+          booking_id?: string
+          created_at?: string
+          customer_id?: string
+          id?: string
+          provider_id?: string
+          rating?: number
+          review?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ratings_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: true
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ratings_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -83,6 +229,12 @@ export type Database = {
     }
     Enums: {
       app_role: "customer" | "provider" | "admin"
+      booking_status:
+        | "pending"
+        | "accepted"
+        | "in_progress"
+        | "completed"
+        | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -211,6 +363,13 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["customer", "provider", "admin"],
+      booking_status: [
+        "pending",
+        "accepted",
+        "in_progress",
+        "completed",
+        "cancelled",
+      ],
     },
   },
 } as const
