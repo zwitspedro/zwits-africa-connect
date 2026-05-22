@@ -41,7 +41,7 @@ function ProviderDashboard() {
   });
 
   const updateStatus = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+    mutationFn: async ({ id, status }: { id: string; status: "pending" | "accepted" | "in_progress" | "completed" | "cancelled" }) => {
       const { error } = await supabase.from("bookings").update({ status }).eq("id", id);
       if (error) throw error;
     },

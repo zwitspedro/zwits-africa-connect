@@ -18,7 +18,13 @@ import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BecomeAProviderRouteImport } from './routes/become-a-provider'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedProviderRouteImport } from './routes/_authenticated/provider'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedBookingsRouteImport } from './routes/_authenticated/bookings'
+import { Route as AuthenticatedProviderSetupRouteImport } from './routes/_authenticated/provider.setup'
+import { Route as AuthenticatedBookCategoryRouteImport } from './routes/_authenticated/book.$category'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -65,11 +71,42 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedProviderRoute = AuthenticatedProviderRouteImport.update({
+  id: '/provider',
+  path: '/provider',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedBookingsRoute = AuthenticatedBookingsRouteImport.update({
+  id: '/bookings',
+  path: '/bookings',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedProviderSetupRoute =
+  AuthenticatedProviderSetupRouteImport.update({
+    id: '/setup',
+    path: '/setup',
+    getParentRoute: () => AuthenticatedProviderRoute,
+  } as any)
+const AuthenticatedBookCategoryRoute =
+  AuthenticatedBookCategoryRouteImport.update({
+    id: '/book/$category',
+    path: '/book/$category',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -82,6 +119,11 @@ export interface FileRoutesByFullPath {
   '/services': typeof ServicesRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
+  '/bookings': typeof AuthenticatedBookingsRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/provider': typeof AuthenticatedProviderRouteWithChildren
+  '/book/$category': typeof AuthenticatedBookCategoryRoute
+  '/provider/setup': typeof AuthenticatedProviderSetupRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -94,10 +136,16 @@ export interface FileRoutesByTo {
   '/services': typeof ServicesRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
+  '/bookings': typeof AuthenticatedBookingsRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/provider': typeof AuthenticatedProviderRouteWithChildren
+  '/book/$category': typeof AuthenticatedBookCategoryRoute
+  '/provider/setup': typeof AuthenticatedProviderSetupRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
   '/become-a-provider': typeof BecomeAProviderRoute
   '/contact': typeof ContactRoute
@@ -107,6 +155,11 @@ export interface FileRoutesById {
   '/services': typeof ServicesRoute
   '/signup': typeof SignupRoute
   '/terms': typeof TermsRoute
+  '/_authenticated/bookings': typeof AuthenticatedBookingsRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/provider': typeof AuthenticatedProviderRouteWithChildren
+  '/_authenticated/book/$category': typeof AuthenticatedBookCategoryRoute
+  '/_authenticated/provider/setup': typeof AuthenticatedProviderSetupRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -121,6 +174,11 @@ export interface FileRouteTypes {
     | '/services'
     | '/signup'
     | '/terms'
+    | '/bookings'
+    | '/dashboard'
+    | '/provider'
+    | '/book/$category'
+    | '/provider/setup'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -133,9 +191,15 @@ export interface FileRouteTypes {
     | '/services'
     | '/signup'
     | '/terms'
+    | '/bookings'
+    | '/dashboard'
+    | '/provider'
+    | '/book/$category'
+    | '/provider/setup'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/about'
     | '/become-a-provider'
     | '/contact'
@@ -145,10 +209,16 @@ export interface FileRouteTypes {
     | '/services'
     | '/signup'
     | '/terms'
+    | '/_authenticated/bookings'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/provider'
+    | '/_authenticated/book/$category'
+    | '/_authenticated/provider/setup'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AboutRoute: typeof AboutRoute
   BecomeAProviderRoute: typeof BecomeAProviderRoute
   ContactRoute: typeof ContactRoute
@@ -225,6 +295,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -232,11 +309,78 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/provider': {
+      id: '/_authenticated/provider'
+      path: '/provider'
+      fullPath: '/provider'
+      preLoaderRoute: typeof AuthenticatedProviderRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/bookings': {
+      id: '/_authenticated/bookings'
+      path: '/bookings'
+      fullPath: '/bookings'
+      preLoaderRoute: typeof AuthenticatedBookingsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/provider/setup': {
+      id: '/_authenticated/provider/setup'
+      path: '/setup'
+      fullPath: '/provider/setup'
+      preLoaderRoute: typeof AuthenticatedProviderSetupRouteImport
+      parentRoute: typeof AuthenticatedProviderRoute
+    }
+    '/_authenticated/book/$category': {
+      id: '/_authenticated/book/$category'
+      path: '/book/$category'
+      fullPath: '/book/$category'
+      preLoaderRoute: typeof AuthenticatedBookCategoryRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
+interface AuthenticatedProviderRouteChildren {
+  AuthenticatedProviderSetupRoute: typeof AuthenticatedProviderSetupRoute
+}
+
+const AuthenticatedProviderRouteChildren: AuthenticatedProviderRouteChildren = {
+  AuthenticatedProviderSetupRoute: AuthenticatedProviderSetupRoute,
+}
+
+const AuthenticatedProviderRouteWithChildren =
+  AuthenticatedProviderRoute._addFileChildren(
+    AuthenticatedProviderRouteChildren,
+  )
+
+interface AuthenticatedRouteChildren {
+  AuthenticatedBookingsRoute: typeof AuthenticatedBookingsRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedProviderRoute: typeof AuthenticatedProviderRouteWithChildren
+  AuthenticatedBookCategoryRoute: typeof AuthenticatedBookCategoryRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedBookingsRoute: AuthenticatedBookingsRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedProviderRoute: AuthenticatedProviderRouteWithChildren,
+  AuthenticatedBookCategoryRoute: AuthenticatedBookCategoryRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AboutRoute: AboutRoute,
   BecomeAProviderRoute: BecomeAProviderRoute,
   ContactRoute: ContactRoute,
