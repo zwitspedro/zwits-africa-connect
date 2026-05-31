@@ -4,6 +4,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Star, BadgeCheck } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
+import { AddressAutocomplete } from "@/components/address-autocomplete";
+import { LocationMap } from "@/components/location-map";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { services } from "@/data/services";
@@ -21,6 +23,7 @@ function BookCategory() {
 
   const [providerId, setProviderId] = useState<string | null>(null);
   const [address, setAddress] = useState("");
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [description, setDescription] = useState("");
   const [scheduled, setScheduled] = useState("");
 
@@ -117,9 +120,16 @@ function BookCategory() {
         >
           <label className="grid gap-1.5">
             <span className="text-xs text-muted-foreground">Address</span>
-            <input required value={address} onChange={(e) => setAddress(e.target.value)}
-              className="rounded-lg border border-input bg-background px-3 py-2.5 text-sm" />
+            <AddressAutocomplete
+              required
+              value={address}
+              onChange={(v) => {
+                setAddress(v.address);
+                if (v.lat != null && v.lng != null) setCoords({ lat: v.lat, lng: v.lng });
+              }}
+            />
           </label>
+          {coords && <LocationMap lat={coords.lat} lng={coords.lng} />}
           <label className="grid gap-1.5">
             <span className="text-xs text-muted-foreground">When (optional)</span>
             <input type="datetime-local" value={scheduled} onChange={(e) => setScheduled(e.target.value)}
