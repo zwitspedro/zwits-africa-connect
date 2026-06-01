@@ -30,6 +30,7 @@ function BookCategory() {
   const [scheduled, setScheduled] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
   const [paymentReference, setPaymentReference] = useState("");
+  const [receipt, setReceipt] = useState<BookingReceipt | null>(null);
 
   const { data: providers } = useQuery({
     queryKey: ["providers", category],
