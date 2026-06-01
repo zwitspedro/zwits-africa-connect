@@ -190,7 +190,39 @@ function BookCategory() {
           </div>
         </div>
 
-        <h2 className="mt-8 text-sm font-medium text-muted-foreground">Choose a provider</h2>
+        <div className="mt-8 flex items-end justify-between gap-3">
+          <h2 className="text-sm font-medium text-muted-foreground">Choose a provider</h2>
+          <span className="text-xs text-muted-foreground">{visibleProviders.length} match{visibleProviders.length === 1 ? "" : "es"}</span>
+        </div>
+
+        <div className="mt-3 grid gap-3 rounded-2xl border border-border bg-card/50 p-4 sm:grid-cols-[auto,1fr] sm:items-center">
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={availableOnly}
+              onChange={(e) => setAvailableOnly(e.target.checked)}
+              className="size-4 rounded border-input"
+            />
+            Available now
+          </label>
+          <label className="grid gap-1.5">
+            <span className="flex items-center justify-between text-xs text-muted-foreground">
+              <span className="flex items-center gap-1"><MapPin className="size-3" /> Radius</span>
+              <span>{coords ? `${radiusKm} km` : "Set address to enable"}</span>
+            </span>
+            <input
+              type="range"
+              min={1}
+              max={100}
+              step={1}
+              value={radiusKm}
+              disabled={!coords}
+              onChange={(e) => setRadiusKm(Number(e.target.value))}
+              className="w-full accent-primary disabled:opacity-50"
+            />
+          </label>
+        </div>
+
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <button
             onClick={() => setProviderId(null)}
@@ -199,7 +231,7 @@ function BookCategory() {
             <div className="text-sm font-medium">Auto-match</div>
             <div className="text-xs text-muted-foreground">We'll assign the first available pro.</div>
           </button>
-          {providers?.map((p) => (
+          {visibleProviders.map((p) => (
             <button
               key={p.id}
               onClick={() => setProviderId(p.id)}
@@ -208,17 +240,27 @@ function BookCategory() {
               <div className="flex items-center gap-2 text-sm font-medium">
                 {p.business_name}
                 {p.verified && <BadgeCheck className="size-4 text-gold" />}
+                <span className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-medium ${p.available ? "bg-emerald-500/15 text-emerald-600" : "bg-muted text-muted-foreground"}`}>
+                  {p.available ? "Available" : "Busy"}
+                </span>
               </div>
-              <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+              <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
                 <span className="flex items-center gap-0.5"><Star className="size-3 fill-gold text-gold" /> {Number(p.rating_avg).toFixed(1)}</span>
                 <span>· {p.city}</span>
                 <span>· ${p.hourly_rate}/hr</span>
+                {p.distance != null && (
+                  <span className="flex items-center gap-0.5">· <MapPin className="size-3" /> {p.distance.toFixed(1)} km</span>
+                )}
               </div>
             </button>
           ))}
         </div>
-        {providers && providers.length === 0 && (
-          <p className="mt-3 text-xs text-muted-foreground">No providers listed yet — we'll auto-match.</p>
+        {visibleProviders.length === 0 && (
+          <p className="mt-3 text-xs text-muted-foreground">
+            {providers && providers.length > 0
+              ? "No providers match your filters — try widening the radius or turning off 'Available now'."
+              : "No providers listed yet — we'll auto-match."}
+          </p>
         )}
 
         <form
