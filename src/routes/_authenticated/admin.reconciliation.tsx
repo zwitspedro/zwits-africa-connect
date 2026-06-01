@@ -107,7 +107,21 @@ function ReconciliationScreen() {
     return (price * Number(r.percent)) / 100 + Number(r.min_fee);
   };
 
+  const hasDiscrepancy = (b: Booking) => {
+    const r = rateByCategory.get(b.category);
+    const price = Number(b.price ?? 0);
+    if (!r) return true;
+    if (!r.active) return true;
+    if (price <= 0) return true;
+    if (b.payment_status !== "paid") return true;
+    const rawCommission = (price * Number(r.percent)) / 100 + Number(r.min_fee);
+    if (rawCommission > price) return true;
+    return false;
+  };
+
   const rows = bookings ?? [];
+  const discrepancyRows = rows.filter(hasDiscrepancy);
+  const displayRows = showDiscrepanciesOnly ? discrepancyRows : rows;
   const totals = rows.reduce(
     (acc, b) => {
       const price = Number(b.price ?? 0);
