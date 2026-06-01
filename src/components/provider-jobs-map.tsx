@@ -1,13 +1,22 @@
 /// <reference types="google.maps" />
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import {
   MarkerClusterer,
   SuperClusterAlgorithm,
   type Cluster,
 } from "@googlemaps/markerclusterer";
-import { ChevronRight, X } from "lucide-react";
+import { ChevronRight, X, MapPin, User, FileText, Tag, Calendar, ExternalLink } from "lucide-react";
 import { useGoogleMaps } from "@/hooks/use-google-maps";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 
 type Job = {
   id: string;
@@ -16,6 +25,10 @@ type Job = {
   address: string;
   category: string;
   status: string;
+  customer_id?: string | null;
+  description?: string | null;
+  scheduled_for?: string | null;
+  price?: number | string | null;
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -50,6 +63,26 @@ export function ProviderJobsMap({
   // null = show all; otherwise restrict to these booking IDs
   const [selectedIds, setSelectedIds] = useState<string[] | null>(null);
   const [highlightId, setHighlightId] = useState<string | null>(null);
+  const [detailId, setDetailId] = useState<string | null>(null);
+
+  const detailJob = useMemo(
+    () => (detailId ? jobs.find((j) => j.id === detailId) ?? null : null),
+    [detailId, jobs],
+  );
+
+  const { data: customer } = useQuery({
+    queryKey: ["booking-customer", detailJob?.customer_id],
+    enabled: !!detailJob?.customer_id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("display_name, phone, avatar_url")
+        .eq("user_id", detailJob!.customer_id!)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
 
   useEffect(() => {
     if (!ready || !ref.current) return;
@@ -186,12 +219,18 @@ export function ProviderJobsMap({
             </li>
           )}
           {visibleJobs.map((j) => {
-            const isHighlighted = j.id === highlightId;
+            const isHighlighted = j.id === highlightId || j.id === detailId;
             return (
               <li key={j.id}>
                 <button
                   type="button"
-                  onClick={() => navigate({ to: "/bookings/$id", params: { id: j.id } })}
+                  onClick={() => {
+                    setDetailId(j.id);
+                    setHighlightId(j.id);
+                    if (mapRef.current && j.lat != null && j.lng != null) {
+                      mapRef.current.panTo({ lat: j.lat, lng: j.lng });
+                    }
+                  }}
                   className={`flex w-full items-start gap-2 px-3 py-2.5 text-left transition-colors hover:bg-muted/60 ${
                     isHighlighted ? "bg-muted" : ""
                   }`}
@@ -213,6 +252,93 @@ export function ProviderJobsMap({
           })}
         </ul>
       </aside>
+
+      <Sheet open={!!detailJob} onOpenChange={(o) => !o && setDetailId(null)}>
+        <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
+          {detailJob && (
+            <>
+              <SheetHeader className="text-left">
+                <div className="flex items-center gap-2">
+                  <span
+                    className="size-2.5 rounded-full"
+                    style={{ background: STATUS_COLORS[detailJob.status] ?? "#6b7280" }}
+                  />
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                    {detailJob.status.replace("_", " ")}
+                  </span>
+                </div>
+                <SheetTitle className="font-display text-2xl">
+                  {detailJob.category}
+                </SheetTitle>
+                <SheetDescription>Booking #{detailJob.id.slice(0, 8)}</SheetDescription>
+              </SheetHeader>
+
+              <div className="mt-6 grid gap-4 text-sm">
+                <Field icon={<User className="size-4" />} label="Customer">
+                  {customer?.display_name ?? "—"}
+                  {customer?.phone && (
+                    <div className="text-xs text-muted-foreground">{customer.phone}</div>
+                  )}
+                </Field>
+                <Field icon={<Tag className="size-4" />} label="Service">
+                  {detailJob.category}
+                  {detailJob.price != null && (
+                    <span className="ml-2 text-xs text-muted-foreground">
+                      ${Number(detailJob.price).toFixed(0)}
+                    </span>
+                  )}
+                </Field>
+                <Field icon={<MapPin className="size-4" />} label="Address">
+                  {detailJob.address}
+                </Field>
+                {detailJob.scheduled_for && (
+                  <Field icon={<Calendar className="size-4" />} label="Scheduled">
+                    {new Date(detailJob.scheduled_for).toLocaleString()}
+                  </Field>
+                )}
+                <Field icon={<FileText className="size-4" />} label="Notes">
+                  {detailJob.description ? (
+                    <p className="whitespace-pre-wrap">{detailJob.description}</p>
+                  ) : (
+                    <span className="text-muted-foreground">No notes provided.</span>
+                  )}
+                </Field>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => navigate({ to: "/bookings/$id", params: { id: detailJob.id } })}
+                className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground"
+              >
+                Open full booking
+                <ExternalLink className="size-4" />
+              </button>
+            </>
+          )}
+        </SheetContent>
+      </Sheet>
+    </div>
+  );
+}
+
+function Field({
+  icon,
+  label,
+  children,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-start gap-3 rounded-xl border border-border bg-card p-3">
+      <span className="mt-0.5 text-muted-foreground">{icon}</span>
+      <div className="min-w-0 flex-1">
+        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+          {label}
+        </div>
+        <div className="mt-0.5 text-sm">{children}</div>
+      </div>
     </div>
   );
 }
