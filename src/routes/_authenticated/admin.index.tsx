@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ShieldCheck, Users, CalendarCheck, Wallet, Star, FileSearch, AlertTriangle, ArrowRight, Activity } from "lucide-react";
+import { ShieldCheck, Users, CalendarCheck, Wallet, Star, FileSearch, AlertTriangle, ArrowRight, Activity, Percent } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { AuditExportButtons } from "@/components/audit-export-buttons";
 import { supabase } from "@/integrations/supabase/client";
@@ -117,6 +117,9 @@ function AdminDashboard() {
           <div className="flex flex-wrap gap-2">
             <Link to="/admin/providers" className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-xs text-primary-foreground hover:opacity-90">
               <Users className="size-3.5" /> Manage providers
+            </Link>
+            <Link to="/admin/commissions" className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-xs hover:bg-muted">
+              <Percent className="size-3.5" /> Commissions
             </Link>
             <AuditExportButtons
               rows={audits as any}

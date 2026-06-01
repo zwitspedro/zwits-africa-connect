@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.log_commission_rate_change() FROM PUBLIC, anon, authenticated;

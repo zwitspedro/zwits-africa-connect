@@ -79,6 +79,78 @@ export type Database = {
           },
         ]
       }
+      commission_rate_history: {
+        Row: {
+          active: boolean
+          category: string
+          change_kind: string
+          changed_by: string | null
+          created_at: string
+          id: string
+          min_fee: number
+          notes: string | null
+          percent: number
+        }
+        Insert: {
+          active?: boolean
+          category: string
+          change_kind: string
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          min_fee?: number
+          notes?: string | null
+          percent: number
+        }
+        Update: {
+          active?: boolean
+          category?: string
+          change_kind?: string
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          min_fee?: number
+          notes?: string | null
+          percent?: number
+        }
+        Relationships: []
+      }
+      commission_rates: {
+        Row: {
+          active: boolean
+          category: string
+          created_at: string
+          id: string
+          min_fee: number
+          notes: string | null
+          percent: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          active?: boolean
+          category: string
+          created_at?: string
+          id?: string
+          min_fee?: number
+          notes?: string | null
+          percent?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          active?: boolean
+          category?: string
+          created_at?: string
+          id?: string
+          min_fee?: number
+          notes?: string | null
+          percent?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           attachment_name: string | null
