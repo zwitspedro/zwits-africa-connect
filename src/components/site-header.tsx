@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Menu, X, Bell } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { useNotificationsRealtime } from "@/hooks/use-notifications-realtime";
 
 const links = [
   { to: "/", label: "Home" },
