@@ -218,6 +218,17 @@ function ProviderSetup() {
 
           {step === 1 && (
             <div className="grid gap-4">
+              <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <ShieldCheck className="size-4 text-primary" /> Before you upload
+                </div>
+                <ul className="mt-2 grid gap-1 text-xs text-muted-foreground">
+                  <li>· Documents must be genuine, current, and unedited.</li>
+                  <li>· Each file: max 10 MB · JPG, PNG, WEBP or PDF (selfie must be an image).</li>
+                  <li>· Photos must be sharp — no blur, no glare, all edges visible.</li>
+                </ul>
+              </div>
+
               {(Object.keys(DOC_META) as DocKey[]).map((k) => (
                 <DocUpload
                   key={k}
