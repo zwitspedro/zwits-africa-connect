@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_authenticated/book/$category")({
 function BookCategory() {
   const { category } = Route.useParams();
   const { user } = useAuth();
-  
+  const qc = useQueryClient();
   const service = services.find((s) => s.slug === category);
 
   const [providerId, setProviderId] = useState<string | null>(null);
