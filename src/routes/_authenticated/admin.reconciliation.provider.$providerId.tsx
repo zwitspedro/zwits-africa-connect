@@ -99,11 +99,24 @@ function ProviderBreakdown() {
     return m;
   }, [rates]);
 
+  type CatCalc = {
+    count: number;
+    gross: number;
+    percentFee: number;
+    minFeeTotal: number;
+    rawCommission: number;
+    capAdjustment: number;
+    commission: number;
+    net: number;
+    rate: Rate | undefined;
+  };
+
   const fee = (b: Booking) => {
     const r = rateByCategory.get(b.category);
     const price = Number(b.price ?? 0);
     if (!r) return 0;
-    return (price * Number(r.percent)) / 100 + Number(r.min_fee);
+    const raw = (price * Number(r.percent)) / 100 + Number(r.min_fee);
+    return Math.min(raw, price);
   };
 
   const rows = bookings ?? [];
@@ -123,20 +136,54 @@ function ProviderBreakdown() {
   );
 
   const byCategory = useMemo(() => {
-    const m = new Map<string, { count: number; gross: number; commission: number; net: number }>();
+    const m = new Map<string, CatCalc>();
     for (const b of rows) {
       const k = b.category;
-      const cur = m.get(k) ?? { count: 0, gross: 0, commission: 0, net: 0 };
+      const r = rateByCategory.get(k);
+      const cur =
+        m.get(k) ??
+        ({
+          count: 0,
+          gross: 0,
+          percentFee: 0,
+          minFeeTotal: 0,
+          rawCommission: 0,
+          capAdjustment: 0,
+          commission: 0,
+          net: 0,
+          rate: r,
+        } as CatCalc);
       const price = Number(b.price ?? 0);
-      const f = fee(b);
+      const pct = r ? (price * Number(r.percent)) / 100 : 0;
+      const mf = r ? Number(r.min_fee) : 0;
+      const raw = pct + mf;
+      const applied = Math.min(raw, price);
       cur.count += 1;
       cur.gross += price;
-      cur.commission += f;
-      cur.net += price - f;
+      cur.percentFee += pct;
+      cur.minFeeTotal += mf;
+      cur.rawCommission += raw;
+      cur.capAdjustment += raw - applied;
+      cur.commission += applied;
+      cur.net += price - applied;
       m.set(k, cur);
     }
     return Array.from(m.entries()).sort((a, b) => b[1].gross - a[1].gross);
   }, [rows, rateByCategory]);
+
+  const calcTotals = byCategory.reduce(
+    (a, [, v]) => {
+      a.gross += v.gross;
+      a.percentFee += v.percentFee;
+      a.minFeeTotal += v.minFeeTotal;
+      a.capAdjustment += v.capAdjustment;
+      a.commission += v.commission;
+      return a;
+    },
+    { gross: 0, percentFee: 0, minFeeTotal: 0, capAdjustment: 0, commission: 0 },
+  );
+  const adjustments = 0;
+  const netPayout = calcTotals.gross - calcTotals.commission - adjustments;
 
   const setPreset = (days: number) => {
     const end = new Date();
@@ -243,11 +290,50 @@ function ProviderBreakdown() {
 
         {isLoading && <p className="mt-6 text-sm text-muted-foreground">Loading bookings…</p>}
 
-        <Panel title="By service category" className="mt-6" empty={byCategory.length === 0}>
+        <Panel title="Net payout calculation" className="mt-6" empty={byCategory.length === 0}>
+          <div className="space-y-3 text-sm">
+            <div className="grid gap-2 sm:grid-cols-2">
+              <Calc label="Gross (sum of completed bookings)" value={`$${calcTotals.gross.toFixed(2)}`} bold />
+              <Calc label="Total commission applied" value={`− $${calcTotals.commission.toFixed(2)}`} bold />
+            </div>
+            <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+              <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                Commission components
+              </div>
+              <div className="mt-2 space-y-1.5">
+                <Calc label="Percent fees across categories" value={`$${calcTotals.percentFee.toFixed(2)}`} />
+                <Calc label="Flat min-fees · sum across bookings" value={`+ $${calcTotals.minFeeTotal.toFixed(2)}`} />
+                {calcTotals.capAdjustment > 0 && (
+                  <Calc
+                    label="Min-fee cap · reductions where raw fee exceeded gross"
+                    value={`− $${calcTotals.capAdjustment.toFixed(2)}`}
+                  />
+                )}
+                <Calc label="Adjustments (refunds, manual credits)" value={`− $${adjustments.toFixed(2)}`} />
+              </div>
+            </div>
+            <div className="border-t border-border/60 pt-2">
+              <Calc
+                label="Net payout · gross − commission − adjustments"
+                value={`$${netPayout.toFixed(2)}`}
+                bold
+              />
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              {calcTotals.capAdjustment > 0
+                ? "Min-fee cap applied on bookings where percent + min fee exceeded the gross price."
+                : "No min-fee cap triggered in this range."}
+              {" · "}
+              {adjustments === 0 ? "No adjustments recorded for this range." : ""}
+            </p>
+          </div>
+        </Panel>
+
+        <Panel title="By service category" className="mt-4" empty={byCategory.length === 0}>
           <Table
-            headers={["Category", "Rate", "#", "Gross", "Commission", "Net"]}
+            headers={["Category", "Rate", "#", "Gross", "% fee", "Min fees", "Cap", "Commission", "Net"]}
             rows={byCategory.map(([cat, v]) => {
-              const r = rateByCategory.get(cat);
+              const r = v.rate;
               return [
                 <span key="c" className="capitalize">
                   {cat}
@@ -263,12 +349,16 @@ function ProviderBreakdown() {
                 ),
                 v.count,
                 `$${v.gross.toFixed(2)}`,
+                `$${v.percentFee.toFixed(2)}`,
+                `$${v.minFeeTotal.toFixed(2)}`,
+                v.capAdjustment > 0 ? `− $${v.capAdjustment.toFixed(2)}` : "—",
                 `$${v.commission.toFixed(2)}`,
                 `$${v.net.toFixed(2)}`,
               ];
             })}
           />
         </Panel>
+
 
         <Panel title="Booking-level breakdown" className="mt-4" empty={rows.length === 0}>
           <Table
@@ -311,6 +401,16 @@ function ProviderBreakdown() {
   );
 }
 
+function Calc({ label, value, bold }: { label: string; value: string; bold?: boolean }) {
+  return (
+    <div
+      className={`flex items-center justify-between ${bold ? "font-semibold" : "text-muted-foreground"}`}
+    >
+      <span>{label}</span>
+      <span className="tabular-nums text-foreground">{value}</span>
+    </div>
+  );
+}
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="grid gap-1">
