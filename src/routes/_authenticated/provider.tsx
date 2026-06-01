@@ -77,6 +77,8 @@ function ProviderDashboard() {
   const active = jobs?.filter((j) => ["pending", "accepted", "in_progress"].includes(j.status)) ?? [];
   const completed = jobs?.filter((j) => j.status === "completed") ?? [];
   const earnings = completed.reduce((s, j) => s + (Number(j.price) || 0), 0);
+  const trackingJob = active.find((j) => j.status === "in_progress");
+  useProviderTracking({ bookingId: trackingJob?.id ?? null, enabled: !!trackingJob });
 
   return (
     <SiteShell>
