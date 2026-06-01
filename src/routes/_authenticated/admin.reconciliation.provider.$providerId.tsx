@@ -401,6 +401,16 @@ function ProviderBreakdown() {
   );
 }
 
+function Calc({ label, value, bold }: { label: string; value: string; bold?: boolean }) {
+  return (
+    <div
+      className={`flex items-center justify-between ${bold ? "font-semibold" : "text-muted-foreground"}`}
+    >
+      <span>{label}</span>
+      <span className="tabular-nums text-foreground">{value}</span>
+    </div>
+  );
+}
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="grid gap-1">
