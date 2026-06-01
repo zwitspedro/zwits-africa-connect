@@ -6,6 +6,7 @@ import { Star, BadgeCheck } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { AddressAutocomplete } from "@/components/address-autocomplete";
 import { LocationMap } from "@/components/location-map";
+import { PaymentMethodPicker, type PaymentMethod } from "@/components/payment-method-picker";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { services } from "@/data/services";
@@ -26,6 +27,8 @@ function BookCategory() {
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [description, setDescription] = useState("");
   const [scheduled, setScheduled] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
+  const [paymentReference, setPaymentReference] = useState("");
 
   const { data: providers } = useQuery({
     queryKey: ["providers", category],
@@ -43,6 +46,7 @@ function BookCategory() {
 
   const create = useMutation({
     mutationFn: async () => {
+      if (!paymentMethod) throw new Error("Choose a payment method");
       const { error } = await supabase.from("bookings").insert({
         customer_id: user!.id,
         provider_id: providerId,
@@ -50,6 +54,9 @@ function BookCategory() {
         address,
         description,
         scheduled_for: scheduled || null,
+        payment_method: paymentMethod,
+        payment_reference: paymentMethod === "cash" ? null : paymentReference.trim() || null,
+        payment_status: paymentMethod === "cash" ? "pending" : "pending",
       });
       if (error) throw error;
     },
@@ -141,7 +148,16 @@ function BookCategory() {
               placeholder={`Describe your ${service.name.toLowerCase()} request…`}
               className="rounded-lg border border-input bg-background px-3 py-2.5 text-sm" />
           </label>
-          <button disabled={create.isPending} className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground disabled:opacity-60">
+          <div className="grid gap-1.5">
+            <span className="text-xs text-muted-foreground">Payment method</span>
+            <PaymentMethodPicker
+              value={paymentMethod}
+              onChange={setPaymentMethod}
+              reference={paymentReference}
+              onReferenceChange={setPaymentReference}
+            />
+          </div>
+          <button disabled={create.isPending || !paymentMethod} className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground disabled:opacity-60">
             {create.isPending ? "Sending…" : "Request booking"}
           </button>
         </form>

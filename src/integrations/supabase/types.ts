@@ -24,6 +24,9 @@ export type Database = {
           id: string
           lat: number | null
           lng: number | null
+          payment_method: string | null
+          payment_reference: string | null
+          payment_status: string
           price: number | null
           provider_id: string | null
           scheduled_for: string | null
@@ -39,6 +42,9 @@ export type Database = {
           id?: string
           lat?: number | null
           lng?: number | null
+          payment_method?: string | null
+          payment_reference?: string | null
+          payment_status?: string
           price?: number | null
           provider_id?: string | null
           scheduled_for?: string | null
@@ -54,6 +60,9 @@ export type Database = {
           id?: string
           lat?: number | null
           lng?: number | null
+          payment_method?: string | null
+          payment_reference?: string | null
+          payment_status?: string
           price?: number | null
           provider_id?: string | null
           scheduled_for?: string | null
