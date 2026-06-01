@@ -259,7 +259,16 @@ function ReconciliationScreen() {
               </button>
             ))}
           </div>
-          <div className="ml-auto text-xs text-muted-foreground">{rows.length} completed bookings</div>
+          <div className="ml-auto flex items-center gap-3">
+            <button
+              onClick={() => setShowDiscrepanciesOnly((v) => !v)}
+              className={`inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-[11px] transition-colors ${showDiscrepanciesOnly ? "border-amber-500/40 bg-amber-500/10 text-amber-400" : "border-border hover:bg-muted"}`}
+            >
+              <Filter className="size-3" />
+              {showDiscrepanciesOnly ? "Discrepancies only" : "Show all"}
+            </button>
+            <span className="text-xs text-muted-foreground">{displayRows.length} of {rows.length} bookings</span>
+          </div>
         </div>
 
         <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
