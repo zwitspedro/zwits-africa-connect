@@ -7,6 +7,7 @@ import {
   Scissors,
   Laptop,
   Siren,
+  Headphones,
   type LucideIcon,
 } from "lucide-react";
 
@@ -83,5 +84,13 @@ export const services: Service[] = [
     description: "Roadside, locksmith, medical transport and urgent response.",
     icon: Siren,
     examples: ["Roadside", "Locksmith", "Medical"],
+  },
+  {
+    slug: "customer-service",
+    name: "Customer Service",
+    tagline: "Real people, real help",
+    description: "Book a trained customer service agent for calls, chats, complaints handling and account support.",
+    icon: Headphones,
+    examples: ["Phone support", "Live chat", "Complaints", "Onboarding calls"],
   },
 ];
