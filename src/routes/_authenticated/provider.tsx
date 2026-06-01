@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Star, BadgeCheck } from "lucide-react";
+import { Star, BadgeCheck, MapPin } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { useProviderTracking } from "@/hooks/use-provider-tracking";
 
 export const Route = createFileRoute("/_authenticated/provider")({
   head: () => ({ meta: [{ title: "Provider dashboard — Zwits" }] }),
