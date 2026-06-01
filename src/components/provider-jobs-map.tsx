@@ -1,13 +1,22 @@
 /// <reference types="google.maps" />
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import {
   MarkerClusterer,
   SuperClusterAlgorithm,
   type Cluster,
 } from "@googlemaps/markerclusterer";
-import { ChevronRight, X } from "lucide-react";
+import { ChevronRight, X, MapPin, User, FileText, Tag, Calendar, ExternalLink } from "lucide-react";
 import { useGoogleMaps } from "@/hooks/use-google-maps";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 
 type Job = {
   id: string;
@@ -16,6 +25,10 @@ type Job = {
   address: string;
   category: string;
   status: string;
+  customer_id?: string | null;
+  description?: string | null;
+  scheduled_for?: string | null;
+  price?: number | string | null;
 };
 
 const STATUS_COLORS: Record<string, string> = {
