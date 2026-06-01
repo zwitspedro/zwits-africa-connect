@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { Upload, Check, FileText, IdCard, Camera, ChevronLeft, ChevronRight, ShieldCheck, AlertCircle, CircleDot, History, ChevronDown } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
+import { AuditExportButtons } from "@/components/audit-export-buttons";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { services } from "@/data/services";
@@ -505,7 +506,15 @@ function DocUpload({ docKey, userId, value, onChange }: { docKey: DocKey; userId
 
       {showAudit && (
         <div className="mt-2 grid gap-1.5 rounded-xl bg-muted/30 p-3 text-[11px]">
-          {!audits?.length && <span className="text-muted-foreground">No upload attempts yet.</span>}
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-muted-foreground">{audits?.length ? `${audits.length} entr${audits.length === 1 ? "y" : "ies"}` : "No upload attempts yet."}</span>
+            <AuditExportButtons
+              rows={audits as any}
+              filenameBase={`audit-${docKey}`}
+              pdfTitle={`Upload audit — ${meta.label}`}
+              pdfSubtitle={`Provider user ${userId}`}
+            />
+          </div>
           {audits?.map((a) => <AuditRow key={a.id} audit={a} />)}
         </div>
       )}
