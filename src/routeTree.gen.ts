@@ -32,6 +32,8 @@ import { Route as AuthenticatedBookCategoryRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminReconciliationRouteImport } from './routes/_authenticated/admin.reconciliation'
 import { Route as AuthenticatedAdminProvidersRouteImport } from './routes/_authenticated/admin.providers'
 import { Route as AuthenticatedAdminCommissionsRouteImport } from './routes/_authenticated/admin.commissions'
+import { Route as AuthenticatedAdminReconciliationProviderProviderIdRouteImport } from './routes/_authenticated/admin.reconciliation.provider.$providerId'
+import { Route as AuthenticatedAdminReconciliationBookingBookingIdRouteImport } from './routes/_authenticated/admin.reconciliation.booking.$bookingId'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -154,6 +156,18 @@ const AuthenticatedAdminCommissionsRoute =
     path: '/admin/commissions',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedAdminReconciliationProviderProviderIdRoute =
+  AuthenticatedAdminReconciliationProviderProviderIdRouteImport.update({
+    id: '/provider/$providerId',
+    path: '/provider/$providerId',
+    getParentRoute: () => AuthenticatedAdminReconciliationRoute,
+  } as any)
+const AuthenticatedAdminReconciliationBookingBookingIdRoute =
+  AuthenticatedAdminReconciliationBookingBookingIdRouteImport.update({
+    id: '/booking/$bookingId',
+    path: '/booking/$bookingId',
+    getParentRoute: () => AuthenticatedAdminReconciliationRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -172,12 +186,14 @@ export interface FileRoutesByFullPath {
   '/provider': typeof AuthenticatedProviderRouteWithChildren
   '/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
-  '/admin/reconciliation': typeof AuthenticatedAdminReconciliationRoute
+  '/admin/reconciliation': typeof AuthenticatedAdminReconciliationRouteWithChildren
   '/book/$category': typeof AuthenticatedBookCategoryRoute
   '/bookings/$id': typeof AuthenticatedBookingsIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/admin/reconciliation/booking/$bookingId': typeof AuthenticatedAdminReconciliationBookingBookingIdRoute
+  '/admin/reconciliation/provider/$providerId': typeof AuthenticatedAdminReconciliationProviderProviderIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -196,12 +212,14 @@ export interface FileRoutesByTo {
   '/provider': typeof AuthenticatedProviderRouteWithChildren
   '/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
-  '/admin/reconciliation': typeof AuthenticatedAdminReconciliationRoute
+  '/admin/reconciliation': typeof AuthenticatedAdminReconciliationRouteWithChildren
   '/book/$category': typeof AuthenticatedBookCategoryRoute
   '/bookings/$id': typeof AuthenticatedBookingsIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/admin/reconciliation/booking/$bookingId': typeof AuthenticatedAdminReconciliationBookingBookingIdRoute
+  '/admin/reconciliation/provider/$providerId': typeof AuthenticatedAdminReconciliationProviderProviderIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -222,12 +240,14 @@ export interface FileRoutesById {
   '/_authenticated/provider': typeof AuthenticatedProviderRouteWithChildren
   '/_authenticated/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/_authenticated/admin/providers': typeof AuthenticatedAdminProvidersRoute
-  '/_authenticated/admin/reconciliation': typeof AuthenticatedAdminReconciliationRoute
+  '/_authenticated/admin/reconciliation': typeof AuthenticatedAdminReconciliationRouteWithChildren
   '/_authenticated/book/$category': typeof AuthenticatedBookCategoryRoute
   '/_authenticated/bookings/$id': typeof AuthenticatedBookingsIdRoute
   '/_authenticated/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/_authenticated/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/admin/reconciliation/booking/$bookingId': typeof AuthenticatedAdminReconciliationBookingBookingIdRoute
+  '/_authenticated/admin/reconciliation/provider/$providerId': typeof AuthenticatedAdminReconciliationProviderProviderIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -254,6 +274,8 @@ export interface FileRouteTypes {
     | '/messages/$bookingId'
     | '/provider/setup'
     | '/admin/'
+    | '/admin/reconciliation/booking/$bookingId'
+    | '/admin/reconciliation/provider/$providerId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -278,6 +300,8 @@ export interface FileRouteTypes {
     | '/messages/$bookingId'
     | '/provider/setup'
     | '/admin'
+    | '/admin/reconciliation/booking/$bookingId'
+    | '/admin/reconciliation/provider/$providerId'
   id:
     | '__root__'
     | '/'
@@ -303,6 +327,8 @@ export interface FileRouteTypes {
     | '/_authenticated/messages/$bookingId'
     | '/_authenticated/provider/setup'
     | '/_authenticated/admin/'
+    | '/_authenticated/admin/reconciliation/booking/$bookingId'
+    | '/_authenticated/admin/reconciliation/provider/$providerId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -482,6 +508,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminCommissionsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin/reconciliation/provider/$providerId': {
+      id: '/_authenticated/admin/reconciliation/provider/$providerId'
+      path: '/provider/$providerId'
+      fullPath: '/admin/reconciliation/provider/$providerId'
+      preLoaderRoute: typeof AuthenticatedAdminReconciliationProviderProviderIdRouteImport
+      parentRoute: typeof AuthenticatedAdminReconciliationRoute
+    }
+    '/_authenticated/admin/reconciliation/booking/$bookingId': {
+      id: '/_authenticated/admin/reconciliation/booking/$bookingId'
+      path: '/booking/$bookingId'
+      fullPath: '/admin/reconciliation/booking/$bookingId'
+      preLoaderRoute: typeof AuthenticatedAdminReconciliationBookingBookingIdRouteImport
+      parentRoute: typeof AuthenticatedAdminReconciliationRoute
+    }
   }
 }
 
@@ -511,6 +551,24 @@ const AuthenticatedProviderRouteWithChildren =
     AuthenticatedProviderRouteChildren,
   )
 
+interface AuthenticatedAdminReconciliationRouteChildren {
+  AuthenticatedAdminReconciliationBookingBookingIdRoute: typeof AuthenticatedAdminReconciliationBookingBookingIdRoute
+  AuthenticatedAdminReconciliationProviderProviderIdRoute: typeof AuthenticatedAdminReconciliationProviderProviderIdRoute
+}
+
+const AuthenticatedAdminReconciliationRouteChildren: AuthenticatedAdminReconciliationRouteChildren =
+  {
+    AuthenticatedAdminReconciliationBookingBookingIdRoute:
+      AuthenticatedAdminReconciliationBookingBookingIdRoute,
+    AuthenticatedAdminReconciliationProviderProviderIdRoute:
+      AuthenticatedAdminReconciliationProviderProviderIdRoute,
+  }
+
+const AuthenticatedAdminReconciliationRouteWithChildren =
+  AuthenticatedAdminReconciliationRoute._addFileChildren(
+    AuthenticatedAdminReconciliationRouteChildren,
+  )
+
 interface AuthenticatedRouteChildren {
   AuthenticatedBookingsRoute: typeof AuthenticatedBookingsRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
@@ -518,7 +576,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedProviderRoute: typeof AuthenticatedProviderRouteWithChildren
   AuthenticatedAdminCommissionsRoute: typeof AuthenticatedAdminCommissionsRoute
   AuthenticatedAdminProvidersRoute: typeof AuthenticatedAdminProvidersRoute
-  AuthenticatedAdminReconciliationRoute: typeof AuthenticatedAdminReconciliationRoute
+  AuthenticatedAdminReconciliationRoute: typeof AuthenticatedAdminReconciliationRouteWithChildren
   AuthenticatedBookCategoryRoute: typeof AuthenticatedBookCategoryRoute
   AuthenticatedMessagesBookingIdRoute: typeof AuthenticatedMessagesBookingIdRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
@@ -531,7 +589,8 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedProviderRoute: AuthenticatedProviderRouteWithChildren,
   AuthenticatedAdminCommissionsRoute: AuthenticatedAdminCommissionsRoute,
   AuthenticatedAdminProvidersRoute: AuthenticatedAdminProvidersRoute,
-  AuthenticatedAdminReconciliationRoute: AuthenticatedAdminReconciliationRoute,
+  AuthenticatedAdminReconciliationRoute:
+    AuthenticatedAdminReconciliationRouteWithChildren,
   AuthenticatedBookCategoryRoute: AuthenticatedBookCategoryRoute,
   AuthenticatedMessagesBookingIdRoute: AuthenticatedMessagesBookingIdRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
@@ -557,13 +616,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
