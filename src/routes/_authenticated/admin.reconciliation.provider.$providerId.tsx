@@ -6,6 +6,7 @@ import { SiteShell } from "@/components/site-shell";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
+import { DiscrepancyBanner, type DiscrepancyIssue } from "@/components/discrepancy-banner";
 
 export const Route = createFileRoute(
   "/_authenticated/admin/reconciliation/provider/$providerId",
