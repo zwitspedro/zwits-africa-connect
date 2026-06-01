@@ -63,6 +63,26 @@ export function ProviderJobsMap({
   // null = show all; otherwise restrict to these booking IDs
   const [selectedIds, setSelectedIds] = useState<string[] | null>(null);
   const [highlightId, setHighlightId] = useState<string | null>(null);
+  const [detailId, setDetailId] = useState<string | null>(null);
+
+  const detailJob = useMemo(
+    () => (detailId ? jobs.find((j) => j.id === detailId) ?? null : null),
+    [detailId, jobs],
+  );
+
+  const { data: customer } = useQuery({
+    queryKey: ["booking-customer", detailJob?.customer_id],
+    enabled: !!detailJob?.customer_id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("display_name, phone, avatar_url")
+        .eq("user_id", detailJob!.customer_id!)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
 
   useEffect(() => {
     if (!ready || !ref.current) return;
