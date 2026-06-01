@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -7,6 +7,7 @@ import { SiteShell } from "@/components/site-shell";
 import { AddressAutocomplete } from "@/components/address-autocomplete";
 import { LocationMap } from "@/components/location-map";
 import { PaymentMethodPicker, type PaymentMethod } from "@/components/payment-method-picker";
+import { BookingReceiptDialog, type BookingReceipt } from "@/components/booking-receipt";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { services } from "@/data/services";
@@ -19,7 +20,7 @@ export const Route = createFileRoute("/_authenticated/book/$category")({
 function BookCategory() {
   const { category } = Route.useParams();
   const { user } = useAuth();
-  const navigate = useNavigate();
+  
   const service = services.find((s) => s.slug === category);
 
   const [providerId, setProviderId] = useState<string | null>(null);
@@ -29,6 +30,7 @@ function BookCategory() {
   const [scheduled, setScheduled] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
   const [paymentReference, setPaymentReference] = useState("");
+  const [receipt, setReceipt] = useState<BookingReceipt | null>(null);
 
   const { data: providers } = useQuery({
     queryKey: ["providers", category],
@@ -47,7 +49,7 @@ function BookCategory() {
   const create = useMutation({
     mutationFn: async () => {
       if (!paymentMethod) throw new Error("Choose a payment method");
-      const { error } = await supabase.from("bookings").insert({
+      const { data, error } = await supabase.from("bookings").insert({
         customer_id: user!.id,
         provider_id: providerId,
         category,
@@ -56,16 +58,37 @@ function BookCategory() {
         scheduled_for: scheduled || null,
         payment_method: paymentMethod,
         payment_reference: paymentMethod === "cash" ? null : paymentReference.trim() || null,
-        payment_status: paymentMethod === "cash" ? "pending" : "pending",
-      });
+        payment_status: "pending",
+      }).select("id, created_at").single();
       if (error) throw error;
+      return data;
     },
-    onSuccess: () => {
-      toast.success("Booking sent");
-      navigate({ to: "/bookings" });
+    onSuccess: (data) => {
+      toast.success("Booking confirmed");
+      setReceipt({
+        id: data.id,
+        category: category!,
+        serviceName: service!.name,
+        address,
+        scheduledFor: scheduled || null,
+        paymentMethod: paymentMethod!,
+        paymentReference: paymentMethod === "cash" ? null : paymentReference.trim() || null,
+        createdAt: data.created_at,
+      });
     },
     onError: (e: any) => toast.error(e.message),
   });
+
+  const resetForm = () => {
+    setReceipt(null);
+    setProviderId(null);
+    setAddress("");
+    setCoords(null);
+    setDescription("");
+    setScheduled("");
+    setPaymentMethod(null);
+    setPaymentReference("");
+  };
 
   if (!service) {
     return (
@@ -162,6 +185,7 @@ function BookCategory() {
           </button>
         </form>
       </section>
+      {receipt && <BookingReceiptDialog receipt={receipt} onClose={resetForm} />}
     </SiteShell>
   );
 }
