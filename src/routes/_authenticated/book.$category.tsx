@@ -297,7 +297,11 @@ function BookCategory() {
         )}
 
         <form
-          onSubmit={(e) => { e.preventDefault(); create.mutate(); }}
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!address) return toast.error("Add an address");
+            setStep(2);
+          }}
           className="mt-8 grid gap-4 rounded-3xl border border-border bg-card p-6"
         >
           <label className="grid gap-1.5">
@@ -323,20 +327,88 @@ function BookCategory() {
               placeholder={`Describe your ${service.name.toLowerCase()} request…`}
               className="rounded-lg border border-input bg-background px-3 py-2.5 text-sm" />
           </label>
-          <div className="grid gap-1.5">
-            <span className="text-xs text-muted-foreground">Payment method</span>
-            <PaymentMethodPicker
-              value={paymentMethod}
-              onChange={setPaymentMethod}
-              reference={paymentReference}
-              onReferenceChange={setPaymentReference}
-            />
-          </div>
-          <button disabled={create.isPending || !paymentMethod} className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground disabled:opacity-60">
-            {create.isPending ? "Sending…" : "Request booking"}
+          <button className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground">
+            Continue to confirm
           </button>
         </form>
+        </>)}
+
+        {step === 2 && (
+          <form
+            onSubmit={(e) => { e.preventDefault(); create.mutate(); }}
+            className="mt-8 grid gap-5 rounded-3xl border border-border bg-card p-6"
+          >
+            <div>
+              <h2 className="font-display text-xl font-semibold">Confirm your booking</h2>
+              <p className="text-xs text-muted-foreground">Review the details before sending the request.</p>
+            </div>
+
+            <div className="grid gap-3 rounded-2xl border border-border bg-background/60 p-4 text-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Provider</span>
+                <span className="font-medium">{selectedProvider ? selectedProvider.business_name : "Auto-match"}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Service</span>
+                <span className="font-medium">{service.name}</span>
+              </div>
+              <div className="flex items-start justify-between gap-3">
+                <span className="text-muted-foreground">Address</span>
+                <span className="max-w-[60%] text-right font-medium">{address}</span>
+              </div>
+              {scheduled && (
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">When</span>
+                  <span className="font-medium">{new Date(scheduled).toLocaleString()}</span>
+                </div>
+              )}
+              {estimate.distance != null && (
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Distance</span>
+                  <span className="font-medium">{estimate.distance.toFixed(1)} km</span>
+                </div>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4">
+                <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Final price</div>
+                <div className="mt-1 font-display text-2xl font-bold tabular-nums">${estimate.price.toFixed(2)}</div>
+                <div className="text-[11px] text-muted-foreground">≈ 1 hr at ${estimate.hourly.toFixed(2)}/hr</div>
+              </div>
+              <div className="rounded-2xl border border-border bg-background/60 p-4">
+                <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Estimated ETA</div>
+                <div className="mt-1 font-display text-2xl font-bold tabular-nums">
+                  {scheduled ? "Scheduled" : estimate.etaMinutes != null ? `${estimate.etaMinutes} min` : "—"}
+                </div>
+                <div className="text-[11px] text-muted-foreground">
+                  {scheduled ? "At your chosen time" : estimate.etaMinutes != null ? "Based on distance" : "Set address to estimate"}
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-1.5">
+              <span className="text-xs text-muted-foreground">Payment method</span>
+              <PaymentMethodPicker
+                value={paymentMethod}
+                onChange={setPaymentMethod}
+                reference={paymentReference}
+                onReferenceChange={setPaymentReference}
+              />
+            </div>
+
+            <div className="flex items-center justify-between gap-3">
+              <button type="button" onClick={() => setStep(1)} className="rounded-full border border-border px-5 py-2.5 text-sm font-medium hover:bg-muted">
+                ← Back
+              </button>
+              <button disabled={create.isPending || !paymentMethod} className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground disabled:opacity-60">
+                {create.isPending ? "Sending…" : `Confirm — $${estimate.price.toFixed(2)}`}
+              </button>
+            </div>
+          </form>
+        )}
       </section>
+
       {receipt && <BookingReceiptDialog receipt={receipt} onClose={resetForm} />}
     </SiteShell>
   );
