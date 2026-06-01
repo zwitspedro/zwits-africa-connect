@@ -44,6 +44,7 @@ function ReconciliationScreen() {
   const def = defaultRange();
   const [from, setFrom] = useState(def.from);
   const [to, setTo] = useState(def.to);
+  const [showDiscrepanciesOnly, setShowDiscrepanciesOnly] = useState(false);
 
   const { data: bookings, isLoading } = useQuery({
     queryKey: ["recon-bookings", from, to],
