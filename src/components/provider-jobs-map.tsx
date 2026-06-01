@@ -1,6 +1,7 @@
 /// <reference types="google.maps" />
 import { useEffect, useRef } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { MarkerClusterer, SuperClusterAlgorithm } from "@googlemaps/markerclusterer";
 import { useGoogleMaps } from "@/hooks/use-google-maps";
 
 type Job = {
@@ -24,6 +25,7 @@ export function ProviderJobsMap({
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<google.maps.Marker[]>([]);
+  const clustererRef = useRef<MarkerClusterer | null>(null);
 
   const points = jobs.filter(
     (j): j is Job & { lat: number; lng: number } =>
@@ -46,6 +48,7 @@ export function ProviderJobsMap({
     if (!mapRef.current) return;
     const map = mapRef.current;
 
+    clustererRef.current?.clearMarkers();
     markersRef.current.forEach((m) => m.setMap(null));
     markersRef.current = [];
 
@@ -58,9 +61,9 @@ export function ProviderJobsMap({
     };
 
     const bounds = new google.maps.LatLngBounds();
+    const markers: google.maps.Marker[] = [];
     for (const j of points) {
       const marker = new google.maps.Marker({
-        map,
         position: { lat: j.lat, lng: j.lng },
         title: `${j.category} — ${j.address}`,
         icon: {
@@ -75,8 +78,19 @@ export function ProviderJobsMap({
       marker.addListener("click", () => {
         navigate({ to: "/bookings/$id", params: { id: j.id } });
       });
-      markersRef.current.push(marker);
+      markers.push(marker);
       bounds.extend({ lat: j.lat, lng: j.lng });
+    }
+    markersRef.current = markers;
+
+    if (!clustererRef.current) {
+      clustererRef.current = new MarkerClusterer({
+        map,
+        markers,
+        algorithm: new SuperClusterAlgorithm({ radius: 80, maxZoom: 16 }),
+      });
+    } else {
+      clustererRef.current.addMarkers(markers);
     }
 
     if (points.length === 1) {
@@ -86,6 +100,13 @@ export function ProviderJobsMap({
       map.fitBounds(bounds, 60);
     }
   }, [points, navigate]);
+
+  useEffect(() => {
+    return () => {
+      clustererRef.current?.clearMarkers();
+      clustererRef.current = null;
+    };
+  }, []);
 
   return (
     <div className="relative">
