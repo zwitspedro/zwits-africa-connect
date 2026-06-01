@@ -345,49 +345,106 @@ function DocUpload({ docKey, userId, value, onChange }: { docKey: DocKey; userId
   const Icon = meta.icon;
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  const [errors, setErrors] = useState<string[]>([]);
+  const [fileName, setFileName] = useState<string | null>(null);
+  const [showReqs, setShowReqs] = useState(false);
 
   const handleFile = async (file: File) => {
     if (!userId) return;
-    if (file.size > 10 * 1024 * 1024) { toast.error("File too large (max 10MB)"); return; }
+    setErrors([]);
+    setFileName(file.name);
+
+    const validationErrors = await validateFile(meta, file);
+    if (validationErrors.length) {
+      setErrors(validationErrors);
+      toast.error(`${meta.label}: ${validationErrors[0]}`);
+      return;
+    }
+
     setUploading(true);
     try {
-      const ext = file.name.split(".").pop() ?? "bin";
+      const ext = (file.name.split(".").pop() ?? "bin").toLowerCase();
       const path = `${userId}/${docKey}-${Date.now()}.${ext}`;
-      const { error } = await supabase.storage.from("provider-verification").upload(path, file, { upsert: true });
+      const { error } = await supabase.storage.from("provider-verification").upload(path, file, { upsert: true, contentType: file.type });
       if (error) throw error;
       onChange(path);
       toast.success(`${meta.label} uploaded`);
     } catch (e: any) {
+      setErrors([e.message ?? "Upload failed. Please try again."]);
       toast.error(e.message ?? "Upload failed");
     } finally {
       setUploading(false);
     }
   };
 
+  const status: "missing" | "error" | "uploaded" = errors.length ? "error" : value ? "uploaded" : "missing";
+  const ringClass =
+    status === "error" ? "border-destructive/60" :
+    status === "uploaded" ? "border-emerald-500/50" :
+    "border-border";
+
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-border bg-background p-3">
-      <div className="flex size-10 items-center justify-center rounded-lg bg-muted">
-        <Icon className="size-5 text-primary" />
+    <div className={`rounded-2xl border bg-background p-3 ${ringClass}`}>
+      <div className="flex items-center gap-3">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted">
+          <Icon className="size-5 text-primary" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">{meta.label}</span>
+            {status === "uploaded" && <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] uppercase tracking-wider text-emerald-400">Ready</span>}
+            {status === "error" && <span className="rounded-full bg-destructive/15 px-2 py-0.5 text-[10px] uppercase tracking-wider text-destructive">Action needed</span>}
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowReqs((v) => !v)}
+            className="mt-0.5 truncate text-left text-xs text-muted-foreground underline-offset-2 hover:underline"
+          >
+            {fileName ?? (value ? "Uploaded — tap to replace" : meta.hint)} · {showReqs ? "hide" : "see"} requirements
+          </button>
+        </div>
+        <input
+          ref={inputRef}
+          type="file"
+          accept={meta.accept}
+          className="hidden"
+          onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ""; }}
+        />
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          disabled={uploading}
+          className={`inline-flex shrink-0 items-center gap-1 rounded-full px-3 py-1.5 text-xs ${
+            status === "uploaded" ? "bg-emerald-500/20 text-emerald-400" :
+            status === "error" ? "bg-destructive text-destructive-foreground" :
+            "bg-primary text-primary-foreground"
+          }`}
+        >
+          {uploading ? "Uploading…" : status === "uploaded" ? <><Check className="size-3" /> Done</> : status === "error" ? "Retry" : <><Upload className="size-3" /> Upload</>}
+        </button>
       </div>
-      <div className="min-w-0 flex-1">
-        <div className="text-sm font-medium">{meta.label}</div>
-        <div className="truncate text-xs text-muted-foreground">{value ? "Uploaded ✓ — tap to replace" : meta.hint}</div>
-      </div>
-      <input
-        ref={inputRef}
-        type="file"
-        accept={meta.accept}
-        className="hidden"
-        onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ""; }}
-      />
-      <button
-        type="button"
-        onClick={() => inputRef.current?.click()}
-        disabled={uploading}
-        className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs ${value ? "bg-emerald-500/20 text-emerald-400" : "bg-primary text-primary-foreground"}`}
-      >
-        {uploading ? "Uploading…" : value ? <><Check className="size-3" /> Done</> : <><Upload className="size-3" /> Upload</>}
-      </button>
+
+      {showReqs && (
+        <ul className="mt-3 grid gap-1 rounded-xl bg-muted/40 p-3 text-xs text-muted-foreground">
+          {meta.requirements.map((r) => (
+            <li key={r} className="flex items-start gap-2">
+              <CircleDot className="mt-0.5 size-3 shrink-0 text-primary" />
+              <span>{r}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {errors.length > 0 && (
+        <ul className="mt-3 grid gap-1 rounded-xl border border-destructive/40 bg-destructive/10 p-3 text-xs text-destructive">
+          {errors.map((e) => (
+            <li key={e} className="flex items-start gap-2">
+              <AlertCircle className="mt-0.5 size-3 shrink-0" />
+              <span>{e}</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
