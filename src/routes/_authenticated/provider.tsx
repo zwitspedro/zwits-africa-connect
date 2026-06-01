@@ -42,6 +42,18 @@ function ProviderDashboard() {
     },
   });
 
+  const { data: rates } = useQuery({
+    queryKey: ["commission-rates-active"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("commission_rates")
+        .select("category,percent,min_fee,active")
+        .eq("active", true);
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const updateStatus = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: "pending" | "accepted" | "in_progress" | "completed" | "cancelled" }) => {
       const { error } = await supabase.from("bookings").update({ status }).eq("id", id);
