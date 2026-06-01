@@ -280,6 +280,25 @@ export function ProviderJobsMap({
                     <div className="text-xs text-muted-foreground">{customer.phone}</div>
                   )}
                 </Field>
+
+                {customer?.phone && (
+                  <div className="flex gap-2">
+                    <a
+                      href={`tel:${customer.phone}`}
+                      className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-emerald-500 px-4 py-2.5 text-sm font-medium text-white"
+                    >
+                      <Phone className="size-4" /> Call
+                    </a>
+                    <Link
+                      to="/messages/$bookingId"
+                      params={{ bookingId: detailJob.id }}
+                      className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground"
+                    >
+                      <MessageCircle className="size-4" /> Chat
+                    </Link>
+                  </div>
+                )}
+
                 <Field icon={<Tag className="size-4" />} label="Service">
                   {detailJob.category}
                   {detailJob.price != null && (
