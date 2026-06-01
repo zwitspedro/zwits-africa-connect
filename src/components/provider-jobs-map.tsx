@@ -25,6 +25,7 @@ export function ProviderJobsMap({
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<google.maps.Marker[]>([]);
+  const clustererRef = useRef<MarkerClusterer | null>(null);
 
   const points = jobs.filter(
     (j): j is Job & { lat: number; lng: number } =>
