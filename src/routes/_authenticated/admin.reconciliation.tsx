@@ -275,13 +275,22 @@ function ReconciliationScreen() {
 
           <Panel title="By provider" empty={byProvider.length === 0}>
             <Table
-              headers={["Provider", "#", "Gross", "Commission", "Net"]}
+              headers={["Provider", "#", "Gross", "Commission", "Net", ""]}
               rows={byProvider.slice(0, 20).map((p) => [
                 p.name,
                 p.count,
                 `$${p.gross.toFixed(2)}`,
                 `$${p.commission.toFixed(2)}`,
                 `$${p.net.toFixed(2)}`,
+                <Link
+                  key="l"
+                  to="/admin/reconciliation/provider/$providerId"
+                  params={{ providerId: p.id }}
+                  search={{ from, to }}
+                  className="text-[11px] text-primary hover:underline"
+                >
+                  Details →
+                </Link>,
               ])}
             />
           </Panel>
@@ -289,7 +298,7 @@ function ReconciliationScreen() {
 
         <Panel title="Booking-level detail" className="mt-6" empty={rows.length === 0}>
           <Table
-            headers={["Completed", "Category", "Provider", "Payment", "Gross", "Commission", "Net"]}
+            headers={["Completed", "Category", "Provider", "Payment", "Gross", "Commission", "Net", ""]}
             rows={rows.slice(0, 100).map((b) => {
               const price = Number(b.price ?? 0);
               const f = fee(b);
@@ -302,9 +311,18 @@ function ReconciliationScreen() {
                 `$${price.toFixed(2)}`,
                 `$${f.toFixed(2)}`,
                 `$${(price - f).toFixed(2)}`,
+                <Link
+                  key="l"
+                  to="/admin/reconciliation/booking/$bookingId"
+                  params={{ bookingId: b.id }}
+                  className="text-[11px] text-primary hover:underline"
+                >
+                  Details →
+                </Link>,
               ];
             })}
           />
+
           {rows.length > 100 && (
             <p className="mt-2 text-[11px] text-muted-foreground">Showing first 100 of {rows.length}. Export CSV for the full list.</p>
           )}
