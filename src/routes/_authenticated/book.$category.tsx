@@ -183,6 +183,7 @@ function BookCategory() {
     setScheduled("");
     setPaymentMethod(null);
     setPaymentReference("");
+    setStep(1);
   };
 
   if (!service) {
