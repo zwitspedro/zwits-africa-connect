@@ -38,12 +38,30 @@ function NotificationsPage() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["notifications"] }),
   });
 
+  const markOne = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from("notifications")
+        .update({ read_at: new Date().toISOString() })
+        .eq("id", id)
+        .is("read_at", null);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["notifications"] });
+      qc.invalidateQueries({ queryKey: ["notifications-unread"] });
+    },
+  });
+
   const remove = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase.from("notifications").delete().eq("id", id);
       if (error) throw error;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["notifications"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["notifications"] });
+      qc.invalidateQueries({ queryKey: ["notifications-unread"] });
+    },
   });
 
   return (
@@ -85,7 +103,13 @@ function NotificationsPage() {
                     n.read_at ? "bg-muted-foreground/30" : "bg-primary"
                   }`}
                 />
-                <Card {...cardProps} className={`min-w-0 flex-1 ${n.link ? "cursor-pointer" : ""}`}>
+                <Card
+                  {...cardProps}
+                  className={`min-w-0 flex-1 ${n.link ? "cursor-pointer" : ""}`}
+                  onClick={() => {
+                    if (!n.read_at) markOne.mutate(n.id);
+                  }}
+                >
                   <div className="flex items-center justify-between gap-2">
                     <p className="truncate text-sm font-medium">{n.title}</p>
                     <span className="shrink-0 text-[11px] text-muted-foreground">
