@@ -6,6 +6,7 @@ import { Star, BadgeCheck } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { AddressAutocomplete } from "@/components/address-autocomplete";
 import { LocationMap } from "@/components/location-map";
+import { PaymentMethodPicker, type PaymentMethod } from "@/components/payment-method-picker";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { services } from "@/data/services";
