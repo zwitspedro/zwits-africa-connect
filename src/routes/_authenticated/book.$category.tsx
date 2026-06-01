@@ -101,6 +101,22 @@ function BookCategory() {
     return list;
   }, [providers, cityCoords, coords, availableOnly, radiusKm]);
 
+  const selectedProvider = useMemo(
+    () => visibleProviders.find((p) => p.id === providerId) ?? null,
+    [visibleProviders, providerId]
+  );
+
+  // Final price = hourly rate of selected provider, or median of filtered list for auto-match
+  const estimate = useMemo(() => {
+    const rates = visibleProviders.map((p) => Number(p.hourly_rate)).filter((n) => n > 0);
+    const fallback = rates.length ? rates.reduce((a, b) => a + b, 0) / rates.length : 0;
+    const hourly = selectedProvider ? Number(selectedProvider.hourly_rate) : fallback;
+    const price = Math.round(hourly * 100) / 100;
+    const distance = selectedProvider?.distance ?? null;
+    // Travel ETA at ~30 km/h + 10 min prep
+    const etaMinutes = distance != null ? Math.max(10, Math.round((distance / 30) * 60) + 10) : null;
+    return { hourly, price, distance, etaMinutes };
+  }, [selectedProvider, visibleProviders]);
 
   const create = useMutation({
     mutationFn: async () => {
@@ -112,6 +128,7 @@ function BookCategory() {
         address,
         description,
         scheduled_for: scheduled || null,
+        price: estimate.price || null,
         payment_method: paymentMethod,
         payment_reference: paymentMethod === "cash" ? null : paymentReference.trim() || null,
         payment_status: "pending",
