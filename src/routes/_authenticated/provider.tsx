@@ -104,6 +104,8 @@ function ProviderDashboard() {
           </button>
         </div>
 
+        <VerificationBanner status={(profile as any).verification_status} reason={(profile as any).revoke_reason} />
+
         <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
           <Stat label="Active jobs" value={active.length} />
           <Stat label="Completed" value={profile.jobs_completed} />
