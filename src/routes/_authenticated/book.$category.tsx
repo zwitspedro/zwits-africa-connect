@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Star, BadgeCheck } from "lucide-react";
@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_authenticated/book/$category")({
 function BookCategory() {
   const { category } = Route.useParams();
   const { user } = useAuth();
-  
+  const qc = useQueryClient();
   const service = services.find((s) => s.slug === category);
 
   const [providerId, setProviderId] = useState<string | null>(null);
@@ -63,8 +63,30 @@ function BookCategory() {
       if (error) throw error;
       return data;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       toast.success("Booking confirmed");
+      const methodLabel = paymentMethod === "cash"
+        ? "Cash on delivery"
+        : paymentMethod!.toUpperCase();
+      const ref = data.id.slice(0, 8).toUpperCase();
+      const body = [
+        `Service: ${service!.name}`,
+        `Address: ${address}`,
+        scheduled ? `Scheduled: ${new Date(scheduled).toLocaleString()}` : null,
+        `Payment: ${methodLabel}${paymentMethod !== "cash" && paymentReference ? ` (${paymentReference.trim()})` : ""}`,
+        `Reference: ${ref}`,
+        "",
+        "Mock receipt — payment will be confirmed by the provider.",
+      ].filter(Boolean).join("\n");
+      await supabase.from("notifications").insert({
+        user_id: user!.id,
+        title: `Booking confirmed — ${service!.name}`,
+        body,
+        link: "/bookings",
+        kind: "booking",
+      });
+      qc.invalidateQueries({ queryKey: ["notifications-unread"] });
+      qc.invalidateQueries({ queryKey: ["notifications"] });
       setReceipt({
         id: data.id,
         category: category!,

@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Menu, X, Bell } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
 
 const links = [
   { to: "/", label: "Home" },
@@ -15,6 +17,19 @@ const links = [
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const { data: unread = 0 } = useQuery({
+    queryKey: ["notifications-unread", user?.id],
+    enabled: !!user,
+    refetchInterval: 30_000,
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("notifications")
+        .select("id", { count: "exact", head: true })
+        .is("read_at", null);
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/70 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
@@ -38,6 +53,14 @@ export function SiteHeader() {
         <div className="hidden items-center gap-2 md:flex">
           {user ? (
             <>
+              <Link to="/notifications" aria-label="Notifications" className="relative rounded-full p-2 hover:bg-muted">
+                <Bell className="size-5" />
+                {unread > 0 && (
+                  <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-foreground">
+                    {unread > 9 ? "9+" : unread}
+                  </span>
+                )}
+              </Link>
               <Link to="/dashboard" className="rounded-full px-4 py-2 text-sm hover:text-foreground">Dashboard</Link>
               <button onClick={() => signOut()} className="rounded-full border border-border px-4 py-2 text-sm hover:bg-muted">Sign out</button>
             </>

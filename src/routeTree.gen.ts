@@ -21,6 +21,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedProviderRouteImport } from './routes/_authenticated/provider'
+import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedBookingsRouteImport } from './routes/_authenticated/bookings'
 import { Route as AuthenticatedProviderSetupRouteImport } from './routes/_authenticated/provider.setup'
@@ -85,6 +86,12 @@ const AuthenticatedProviderRoute = AuthenticatedProviderRouteImport.update({
   path: '/provider',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedNotificationsRoute =
+  AuthenticatedNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -121,6 +128,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/bookings': typeof AuthenticatedBookingsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/notifications': typeof AuthenticatedNotificationsRoute
   '/provider': typeof AuthenticatedProviderRouteWithChildren
   '/book/$category': typeof AuthenticatedBookCategoryRoute
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
@@ -138,6 +146,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/bookings': typeof AuthenticatedBookingsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/notifications': typeof AuthenticatedNotificationsRoute
   '/provider': typeof AuthenticatedProviderRouteWithChildren
   '/book/$category': typeof AuthenticatedBookCategoryRoute
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
@@ -157,6 +166,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/_authenticated/bookings': typeof AuthenticatedBookingsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/provider': typeof AuthenticatedProviderRouteWithChildren
   '/_authenticated/book/$category': typeof AuthenticatedBookCategoryRoute
   '/_authenticated/provider/setup': typeof AuthenticatedProviderSetupRoute
@@ -176,6 +186,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/bookings'
     | '/dashboard'
+    | '/notifications'
     | '/provider'
     | '/book/$category'
     | '/provider/setup'
@@ -193,6 +204,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/bookings'
     | '/dashboard'
+    | '/notifications'
     | '/provider'
     | '/book/$category'
     | '/provider/setup'
@@ -211,6 +223,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/_authenticated/bookings'
     | '/_authenticated/dashboard'
+    | '/_authenticated/notifications'
     | '/_authenticated/provider'
     | '/_authenticated/book/$category'
     | '/_authenticated/provider/setup'
@@ -316,6 +329,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProviderRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/notifications': {
+      id: '/_authenticated/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -363,6 +383,7 @@ const AuthenticatedProviderRouteWithChildren =
 interface AuthenticatedRouteChildren {
   AuthenticatedBookingsRoute: typeof AuthenticatedBookingsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedProviderRoute: typeof AuthenticatedProviderRouteWithChildren
   AuthenticatedBookCategoryRoute: typeof AuthenticatedBookCategoryRoute
 }
@@ -370,6 +391,7 @@ interface AuthenticatedRouteChildren {
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedBookingsRoute: AuthenticatedBookingsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedProviderRoute: AuthenticatedProviderRouteWithChildren,
   AuthenticatedBookCategoryRoute: AuthenticatedBookCategoryRoute,
 }
