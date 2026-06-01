@@ -15,11 +15,100 @@ export const Route = createFileRoute("/_authenticated/provider/setup")({
 
 type DocKey = "id_document_url" | "selfie_url" | "business_doc_url";
 
-const DOC_META: Record<DocKey, { label: string; hint: string; icon: typeof IdCard; accept: string }> = {
-  id_document_url: { label: "Government ID", hint: "Passport, national ID or driver's license", icon: IdCard, accept: "image/*,application/pdf" },
-  selfie_url:      { label: "Selfie with ID",  hint: "Hold your ID next to your face, well lit", icon: Camera,  accept: "image/*" },
-  business_doc_url:{ label: "Business / certification doc", hint: "Trade license, certificate, utility bill", icon: FileText, accept: "image/*,application/pdf" },
+type DocSpec = {
+  label: string;
+  hint: string;
+  icon: typeof IdCard;
+  accept: string;
+  mimes: string[];
+  maxBytes: number;
+  minImageDim?: number;   // min width & height in px (images only)
+  imageOnly?: boolean;
+  requirements: string[];
 };
+
+const MB = 1024 * 1024;
+
+const DOC_META: Record<DocKey, DocSpec> = {
+  id_document_url: {
+    label: "Government ID",
+    hint: "Passport, national ID or driver's license",
+    icon: IdCard,
+    accept: "image/jpeg,image/png,image/webp,application/pdf",
+    mimes: ["image/jpeg", "image/png", "image/webp", "application/pdf"],
+    maxBytes: 10 * MB,
+    minImageDim: 600,
+    requirements: [
+      "Government-issued: passport, national ID or driver's license",
+      "All four corners visible, not cropped",
+      "Colour photo or scan — no black & white",
+      "Text and photo legible, no glare",
+      "JPG, PNG, WEBP or PDF · max 10 MB",
+    ],
+  },
+  selfie_url: {
+    label: "Selfie with ID",
+    hint: "Hold your ID next to your face, well lit",
+    icon: Camera,
+    accept: "image/jpeg,image/png,image/webp",
+    mimes: ["image/jpeg", "image/png", "image/webp"],
+    maxBytes: 10 * MB,
+    minImageDim: 600,
+    imageOnly: true,
+    requirements: [
+      "Your face clearly visible, no sunglasses, no hat",
+      "Hold the same ID document next to your face",
+      "Well-lit, no heavy filters or edits",
+      "Image only — JPG, PNG or WEBP · max 10 MB",
+    ],
+  },
+  business_doc_url: {
+    label: "Business / certification doc",
+    hint: "Trade license, certificate, utility bill",
+    icon: FileText,
+    accept: "image/jpeg,image/png,image/webp,application/pdf",
+    mimes: ["image/jpeg", "image/png", "image/webp", "application/pdf"],
+    maxBytes: 10 * MB,
+    requirements: [
+      "Trade license, professional certificate, or recent utility bill",
+      "Issued in the last 12 months",
+      "Your name or business name clearly shown",
+      "JPG, PNG, WEBP or PDF · max 10 MB",
+    ],
+  },
+};
+
+async function validateFile(spec: DocSpec, file: File): Promise<string[]> {
+  const errors: string[] = [];
+  if (!spec.mimes.includes(file.type)) {
+    errors.push(`Unsupported file type (${file.type || "unknown"}). Accepted: ${spec.mimes.map((m) => m.split("/")[1].toUpperCase()).join(", ")}.`);
+  }
+  if (file.size > spec.maxBytes) {
+    errors.push(`File is ${(file.size / MB).toFixed(1)} MB — must be under ${(spec.maxBytes / MB).toFixed(0)} MB.`);
+  }
+  if (file.size < 20 * 1024) {
+    errors.push("File looks too small to be a real document (under 20 KB).");
+  }
+  if (spec.minImageDim && file.type.startsWith("image/")) {
+    const dim = await readImageDimensions(file).catch(() => null);
+    if (!dim) {
+      errors.push("Could not read image. Try a different file.");
+    } else if (dim.width < spec.minImageDim || dim.height < spec.minImageDim) {
+      errors.push(`Image is ${dim.width}×${dim.height}px — needs to be at least ${spec.minImageDim}×${spec.minImageDim}px.`);
+    }
+  }
+  return errors;
+}
+
+function readImageDimensions(file: File): Promise<{ width: number; height: number }> {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); resolve({ width: img.naturalWidth, height: img.naturalHeight }); };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("decode failed")); };
+    img.src = url;
+  });
+}
 
 function ProviderSetup() {
   const { user } = useAuth();
