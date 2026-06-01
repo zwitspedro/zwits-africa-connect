@@ -46,14 +46,15 @@ function MessagesPage() {
     },
   });
 
+  const providerId = booking?.provider_id;
   const { data: provider } = useQuery({
-    queryKey: ["provider", booking?.provider_id],
-    enabled: !!booking?.provider_id,
+    queryKey: ["provider", providerId],
+    enabled: !!providerId,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("providers")
         .select("user_id, business_name")
-        .eq("id", booking!.provider_id)
+        .eq("id", providerId!)
         .maybeSingle();
       if (error) throw error;
       return data;
