@@ -170,14 +170,31 @@ function ProviderDashboard() {
           ))}
         </ul>
 
-        <h2 className="mt-10 font-display text-xl font-semibold">History</h2>
+        <h2 className="mt-10 font-display text-xl font-semibold">History & payouts</h2>
+        <p className="mt-1 text-xs text-muted-foreground">Net payout = price − platform commission (latest configured rates).</p>
         <ul className="mt-3 grid gap-2">
-          {completed.slice(0, 10).map((j) => (
-            <li key={j.id} className="flex items-center justify-between rounded-xl border border-border bg-card p-3 text-sm">
-              <span>{j.category} — {j.address}</span>
-              <span className="text-xs text-muted-foreground">{new Date(j.updated_at).toLocaleDateString()}</span>
-            </li>
-          ))}
+          {completed.slice(0, 10).map((j) => {
+            const price = Number(j.price) || 0;
+            const fee = computeFee(j.category, price);
+            const net = price - fee;
+            const r: any = ratesByCategory.get(j.category);
+            return (
+              <li key={j.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-card p-3 text-sm">
+                <div className="min-w-0">
+                  <div className="truncate">{j.category} — {j.address}</div>
+                  <div className="text-[11px] text-muted-foreground">
+                    {new Date(j.updated_at).toLocaleDateString()} · ${price.toFixed(2)} gross
+                    {r ? ` · ${Number(r.percent).toFixed(1)}% + $${Number(r.min_fee).toFixed(2)} fee` : " · no rate set"}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xs text-muted-foreground">−${fee.toFixed(2)}</div>
+                  <div className="font-semibold">${net.toFixed(2)}</div>
+                </div>
+              </li>
+            );
+          })}
+          {completed.length === 0 && <li className="rounded-xl border border-dashed border-border p-4 text-center text-xs text-muted-foreground">No completed jobs yet.</li>}
         </ul>
       </section>
     </SiteShell>
