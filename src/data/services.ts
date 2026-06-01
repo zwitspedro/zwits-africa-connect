@@ -7,6 +7,7 @@ import {
   Scissors,
   Laptop,
   Siren,
+  Headphones,
   type LucideIcon,
 } from "lucide-react";
 
