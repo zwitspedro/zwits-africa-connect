@@ -111,6 +111,11 @@ function ProviderDashboard() {
           <Stat label="Earnings" value={`$${earnings.toFixed(0)}`} />
         </div>
 
+        <h2 className="mt-10 font-display text-xl font-semibold">Jobs map</h2>
+        <div className="mt-3">
+          <ProviderJobsMap jobs={active} />
+        </div>
+
         <h2 className="mt-10 font-display text-xl font-semibold">Active jobs</h2>
         <ul className="mt-3 grid gap-3">
           {active.length === 0 && <li className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">No active jobs.</li>}
