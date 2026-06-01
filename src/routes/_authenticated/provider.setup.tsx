@@ -1,83 +1,293 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
+import { Upload, Check, FileText, IdCard, Camera, ChevronLeft, ChevronRight, ShieldCheck } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { services } from "@/data/services";
 
 export const Route = createFileRoute("/_authenticated/provider/setup")({
-  head: () => ({ meta: [{ title: "Become a provider — Zwits" }] }),
+  head: () => ({ meta: [{ title: "Provider onboarding — Zwits" }] }),
   component: ProviderSetup,
 });
+
+type DocKey = "id_document_url" | "selfie_url" | "business_doc_url";
+
+const DOC_META: Record<DocKey, { label: string; hint: string; icon: typeof IdCard; accept: string }> = {
+  id_document_url: { label: "Government ID", hint: "Passport, national ID or driver's license", icon: IdCard, accept: "image/*,application/pdf" },
+  selfie_url:      { label: "Selfie with ID",  hint: "Hold your ID next to your face, well lit", icon: Camera,  accept: "image/*" },
+  business_doc_url:{ label: "Business / certification doc", hint: "Trade license, certificate, utility bill", icon: FileText, accept: "image/*,application/pdf" },
+};
 
 function ProviderSetup() {
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  // Load any existing provider row so re-entry resumes the flow.
+  const { data: existing, refetch } = useQuery({
+    queryKey: ["my-provider-setup", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("providers").select("*").eq("user_id", user!.id).maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const [step, setStep] = useState(0);
   const [businessName, setBusinessName] = useState("");
   const [category, setCategory] = useState(services[0].slug);
   const [city, setCity] = useState("");
   const [hourlyRate, setHourlyRate] = useState("");
   const [bio, setBio] = useState("");
+  const [docs, setDocs] = useState<Record<DocKey, string | null>>({
+    id_document_url: null, selfie_url: null, business_doc_url: null,
+  });
+
+  // Hydrate from existing row on first load
+  const [hydrated, setHydrated] = useState(false);
+  if (existing && !hydrated) {
+    setBusinessName(existing.business_name ?? "");
+    setCategory(existing.category ?? services[0].slug);
+    setCity(existing.city ?? "");
+    setHourlyRate(existing.hourly_rate ? String(existing.hourly_rate) : "");
+    setBio(existing.bio ?? "");
+    setDocs({
+      id_document_url: (existing as any).id_document_url ?? null,
+      selfie_url: (existing as any).selfie_url ?? null,
+      business_doc_url: (existing as any).business_doc_url ?? null,
+    });
+    setHydrated(true);
+  }
+
+  const step1Valid = businessName.trim() && city.trim() && Number(hourlyRate) > 0;
+  const allDocs = !!docs.id_document_url && !!docs.selfie_url && !!docs.business_doc_url;
 
   const submit = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("providers").insert({
-        user_id: user!.id, business_name: businessName, category, city,
-        hourly_rate: Number(hourlyRate) || 0, bio,
-      });
-      if (error) throw error;
-      // Add provider role
-      await supabase.from("user_roles").insert({ user_id: user!.id, role: "provider" });
+      if (!user) throw new Error("Not signed in");
+      const payload = {
+        user_id: user.id,
+        business_name: businessName.trim(),
+        category, city: city.trim(),
+        hourly_rate: Number(hourlyRate) || 0,
+        bio: bio.trim(),
+        id_document_url: docs.id_document_url,
+        selfie_url: docs.selfie_url,
+        business_doc_url: docs.business_doc_url,
+        submitted_at: new Date().toISOString(),
+      };
+      if (existing) {
+        const { error } = await supabase.from("providers").update(payload).eq("id", existing.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from("providers").insert(payload);
+        if (error) throw error;
+        await supabase.from("user_roles").upsert(
+          { user_id: user.id, role: "provider" },
+          { onConflict: "user_id,role", ignoreDuplicates: true },
+        );
+      }
     },
     onSuccess: () => {
-      toast.success("Provider profile created");
+      toast.success("Profile submitted — you're verified!");
       navigate({ to: "/provider" });
     },
-    onError: (e: any) => toast.error(e.message),
+    onError: (e: any) => toast.error(e.message ?? "Could not submit"),
   });
 
   return (
     <SiteShell>
-      <section className="mx-auto max-w-xl px-4 py-10 sm:px-6">
+      <section className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
         <h1 className="font-display text-3xl font-bold">Become a Zwits provider</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Set up your business profile to start receiving jobs.</p>
+        <p className="mt-2 text-sm text-muted-foreground">A quick three-step setup. Documents are kept private and used only for verification.</p>
 
-        <form
-          onSubmit={(e) => { e.preventDefault(); submit.mutate(); }}
-          className="mt-6 grid gap-4 rounded-3xl border border-border bg-card p-6"
-        >
-          <Field label="Business / professional name" value={businessName} onChange={setBusinessName} required />
-          <label className="grid gap-1.5">
-            <span className="text-xs text-muted-foreground">Service category</span>
-            <select value={category} onChange={(e) => setCategory(e.target.value)}
-              className="rounded-lg border border-input bg-background px-3 py-2.5 text-sm">
-              {services.map((s) => <option key={s.slug} value={s.slug}>{s.name}</option>)}
-            </select>
-          </label>
-          <Field label="City" value={city} onChange={setCity} required />
-          <Field label="Hourly rate (USD)" value={hourlyRate} onChange={setHourlyRate} type="number" required />
-          <label className="grid gap-1.5">
-            <span className="text-xs text-muted-foreground">About you</span>
-            <textarea rows={4} value={bio} onChange={(e) => setBio(e.target.value)}
-              className="rounded-lg border border-input bg-background px-3 py-2.5 text-sm" />
-          </label>
-          <button disabled={submit.isPending} className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground disabled:opacity-60">
-            {submit.isPending ? "Saving…" : "Create provider profile"}
-          </button>
-        </form>
+        <Steps step={step} />
+
+        <div className="mt-6 rounded-3xl border border-border bg-card p-6">
+          {step === 0 && (
+            <div className="grid gap-4">
+              <Field label="Business / professional name" value={businessName} onChange={setBusinessName} required />
+              <label className="grid gap-1.5">
+                <span className="text-xs text-muted-foreground">Service category</span>
+                <select value={category} onChange={(e) => setCategory(e.target.value)}
+                  className="rounded-lg border border-input bg-background px-3 py-2.5 text-sm">
+                  {services.map((s) => <option key={s.slug} value={s.slug}>{s.name}</option>)}
+                </select>
+              </label>
+              <Field label="City" value={city} onChange={setCity} required />
+              <Field label="Hourly rate (USD)" value={hourlyRate} onChange={setHourlyRate} type="number" required />
+              <label className="grid gap-1.5">
+                <span className="text-xs text-muted-foreground">About you</span>
+                <textarea rows={4} value={bio} onChange={(e) => setBio(e.target.value)}
+                  className="rounded-lg border border-input bg-background px-3 py-2.5 text-sm" />
+              </label>
+            </div>
+          )}
+
+          {step === 1 && (
+            <div className="grid gap-4">
+              {(Object.keys(DOC_META) as DocKey[]).map((k) => (
+                <DocUpload
+                  key={k}
+                  docKey={k}
+                  userId={user?.id ?? ""}
+                  value={docs[k]}
+                  onChange={(url) => setDocs((d) => ({ ...d, [k]: url }))}
+                />
+              ))}
+              <p className="rounded-xl bg-muted/40 p-3 text-xs text-muted-foreground">
+                Files are uploaded to a private bucket. Only you and Zwits reviewers can access them.
+              </p>
+            </div>
+          )}
+
+          {step === 2 && (
+            <div className="grid gap-4">
+              <h2 className="font-display text-lg font-semibold">Review & submit</h2>
+              <Row label="Business name" value={businessName} />
+              <Row label="Category" value={services.find((s) => s.slug === category)?.name ?? category} />
+              <Row label="City" value={city} />
+              <Row label="Hourly rate" value={`$${hourlyRate}/hr`} />
+              {bio && <Row label="Bio" value={bio} />}
+              <div className="grid gap-2 rounded-xl bg-muted/30 p-3 text-sm">
+                {(Object.keys(DOC_META) as DocKey[]).map((k) => (
+                  <div key={k} className="flex items-center justify-between">
+                    <span>{DOC_META[k].label}</span>
+                    <span className={docs[k] ? "flex items-center gap-1 text-emerald-400" : "text-destructive"}>
+                      {docs[k] ? <><Check className="size-4" /> Uploaded</> : "Missing"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="flex items-start gap-2 rounded-xl border border-gold/40 bg-gold/10 p-3 text-xs text-foreground">
+                <ShieldCheck className="mt-0.5 size-4 text-gold" />
+                <span>By submitting, you confirm the documents are genuine. Zwits may revoke verification at any time.</span>
+              </div>
+            </div>
+          )}
+
+          <div className="mt-6 flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => setStep((s) => Math.max(0, s - 1))}
+              disabled={step === 0}
+              className="inline-flex items-center gap-1 rounded-full border border-border px-4 py-2 text-sm text-muted-foreground disabled:opacity-40"
+            >
+              <ChevronLeft className="size-4" /> Back
+            </button>
+            {step < 2 ? (
+              <button
+                type="button"
+                onClick={() => setStep((s) => s + 1)}
+                disabled={(step === 0 && !step1Valid) || (step === 1 && !allDocs)}
+                className="inline-flex items-center gap-1 rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
+              >
+                Continue <ChevronRight className="size-4" />
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => submit.mutate()}
+                disabled={submit.isPending || !step1Valid || !allDocs}
+                className="rounded-full bg-gold px-6 py-2 text-sm font-medium text-background disabled:opacity-50"
+              >
+                {submit.isPending ? "Submitting…" : "Submit & go live"}
+              </button>
+            )}
+          </div>
+        </div>
       </section>
     </SiteShell>
+  );
+}
+
+function Steps({ step }: { step: number }) {
+  const labels = ["Profile", "Documents", "Review"];
+  return (
+    <ol className="mt-6 flex items-center gap-2 text-xs">
+      {labels.map((l, i) => (
+        <li key={l} className="flex flex-1 items-center gap-2">
+          <span className={`flex size-6 items-center justify-center rounded-full text-[10px] font-semibold ${i <= step ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
+            {i < step ? <Check className="size-3" /> : i + 1}
+          </span>
+          <span className={i <= step ? "text-foreground" : "text-muted-foreground"}>{l}</span>
+          {i < labels.length - 1 && <span className="ml-1 h-px flex-1 bg-border" />}
+        </li>
+      ))}
+    </ol>
   );
 }
 
 function Field({ label, value, onChange, type = "text", required }: { label: string; value: string; onChange: (v: string) => void; type?: string; required?: boolean }) {
   return (
     <label className="grid gap-1.5">
-      <span className="text-xs text-muted-foreground">{label}</span>
+      <span className="text-xs text-muted-foreground">{label}{required && " *"}</span>
       <input type={type} value={value} required={required} onChange={(e) => onChange(e.target.value)}
         className="rounded-lg border border-input bg-background px-3 py-2.5 text-sm" />
     </label>
+  );
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-start justify-between gap-4 border-b border-border/60 pb-2 text-sm last:border-0">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="text-right">{value}</span>
+    </div>
+  );
+}
+
+function DocUpload({ docKey, userId, value, onChange }: { docKey: DocKey; userId: string; value: string | null; onChange: (url: string | null) => void }) {
+  const meta = DOC_META[docKey];
+  const Icon = meta.icon;
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const handleFile = async (file: File) => {
+    if (!userId) return;
+    if (file.size > 10 * 1024 * 1024) { toast.error("File too large (max 10MB)"); return; }
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop() ?? "bin";
+      const path = `${userId}/${docKey}-${Date.now()}.${ext}`;
+      const { error } = await supabase.storage.from("provider-verification").upload(path, file, { upsert: true });
+      if (error) throw error;
+      onChange(path);
+      toast.success(`${meta.label} uploaded`);
+    } catch (e: any) {
+      toast.error(e.message ?? "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-3 rounded-2xl border border-border bg-background p-3">
+      <div className="flex size-10 items-center justify-center rounded-lg bg-muted">
+        <Icon className="size-5 text-primary" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="text-sm font-medium">{meta.label}</div>
+        <div className="truncate text-xs text-muted-foreground">{value ? "Uploaded ✓ — tap to replace" : meta.hint}</div>
+      </div>
+      <input
+        ref={inputRef}
+        type="file"
+        accept={meta.accept}
+        className="hidden"
+        onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ""; }}
+      />
+      <button
+        type="button"
+        onClick={() => inputRef.current?.click()}
+        disabled={uploading}
+        className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs ${value ? "bg-emerald-500/20 text-emerald-400" : "bg-primary text-primary-foreground"}`}
+      >
+        {uploading ? "Uploading…" : value ? <><Check className="size-3" /> Done</> : <><Upload className="size-3" /> Upload</>}
+      </button>
+    </div>
   );
 }
