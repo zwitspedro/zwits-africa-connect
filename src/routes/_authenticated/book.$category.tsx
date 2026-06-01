@@ -82,7 +82,7 @@ function BookCategory() {
         user_id: user!.id,
         title: `Booking confirmed — ${service!.name}`,
         body,
-        link: "/bookings",
+        link: `/bookings/${data.id}`,
         kind: "booking",
       });
       qc.invalidateQueries({ queryKey: ["notifications-unread"] });
