@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Calendar, MapPin, CreditCard, Clock } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
+import { LiveTrackingMap } from "@/components/live-tracking-map";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -63,6 +64,23 @@ function BookingDetailPage() {
               </div>
               <StatusBadge status={booking.status} />
             </div>
+
+            {(booking.status === "accepted" || booking.status === "in_progress") && (
+              <div className="mt-5">
+                <div className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">
+                  Live tracking
+                </div>
+                <LiveTrackingMap
+                  bookingId={booking.id}
+                  destination={
+                    booking.lat != null && booking.lng != null
+                      ? { lat: booking.lat, lng: booking.lng }
+                      : null
+                  }
+                />
+              </div>
+            )}
+
 
             <div className="mt-5 space-y-3 text-sm">
               <div className="flex items-start gap-3">
