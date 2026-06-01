@@ -42,6 +42,10 @@ function BookCategory() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
   const [paymentReference, setPaymentReference] = useState("");
   const [receipt, setReceipt] = useState<BookingReceipt | null>(null);
+  const [availableOnly, setAvailableOnly] = useState(true);
+  const [radiusKm, setRadiusKm] = useState(25);
+  const [cityCoords, setCityCoords] = useState<Record<string, { lat: number; lng: number } | null>>({});
+  const { ready: mapsReady } = useGoogleMaps();
 
   const { data: providers } = useQuery({
     queryKey: ["providers", category],
@@ -50,12 +54,52 @@ function BookCategory() {
         .from("providers")
         .select("*")
         .eq("category", category)
-        .eq("available", true)
         .order("rating_avg", { ascending: false });
       if (error) throw error;
       return data;
     },
   });
+
+  // Geocode unique provider cities once Google Maps is ready
+  useEffect(() => {
+    if (!mapsReady || !providers || !coords) return;
+    const geocoder = new google.maps.Geocoder();
+    const cities = Array.from(new Set(providers.map((p) => p.city).filter(Boolean)));
+    cities.forEach((city) => {
+      if (city in cityCoords) return;
+      geocoder
+        .geocode({ address: city })
+        .then((res) => {
+          const loc = res.results[0]?.geometry.location;
+          setCityCoords((prev) => ({
+            ...prev,
+            [city]: loc ? { lat: loc.lat(), lng: loc.lng() } : null,
+          }));
+        })
+        .catch(() => setCityCoords((prev) => ({ ...prev, [city]: null })));
+    });
+  }, [mapsReady, providers, coords, cityCoords]);
+
+  const visibleProviders = useMemo(() => {
+    if (!providers) return [];
+    let list = providers.map((p) => {
+      const c = cityCoords[p.city];
+      const distance = coords && c ? haversineKm(coords, c) : null;
+      return { ...p, distance };
+    });
+    if (availableOnly) list = list.filter((p) => p.available);
+    if (coords) {
+      list = list.filter((p) => p.distance == null || p.distance <= radiusKm);
+      list.sort((a, b) => {
+        if (a.distance == null && b.distance == null) return 0;
+        if (a.distance == null) return 1;
+        if (b.distance == null) return -1;
+        return a.distance - b.distance;
+      });
+    }
+    return list;
+  }, [providers, cityCoords, coords, availableOnly, radiusKm]);
+
 
   const create = useMutation({
     mutationFn: async () => {
