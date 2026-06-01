@@ -514,33 +514,110 @@ function DocUpload({ docKey, userId, value, onChange }: { docKey: DocKey; userId
 }
 
 function AuditRow({ audit }: { audit: any }) {
+  const [open, setOpen] = useState(false);
+
   const tone =
-    audit.status === "uploaded" ? "text-emerald-400" :
-    audit.status === "rejected" ? "text-destructive" :
-    audit.status === "upload_error" ? "text-destructive" :
-    "text-muted-foreground";
+    audit.status === "uploaded"
+      ? "text-emerald-400"
+      : audit.status === "rejected"
+      ? "text-destructive"
+      : audit.status === "upload_error"
+      ? "text-destructive"
+      : "text-muted-foreground";
+
   const label =
-    audit.status === "uploaded" ? "Uploaded" :
-    audit.status === "rejected" ? "Rejected" :
-    audit.status === "upload_error" ? "Upload error" :
-    audit.status;
+    audit.status === "uploaded"
+      ? "Uploaded"
+      : audit.status === "rejected"
+      ? "Rejected"
+      : audit.status === "upload_error"
+      ? "Upload error"
+      : audit.status;
+
+  const hasChecks =
+    audit.mime_type ||
+    audit.file_size ||
+    audit.width ||
+    audit.height ||
+    audit.errors?.length;
+
   return (
     <div className="rounded-lg border border-border/60 bg-background/50 p-2">
-      <div className="flex items-center justify-between gap-2">
-        <span className={`font-medium ${tone}`}>{label}</span>
-        <span className="text-muted-foreground">{new Date(audit.created_at).toLocaleString()}</span>
-      </div>
-      <div className="mt-1 truncate text-muted-foreground">
-        {audit.file_name ?? "—"} · {audit.mime_type ?? "?"} · {audit.file_size ? `${(audit.file_size / (1024 * 1024)).toFixed(2)} MB` : "?"}
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between gap-2 text-left"
+      >
+        <span className={`text-xs font-medium ${tone}`}>{label}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] text-muted-foreground">
+            {new Date(audit.created_at).toLocaleString()}
+          </span>
+          <ChevronDown className={`size-3 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+        </div>
+      </button>
+
+      <div className="mt-1 truncate text-[11px] text-muted-foreground">
+        {audit.file_name ?? "—"} · {audit.file_size ? `${(audit.file_size / (1024 * 1024)).toFixed(2)} MB` : "?"}
         {audit.width && audit.height ? ` · ${audit.width}×${audit.height}px` : ""}
       </div>
-      {audit.errors?.length > 0 && (
-        <ul className="mt-1 grid gap-0.5 text-destructive">
-          {audit.errors.map((e: string, i: number) => (
-            <li key={i} className="flex items-start gap-1"><AlertCircle className="mt-0.5 size-3 shrink-0" /><span>{e}</span></li>
-          ))}
-        </ul>
+
+      {open && (
+        <div className="mt-2 grid gap-1 rounded-lg border border-border/40 bg-muted/30 p-2.5 text-[11px]">
+          <h4 className="mb-0.5 font-medium text-foreground">File checks</h4>
+
+          <CheckLine
+            label="Format"
+            value={audit.mime_type ?? "unknown"}
+            pass={!audit.errors?.some((e: string) => e.includes("file type") || e.includes("Unsupported"))}
+          />
+          <CheckLine
+            label="Size"
+            value={audit.file_size ? `${(audit.file_size / (1024 * 1024)).toFixed(2)} MB` : "unknown"}
+            pass={!audit.errors?.some((e: string) => e.includes("size") || e.includes("MB") || e.includes("KB"))}
+          />
+          {audit.width && audit.height && (
+            <CheckLine
+              label="Dimensions"
+              value={`${audit.width}×${audit.height}px`}
+              pass={!audit.errors?.some((e: string) => e.includes("px") && e.includes("needs to be at least"))}
+            />
+          )}
+          {audit.storage_path && (
+            <CheckLine label="Storage path" value={audit.storage_path} pass />
+          )}
+
+          {audit.errors?.length > 0 && (
+            <div className="mt-1.5 grid gap-1">
+              <h4 className="font-medium text-destructive">Exact errors</h4>
+              {audit.errors.map((e: string, i: number) => (
+                <div key={i} className="flex items-start gap-1.5 text-destructive">
+                  <AlertCircle className="mt-0.5 size-3 shrink-0" />
+                  <span>{e}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {!hasChecks && (
+            <span className="text-muted-foreground">No detailed checks recorded for this attempt.</span>
+          )}
+        </div>
       )}
+    </div>
+  );
+}
+
+function CheckLine({ label, value, pass }: { label: string; value: string; pass: boolean }) {
+  return (
+    <div className="flex items-center gap-2">
+      {pass ? (
+        <Check className="size-3 shrink-0 text-emerald-400" />
+      ) : (
+        <AlertCircle className="size-3 shrink-0 text-destructive" />
+      )}
+      <span className="text-muted-foreground">{label}:</span>
+      <span className={pass ? "text-foreground" : "text-destructive font-medium"}>{value}</span>
     </div>
   );
 }
