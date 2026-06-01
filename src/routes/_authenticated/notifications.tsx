@@ -66,49 +66,48 @@ function NotificationsPage() {
               No notifications yet.
             </div>
           )}
-          {items?.map((n) => (
-            <div
-              key={n.id}
-              className={`flex gap-3 rounded-2xl border p-4 ${
-                n.read_at ? "border-border bg-card" : "border-primary/40 bg-primary/5"
-              }`}
-            >
+          {items?.map((n) => {
+            const Card = n.link ? Link : "div";
+            const cardProps = n.link
+              ? { to: n.link, className: "block" }
+              : {};
+            return (
               <div
-                className={`mt-1 size-2 shrink-0 rounded-full ${
-                  n.read_at ? "bg-muted-foreground/30" : "bg-primary"
+                key={n.id}
+                className={`flex gap-3 rounded-2xl border p-4 ${
+                  n.read_at
+                    ? "border-border bg-card"
+                    : "border-primary/40 bg-primary/5"
                 }`}
-              />
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="truncate text-sm font-medium">{n.title}</p>
-                  <span className="shrink-0 text-[11px] text-muted-foreground">
-                    {new Date(n.created_at).toLocaleString()}
-                  </span>
-                </div>
-                {n.body && (
-                  <p className="mt-1 whitespace-pre-line text-xs text-muted-foreground">
-                    {n.body}
-                  </p>
-                )}
-                <div className="mt-2 flex items-center gap-3">
-                  {n.link && (
-                    <Link
-                      to={n.link}
-                      className="text-xs font-medium text-primary hover:underline"
-                    >
-                      View →
-                    </Link>
+              >
+                <div
+                  className={`mt-1 size-2 shrink-0 rounded-full ${
+                    n.read_at ? "bg-muted-foreground/30" : "bg-primary"
+                  }`}
+                />
+                <Card {...cardProps} className={`min-w-0 flex-1 ${n.link ? "cursor-pointer" : ""}`}>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="truncate text-sm font-medium">{n.title}</p>
+                    <span className="shrink-0 text-[11px] text-muted-foreground">
+                      {new Date(n.created_at).toLocaleString()}
+                    </span>
+                  </div>
+                  {n.body && (
+                    <p className="mt-1 whitespace-pre-line text-xs text-muted-foreground">
+                      {n.body}
+                    </p>
                   )}
-                  <button
-                    onClick={() => remove.mutate(n.id)}
-                    className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
-                  >
-                    <Trash2 className="size-3" /> Remove
-                  </button>
-                </div>
+                </Card>
+                <button
+                  onClick={() => remove.mutate(n.id)}
+                  className="inline-flex items-center gap-1 self-start text-xs text-muted-foreground hover:text-foreground"
+                  title="Remove"
+                >
+                  <Trash2 className="size-3.5" />
+                </button>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
     </SiteShell>
