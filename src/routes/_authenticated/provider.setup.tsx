@@ -78,7 +78,7 @@ const DOC_META: Record<DocKey, DocSpec> = {
   },
 };
 
-async function validateFile(spec: DocSpec, file: File): Promise<string[]> {
+async function validateFile(spec: DocSpec, file: File): Promise<{ errors: string[]; dimensions: { width: number; height: number } | null }> {
   const errors: string[] = [];
   if (!spec.mimes.includes(file.type)) {
     errors.push(`Unsupported file type (${file.type || "unknown"}). Accepted: ${spec.mimes.map((m) => m.split("/")[1].toUpperCase()).join(", ")}.`);
@@ -89,15 +89,18 @@ async function validateFile(spec: DocSpec, file: File): Promise<string[]> {
   if (file.size < 20 * 1024) {
     errors.push("File looks too small to be a real document (under 20 KB).");
   }
-  if (spec.minImageDim && file.type.startsWith("image/")) {
-    const dim = await readImageDimensions(file).catch(() => null);
-    if (!dim) {
-      errors.push("Could not read image. Try a different file.");
-    } else if (dim.width < spec.minImageDim || dim.height < spec.minImageDim) {
-      errors.push(`Image is ${dim.width}×${dim.height}px — needs to be at least ${spec.minImageDim}×${spec.minImageDim}px.`);
+  let dimensions: { width: number; height: number } | null = null;
+  if (file.type.startsWith("image/")) {
+    dimensions = await readImageDimensions(file).catch(() => null);
+    if (spec.minImageDim) {
+      if (!dimensions) {
+        errors.push("Could not read image. Try a different file.");
+      } else if (dimensions.width < spec.minImageDim || dimensions.height < spec.minImageDim) {
+        errors.push(`Image is ${dimensions.width}×${dimensions.height}px — needs to be at least ${spec.minImageDim}×${spec.minImageDim}px.`);
+      }
     }
   }
-  return errors;
+  return { errors, dimensions };
 }
 
 function readImageDimensions(file: File): Promise<{ width: number; height: number }> {
