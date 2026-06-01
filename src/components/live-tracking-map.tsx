@@ -1,10 +1,16 @@
 /// <reference types="google.maps" />
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { Clock } from "lucide-react";
 import { useGoogleMaps } from "@/hooks/use-google-maps";
 import { supabase } from "@/integrations/supabase/client";
+import { getDrivingEta } from "@/lib/eta.functions";
 
 type LatLng = { lat: number; lng: number };
+
+// Round coords to ~50m so small jitter doesn't trigger refetches
+const roundCoord = (n: number) => Math.round(n * 2000) / 2000;
 
 export function LiveTrackingMap({
   bookingId,
@@ -125,6 +131,19 @@ export function LiveTrackingMap({
     }
   }, [pos, destination]);
 
+  // ETA via Routes API (server fn). Keyed on rounded coords so it only
+  // refetches when the provider has actually moved a meaningful distance.
+  const fetchEta = useServerFn(getDrivingEta);
+  const etaKey = pos && destination
+    ? [roundCoord(pos.lat), roundCoord(pos.lng), roundCoord(destination.lat), roundCoord(destination.lng)]
+    : null;
+  const { data: eta } = useQuery({
+    queryKey: ["eta", bookingId, etaKey],
+    enabled: !!pos && !!destination,
+    staleTime: 20_000,
+    queryFn: () => fetchEta({ data: { origin: pos!, destination: destination! } }),
+  });
+
   return (
     <div className="relative">
       <div ref={ref} className={className ?? "h-72 w-full rounded-2xl border border-border bg-muted"} />
@@ -133,6 +152,29 @@ export function LiveTrackingMap({
           Waiting for provider location…
         </div>
       )}
+      {pos && eta?.durationSeconds != null && (
+        <div className="pointer-events-none absolute left-3 top-3 flex items-center gap-2 rounded-full bg-background/90 px-3 py-1.5 text-xs font-medium shadow-md backdrop-blur">
+          <Clock className="size-3.5 text-primary" />
+          <span>ETA {formatEta(eta.durationSeconds)}</span>
+          {eta.distanceMeters != null && (
+            <span className="text-muted-foreground">· {formatDistance(eta.distanceMeters)}</span>
+          )}
+        </div>
+      )}
     </div>
   );
+}
+
+function formatEta(seconds: number) {
+  if (seconds < 60) return "<1 min";
+  const mins = Math.round(seconds / 60);
+  if (mins < 60) return `${mins} min`;
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return `${h}h ${m}m`;
+}
+
+function formatDistance(meters: number) {
+  if (meters < 1000) return `${Math.round(meters)} m`;
+  return `${(meters / 1000).toFixed(1)} km`;
 }
