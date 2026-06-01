@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Star, BadgeCheck, MapPin } from "lucide-react";
+import { Star, BadgeCheck, MapPin, ShieldAlert, ShieldX, Clock } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -104,6 +104,8 @@ function ProviderDashboard() {
           </button>
         </div>
 
+        <VerificationBanner status={(profile as any).verification_status} reason={(profile as any).revoke_reason} />
+
         <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
           <Stat label="Active jobs" value={active.length} />
           <Stat label="Completed" value={profile.jobs_completed} />
@@ -167,6 +169,42 @@ function Stat({ label, value }: { label: string; value: string | number }) {
     <div className="rounded-2xl border border-border bg-card p-4">
       <div className="text-xs text-muted-foreground">{label}</div>
       <div className="mt-1 font-display text-2xl font-bold">{value}</div>
+    </div>
+  );
+}
+
+function VerificationBanner({ status, reason }: { status?: string; reason?: string | null }) {
+  if (status === "approved") return null;
+  if (status === "revoked") {
+    return (
+      <div className="mt-6 flex items-start gap-3 rounded-2xl border border-destructive/40 bg-destructive/10 p-4 text-sm">
+        <ShieldX className="mt-0.5 size-5 text-destructive" />
+        <div className="flex-1">
+          <div className="font-medium">Verification revoked</div>
+          <p className="text-muted-foreground">{reason || "An admin revoked your verification. Please contact support."}</p>
+        </div>
+      </div>
+    );
+  }
+  if (status === "pending") {
+    return (
+      <div className="mt-6 flex items-start gap-3 rounded-2xl border border-gold/40 bg-gold/10 p-4 text-sm">
+        <Clock className="mt-0.5 size-5 text-gold" />
+        <div className="flex-1">
+          <div className="font-medium">Verification pending</div>
+          <p className="text-muted-foreground">We're reviewing your documents. You can browse the dashboard but bookings are paused.</p>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div className="mt-6 flex items-start gap-3 rounded-2xl border border-primary/40 bg-primary/10 p-4 text-sm">
+      <ShieldAlert className="mt-0.5 size-5 text-primary" />
+      <div className="flex-1">
+        <div className="font-medium">Finish verification to start accepting jobs</div>
+        <p className="text-muted-foreground">Upload your ID, selfie, and a business document to go live.</p>
+      </div>
+      <Link to="/provider/setup" className="rounded-full bg-primary px-4 py-2 text-xs font-medium text-primary-foreground">Continue</Link>
     </div>
   );
 }
