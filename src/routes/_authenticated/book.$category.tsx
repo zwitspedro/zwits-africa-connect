@@ -413,12 +413,29 @@ function BookCategory() {
                 ← Back
               </button>
               <button disabled={create.isPending || !paymentMethod} className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground disabled:opacity-60">
-                {create.isPending ? "Sending…" : `Confirm — $${estimate.price.toFixed(2)}`}
+                {create.isPending
+                  ? "Finalising…"
+                  : paymentMethod === "cash"
+                    ? `Confirm — $${estimate.price.toFixed(2)}`
+                    : `Pay $${estimate.price.toFixed(2)} & confirm`}
               </button>
             </div>
           </form>
         )}
       </section>
+
+      {payDialogOpen && paymentMethod && paymentMethod !== "cash" && (
+        <PaymentProcessingDialog
+          method={paymentMethod}
+          amount={estimate.price}
+          reference={paymentReference}
+          onCancel={() => setPayDialogOpen(false)}
+          onSuccess={(transactionId) => {
+            setPayDialogOpen(false);
+            create.mutate({ transactionId });
+          }}
+        />
+      )}
 
       {receipt && <BookingReceiptDialog receipt={receipt} onClose={resetForm} />}
     </SiteShell>
