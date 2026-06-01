@@ -119,8 +119,9 @@ function BookCategory() {
   }, [selectedProvider, visibleProviders]);
 
   const create = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (txn: { transactionId: string | null }) => {
       if (!paymentMethod) throw new Error("Choose a payment method");
+      const isCash = paymentMethod === "cash";
       const { data, error } = await supabase.from("bookings").insert({
         customer_id: user!.id,
         provider_id: providerId,
@@ -130,8 +131,8 @@ function BookCategory() {
         scheduled_for: scheduled || null,
         price: estimate.price || null,
         payment_method: paymentMethod,
-        payment_reference: paymentMethod === "cash" ? null : paymentReference.trim() || null,
-        payment_status: "pending",
+        payment_reference: isCash ? null : txn.transactionId ?? paymentReference.trim() || null,
+        payment_status: isCash ? "pending" : "paid",
       }).select("id, created_at").single();
       if (error) throw error;
       return data;
