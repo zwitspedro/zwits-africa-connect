@@ -1,13 +1,13 @@
 /// <reference types="google.maps" />
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
   MarkerClusterer,
   SuperClusterAlgorithm,
   type Cluster,
 } from "@googlemaps/markerclusterer";
-import { ChevronRight, X, MapPin, User, FileText, Tag, Calendar, ExternalLink } from "lucide-react";
+import { ChevronRight, X, MapPin, User, FileText, Tag, Calendar, ExternalLink, Phone, MessageCircle } from "lucide-react";
 import { useGoogleMaps } from "@/hooks/use-google-maps";
 import { supabase } from "@/integrations/supabase/client";
 import {
