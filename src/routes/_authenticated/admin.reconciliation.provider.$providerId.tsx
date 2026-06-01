@@ -6,6 +6,7 @@ import { SiteShell } from "@/components/site-shell";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
+import { DiscrepancyBanner, type DiscrepancyIssue } from "@/components/discrepancy-banner";
 
 export const Route = createFileRoute(
   "/_authenticated/admin/reconciliation/provider/$providerId",
@@ -289,6 +290,59 @@ function ProviderBreakdown() {
         </div>
 
         {isLoading && <p className="mt-6 text-sm text-muted-foreground">Loading bookings…</p>}
+
+        {(() => {
+          const storedNet = rows.reduce((s, b) => {
+            const r = rateByCategory.get(b.category);
+            const p = Number(b.price ?? 0);
+            if (!r) return s + p;
+            return s + (p - ((p * Number(r.percent)) / 100 + Number(r.min_fee)));
+          }, 0);
+          const issues: DiscrepancyIssue[] = [];
+          const missingCats = Array.from(
+            new Set(rows.filter((b) => !rateByCategory.get(b.category)).map((b) => b.category)),
+          );
+          if (missingCats.length > 0)
+            issues.push({
+              kind: "missing_rate",
+              label: `No active rate for: ${missingCats.join(", ")}`,
+              detail: `${rows.filter((b) => !rateByCategory.get(b.category)).length} booking(s)`,
+            });
+          if (calcTotals.capAdjustment > 0)
+            issues.push({
+              kind: "min_fee_cap",
+              label: "Min-fee cap reduced commission on one or more bookings.",
+              amount: calcTotals.capAdjustment,
+            });
+          const unpaidCount = rows.filter((b) => b.payment_status !== "paid").length;
+          if (unpaidCount > 0)
+            issues.push({
+              kind: "unpaid",
+              label: `${unpaidCount} of ${rows.length} bookings have unpaid payment status.`,
+              amount: totals.unpaid,
+            });
+          const zeroCount = rows.filter((b) => !b.price || Number(b.price) <= 0).length;
+          if (zeroCount > 0)
+            issues.push({
+              kind: "zero_price",
+              label: `${zeroCount} booking(s) recorded with no price.`,
+            });
+          if (Math.abs(netPayout - storedNet) > 0.01)
+            issues.push({
+              kind: "net_mismatch",
+              label: "Reconciled net diverges from provider's stored payout snapshot.",
+              amount: netPayout - storedNet,
+            });
+          return (
+            <DiscrepancyBanner
+              className="mt-6"
+              computedNet={netPayout}
+              storedNet={storedNet}
+              issues={issues}
+            />
+          );
+        })()}
+
 
         <Panel title="Net payout calculation" className="mt-6" empty={byCategory.length === 0}>
           <div className="space-y-3 text-sm">

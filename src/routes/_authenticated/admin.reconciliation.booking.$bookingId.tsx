@@ -5,6 +5,7 @@ import { SiteShell } from "@/components/site-shell";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
+import { DiscrepancyBanner, type DiscrepancyIssue } from "@/components/discrepancy-banner";
 
 export const Route = createFileRoute(
   "/_authenticated/admin/reconciliation/booking/$bookingId",
@@ -152,6 +153,20 @@ function BookingBreakdown() {
             {booking.status}
           </span>
         </div>
+
+        {(() => {
+          // "Stored" payout = what the provider would see without the cap or with no rate
+          const storedNet = rate?.active ? price - rawCommission : price;
+          const issues: DiscrepancyIssue[] = [];
+          if (!rate) issues.push({ kind: "missing_rate", label: `No rate row exists for category “${booking.category}”.` });
+          else if (!rate.active) issues.push({ kind: "rate_inactive", label: `Rate for “${booking.category}” is marked inactive.` });
+          if (minFeeCapped) issues.push({ kind: "min_fee_cap", label: "Min-fee cap reduced commission to gross.", amount: rawCommission - price });
+          if (price <= 0) issues.push({ kind: "zero_price", label: "Booking has no price recorded." });
+          if (booking.payment_status !== "paid") issues.push({ kind: "unpaid", label: `Payment status is “${booking.payment_status ?? "—"}” — payout not yet collectable.` });
+          if (Math.abs(net - storedNet) > 0.01) issues.push({ kind: "net_mismatch", label: "Recomputed net diverges from provider's stored payout snapshot.", amount: net - storedNet });
+          return <DiscrepancyBanner className="mt-6" computedNet={net} storedNet={storedNet} issues={issues} />;
+        })()}
+
 
         <div className="mt-6 grid gap-3 sm:grid-cols-3">
           <Kpi label="Gross" value={`$${price.toFixed(2)}`} />
