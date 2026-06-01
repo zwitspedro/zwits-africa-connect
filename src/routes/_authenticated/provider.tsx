@@ -89,7 +89,15 @@ function ProviderDashboard() {
 
   const active = jobs?.filter((j) => ["pending", "accepted", "in_progress"].includes(j.status)) ?? [];
   const completed = jobs?.filter((j) => j.status === "completed") ?? [];
-  const earnings = completed.reduce((s, j) => s + (Number(j.price) || 0), 0);
+  const ratesByCategory = new Map((rates ?? []).map((r: any) => [r.category, r]));
+  const computeFee = (category: string, price: number) => {
+    const r: any = ratesByCategory.get(category);
+    if (!r) return 0;
+    return (price * Number(r.percent)) / 100 + Number(r.min_fee);
+  };
+  const gross = completed.reduce((s, j) => s + (Number(j.price) || 0), 0);
+  const commissionTotal = completed.reduce((s, j) => s + computeFee(j.category, Number(j.price) || 0), 0);
+  const earnings = gross - commissionTotal;
   const trackingJob = active.find((j) => j.status === "in_progress");
   useProviderTracking({ bookingId: trackingJob?.id ?? null, enabled: !!trackingJob });
 
@@ -122,7 +130,7 @@ function ProviderDashboard() {
           <Stat label="Active jobs" value={active.length} />
           <Stat label="Completed" value={profile.jobs_completed} />
           <Stat label="Rating" value={`${Number(profile.rating_avg).toFixed(1)} ★`} />
-          <Stat label="Earnings" value={`$${earnings.toFixed(0)}`} />
+          <Stat label="Net earnings" value={`$${earnings.toFixed(2)}`} sub={`Gross $${gross.toFixed(0)} · Fees $${commissionTotal.toFixed(2)}`} />
         </div>
 
         <h2 className="mt-10 font-display text-xl font-semibold">Jobs map</h2>
