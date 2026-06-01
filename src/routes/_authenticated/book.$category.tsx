@@ -148,7 +148,16 @@ function BookCategory() {
               placeholder={`Describe your ${service.name.toLowerCase()} request…`}
               className="rounded-lg border border-input bg-background px-3 py-2.5 text-sm" />
           </label>
-          <button disabled={create.isPending} className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground disabled:opacity-60">
+          <div className="grid gap-1.5">
+            <span className="text-xs text-muted-foreground">Payment method</span>
+            <PaymentMethodPicker
+              value={paymentMethod}
+              onChange={setPaymentMethod}
+              reference={paymentReference}
+              onReferenceChange={setPaymentReference}
+            />
+          </div>
+          <button disabled={create.isPending || !paymentMethod} className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground disabled:opacity-60">
             {create.isPending ? "Sending…" : "Request booking"}
           </button>
         </form>
