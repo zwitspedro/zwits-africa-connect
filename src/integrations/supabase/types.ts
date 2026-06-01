@@ -240,49 +240,73 @@ export type Database = {
         Row: {
           available: boolean
           bio: string | null
+          business_doc_url: string | null
           business_name: string
           category: string
           city: string
           created_at: string
           hourly_rate: number
           id: string
+          id_document_url: string | null
           jobs_completed: number
           rating_avg: number
           ratings_count: number
+          reviewed_at: string | null
+          reviewed_by: string | null
+          revoke_reason: string | null
+          selfie_url: string | null
+          submitted_at: string | null
           updated_at: string
           user_id: string
+          verification_status: Database["public"]["Enums"]["provider_verification_status"]
           verified: boolean
         }
         Insert: {
           available?: boolean
           bio?: string | null
+          business_doc_url?: string | null
           business_name: string
           category: string
           city: string
           created_at?: string
           hourly_rate?: number
           id?: string
+          id_document_url?: string | null
           jobs_completed?: number
           rating_avg?: number
           ratings_count?: number
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          revoke_reason?: string | null
+          selfie_url?: string | null
+          submitted_at?: string | null
           updated_at?: string
           user_id: string
+          verification_status?: Database["public"]["Enums"]["provider_verification_status"]
           verified?: boolean
         }
         Update: {
           available?: boolean
           bio?: string | null
+          business_doc_url?: string | null
           business_name?: string
           category?: string
           city?: string
           created_at?: string
           hourly_rate?: number
           id?: string
+          id_document_url?: string | null
           jobs_completed?: number
           rating_avg?: number
           ratings_count?: number
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          revoke_reason?: string | null
+          selfie_url?: string | null
+          submitted_at?: string | null
           updated_at?: string
           user_id?: string
+          verification_status?: Database["public"]["Enums"]["provider_verification_status"]
           verified?: boolean
         }
         Relationships: []
@@ -374,6 +398,11 @@ export type Database = {
         | "in_progress"
         | "completed"
         | "cancelled"
+      provider_verification_status:
+        | "unverified"
+        | "pending"
+        | "approved"
+        | "revoked"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -508,6 +537,12 @@ export const Constants = {
         "in_progress",
         "completed",
         "cancelled",
+      ],
+      provider_verification_status: [
+        "unverified",
+        "pending",
+        "approved",
+        "revoked",
       ],
     },
   },
