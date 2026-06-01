@@ -59,30 +59,32 @@ function BookingsPage() {
 
         <ul className="mt-6 grid gap-3">
           {bookings?.map((b: any) => (
-            <li key={b.id} className="rounded-2xl border border-border bg-card p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <div className="text-xs uppercase tracking-wider text-primary">{b.category}</div>
-                  <div className="mt-1 font-medium">{b.providers?.business_name ?? "Awaiting provider"}</div>
-                  <div className="mt-1 text-sm text-muted-foreground">{b.address}</div>
-                  {b.description && <div className="mt-1 text-xs text-muted-foreground">{b.description}</div>}
+            <li key={b.id} className="rounded-2xl border border-border bg-card p-4 hover:border-primary/30 transition-colors">
+              <Link to={`/bookings/${b.id}`} className="block">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="text-xs uppercase tracking-wider text-primary">{b.category}</div>
+                    <div className="mt-1 font-medium">{b.providers?.business_name ?? "Awaiting provider"}</div>
+                    <div className="mt-1 text-sm text-muted-foreground">{b.address}</div>
+                    {b.description && <div className="mt-1 text-xs text-muted-foreground">{b.description}</div>}
+                  </div>
+                  <StatusBadge status={b.status} />
                 </div>
-                <StatusBadge status={b.status} />
-              </div>
-              <div className="mt-3 flex items-center justify-between gap-3 text-xs">
-                <span className="text-muted-foreground">{new Date(b.created_at).toLocaleString()}</span>
-                <div className="flex gap-2">
-                  {b.status === "completed" && b.provider_id && !b.ratings?.length && (
-                    <RateButton bookingId={b.id} providerId={b.provider_id} />
-                  )}
-                  {(b.status === "pending" || b.status === "accepted") && (
-                    <button
-                      onClick={() => cancel.mutate(b.id)}
-                      className="rounded-full border border-border px-3 py-1.5 hover:bg-muted"
-                    >Cancel</button>
-                  )}
+                <div className="mt-3 flex items-center justify-between gap-3 text-xs">
+                  <span className="text-muted-foreground">{new Date(b.created_at).toLocaleString()}</span>
+                  <div className="flex gap-2">
+                    {b.status === "completed" && b.provider_id && !b.ratings?.length && (
+                      <RateButton bookingId={b.id} providerId={b.provider_id} />
+                    )}
+                    {(b.status === "pending" || b.status === "accepted") && (
+                      <button
+                        onClick={(e) => { e.preventDefault(); cancel.mutate(b.id); }}
+                        className="rounded-full border border-border px-3 py-1.5 hover:bg-muted"
+                      >Cancel</button>
+                    )}
+                  </div>
                 </div>
-              </div>
+              </Link>
             </li>
           ))}
         </ul>
