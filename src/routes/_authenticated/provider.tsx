@@ -42,6 +42,18 @@ function ProviderDashboard() {
     },
   });
 
+  const { data: rates } = useQuery({
+    queryKey: ["commission-rates-active"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("commission_rates")
+        .select("category,percent,min_fee,active")
+        .eq("active", true);
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const updateStatus = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: "pending" | "accepted" | "in_progress" | "completed" | "cancelled" }) => {
       const { error } = await supabase.from("bookings").update({ status }).eq("id", id);
@@ -77,7 +89,15 @@ function ProviderDashboard() {
 
   const active = jobs?.filter((j) => ["pending", "accepted", "in_progress"].includes(j.status)) ?? [];
   const completed = jobs?.filter((j) => j.status === "completed") ?? [];
-  const earnings = completed.reduce((s, j) => s + (Number(j.price) || 0), 0);
+  const ratesByCategory = new Map((rates ?? []).map((r: any) => [r.category, r]));
+  const computeFee = (category: string, price: number) => {
+    const r: any = ratesByCategory.get(category);
+    if (!r) return 0;
+    return (price * Number(r.percent)) / 100 + Number(r.min_fee);
+  };
+  const gross = completed.reduce((s, j) => s + (Number(j.price) || 0), 0);
+  const commissionTotal = completed.reduce((s, j) => s + computeFee(j.category, Number(j.price) || 0), 0);
+  const earnings = gross - commissionTotal;
   const trackingJob = active.find((j) => j.status === "in_progress");
   useProviderTracking({ bookingId: trackingJob?.id ?? null, enabled: !!trackingJob });
 
@@ -110,7 +130,7 @@ function ProviderDashboard() {
           <Stat label="Active jobs" value={active.length} />
           <Stat label="Completed" value={profile.jobs_completed} />
           <Stat label="Rating" value={`${Number(profile.rating_avg).toFixed(1)} ★`} />
-          <Stat label="Earnings" value={`$${earnings.toFixed(0)}`} />
+          <Stat label="Net earnings" value={`$${earnings.toFixed(2)}`} sub={`Gross $${gross.toFixed(0)} · Fees $${commissionTotal.toFixed(2)}`} />
         </div>
 
         <h2 className="mt-10 font-display text-xl font-semibold">Jobs map</h2>
@@ -150,25 +170,43 @@ function ProviderDashboard() {
           ))}
         </ul>
 
-        <h2 className="mt-10 font-display text-xl font-semibold">History</h2>
+        <h2 className="mt-10 font-display text-xl font-semibold">History & payouts</h2>
+        <p className="mt-1 text-xs text-muted-foreground">Net payout = price − platform commission (latest configured rates).</p>
         <ul className="mt-3 grid gap-2">
-          {completed.slice(0, 10).map((j) => (
-            <li key={j.id} className="flex items-center justify-between rounded-xl border border-border bg-card p-3 text-sm">
-              <span>{j.category} — {j.address}</span>
-              <span className="text-xs text-muted-foreground">{new Date(j.updated_at).toLocaleDateString()}</span>
-            </li>
-          ))}
+          {completed.slice(0, 10).map((j) => {
+            const price = Number(j.price) || 0;
+            const fee = computeFee(j.category, price);
+            const net = price - fee;
+            const r: any = ratesByCategory.get(j.category);
+            return (
+              <li key={j.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-card p-3 text-sm">
+                <div className="min-w-0">
+                  <div className="truncate">{j.category} — {j.address}</div>
+                  <div className="text-[11px] text-muted-foreground">
+                    {new Date(j.updated_at).toLocaleDateString()} · ${price.toFixed(2)} gross
+                    {r ? ` · ${Number(r.percent).toFixed(1)}% + $${Number(r.min_fee).toFixed(2)} fee` : " · no rate set"}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xs text-muted-foreground">−${fee.toFixed(2)}</div>
+                  <div className="font-semibold">${net.toFixed(2)}</div>
+                </div>
+              </li>
+            );
+          })}
+          {completed.length === 0 && <li className="rounded-xl border border-dashed border-border p-4 text-center text-xs text-muted-foreground">No completed jobs yet.</li>}
         </ul>
       </section>
     </SiteShell>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string | number }) {
+function Stat({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
   return (
     <div className="rounded-2xl border border-border bg-card p-4">
       <div className="text-xs text-muted-foreground">{label}</div>
       <div className="mt-1 font-display text-2xl font-bold">{value}</div>
+      {sub && <div className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground/80">{sub}</div>}
     </div>
   );
 }
