@@ -6,6 +6,7 @@ import { SiteShell } from "@/components/site-shell";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useProviderTracking } from "@/hooks/use-provider-tracking";
+import { ProviderJobsMap } from "@/components/provider-jobs-map";
 
 export const Route = createFileRoute("/_authenticated/provider")({
   head: () => ({ meta: [{ title: "Provider dashboard — Zwits" }] }),
@@ -108,6 +109,11 @@ function ProviderDashboard() {
           <Stat label="Completed" value={profile.jobs_completed} />
           <Stat label="Rating" value={`${Number(profile.rating_avg).toFixed(1)} ★`} />
           <Stat label="Earnings" value={`$${earnings.toFixed(0)}`} />
+        </div>
+
+        <h2 className="mt-10 font-display text-xl font-semibold">Jobs map</h2>
+        <div className="mt-3">
+          <ProviderJobsMap jobs={active} />
         </div>
 
         <h2 className="mt-10 font-display text-xl font-semibold">Active jobs</h2>
