@@ -65,6 +65,23 @@ function BookingDetailPage() {
               <StatusBadge status={booking.status} />
             </div>
 
+            {(booking.status === "accepted" || booking.status === "in_progress") && (
+              <div className="mt-5">
+                <div className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">
+                  Live tracking
+                </div>
+                <LiveTrackingMap
+                  bookingId={booking.id}
+                  destination={
+                    booking.lat != null && booking.lng != null
+                      ? { lat: booking.lat, lng: booking.lng }
+                      : null
+                  }
+                />
+              </div>
+            )}
+
+
             <div className="mt-5 space-y-3 text-sm">
               <div className="flex items-start gap-3">
                 <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
