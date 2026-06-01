@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Calendar, MapPin, CreditCard, Clock } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { LiveTrackingMap } from "@/components/live-tracking-map";
+import { BookingAddressMap } from "@/components/booking-address-map";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 
