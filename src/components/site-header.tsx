@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Menu, X, Bell } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { useNotificationsRealtime } from "@/hooks/use-notifications-realtime";
 
 const links = [
   { to: "/", label: "Home" },
@@ -17,6 +18,7 @@ const links = [
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const { user, signOut } = useAuth();
+  useNotificationsRealtime({ showToast: true });
   const { data: unread = 0 } = useQuery({
     queryKey: ["notifications-unread", user?.id],
     enabled: !!user,
