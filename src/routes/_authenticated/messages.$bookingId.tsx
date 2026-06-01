@@ -24,7 +24,7 @@ function MessagesPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("bookings")
-        .select("*, customer:profiles!customer_id(display_name, avatar_url), provider:providers!provider_id(business_name)")
+        .select("*")
         .eq("id", bookingId)
         .single();
       if (error) throw error;
@@ -32,16 +32,44 @@ function MessagesPage() {
     },
   });
 
+  const { data: customerProfile } = useQuery({
+    queryKey: ["profile", booking?.customer_id],
+    enabled: !!booking?.customer_id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("display_name, avatar_url")
+        .eq("user_id", booking!.customer_id)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: provider } = useQuery({
+    queryKey: ["provider", booking?.provider_id],
+    enabled: !!booking?.provider_id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("providers")
+        .select("user_id, business_name")
+        .eq("id", booking!.provider_id)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const otherUserId = booking
     ? booking.customer_id === user?.id
-      ? booking.provider?.user_id ?? null
+      ? provider?.user_id ?? null
       : booking.customer_id
     : null;
 
   const otherName = booking
     ? booking.customer_id === user?.id
-      ? booking.provider?.business_name ?? "Provider"
-      : booking.customer?.display_name ?? "Customer"
+      ? provider?.business_name ?? "Provider"
+      : customerProfile?.display_name ?? "Customer"
     : "...";
 
   const { data: messages } = useQuery({
