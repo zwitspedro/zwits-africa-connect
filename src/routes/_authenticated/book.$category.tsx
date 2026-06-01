@@ -185,6 +185,7 @@ function BookCategory() {
           </button>
         </form>
       </section>
+      {receipt && <BookingReceiptDialog receipt={receipt} onClose={resetForm} />}
     </SiteShell>
   );
 }
