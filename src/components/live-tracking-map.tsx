@@ -1,10 +1,16 @@
 /// <reference types="google.maps" />
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { Clock } from "lucide-react";
 import { useGoogleMaps } from "@/hooks/use-google-maps";
 import { supabase } from "@/integrations/supabase/client";
+import { getDrivingEta } from "@/lib/eta.functions";
 
 type LatLng = { lat: number; lng: number };
+
+// Round coords to ~50m so small jitter doesn't trigger refetches
+const roundCoord = (n: number) => Math.round(n * 2000) / 2000;
 
 export function LiveTrackingMap({
   bookingId,
