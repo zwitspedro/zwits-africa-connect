@@ -18,6 +18,7 @@ const links = [
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const { user, signOut } = useAuth();
+  useNotificationsRealtime({ showToast: true });
   const { data: unread = 0 } = useQuery({
     queryKey: ["notifications-unread", user?.id],
     enabled: !!user,
