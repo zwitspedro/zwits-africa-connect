@@ -27,6 +27,8 @@ function BookCategory() {
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [description, setDescription] = useState("");
   const [scheduled, setScheduled] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
+  const [paymentReference, setPaymentReference] = useState("");
 
   const { data: providers } = useQuery({
     queryKey: ["providers", category],
@@ -44,6 +46,7 @@ function BookCategory() {
 
   const create = useMutation({
     mutationFn: async () => {
+      if (!paymentMethod) throw new Error("Choose a payment method");
       const { error } = await supabase.from("bookings").insert({
         customer_id: user!.id,
         provider_id: providerId,
@@ -51,6 +54,9 @@ function BookCategory() {
         address,
         description,
         scheduled_for: scheduled || null,
+        payment_method: paymentMethod,
+        payment_reference: paymentMethod === "cash" ? null : paymentReference.trim() || null,
+        payment_status: paymentMethod === "cash" ? "pending" : "pending",
       });
       if (error) throw error;
     },
