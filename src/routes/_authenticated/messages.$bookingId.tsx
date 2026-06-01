@@ -32,14 +32,15 @@ function MessagesPage() {
     },
   });
 
+  const customerId = booking?.customer_id;
   const { data: customerProfile } = useQuery({
-    queryKey: ["profile", booking?.customer_id],
-    enabled: !!booking?.customer_id,
+    queryKey: ["profile", customerId],
+    enabled: !!customerId,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
         .select("display_name, avatar_url")
-        .eq("user_id", booking!.customer_id)
+        .eq("user_id", customerId!)
         .maybeSingle();
       if (error) throw error;
       return data;
