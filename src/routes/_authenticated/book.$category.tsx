@@ -131,7 +131,7 @@ function BookCategory() {
         scheduled_for: scheduled || null,
         price: estimate.price || null,
         payment_method: paymentMethod,
-        payment_reference: isCash ? null : txn.transactionId ?? paymentReference.trim() || null,
+        payment_reference: isCash ? null : (txn.transactionId ?? (paymentReference.trim() || null)),
         payment_status: isCash ? "pending" : "paid",
       }).select("id, created_at").single();
       if (error) throw error;
