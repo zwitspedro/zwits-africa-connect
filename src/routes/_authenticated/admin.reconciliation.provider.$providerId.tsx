@@ -290,11 +290,50 @@ function ProviderBreakdown() {
 
         {isLoading && <p className="mt-6 text-sm text-muted-foreground">Loading bookings…</p>}
 
-        <Panel title="By service category" className="mt-6" empty={byCategory.length === 0}>
+        <Panel title="Net payout calculation" className="mt-6" empty={byCategory.length === 0}>
+          <div className="space-y-3 text-sm">
+            <div className="grid gap-2 sm:grid-cols-2">
+              <Calc label="Gross (sum of completed bookings)" value={`$${calcTotals.gross.toFixed(2)}`} bold />
+              <Calc label="Total commission applied" value={`− $${calcTotals.commission.toFixed(2)}`} bold />
+            </div>
+            <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+              <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                Commission components
+              </div>
+              <div className="mt-2 space-y-1.5">
+                <Calc label="Percent fees across categories" value={`$${calcTotals.percentFee.toFixed(2)}`} />
+                <Calc label="Flat min-fees · sum across bookings" value={`+ $${calcTotals.minFeeTotal.toFixed(2)}`} />
+                {calcTotals.capAdjustment > 0 && (
+                  <Calc
+                    label="Min-fee cap · reductions where raw fee exceeded gross"
+                    value={`− $${calcTotals.capAdjustment.toFixed(2)}`}
+                  />
+                )}
+                <Calc label="Adjustments (refunds, manual credits)" value={`− $${adjustments.toFixed(2)}`} />
+              </div>
+            </div>
+            <div className="border-t border-border/60 pt-2">
+              <Calc
+                label="Net payout · gross − commission − adjustments"
+                value={`$${netPayout.toFixed(2)}`}
+                bold
+              />
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              {calcTotals.capAdjustment > 0
+                ? "Min-fee cap applied on bookings where percent + min fee exceeded the gross price."
+                : "No min-fee cap triggered in this range."}
+              {" · "}
+              {adjustments === 0 ? "No adjustments recorded for this range." : ""}
+            </p>
+          </div>
+        </Panel>
+
+        <Panel title="By service category" className="mt-4" empty={byCategory.length === 0}>
           <Table
-            headers={["Category", "Rate", "#", "Gross", "Commission", "Net"]}
+            headers={["Category", "Rate", "#", "Gross", "% fee", "Min fees", "Cap", "Commission", "Net"]}
             rows={byCategory.map(([cat, v]) => {
-              const r = rateByCategory.get(cat);
+              const r = v.rate;
               return [
                 <span key="c" className="capitalize">
                   {cat}
@@ -310,12 +349,16 @@ function ProviderBreakdown() {
                 ),
                 v.count,
                 `$${v.gross.toFixed(2)}`,
+                `$${v.percentFee.toFixed(2)}`,
+                `$${v.minFeeTotal.toFixed(2)}`,
+                v.capAdjustment > 0 ? `− $${v.capAdjustment.toFixed(2)}` : "—",
                 `$${v.commission.toFixed(2)}`,
                 `$${v.net.toFixed(2)}`,
               ];
             })}
           />
         </Panel>
+
 
         <Panel title="Booking-level breakdown" className="mt-4" empty={rows.length === 0}>
           <Table
