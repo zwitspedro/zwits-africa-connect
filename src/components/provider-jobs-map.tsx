@@ -1,7 +1,12 @@
 /// <reference types="google.maps" />
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { MarkerClusterer, SuperClusterAlgorithm } from "@googlemaps/markerclusterer";
+import {
+  MarkerClusterer,
+  SuperClusterAlgorithm,
+  type Cluster,
+} from "@googlemaps/markerclusterer";
+import { ChevronRight, X } from "lucide-react";
 import { useGoogleMaps } from "@/hooks/use-google-maps";
 
 type Job = {
@@ -11,6 +16,12 @@ type Job = {
   address: string;
   category: string;
   status: string;
+};
+
+const STATUS_COLORS: Record<string, string> = {
+  pending: "#f59e0b",
+  accepted: "#3b82f6",
+  in_progress: "#10b981",
 };
 
 export function ProviderJobsMap({
@@ -24,13 +35,21 @@ export function ProviderJobsMap({
   const navigate = useNavigate();
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
-  const markersRef = useRef<google.maps.Marker[]>([]);
+  const markersRef = useRef<Map<google.maps.Marker, string>>(new Map());
   const clustererRef = useRef<MarkerClusterer | null>(null);
 
-  const points = jobs.filter(
-    (j): j is Job & { lat: number; lng: number } =>
-      j.lat != null && j.lng != null,
+  const points = useMemo(
+    () =>
+      jobs.filter(
+        (j): j is Job & { lat: number; lng: number } =>
+          j.lat != null && j.lng != null,
+      ),
+    [jobs],
   );
+
+  // null = show all; otherwise restrict to these booking IDs
+  const [selectedIds, setSelectedIds] = useState<string[] | null>(null);
+  const [highlightId, setHighlightId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!ready || !ref.current) return;
@@ -49,16 +68,10 @@ export function ProviderJobsMap({
     const map = mapRef.current;
 
     clustererRef.current?.clearMarkers();
-    markersRef.current.forEach((m) => m.setMap(null));
-    markersRef.current = [];
+    markersRef.current.forEach((_, m) => m.setMap(null));
+    markersRef.current = new Map();
 
     if (points.length === 0) return;
-
-    const colors: Record<string, string> = {
-      pending: "#f59e0b",
-      accepted: "#3b82f6",
-      in_progress: "#10b981",
-    };
 
     const bounds = new google.maps.LatLngBounds();
     const markers: google.maps.Marker[] = [];
@@ -69,29 +82,36 @@ export function ProviderJobsMap({
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
           scale: 9,
-          fillColor: colors[j.status] ?? "#6b7280",
+          fillColor: STATUS_COLORS[j.status] ?? "#6b7280",
           fillOpacity: 1,
           strokeColor: "#0a0a0a",
           strokeWeight: 2,
         },
       });
       marker.addListener("click", () => {
-        navigate({ to: "/bookings/$id", params: { id: j.id } });
+        setSelectedIds([j.id]);
+        setHighlightId(j.id);
+        map.panTo({ lat: j.lat, lng: j.lng });
       });
       markers.push(marker);
+      markersRef.current.set(marker, j.id);
       bounds.extend({ lat: j.lat, lng: j.lng });
     }
-    markersRef.current = markers;
 
-    if (!clustererRef.current) {
-      clustererRef.current = new MarkerClusterer({
-        map,
-        markers,
-        algorithm: new SuperClusterAlgorithm({ radius: 80, maxZoom: 16 }),
-      });
-    } else {
-      clustererRef.current.addMarkers(markers);
-    }
+    clustererRef.current = new MarkerClusterer({
+      map,
+      markers,
+      algorithm: new SuperClusterAlgorithm({ radius: 80, maxZoom: 16 }),
+      onClusterClick: (_event, cluster: Cluster, m) => {
+        const ids = cluster.markers
+          ?.map((mk) => markersRef.current.get(mk as google.maps.Marker))
+          .filter((v): v is string => !!v) ?? [];
+        setSelectedIds(ids);
+        setHighlightId(null);
+        // Preserve default zoom-in behavior
+        if (cluster.bounds) m.fitBounds(cluster.bounds);
+      },
+    });
 
     if (points.length === 1) {
       map.setCenter({ lat: points[0].lat, lng: points[0].lng });
@@ -99,7 +119,7 @@ export function ProviderJobsMap({
     } else {
       map.fitBounds(bounds, 60);
     }
-  }, [points, navigate]);
+  }, [points]);
 
   useEffect(() => {
     return () => {
@@ -108,22 +128,91 @@ export function ProviderJobsMap({
     };
   }, []);
 
+  // Reset selection when underlying jobs change shape
+  useEffect(() => {
+    if (selectedIds) {
+      const stillValid = selectedIds.filter((id) => points.some((p) => p.id === id));
+      if (stillValid.length !== selectedIds.length) {
+        setSelectedIds(stillValid.length ? stillValid : null);
+      }
+    }
+  }, [points, selectedIds]);
+
+  const visibleJobs = selectedIds
+    ? points.filter((p) => selectedIds.includes(p.id))
+    : points;
+
   return (
-    <div className="relative">
-      <div
-        ref={ref}
-        className={className ?? "h-72 w-full rounded-2xl border border-border bg-muted"}
-      />
-      {points.length === 0 && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center text-sm text-muted-foreground">
-          No active jobs with locations
+    <div className="grid gap-3 md:grid-cols-[1fr_320px]">
+      <div className="relative">
+        <div
+          ref={ref}
+          className={className ?? "h-72 w-full rounded-2xl border border-border bg-muted md:h-[420px]"}
+        />
+        {points.length === 0 && (
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center text-sm text-muted-foreground">
+            No active jobs with locations
+          </div>
+        )}
+        <div className="absolute left-2 top-2 flex flex-wrap gap-1.5 text-[10px]">
+          <Legend color="#f59e0b" label="Pending" />
+          <Legend color="#3b82f6" label="Accepted" />
+          <Legend color="#10b981" label="In progress" />
         </div>
-      )}
-      <div className="absolute left-2 top-2 flex flex-wrap gap-1.5 text-[10px]">
-        <Legend color="#f59e0b" label="Pending" />
-        <Legend color="#3b82f6" label="Accepted" />
-        <Legend color="#10b981" label="In progress" />
       </div>
+
+      <aside className="flex h-72 flex-col rounded-2xl border border-border bg-card md:h-[420px]">
+        <header className="flex items-center justify-between border-b border-border px-3 py-2">
+          <div className="text-xs uppercase tracking-wider text-muted-foreground">
+            {selectedIds ? "Selected" : "All active"} · {visibleJobs.length}
+          </div>
+          {selectedIds && (
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedIds(null);
+                setHighlightId(null);
+              }}
+              className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] text-muted-foreground hover:bg-muted"
+            >
+              <X className="size-3" /> Clear
+            </button>
+          )}
+        </header>
+        <ul className="flex-1 divide-y divide-border overflow-y-auto">
+          {visibleJobs.length === 0 && (
+            <li className="p-4 text-center text-xs text-muted-foreground">
+              Tap a marker or cluster on the map.
+            </li>
+          )}
+          {visibleJobs.map((j) => {
+            const isHighlighted = j.id === highlightId;
+            return (
+              <li key={j.id}>
+                <button
+                  type="button"
+                  onClick={() => navigate({ to: "/bookings/$id", params: { id: j.id } })}
+                  className={`flex w-full items-start gap-2 px-3 py-2.5 text-left transition-colors hover:bg-muted/60 ${
+                    isHighlighted ? "bg-muted" : ""
+                  }`}
+                >
+                  <span
+                    className="mt-1.5 size-2 shrink-0 rounded-full"
+                    style={{ background: STATUS_COLORS[j.status] ?? "#6b7280" }}
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                      {j.category} · {j.status.replace("_", " ")}
+                    </div>
+                    <div className="truncate text-sm font-medium">{j.address}</div>
+                  </div>
+                  <ChevronRight className="mt-1 size-4 shrink-0 text-muted-foreground" />
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </aside>
     </div>
   );
 }
