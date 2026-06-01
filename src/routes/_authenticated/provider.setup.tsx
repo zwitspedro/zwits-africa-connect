@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { Upload, Check, FileText, IdCard, Camera, ChevronLeft, ChevronRight, ShieldCheck } from "lucide-react";
+import { Upload, Check, FileText, IdCard, Camera, ChevronLeft, ChevronRight, ShieldCheck, AlertCircle, CircleDot } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -15,11 +15,100 @@ export const Route = createFileRoute("/_authenticated/provider/setup")({
 
 type DocKey = "id_document_url" | "selfie_url" | "business_doc_url";
 
-const DOC_META: Record<DocKey, { label: string; hint: string; icon: typeof IdCard; accept: string }> = {
-  id_document_url: { label: "Government ID", hint: "Passport, national ID or driver's license", icon: IdCard, accept: "image/*,application/pdf" },
-  selfie_url:      { label: "Selfie with ID",  hint: "Hold your ID next to your face, well lit", icon: Camera,  accept: "image/*" },
-  business_doc_url:{ label: "Business / certification doc", hint: "Trade license, certificate, utility bill", icon: FileText, accept: "image/*,application/pdf" },
+type DocSpec = {
+  label: string;
+  hint: string;
+  icon: typeof IdCard;
+  accept: string;
+  mimes: string[];
+  maxBytes: number;
+  minImageDim?: number;   // min width & height in px (images only)
+  imageOnly?: boolean;
+  requirements: string[];
 };
+
+const MB = 1024 * 1024;
+
+const DOC_META: Record<DocKey, DocSpec> = {
+  id_document_url: {
+    label: "Government ID",
+    hint: "Passport, national ID or driver's license",
+    icon: IdCard,
+    accept: "image/jpeg,image/png,image/webp,application/pdf",
+    mimes: ["image/jpeg", "image/png", "image/webp", "application/pdf"],
+    maxBytes: 10 * MB,
+    minImageDim: 600,
+    requirements: [
+      "Government-issued: passport, national ID or driver's license",
+      "All four corners visible, not cropped",
+      "Colour photo or scan — no black & white",
+      "Text and photo legible, no glare",
+      "JPG, PNG, WEBP or PDF · max 10 MB",
+    ],
+  },
+  selfie_url: {
+    label: "Selfie with ID",
+    hint: "Hold your ID next to your face, well lit",
+    icon: Camera,
+    accept: "image/jpeg,image/png,image/webp",
+    mimes: ["image/jpeg", "image/png", "image/webp"],
+    maxBytes: 10 * MB,
+    minImageDim: 600,
+    imageOnly: true,
+    requirements: [
+      "Your face clearly visible, no sunglasses, no hat",
+      "Hold the same ID document next to your face",
+      "Well-lit, no heavy filters or edits",
+      "Image only — JPG, PNG or WEBP · max 10 MB",
+    ],
+  },
+  business_doc_url: {
+    label: "Business / certification doc",
+    hint: "Trade license, certificate, utility bill",
+    icon: FileText,
+    accept: "image/jpeg,image/png,image/webp,application/pdf",
+    mimes: ["image/jpeg", "image/png", "image/webp", "application/pdf"],
+    maxBytes: 10 * MB,
+    requirements: [
+      "Trade license, professional certificate, or recent utility bill",
+      "Issued in the last 12 months",
+      "Your name or business name clearly shown",
+      "JPG, PNG, WEBP or PDF · max 10 MB",
+    ],
+  },
+};
+
+async function validateFile(spec: DocSpec, file: File): Promise<string[]> {
+  const errors: string[] = [];
+  if (!spec.mimes.includes(file.type)) {
+    errors.push(`Unsupported file type (${file.type || "unknown"}). Accepted: ${spec.mimes.map((m) => m.split("/")[1].toUpperCase()).join(", ")}.`);
+  }
+  if (file.size > spec.maxBytes) {
+    errors.push(`File is ${(file.size / MB).toFixed(1)} MB — must be under ${(spec.maxBytes / MB).toFixed(0)} MB.`);
+  }
+  if (file.size < 20 * 1024) {
+    errors.push("File looks too small to be a real document (under 20 KB).");
+  }
+  if (spec.minImageDim && file.type.startsWith("image/")) {
+    const dim = await readImageDimensions(file).catch(() => null);
+    if (!dim) {
+      errors.push("Could not read image. Try a different file.");
+    } else if (dim.width < spec.minImageDim || dim.height < spec.minImageDim) {
+      errors.push(`Image is ${dim.width}×${dim.height}px — needs to be at least ${spec.minImageDim}×${spec.minImageDim}px.`);
+    }
+  }
+  return errors;
+}
+
+function readImageDimensions(file: File): Promise<{ width: number; height: number }> {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); resolve({ width: img.naturalWidth, height: img.naturalHeight }); };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("decode failed")); };
+    img.src = url;
+  });
+}
 
 function ProviderSetup() {
   const { user } = useAuth();
@@ -129,6 +218,17 @@ function ProviderSetup() {
 
           {step === 1 && (
             <div className="grid gap-4">
+              <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <ShieldCheck className="size-4 text-primary" /> Before you upload
+                </div>
+                <ul className="mt-2 grid gap-1 text-xs text-muted-foreground">
+                  <li>· Documents must be genuine, current, and unedited.</li>
+                  <li>· Each file: max 10 MB · JPG, PNG, WEBP or PDF (selfie must be an image).</li>
+                  <li>· Photos must be sharp — no blur, no glare, all edges visible.</li>
+                </ul>
+              </div>
+
               {(Object.keys(DOC_META) as DocKey[]).map((k) => (
                 <DocUpload
                   key={k}
@@ -245,49 +345,106 @@ function DocUpload({ docKey, userId, value, onChange }: { docKey: DocKey; userId
   const Icon = meta.icon;
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  const [errors, setErrors] = useState<string[]>([]);
+  const [fileName, setFileName] = useState<string | null>(null);
+  const [showReqs, setShowReqs] = useState(false);
 
   const handleFile = async (file: File) => {
     if (!userId) return;
-    if (file.size > 10 * 1024 * 1024) { toast.error("File too large (max 10MB)"); return; }
+    setErrors([]);
+    setFileName(file.name);
+
+    const validationErrors = await validateFile(meta, file);
+    if (validationErrors.length) {
+      setErrors(validationErrors);
+      toast.error(`${meta.label}: ${validationErrors[0]}`);
+      return;
+    }
+
     setUploading(true);
     try {
-      const ext = file.name.split(".").pop() ?? "bin";
+      const ext = (file.name.split(".").pop() ?? "bin").toLowerCase();
       const path = `${userId}/${docKey}-${Date.now()}.${ext}`;
-      const { error } = await supabase.storage.from("provider-verification").upload(path, file, { upsert: true });
+      const { error } = await supabase.storage.from("provider-verification").upload(path, file, { upsert: true, contentType: file.type });
       if (error) throw error;
       onChange(path);
       toast.success(`${meta.label} uploaded`);
     } catch (e: any) {
+      setErrors([e.message ?? "Upload failed. Please try again."]);
       toast.error(e.message ?? "Upload failed");
     } finally {
       setUploading(false);
     }
   };
 
+  const status: "missing" | "error" | "uploaded" = errors.length ? "error" : value ? "uploaded" : "missing";
+  const ringClass =
+    status === "error" ? "border-destructive/60" :
+    status === "uploaded" ? "border-emerald-500/50" :
+    "border-border";
+
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-border bg-background p-3">
-      <div className="flex size-10 items-center justify-center rounded-lg bg-muted">
-        <Icon className="size-5 text-primary" />
+    <div className={`rounded-2xl border bg-background p-3 ${ringClass}`}>
+      <div className="flex items-center gap-3">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted">
+          <Icon className="size-5 text-primary" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">{meta.label}</span>
+            {status === "uploaded" && <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] uppercase tracking-wider text-emerald-400">Ready</span>}
+            {status === "error" && <span className="rounded-full bg-destructive/15 px-2 py-0.5 text-[10px] uppercase tracking-wider text-destructive">Action needed</span>}
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowReqs((v) => !v)}
+            className="mt-0.5 truncate text-left text-xs text-muted-foreground underline-offset-2 hover:underline"
+          >
+            {fileName ?? (value ? "Uploaded — tap to replace" : meta.hint)} · {showReqs ? "hide" : "see"} requirements
+          </button>
+        </div>
+        <input
+          ref={inputRef}
+          type="file"
+          accept={meta.accept}
+          className="hidden"
+          onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ""; }}
+        />
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          disabled={uploading}
+          className={`inline-flex shrink-0 items-center gap-1 rounded-full px-3 py-1.5 text-xs ${
+            status === "uploaded" ? "bg-emerald-500/20 text-emerald-400" :
+            status === "error" ? "bg-destructive text-destructive-foreground" :
+            "bg-primary text-primary-foreground"
+          }`}
+        >
+          {uploading ? "Uploading…" : status === "uploaded" ? <><Check className="size-3" /> Done</> : status === "error" ? "Retry" : <><Upload className="size-3" /> Upload</>}
+        </button>
       </div>
-      <div className="min-w-0 flex-1">
-        <div className="text-sm font-medium">{meta.label}</div>
-        <div className="truncate text-xs text-muted-foreground">{value ? "Uploaded ✓ — tap to replace" : meta.hint}</div>
-      </div>
-      <input
-        ref={inputRef}
-        type="file"
-        accept={meta.accept}
-        className="hidden"
-        onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ""; }}
-      />
-      <button
-        type="button"
-        onClick={() => inputRef.current?.click()}
-        disabled={uploading}
-        className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-xs ${value ? "bg-emerald-500/20 text-emerald-400" : "bg-primary text-primary-foreground"}`}
-      >
-        {uploading ? "Uploading…" : value ? <><Check className="size-3" /> Done</> : <><Upload className="size-3" /> Upload</>}
-      </button>
+
+      {showReqs && (
+        <ul className="mt-3 grid gap-1 rounded-xl bg-muted/40 p-3 text-xs text-muted-foreground">
+          {meta.requirements.map((r) => (
+            <li key={r} className="flex items-start gap-2">
+              <CircleDot className="mt-0.5 size-3 shrink-0 text-primary" />
+              <span>{r}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {errors.length > 0 && (
+        <ul className="mt-3 grid gap-1 rounded-xl border border-destructive/40 bg-destructive/10 p-3 text-xs text-destructive">
+          {errors.map((e) => (
+            <li key={e} className="flex items-start gap-2">
+              <AlertCircle className="mt-0.5 size-3 shrink-0" />
+              <span>{e}</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
