@@ -1,10 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Menu, X, Bell } from "lucide-react";
+import { Menu, X, Bell, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { useNotificationsRealtime } from "@/hooks/use-notifications-realtime";
+import { useRoles } from "@/hooks/use-role";
 
 const links = [
   { to: "/", label: "Home" },
@@ -18,6 +19,8 @@ const links = [
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const { data: roles } = useRoles();
+  const isAdmin = (roles ?? []).includes("admin");
   useNotificationsRealtime({ showToast: true });
   const { data: unread = 0 } = useQuery({
     queryKey: ["notifications-unread", user?.id],
@@ -64,6 +67,11 @@ export function SiteHeader() {
                 )}
               </Link>
               <Link to="/dashboard" className="rounded-full px-4 py-2 text-sm hover:text-foreground">Dashboard</Link>
+              {isAdmin && (
+                <Link to="/admin" className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-2 text-sm text-primary hover:bg-primary/15">
+                  <ShieldCheck className="size-4" /> Admin
+                </Link>
+              )}
               <button onClick={() => signOut()} className="rounded-full border border-border px-4 py-2 text-sm hover:bg-muted">Sign out</button>
             </>
           ) : (
