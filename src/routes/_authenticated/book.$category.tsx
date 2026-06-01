@@ -49,7 +49,7 @@ function BookCategory() {
   const create = useMutation({
     mutationFn: async () => {
       if (!paymentMethod) throw new Error("Choose a payment method");
-      const { error } = await supabase.from("bookings").insert({
+      const { data, error } = await supabase.from("bookings").insert({
         customer_id: user!.id,
         provider_id: providerId,
         category,
@@ -58,16 +58,37 @@ function BookCategory() {
         scheduled_for: scheduled || null,
         payment_method: paymentMethod,
         payment_reference: paymentMethod === "cash" ? null : paymentReference.trim() || null,
-        payment_status: paymentMethod === "cash" ? "pending" : "pending",
-      });
+        payment_status: "pending",
+      }).select("id, created_at").single();
       if (error) throw error;
+      return data;
     },
-    onSuccess: () => {
-      toast.success("Booking sent");
-      navigate({ to: "/bookings" });
+    onSuccess: (data) => {
+      toast.success("Booking confirmed");
+      setReceipt({
+        id: data.id,
+        category: category!,
+        serviceName: service!.name,
+        address,
+        scheduledFor: scheduled || null,
+        paymentMethod: paymentMethod!,
+        paymentReference: paymentMethod === "cash" ? null : paymentReference.trim() || null,
+        createdAt: data.created_at,
+      });
     },
     onError: (e: any) => toast.error(e.message),
   });
+
+  const resetForm = () => {
+    setReceipt(null);
+    setProviderId(null);
+    setAddress("");
+    setCoords(null);
+    setDescription("");
+    setScheduled("");
+    setPaymentMethod(null);
+    setPaymentReference("");
+  };
 
   if (!service) {
     return (
