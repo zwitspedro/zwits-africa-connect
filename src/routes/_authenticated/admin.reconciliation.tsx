@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { ArrowLeft, Scale, Wallet, Download } from "lucide-react";
+import { ArrowLeft, Scale, Wallet, Download, Filter } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -44,6 +44,7 @@ function ReconciliationScreen() {
   const def = defaultRange();
   const [from, setFrom] = useState(def.from);
   const [to, setTo] = useState(def.to);
+  const [showDiscrepanciesOnly, setShowDiscrepanciesOnly] = useState(false);
 
   const { data: bookings, isLoading } = useQuery({
     queryKey: ["recon-bookings", from, to],
@@ -106,7 +107,21 @@ function ReconciliationScreen() {
     return (price * Number(r.percent)) / 100 + Number(r.min_fee);
   };
 
+  const hasDiscrepancy = (b: Booking) => {
+    const r = rateByCategory.get(b.category);
+    const price = Number(b.price ?? 0);
+    if (!r) return true;
+    if (!r.active) return true;
+    if (price <= 0) return true;
+    if (b.payment_status !== "paid") return true;
+    const rawCommission = (price * Number(r.percent)) / 100 + Number(r.min_fee);
+    if (rawCommission > price) return true;
+    return false;
+  };
+
   const rows = bookings ?? [];
+  const discrepancyRows = rows.filter(hasDiscrepancy);
+  const displayRows = showDiscrepanciesOnly ? discrepancyRows : rows;
   const totals = rows.reduce(
     (acc, b) => {
       const price = Number(b.price ?? 0);
@@ -139,22 +154,24 @@ function ReconciliationScreen() {
   }, [rows, rateByCategory]);
 
   const byProvider = useMemo(() => {
-    const m = new Map<string, { count: number; gross: number; commission: number; net: number }>();
+    const m = new Map<string, { count: number; gross: number; commission: number; net: number; hasDisc: boolean }>();
     for (const b of rows) {
       if (!b.provider_id) continue;
-      const cur = m.get(b.provider_id) ?? { count: 0, gross: 0, commission: 0, net: 0 };
+      const cur = m.get(b.provider_id) ?? { count: 0, gross: 0, commission: 0, net: 0, hasDisc: false };
       const price = Number(b.price ?? 0);
       const f = fee(b);
       cur.count += 1;
       cur.gross += price;
       cur.commission += f;
       cur.net += price - f;
+      if (hasDiscrepancy(b)) cur.hasDisc = true;
       m.set(b.provider_id, cur);
     }
     return Array.from(m.entries())
+      .filter(([, v]) => !showDiscrepanciesOnly || v.hasDisc)
       .map(([id, v]) => ({ id, name: providerById.get(id)?.business_name ?? "Unknown provider", ...v }))
       .sort((a, b) => b.net - a.net);
-  }, [rows, providerById, rateByCategory]);
+  }, [rows, providerById, rateByCategory, showDiscrepanciesOnly]);
 
   const exportCsv = () => {
     const header = ["booking_id", "completed_at", "category", "provider", "payment_status", "gross", "commission", "net"];
@@ -242,7 +259,16 @@ function ReconciliationScreen() {
               </button>
             ))}
           </div>
-          <div className="ml-auto text-xs text-muted-foreground">{rows.length} completed bookings</div>
+          <div className="ml-auto flex items-center gap-3">
+            <button
+              onClick={() => setShowDiscrepanciesOnly((v) => !v)}
+              className={`inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-[11px] transition-colors ${showDiscrepanciesOnly ? "border-amber-500/40 bg-amber-500/10 text-amber-400" : "border-border hover:bg-muted"}`}
+            >
+              <Filter className="size-3" />
+              {showDiscrepanciesOnly ? "Discrepancies only" : "Show all"}
+            </button>
+            <span className="text-xs text-muted-foreground">{displayRows.length} of {rows.length} bookings</span>
+          </div>
         </div>
 
         <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -296,10 +322,10 @@ function ReconciliationScreen() {
           </Panel>
         </div>
 
-        <Panel title="Booking-level detail" className="mt-6" empty={rows.length === 0}>
+        <Panel title={`Booking-level detail${showDiscrepanciesOnly ? " — discrepancies" : ""}`} className="mt-6" empty={displayRows.length === 0}>
           <Table
             headers={["Completed", "Category", "Provider", "Payment", "Gross", "Commission", "Net", ""]}
-            rows={rows.slice(0, 100).map((b) => {
+            rows={displayRows.slice(0, 100).map((b) => {
               const price = Number(b.price ?? 0);
               const f = fee(b);
               const provider = b.provider_id ? providerById.get(b.provider_id)?.business_name ?? "—" : "—";
@@ -323,8 +349,8 @@ function ReconciliationScreen() {
             })}
           />
 
-          {rows.length > 100 && (
-            <p className="mt-2 text-[11px] text-muted-foreground">Showing first 100 of {rows.length}. Export CSV for the full list.</p>
+          {displayRows.length > 100 && (
+            <p className="mt-2 text-[11px] text-muted-foreground">Showing first 100 of {displayRows.length}. Export CSV for the full list.</p>
           )}
         </Panel>
       </section>
