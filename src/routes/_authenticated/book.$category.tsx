@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Star, BadgeCheck } from "lucide-react";
+import { Star, BadgeCheck, MapPin } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { AddressAutocomplete } from "@/components/address-autocomplete";
 import { LocationMap } from "@/components/location-map";
@@ -10,7 +10,18 @@ import { PaymentMethodPicker, type PaymentMethod } from "@/components/payment-me
 import { BookingReceiptDialog, type BookingReceipt } from "@/components/booking-receipt";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { useGoogleMaps } from "@/hooks/use-google-maps";
 import { services } from "@/data/services";
+
+function haversineKm(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
+  const R = 6371;
+  const dLat = ((b.lat - a.lat) * Math.PI) / 180;
+  const dLng = ((b.lng - a.lng) * Math.PI) / 180;
+  const lat1 = (a.lat * Math.PI) / 180;
+  const lat2 = (b.lat * Math.PI) / 180;
+  const h = Math.sin(dLat / 2) ** 2 + Math.sin(dLng / 2) ** 2 * Math.cos(lat1) * Math.cos(lat2);
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
 
 export const Route = createFileRoute("/_authenticated/book/$category")({
   head: () => ({ meta: [{ title: "Book a service — Zwits" }] }),
