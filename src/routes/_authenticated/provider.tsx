@@ -129,7 +129,12 @@ function ProviderDashboard() {
                     <button onClick={() => updateStatus.mutate({ id: j.id, status: "in_progress" })} className="rounded-full bg-gold px-3 py-1.5 text-xs text-background">Start</button>
                   )}
                   {j.status === "in_progress" && (
-                    <button onClick={() => updateStatus.mutate({ id: j.id, status: "completed" })} className="rounded-full bg-emerald-500 px-3 py-1.5 text-xs text-background">Complete</button>
+                    <>
+                      <span className="inline-flex items-center gap-1 self-end rounded-full bg-primary/15 px-2 py-0.5 text-[10px] text-primary">
+                        <MapPin className="size-3" /> Sharing live location
+                      </span>
+                      <button onClick={() => updateStatus.mutate({ id: j.id, status: "completed" })} className="rounded-full bg-emerald-500 px-3 py-1.5 text-xs text-background">Complete</button>
+                    </>
                   )}
                 </div>
               </div>
