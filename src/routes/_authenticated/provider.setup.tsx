@@ -1,8 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { Upload, Check, FileText, IdCard, Camera, ChevronLeft, ChevronRight, ShieldCheck, AlertCircle, CircleDot } from "lucide-react";
+import { Upload, Check, FileText, IdCard, Camera, ChevronLeft, ChevronRight, ShieldCheck, AlertCircle, CircleDot, History } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
