@@ -338,7 +338,15 @@ function BookCategory() {
 
         {step === 2 && (
           <form
-            onSubmit={(e) => { e.preventDefault(); create.mutate(); }}
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!paymentMethod) return toast.error("Choose a payment method");
+              if (paymentMethod === "cash") {
+                create.mutate({ transactionId: null });
+              } else {
+                setPayDialogOpen(true);
+              }
+            }}
             className="mt-8 grid gap-5 rounded-3xl border border-border bg-card p-6"
           >
             <div>
