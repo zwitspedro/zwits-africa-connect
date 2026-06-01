@@ -7,6 +7,7 @@ import { SiteShell } from "@/components/site-shell";
 import { AddressAutocomplete } from "@/components/address-autocomplete";
 import { LocationMap } from "@/components/location-map";
 import { PaymentMethodPicker, type PaymentMethod } from "@/components/payment-method-picker";
+import { PaymentProcessingDialog } from "@/components/payment-processing-dialog";
 import { BookingReceiptDialog, type BookingReceipt } from "@/components/booking-receipt";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
