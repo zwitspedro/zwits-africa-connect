@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Star, BadgeCheck } from "lucide-react";
+import { Star, BadgeCheck, MapPin } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { AddressAutocomplete } from "@/components/address-autocomplete";
 import { LocationMap } from "@/components/location-map";
@@ -10,7 +10,18 @@ import { PaymentMethodPicker, type PaymentMethod } from "@/components/payment-me
 import { BookingReceiptDialog, type BookingReceipt } from "@/components/booking-receipt";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { useGoogleMaps } from "@/hooks/use-google-maps";
 import { services } from "@/data/services";
+
+function haversineKm(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
+  const R = 6371;
+  const dLat = ((b.lat - a.lat) * Math.PI) / 180;
+  const dLng = ((b.lng - a.lng) * Math.PI) / 180;
+  const lat1 = (a.lat * Math.PI) / 180;
+  const lat2 = (b.lat * Math.PI) / 180;
+  const h = Math.sin(dLat / 2) ** 2 + Math.sin(dLng / 2) ** 2 * Math.cos(lat1) * Math.cos(lat2);
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
 
 export const Route = createFileRoute("/_authenticated/book/$category")({
   head: () => ({ meta: [{ title: "Book a service — Zwits" }] }),
@@ -31,6 +42,10 @@ function BookCategory() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
   const [paymentReference, setPaymentReference] = useState("");
   const [receipt, setReceipt] = useState<BookingReceipt | null>(null);
+  const [availableOnly, setAvailableOnly] = useState(true);
+  const [radiusKm, setRadiusKm] = useState(25);
+  const [cityCoords, setCityCoords] = useState<Record<string, { lat: number; lng: number } | null>>({});
+  const { ready: mapsReady } = useGoogleMaps();
 
   const { data: providers } = useQuery({
     queryKey: ["providers", category],
@@ -39,12 +54,52 @@ function BookCategory() {
         .from("providers")
         .select("*")
         .eq("category", category)
-        .eq("available", true)
         .order("rating_avg", { ascending: false });
       if (error) throw error;
       return data;
     },
   });
+
+  // Geocode unique provider cities once Google Maps is ready
+  useEffect(() => {
+    if (!mapsReady || !providers || !coords) return;
+    const geocoder = new google.maps.Geocoder();
+    const cities = Array.from(new Set(providers.map((p) => p.city).filter(Boolean)));
+    cities.forEach((city) => {
+      if (city in cityCoords) return;
+      geocoder
+        .geocode({ address: city })
+        .then((res) => {
+          const loc = res.results[0]?.geometry.location;
+          setCityCoords((prev) => ({
+            ...prev,
+            [city]: loc ? { lat: loc.lat(), lng: loc.lng() } : null,
+          }));
+        })
+        .catch(() => setCityCoords((prev) => ({ ...prev, [city]: null })));
+    });
+  }, [mapsReady, providers, coords, cityCoords]);
+
+  const visibleProviders = useMemo(() => {
+    if (!providers) return [];
+    let list = providers.map((p) => {
+      const c = cityCoords[p.city];
+      const distance = coords && c ? haversineKm(coords, c) : null;
+      return { ...p, distance };
+    });
+    if (availableOnly) list = list.filter((p) => p.available);
+    if (coords) {
+      list = list.filter((p) => p.distance == null || p.distance <= radiusKm);
+      list.sort((a, b) => {
+        if (a.distance == null && b.distance == null) return 0;
+        if (a.distance == null) return 1;
+        if (b.distance == null) return -1;
+        return a.distance - b.distance;
+      });
+    }
+    return list;
+  }, [providers, cityCoords, coords, availableOnly, radiusKm]);
+
 
   const create = useMutation({
     mutationFn: async () => {
@@ -135,7 +190,39 @@ function BookCategory() {
           </div>
         </div>
 
-        <h2 className="mt-8 text-sm font-medium text-muted-foreground">Choose a provider</h2>
+        <div className="mt-8 flex items-end justify-between gap-3">
+          <h2 className="text-sm font-medium text-muted-foreground">Choose a provider</h2>
+          <span className="text-xs text-muted-foreground">{visibleProviders.length} match{visibleProviders.length === 1 ? "" : "es"}</span>
+        </div>
+
+        <div className="mt-3 grid gap-3 rounded-2xl border border-border bg-card/50 p-4 sm:grid-cols-[auto,1fr] sm:items-center">
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={availableOnly}
+              onChange={(e) => setAvailableOnly(e.target.checked)}
+              className="size-4 rounded border-input"
+            />
+            Available now
+          </label>
+          <label className="grid gap-1.5">
+            <span className="flex items-center justify-between text-xs text-muted-foreground">
+              <span className="flex items-center gap-1"><MapPin className="size-3" /> Radius</span>
+              <span>{coords ? `${radiusKm} km` : "Set address to enable"}</span>
+            </span>
+            <input
+              type="range"
+              min={1}
+              max={100}
+              step={1}
+              value={radiusKm}
+              disabled={!coords}
+              onChange={(e) => setRadiusKm(Number(e.target.value))}
+              className="w-full accent-primary disabled:opacity-50"
+            />
+          </label>
+        </div>
+
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <button
             onClick={() => setProviderId(null)}
@@ -144,7 +231,7 @@ function BookCategory() {
             <div className="text-sm font-medium">Auto-match</div>
             <div className="text-xs text-muted-foreground">We'll assign the first available pro.</div>
           </button>
-          {providers?.map((p) => (
+          {visibleProviders.map((p) => (
             <button
               key={p.id}
               onClick={() => setProviderId(p.id)}
@@ -153,17 +240,27 @@ function BookCategory() {
               <div className="flex items-center gap-2 text-sm font-medium">
                 {p.business_name}
                 {p.verified && <BadgeCheck className="size-4 text-gold" />}
+                <span className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-medium ${p.available ? "bg-emerald-500/15 text-emerald-600" : "bg-muted text-muted-foreground"}`}>
+                  {p.available ? "Available" : "Busy"}
+                </span>
               </div>
-              <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+              <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
                 <span className="flex items-center gap-0.5"><Star className="size-3 fill-gold text-gold" /> {Number(p.rating_avg).toFixed(1)}</span>
                 <span>· {p.city}</span>
                 <span>· ${p.hourly_rate}/hr</span>
+                {p.distance != null && (
+                  <span className="flex items-center gap-0.5">· <MapPin className="size-3" /> {p.distance.toFixed(1)} km</span>
+                )}
               </div>
             </button>
           ))}
         </div>
-        {providers && providers.length === 0 && (
-          <p className="mt-3 text-xs text-muted-foreground">No providers listed yet — we'll auto-match.</p>
+        {visibleProviders.length === 0 && (
+          <p className="mt-3 text-xs text-muted-foreground">
+            {providers && providers.length > 0
+              ? "No providers match your filters — try widening the radius or turning off 'Available now'."
+              : "No providers listed yet — we'll auto-match."}
+          </p>
         )}
 
         <form
