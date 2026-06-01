@@ -28,6 +28,7 @@ import { Route as AuthenticatedProviderSetupRouteImport } from './routes/_authen
 import { Route as AuthenticatedMessagesBookingIdRouteImport } from './routes/_authenticated/messages.$bookingId'
 import { Route as AuthenticatedBookingsIdRouteImport } from './routes/_authenticated/bookings.$id'
 import { Route as AuthenticatedBookCategoryRouteImport } from './routes/_authenticated/book.$category'
+import { Route as AuthenticatedAdminProvidersRouteImport } from './routes/_authenticated/admin.providers'
 
 const TermsRoute = TermsRouteImport.update({
   id: '/terms',
@@ -127,6 +128,12 @@ const AuthenticatedBookCategoryRoute =
     path: '/book/$category',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedAdminProvidersRoute =
+  AuthenticatedAdminProvidersRouteImport.update({
+    id: '/admin/providers',
+    path: '/admin/providers',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -143,6 +150,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/provider': typeof AuthenticatedProviderRouteWithChildren
+  '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/book/$category': typeof AuthenticatedBookCategoryRoute
   '/bookings/$id': typeof AuthenticatedBookingsIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
@@ -163,6 +171,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/provider': typeof AuthenticatedProviderRouteWithChildren
+  '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/book/$category': typeof AuthenticatedBookCategoryRoute
   '/bookings/$id': typeof AuthenticatedBookingsIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
@@ -185,6 +194,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/provider': typeof AuthenticatedProviderRouteWithChildren
+  '/_authenticated/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/_authenticated/book/$category': typeof AuthenticatedBookCategoryRoute
   '/_authenticated/bookings/$id': typeof AuthenticatedBookingsIdRoute
   '/_authenticated/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
@@ -207,6 +217,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/notifications'
     | '/provider'
+    | '/admin/providers'
     | '/book/$category'
     | '/bookings/$id'
     | '/messages/$bookingId'
@@ -227,6 +238,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/notifications'
     | '/provider'
+    | '/admin/providers'
     | '/book/$category'
     | '/bookings/$id'
     | '/messages/$bookingId'
@@ -248,6 +260,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/notifications'
     | '/_authenticated/provider'
+    | '/_authenticated/admin/providers'
     | '/_authenticated/book/$category'
     | '/_authenticated/bookings/$id'
     | '/_authenticated/messages/$bookingId'
@@ -403,6 +416,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBookCategoryRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin/providers': {
+      id: '/_authenticated/admin/providers'
+      path: '/admin/providers'
+      fullPath: '/admin/providers'
+      preLoaderRoute: typeof AuthenticatedAdminProvidersRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
@@ -437,6 +457,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedProviderRoute: typeof AuthenticatedProviderRouteWithChildren
+  AuthenticatedAdminProvidersRoute: typeof AuthenticatedAdminProvidersRoute
   AuthenticatedBookCategoryRoute: typeof AuthenticatedBookCategoryRoute
   AuthenticatedMessagesBookingIdRoute: typeof AuthenticatedMessagesBookingIdRoute
 }
@@ -446,6 +467,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedProviderRoute: AuthenticatedProviderRouteWithChildren,
+  AuthenticatedAdminProvidersRoute: AuthenticatedAdminProvidersRoute,
   AuthenticatedBookCategoryRoute: AuthenticatedBookCategoryRoute,
   AuthenticatedMessagesBookingIdRoute: AuthenticatedMessagesBookingIdRoute,
 }
@@ -470,3 +492,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
