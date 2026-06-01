@@ -35,6 +35,9 @@ export function PaymentMethodPicker({
 
   return (
     <div className="grid gap-3">
+      <div className="rounded-lg border border-dashed border-amber-500/40 bg-amber-500/10 px-3 py-2 text-[11px] text-amber-700 dark:text-amber-300">
+        Mock mode — Paynow is not live yet. Your details are captured for the provider to confirm payment manually. No money is moved.
+      </div>
       <div className="grid gap-2 sm:grid-cols-2">
         {PAYMENT_METHODS.map((m) => {
           const active = value === m.id;
