@@ -22,6 +22,8 @@ export type Database = {
           customer_id: string
           description: string | null
           id: string
+          lat: number | null
+          lng: number | null
           price: number | null
           provider_id: string | null
           scheduled_for: string | null
@@ -35,6 +37,8 @@ export type Database = {
           customer_id: string
           description?: string | null
           id?: string
+          lat?: number | null
+          lng?: number | null
           price?: number | null
           provider_id?: string | null
           scheduled_for?: string | null
@@ -48,6 +52,8 @@ export type Database = {
           customer_id?: string
           description?: string | null
           id?: string
+          lat?: number | null
+          lng?: number | null
           price?: number | null
           provider_id?: string | null
           scheduled_for?: string | null
@@ -96,6 +102,53 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      provider_locations: {
+        Row: {
+          accuracy: number | null
+          booking_id: string
+          created_at: string
+          heading: number | null
+          id: string
+          lat: number
+          lng: number
+          provider_user_id: string
+          speed: number | null
+          updated_at: string
+        }
+        Insert: {
+          accuracy?: number | null
+          booking_id: string
+          created_at?: string
+          heading?: number | null
+          id?: string
+          lat: number
+          lng: number
+          provider_user_id: string
+          speed?: number | null
+          updated_at?: string
+        }
+        Update: {
+          accuracy?: number | null
+          booking_id?: string
+          created_at?: string
+          heading?: number | null
+          id?: string
+          lat?: number
+          lng?: number
+          provider_user_id?: string
+          speed?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_locations_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       providers: {
         Row: {
