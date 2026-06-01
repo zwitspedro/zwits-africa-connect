@@ -209,7 +209,21 @@ function BookCategory() {
           </div>
         </div>
 
+        <ol className="mt-6 flex items-center gap-2 text-xs">
+          {[
+            { n: 1, label: "Find a provider" },
+            { n: 2, label: "Confirm & pay" },
+          ].map((s) => (
+            <li key={s.n} className={`flex items-center gap-2 rounded-full border px-3 py-1.5 ${step === s.n ? "border-primary bg-primary/10 text-foreground" : "border-border text-muted-foreground"}`}>
+              <span className={`grid size-5 place-items-center rounded-full text-[10px] font-semibold ${step === s.n ? "bg-primary text-primary-foreground" : "bg-muted"}`}>{s.n}</span>
+              {s.label}
+            </li>
+          ))}
+        </ol>
+
+        {step === 1 && (<>
         <div className="mt-8 flex items-end justify-between gap-3">
+
           <h2 className="text-sm font-medium text-muted-foreground">Choose a provider</h2>
           <span className="text-xs text-muted-foreground">{visibleProviders.length} match{visibleProviders.length === 1 ? "" : "es"}</span>
         </div>
