@@ -70,11 +70,36 @@ function AdminProviders() {
     );
   }
 
+  const { data: allAudits } = useQuery({
+    queryKey: ["admin-all-audits"],
+    enabled: !!user && isAdmin,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("provider_document_audits")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(2000);
+      if (error) throw error;
+      return data;
+    },
+  });
+
   return (
     <SiteShell>
       <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-        <h1 className="font-display text-3xl font-bold">Provider verification</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Review documents and manage verification status.</p>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h1 className="font-display text-3xl font-bold">Provider verification</h1>
+            <p className="mt-2 text-sm text-muted-foreground">Review documents and manage verification status.</p>
+          </div>
+          <AuditExportButtons
+            rows={allAudits as any}
+            filenameBase="all-provider-audits"
+            pdfTitle="All provider document audits"
+            pdfSubtitle={`${allAudits?.length ?? 0} entries across all providers`}
+            size="sm"
+          />
+        </div>
 
         {isLoading && <p className="mt-6 text-sm text-muted-foreground">Loading providers…</p>}
 
@@ -99,11 +124,27 @@ function AdminProviders() {
 function AdminProviderRow({ provider, onApprove, onRevoke }: { provider: any; onApprove: () => void; onRevoke: (reason: string) => void }) {
   const [confirmRevoke, setConfirmRevoke] = useState(false);
   const [reason, setReason] = useState("");
+  const [showAudit, setShowAudit] = useState(false);
 
   const status = provider.verification_status as string;
   const statusColor = status === "approved" ? "text-emerald-400 bg-emerald-500/15"
     : status === "revoked" ? "text-destructive bg-destructive/15"
     : "text-muted-foreground bg-muted";
+
+  const { data: audits } = useQuery({
+    queryKey: ["admin-provider-audits", provider.user_id],
+    enabled: showAudit,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("provider_document_audits")
+        .select("*")
+        .eq("provider_user_id", provider.user_id)
+        .order("created_at", { ascending: false })
+        .limit(500);
+      if (error) throw error;
+      return data;
+    },
+  });
 
   return (
     <li className="rounded-2xl border border-border bg-card p-4">
@@ -135,6 +176,40 @@ function AdminProviderRow({ provider, onApprove, onRevoke }: { provider: any; on
         <DocLink path={provider.selfie_url} label="Selfie" />
         <DocLink path={provider.business_doc_url} label="Business doc" />
       </div>
+
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border/60 pt-3">
+        <button
+          type="button"
+          onClick={() => setShowAudit((v) => !v)}
+          className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground"
+        >
+          <History className="size-3" /> {showAudit ? "Hide" : "View"} audit history{audits?.length ? ` (${audits.length})` : ""}
+        </button>
+        {showAudit && (
+          <AuditExportButtons
+            rows={audits as any}
+            filenameBase={`audit-${provider.business_name.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}`}
+            pdfTitle={`Document audit — ${provider.business_name}`}
+            pdfSubtitle={`Provider user ${provider.user_id} · status ${status}`}
+          />
+        )}
+      </div>
+
+      {showAudit && (
+        <div className="mt-2 max-h-72 overflow-auto rounded-xl bg-muted/30 p-3 text-[11px]">
+          {!audits?.length && <span className="text-muted-foreground">No upload attempts recorded.</span>}
+          <ul className="grid gap-1.5">
+            {audits?.map((a: any) => (
+              <li key={a.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-background/50 px-2 py-1.5">
+                <span className="text-muted-foreground">{new Date(a.created_at).toLocaleString()}</span>
+                <span className="font-medium">{a.doc_key}</span>
+                <span className={a.status === "uploaded" ? "text-emerald-400" : a.status === "rejected" || a.status === "upload_error" ? "text-destructive" : "text-muted-foreground"}>{a.status}</span>
+                <span className="truncate text-muted-foreground">{a.file_name ?? "—"}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {confirmRevoke && (
         <div className="mt-3 grid gap-2 rounded-xl bg-muted/40 p-3">
