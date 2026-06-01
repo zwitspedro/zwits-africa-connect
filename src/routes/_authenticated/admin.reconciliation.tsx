@@ -154,22 +154,24 @@ function ReconciliationScreen() {
   }, [rows, rateByCategory]);
 
   const byProvider = useMemo(() => {
-    const m = new Map<string, { count: number; gross: number; commission: number; net: number }>();
+    const m = new Map<string, { count: number; gross: number; commission: number; net: number; hasDisc: boolean }>();
     for (const b of rows) {
       if (!b.provider_id) continue;
-      const cur = m.get(b.provider_id) ?? { count: 0, gross: 0, commission: 0, net: 0 };
+      const cur = m.get(b.provider_id) ?? { count: 0, gross: 0, commission: 0, net: 0, hasDisc: false };
       const price = Number(b.price ?? 0);
       const f = fee(b);
       cur.count += 1;
       cur.gross += price;
       cur.commission += f;
       cur.net += price - f;
+      if (hasDiscrepancy(b)) cur.hasDisc = true;
       m.set(b.provider_id, cur);
     }
     return Array.from(m.entries())
+      .filter(([, v]) => !showDiscrepanciesOnly || v.hasDisc)
       .map(([id, v]) => ({ id, name: providerById.get(id)?.business_name ?? "Unknown provider", ...v }))
       .sort((a, b) => b.net - a.net);
-  }, [rows, providerById, rateByCategory]);
+  }, [rows, providerById, rateByCategory, showDiscrepanciesOnly]);
 
   const exportCsv = () => {
     const header = ["booking_id", "completed_at", "category", "provider", "payment_status", "gross", "commission", "net"];
