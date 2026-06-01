@@ -1,8 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { Upload, Check, FileText, IdCard, Camera, ChevronLeft, ChevronRight, ShieldCheck, AlertCircle, CircleDot } from "lucide-react";
+import { Upload, Check, FileText, IdCard, Camera, ChevronLeft, ChevronRight, ShieldCheck, AlertCircle, CircleDot, History } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -78,7 +78,7 @@ const DOC_META: Record<DocKey, DocSpec> = {
   },
 };
 
-async function validateFile(spec: DocSpec, file: File): Promise<string[]> {
+async function validateFile(spec: DocSpec, file: File): Promise<{ errors: string[]; dimensions: { width: number; height: number } | null }> {
   const errors: string[] = [];
   if (!spec.mimes.includes(file.type)) {
     errors.push(`Unsupported file type (${file.type || "unknown"}). Accepted: ${spec.mimes.map((m) => m.split("/")[1].toUpperCase()).join(", ")}.`);
@@ -89,15 +89,18 @@ async function validateFile(spec: DocSpec, file: File): Promise<string[]> {
   if (file.size < 20 * 1024) {
     errors.push("File looks too small to be a real document (under 20 KB).");
   }
-  if (spec.minImageDim && file.type.startsWith("image/")) {
-    const dim = await readImageDimensions(file).catch(() => null);
-    if (!dim) {
-      errors.push("Could not read image. Try a different file.");
-    } else if (dim.width < spec.minImageDim || dim.height < spec.minImageDim) {
-      errors.push(`Image is ${dim.width}×${dim.height}px — needs to be at least ${spec.minImageDim}×${spec.minImageDim}px.`);
+  let dimensions: { width: number; height: number } | null = null;
+  if (file.type.startsWith("image/")) {
+    dimensions = await readImageDimensions(file).catch(() => null);
+    if (spec.minImageDim) {
+      if (!dimensions) {
+        errors.push("Could not read image. Try a different file.");
+      } else if (dimensions.width < spec.minImageDim || dimensions.height < spec.minImageDim) {
+        errors.push(`Image is ${dimensions.width}×${dimensions.height}px — needs to be at least ${spec.minImageDim}×${spec.minImageDim}px.`);
+      }
     }
   }
-  return errors;
+  return { errors, dimensions };
 }
 
 function readImageDimensions(file: File): Promise<{ width: number; height: number }> {
@@ -344,20 +347,62 @@ function DocUpload({ docKey, userId, value, onChange }: { docKey: DocKey; userId
   const meta = DOC_META[docKey];
   const Icon = meta.icon;
   const inputRef = useRef<HTMLInputElement>(null);
+  const qc = useQueryClient();
   const [uploading, setUploading] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [fileName, setFileName] = useState<string | null>(null);
   const [showReqs, setShowReqs] = useState(false);
+  const [showAudit, setShowAudit] = useState(false);
+
+  const auditKey = ["doc-audit", userId, docKey];
+  const { data: audits } = useQuery({
+    queryKey: auditKey,
+    enabled: !!userId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("provider_document_audits")
+        .select("*")
+        .eq("provider_user_id", userId)
+        .eq("doc_key", docKey)
+        .order("created_at", { ascending: false })
+        .limit(20);
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const writeAudit = async (row: {
+    status: "validated" | "rejected" | "uploaded" | "upload_error";
+    file: File;
+    dimensions: { width: number; height: number } | null;
+    errors: string[];
+    storage_path: string | null;
+  }) => {
+    await supabase.from("provider_document_audits").insert({
+      provider_user_id: userId,
+      doc_key: docKey,
+      file_name: row.file.name,
+      file_size: row.file.size,
+      mime_type: row.file.type || null,
+      width: row.dimensions?.width ?? null,
+      height: row.dimensions?.height ?? null,
+      status: row.status,
+      errors: row.errors,
+      storage_path: row.storage_path,
+    });
+    qc.invalidateQueries({ queryKey: auditKey });
+  };
 
   const handleFile = async (file: File) => {
     if (!userId) return;
     setErrors([]);
     setFileName(file.name);
 
-    const validationErrors = await validateFile(meta, file);
+    const { errors: validationErrors, dimensions } = await validateFile(meta, file);
     if (validationErrors.length) {
       setErrors(validationErrors);
       toast.error(`${meta.label}: ${validationErrors[0]}`);
+      await writeAudit({ status: "rejected", file, dimensions, errors: validationErrors, storage_path: null });
       return;
     }
 
@@ -369,9 +414,12 @@ function DocUpload({ docKey, userId, value, onChange }: { docKey: DocKey; userId
       if (error) throw error;
       onChange(path);
       toast.success(`${meta.label} uploaded`);
+      await writeAudit({ status: "uploaded", file, dimensions, errors: [], storage_path: path });
     } catch (e: any) {
-      setErrors([e.message ?? "Upload failed. Please try again."]);
-      toast.error(e.message ?? "Upload failed");
+      const msg = e.message ?? "Upload failed. Please try again.";
+      setErrors([msg]);
+      toast.error(msg);
+      await writeAudit({ status: "upload_error", file, dimensions, errors: [msg], storage_path: null });
     } finally {
       setUploading(false);
     }
@@ -398,7 +446,7 @@ function DocUpload({ docKey, userId, value, onChange }: { docKey: DocKey; userId
           <button
             type="button"
             onClick={() => setShowReqs((v) => !v)}
-            className="mt-0.5 truncate text-left text-xs text-muted-foreground underline-offset-2 hover:underline"
+            className="mt-0.5 block truncate text-left text-xs text-muted-foreground underline-offset-2 hover:underline"
           >
             {fileName ?? (value ? "Uploaded — tap to replace" : meta.hint)} · {showReqs ? "hide" : "see"} requirements
           </button>
@@ -442,6 +490,54 @@ function DocUpload({ docKey, userId, value, onChange }: { docKey: DocKey; userId
               <AlertCircle className="mt-0.5 size-3 shrink-0" />
               <span>{e}</span>
             </li>
+          ))}
+        </ul>
+      )}
+
+      <button
+        type="button"
+        onClick={() => setShowAudit((v) => !v)}
+        className="mt-3 inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground"
+      >
+        <History className="size-3" />
+        {showAudit ? "Hide" : "View"} upload history{audits?.length ? ` (${audits.length})` : ""}
+      </button>
+
+      {showAudit && (
+        <div className="mt-2 grid gap-1.5 rounded-xl bg-muted/30 p-3 text-[11px]">
+          {!audits?.length && <span className="text-muted-foreground">No upload attempts yet.</span>}
+          {audits?.map((a) => <AuditRow key={a.id} audit={a} />)}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AuditRow({ audit }: { audit: any }) {
+  const tone =
+    audit.status === "uploaded" ? "text-emerald-400" :
+    audit.status === "rejected" ? "text-destructive" :
+    audit.status === "upload_error" ? "text-destructive" :
+    "text-muted-foreground";
+  const label =
+    audit.status === "uploaded" ? "Uploaded" :
+    audit.status === "rejected" ? "Rejected" :
+    audit.status === "upload_error" ? "Upload error" :
+    audit.status;
+  return (
+    <div className="rounded-lg border border-border/60 bg-background/50 p-2">
+      <div className="flex items-center justify-between gap-2">
+        <span className={`font-medium ${tone}`}>{label}</span>
+        <span className="text-muted-foreground">{new Date(audit.created_at).toLocaleString()}</span>
+      </div>
+      <div className="mt-1 truncate text-muted-foreground">
+        {audit.file_name ?? "—"} · {audit.mime_type ?? "?"} · {audit.file_size ? `${(audit.file_size / (1024 * 1024)).toFixed(2)} MB` : "?"}
+        {audit.width && audit.height ? ` · ${audit.width}×${audit.height}px` : ""}
+      </div>
+      {audit.errors?.length > 0 && (
+        <ul className="mt-1 grid gap-0.5 text-destructive">
+          {audit.errors.map((e: string, i: number) => (
+            <li key={i} className="flex items-start gap-1"><AlertCircle className="mt-0.5 size-3 shrink-0" /><span>{e}</span></li>
           ))}
         </ul>
       )}

@@ -189,6 +189,51 @@ export type Database = {
         }
         Relationships: []
       }
+      provider_document_audits: {
+        Row: {
+          created_at: string
+          doc_key: string
+          errors: string[]
+          file_name: string | null
+          file_size: number | null
+          height: number | null
+          id: string
+          mime_type: string | null
+          provider_user_id: string
+          status: string
+          storage_path: string | null
+          width: number | null
+        }
+        Insert: {
+          created_at?: string
+          doc_key: string
+          errors?: string[]
+          file_name?: string | null
+          file_size?: number | null
+          height?: number | null
+          id?: string
+          mime_type?: string | null
+          provider_user_id: string
+          status: string
+          storage_path?: string | null
+          width?: number | null
+        }
+        Update: {
+          created_at?: string
+          doc_key?: string
+          errors?: string[]
+          file_name?: string | null
+          file_size?: number | null
+          height?: number | null
+          id?: string
+          mime_type?: string | null
+          provider_user_id?: string
+          status?: string
+          storage_path?: string | null
+          width?: number | null
+        }
+        Relationships: []
+      }
       provider_locations: {
         Row: {
           accuracy: number | null
