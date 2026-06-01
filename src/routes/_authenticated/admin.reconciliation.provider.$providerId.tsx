@@ -99,11 +99,24 @@ function ProviderBreakdown() {
     return m;
   }, [rates]);
 
+  type CatCalc = {
+    count: number;
+    gross: number;
+    percentFee: number;
+    minFeeTotal: number;
+    rawCommission: number;
+    capAdjustment: number;
+    commission: number;
+    net: number;
+    rate: Rate | undefined;
+  };
+
   const fee = (b: Booking) => {
     const r = rateByCategory.get(b.category);
     const price = Number(b.price ?? 0);
     if (!r) return 0;
-    return (price * Number(r.percent)) / 100 + Number(r.min_fee);
+    const raw = (price * Number(r.percent)) / 100 + Number(r.min_fee);
+    return Math.min(raw, price);
   };
 
   const rows = bookings ?? [];
@@ -123,20 +136,54 @@ function ProviderBreakdown() {
   );
 
   const byCategory = useMemo(() => {
-    const m = new Map<string, { count: number; gross: number; commission: number; net: number }>();
+    const m = new Map<string, CatCalc>();
     for (const b of rows) {
       const k = b.category;
-      const cur = m.get(k) ?? { count: 0, gross: 0, commission: 0, net: 0 };
+      const r = rateByCategory.get(k);
+      const cur =
+        m.get(k) ??
+        ({
+          count: 0,
+          gross: 0,
+          percentFee: 0,
+          minFeeTotal: 0,
+          rawCommission: 0,
+          capAdjustment: 0,
+          commission: 0,
+          net: 0,
+          rate: r,
+        } as CatCalc);
       const price = Number(b.price ?? 0);
-      const f = fee(b);
+      const pct = r ? (price * Number(r.percent)) / 100 : 0;
+      const mf = r ? Number(r.min_fee) : 0;
+      const raw = pct + mf;
+      const applied = Math.min(raw, price);
       cur.count += 1;
       cur.gross += price;
-      cur.commission += f;
-      cur.net += price - f;
+      cur.percentFee += pct;
+      cur.minFeeTotal += mf;
+      cur.rawCommission += raw;
+      cur.capAdjustment += raw - applied;
+      cur.commission += applied;
+      cur.net += price - applied;
       m.set(k, cur);
     }
     return Array.from(m.entries()).sort((a, b) => b[1].gross - a[1].gross);
   }, [rows, rateByCategory]);
+
+  const calcTotals = byCategory.reduce(
+    (a, [, v]) => {
+      a.gross += v.gross;
+      a.percentFee += v.percentFee;
+      a.minFeeTotal += v.minFeeTotal;
+      a.capAdjustment += v.capAdjustment;
+      a.commission += v.commission;
+      return a;
+    },
+    { gross: 0, percentFee: 0, minFeeTotal: 0, capAdjustment: 0, commission: 0 },
+  );
+  const adjustments = 0;
+  const netPayout = calcTotals.gross - calcTotals.commission - adjustments;
 
   const setPreset = (days: number) => {
     const end = new Date();
