@@ -85,4 +85,12 @@ export const services: Service[] = [
     icon: Siren,
     examples: ["Roadside", "Locksmith", "Medical"],
   },
+  {
+    slug: "customer-service",
+    name: "Customer Service",
+    tagline: "Real people, real help",
+    description: "Book a trained customer service agent for calls, chats, complaints handling and account support.",
+    icon: Headphones,
+    examples: ["Phone support", "Live chat", "Complaints", "Onboarding calls"],
+  },
 ];
