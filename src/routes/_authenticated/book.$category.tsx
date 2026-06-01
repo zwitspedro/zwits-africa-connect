@@ -7,6 +7,7 @@ import { SiteShell } from "@/components/site-shell";
 import { AddressAutocomplete } from "@/components/address-autocomplete";
 import { LocationMap } from "@/components/location-map";
 import { PaymentMethodPicker, type PaymentMethod } from "@/components/payment-method-picker";
+import { PaymentProcessingDialog } from "@/components/payment-processing-dialog";
 import { BookingReceiptDialog, type BookingReceipt } from "@/components/booking-receipt";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -46,6 +47,7 @@ function BookCategory() {
   const [radiusKm, setRadiusKm] = useState(25);
   const [cityCoords, setCityCoords] = useState<Record<string, { lat: number; lng: number } | null>>({});
   const [step, setStep] = useState<1 | 2>(1);
+  const [payDialogOpen, setPayDialogOpen] = useState(false);
   const { ready: mapsReady } = useGoogleMaps();
 
   const { data: providers } = useQuery({
@@ -119,8 +121,9 @@ function BookCategory() {
   }, [selectedProvider, visibleProviders]);
 
   const create = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (txn: { transactionId: string | null }) => {
       if (!paymentMethod) throw new Error("Choose a payment method");
+      const isCash = paymentMethod === "cash";
       const { data, error } = await supabase.from("bookings").insert({
         customer_id: user!.id,
         provider_id: providerId,
@@ -130,8 +133,8 @@ function BookCategory() {
         scheduled_for: scheduled || null,
         price: estimate.price || null,
         payment_method: paymentMethod,
-        payment_reference: paymentMethod === "cash" ? null : paymentReference.trim() || null,
-        payment_status: "pending",
+        payment_reference: isCash ? null : (txn.transactionId ?? (paymentReference.trim() || null)),
+        payment_status: isCash ? "pending" : "paid",
       }).select("id, created_at").single();
       if (error) throw error;
       return data;
@@ -335,7 +338,15 @@ function BookCategory() {
 
         {step === 2 && (
           <form
-            onSubmit={(e) => { e.preventDefault(); create.mutate(); }}
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!paymentMethod) return toast.error("Choose a payment method");
+              if (paymentMethod === "cash") {
+                create.mutate({ transactionId: null });
+              } else {
+                setPayDialogOpen(true);
+              }
+            }}
             className="mt-8 grid gap-5 rounded-3xl border border-border bg-card p-6"
           >
             <div>
@@ -402,12 +413,29 @@ function BookCategory() {
                 ← Back
               </button>
               <button disabled={create.isPending || !paymentMethod} className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground disabled:opacity-60">
-                {create.isPending ? "Sending…" : `Confirm — $${estimate.price.toFixed(2)}`}
+                {create.isPending
+                  ? "Finalising…"
+                  : paymentMethod === "cash"
+                    ? `Confirm — $${estimate.price.toFixed(2)}`
+                    : `Pay $${estimate.price.toFixed(2)} & confirm`}
               </button>
             </div>
           </form>
         )}
       </section>
+
+      {payDialogOpen && paymentMethod && paymentMethod !== "cash" && (
+        <PaymentProcessingDialog
+          method={paymentMethod}
+          amount={estimate.price}
+          reference={paymentReference}
+          onCancel={() => setPayDialogOpen(false)}
+          onSuccess={(transactionId) => {
+            setPayDialogOpen(false);
+            create.mutate({ transactionId });
+          }}
+        />
+      )}
 
       {receipt && <BookingReceiptDialog receipt={receipt} onClose={resetForm} />}
     </SiteShell>
