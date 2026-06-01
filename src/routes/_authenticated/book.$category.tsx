@@ -45,6 +45,7 @@ function BookCategory() {
   const [availableOnly, setAvailableOnly] = useState(true);
   const [radiusKm, setRadiusKm] = useState(25);
   const [cityCoords, setCityCoords] = useState<Record<string, { lat: number; lng: number } | null>>({});
+  const [step, setStep] = useState<1 | 2>(1);
   const { ready: mapsReady } = useGoogleMaps();
 
   const { data: providers } = useQuery({
