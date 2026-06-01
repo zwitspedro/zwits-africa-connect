@@ -322,10 +322,10 @@ function ReconciliationScreen() {
           </Panel>
         </div>
 
-        <Panel title="Booking-level detail" className="mt-6" empty={rows.length === 0}>
+        <Panel title={`Booking-level detail${showDiscrepanciesOnly ? " — discrepancies" : ""}`} className="mt-6" empty={displayRows.length === 0}>
           <Table
             headers={["Completed", "Category", "Provider", "Payment", "Gross", "Commission", "Net", ""]}
-            rows={rows.slice(0, 100).map((b) => {
+            rows={displayRows.slice(0, 100).map((b) => {
               const price = Number(b.price ?? 0);
               const f = fee(b);
               const provider = b.provider_id ? providerById.get(b.provider_id)?.business_name ?? "—" : "—";
@@ -349,8 +349,8 @@ function ReconciliationScreen() {
             })}
           />
 
-          {rows.length > 100 && (
-            <p className="mt-2 text-[11px] text-muted-foreground">Showing first 100 of {rows.length}. Export CSV for the full list.</p>
+          {displayRows.length > 100 && (
+            <p className="mt-2 text-[11px] text-muted-foreground">Showing first 100 of {displayRows.length}. Export CSV for the full list.</p>
           )}
         </Panel>
       </section>
