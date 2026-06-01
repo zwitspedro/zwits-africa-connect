@@ -1,6 +1,7 @@
 /// <reference types="google.maps" />
 import { useEffect, useRef } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { MarkerClusterer, SuperClusterAlgorithm } from "@googlemaps/markerclusterer";
 import { useGoogleMaps } from "@/hooks/use-google-maps";
 
 type Job = {
