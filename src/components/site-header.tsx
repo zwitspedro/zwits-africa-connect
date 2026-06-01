@@ -53,6 +53,14 @@ export function SiteHeader() {
         <div className="hidden items-center gap-2 md:flex">
           {user ? (
             <>
+              <Link to="/notifications" aria-label="Notifications" className="relative rounded-full p-2 hover:bg-muted">
+                <Bell className="size-5" />
+                {unread > 0 && (
+                  <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-foreground">
+                    {unread > 9 ? "9+" : unread}
+                  </span>
+                )}
+              </Link>
               <Link to="/dashboard" className="rounded-full px-4 py-2 text-sm hover:text-foreground">Dashboard</Link>
               <button onClick={() => signOut()} className="rounded-full border border-border px-4 py-2 text-sm hover:bg-muted">Sign out</button>
             </>
