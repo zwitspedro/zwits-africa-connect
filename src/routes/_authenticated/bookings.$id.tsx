@@ -88,6 +88,13 @@ function BookingDetailPage() {
                 <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
                 <span>{booking.address}</span>
               </div>
+              {booking.lat != null && booking.lng != null && (
+                <BookingAddressMap
+                  position={{ lat: booking.lat, lng: booking.lng }}
+                  address={booking.address}
+                  className="h-56 w-full rounded-2xl border border-border bg-muted"
+                />
+              )}
               {booking.description && (
                 <div className="flex items-start gap-3">
                   <Clock className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
