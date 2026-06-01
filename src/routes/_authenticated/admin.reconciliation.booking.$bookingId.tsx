@@ -110,7 +110,13 @@ function BookingBreakdown() {
   const percent = rate?.active ? Number(rate.percent) : 0;
   const minFee = rate?.active ? Number(rate.min_fee) : 0;
   const pctFee = (price * percent) / 100;
-  const totalFee = rate?.active ? pctFee + minFee : 0;
+  const rawCommission = rate?.active ? pctFee + minFee : 0;
+  // Min-fee handling: commission can't exceed gross (provider never pays out negative)
+  const cappedCommission = Math.min(rawCommission, price);
+  const minFeeCapped = rawCommission > price;
+  // Adjustments: no schema field today — surface as zero for transparency
+  const adjustments = 0;
+  const totalFee = cappedCommission - adjustments;
   const net = price - totalFee;
   const effective = price > 0 ? (totalFee / price) * 100 : 0;
 
@@ -157,31 +163,63 @@ function BookingBreakdown() {
           <Kpi label="Net payout" value={`$${net.toFixed(2)}`} sub="To provider" />
         </div>
 
-        <Panel title="Fee calculation" className="mt-6">
+        <Panel title="Net payout calculation" className="mt-6">
           {rate?.active ? (
             <div className="space-y-2 text-sm">
-              <Calc label={`Gross price`} value={`$${price.toFixed(2)}`} />
+              <Calc label="Gross booking price" value={`$${price.toFixed(2)}`} />
+              <div className="rounded-lg border border-border/60 bg-muted/30 px-3 py-2">
+                <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                  Commission for category “{booking.category}”
+                </div>
+                <div className="mt-1 space-y-1.5">
+                  <Calc
+                    label={`Percent fee · ${percent.toFixed(2)}% × $${price.toFixed(2)}`}
+                    value={`$${pctFee.toFixed(2)}`}
+                  />
+                  <Calc
+                    label={`Flat minimum fee · per booking`}
+                    value={`+ $${minFee.toFixed(2)}`}
+                  />
+                  <Calc
+                    label="Raw commission (percent + min fee)"
+                    value={`$${rawCommission.toFixed(2)}`}
+                  />
+                  {minFeeCapped && (
+                    <Calc
+                      label="Min-fee cap · commission limited to gross"
+                      value={`− $${(rawCommission - price).toFixed(2)}`}
+                    />
+                  )}
+                  <Calc label="Commission applied" value={`$${cappedCommission.toFixed(2)}`} />
+                </div>
+              </div>
               <Calc
-                label={`Percent fee (${percent.toFixed(2)}% × $${price.toFixed(2)})`}
-                value={`$${pctFee.toFixed(2)}`}
+                label="Adjustments (refunds, manual credits)"
+                value={`− $${adjustments.toFixed(2)}`}
               />
-              <Calc label={`Flat minimum fee`} value={`+ $${minFee.toFixed(2)}`} />
               <div className="border-t border-border/60 pt-2">
-                <Calc label="Total commission" value={`$${totalFee.toFixed(2)}`} bold />
-                <Calc label="Net payout (gross − commission)" value={`$${net.toFixed(2)}`} bold />
+                <Calc label="Total commission charged" value={`$${totalFee.toFixed(2)}`} bold />
+                <Calc
+                  label="Net payout · gross − commission − adjustments"
+                  value={`$${net.toFixed(2)}`}
+                  bold
+                />
               </div>
               <p className="pt-1 text-[11px] text-muted-foreground">
                 Rate last updated {new Date(rate.updated_at).toLocaleString()}
                 {rate.notes ? ` · ${rate.notes}` : ""}
+                {minFeeCapped && " · Min-fee cap applied because raw commission exceeded gross."}
+                {adjustments === 0 && " · No adjustments recorded for this booking."}
               </p>
             </div>
           ) : (
             <p className="text-sm text-amber-500">
               No active commission rate configured for category “{booking.category}”. Net payout
-              equals gross.
+              equals gross (${price.toFixed(2)}).
             </p>
           )}
         </Panel>
+
 
         <Panel title="Booking details" className="mt-4">
           <dl className="grid grid-cols-2 gap-3 text-xs sm:grid-cols-3">
