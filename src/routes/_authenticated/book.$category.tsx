@@ -430,6 +430,8 @@ function BookCategory() {
           amount={estimate.price}
           reference={paymentReference}
           onCancel={() => setPayDialogOpen(false)}
+          onChangeMethod={(m) => setPaymentMethod(m)}
+          onChangeReference={(v) => setPaymentReference(v)}
           onFailure={(reason) => {
             toast.error(`Payment failed: ${reason}`, {
               description: "No money was deducted. You can retry or pick a different payment method.",
