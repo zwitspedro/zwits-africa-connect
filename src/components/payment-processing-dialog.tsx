@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Loader2, CheckCircle2, XCircle, ShieldCheck } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, ShieldCheck, AlertTriangle, RotateCcw } from "lucide-react";
 import { PAYMENT_METHODS, type PaymentMethod } from "./payment-method-picker";
 
 type Status = "prompting" | "processing" | "succeeded" | "failed";
@@ -9,31 +9,70 @@ export function PaymentProcessingDialog({
   amount,
   reference,
   onSuccess,
+  onFailure,
   onCancel,
 }: {
   method: PaymentMethod;
   amount: number;
   reference: string;
   onSuccess: (transactionId: string) => void;
+  onFailure?: (reason: string) => void;
   onCancel: () => void;
 }) {
   const meta = PAYMENT_METHODS.find((m) => m.id === method)!;
   const [status, setStatus] = useState<Status>("prompting");
   const [error, setError] = useState<string | null>(null);
+  const [errorDetail, setErrorDetail] = useState<string | null>(null);
 
   // Auto-advance from prompting -> processing -> succeeded (mock gateway)
   useEffect(() => {
     if (status !== "processing") return;
     const t = setTimeout(() => {
       // Light validation that mimics gateway-side checks
-      if (method === "card" && !/^[0-9]{4}$/.test(reference)) {
-        setError("Card declined by issuer");
-        setStatus("failed");
-        return;
+      if (method === "card") {
+        if (!reference.trim()) {
+          setError("Card number missing");
+          setErrorDetail("Enter the last 4 digits of your card to continue.");
+          setStatus("failed");
+          onFailure?.("Card number missing");
+          return;
+        }
+        if (!/^[0-9]{4}$/.test(reference)) {
+          setError("Card declined by issuer");
+          setErrorDetail("Check the card details and ensure you have sufficient funds. If the problem persists, try a different card or wallet.");
+          setStatus("failed");
+          onFailure?.("Card declined by issuer");
+          return;
+        }
       }
-      if (method !== "cash" && method !== "card" && !/^\+?[0-9 ]{9,16}$/.test(reference)) {
-        setError("Wallet number rejected");
+      if (method !== "cash" && method !== "card") {
+        if (!reference.trim()) {
+          setError("Wallet number missing");
+          setErrorDetail(`Enter your ${meta.name} wallet number to continue.`);
+          setStatus("failed");
+          onFailure?.("Wallet number missing");
+          return;
+        }
+        if (!/^\+?[0-9 ]{9,16}$/.test(reference)) {
+          setError("Wallet number rejected");
+          setErrorDetail("The number format is invalid or the wallet is not active. Check the number and try again.");
+          setStatus("failed");
+          onFailure?.("Wallet number rejected");
+          return;
+        }
+      }
+      // Simulate a random gateway failure ~15% of the time for realism
+      if (Math.random() < 0.15) {
+        const failures = [
+          { error: "Gateway timeout", detail: "The payment provider did not respond in time. Please retry." },
+          { error: "Insufficient balance", detail: "Your account does not have enough funds for this transaction. Top up and try again." },
+          { error: "Transaction limit exceeded", detail: "This payment exceeds your daily limit. Use a different method or contact your provider." },
+        ];
+        const f = failures[Math.floor(Math.random() * failures.length)];
+        setError(f.error);
+        setErrorDetail(f.detail);
         setStatus("failed");
+        onFailure?.(f.error);
         return;
       }
       const txn = `TXN-${Date.now().toString(36).toUpperCase()}`;
@@ -42,7 +81,7 @@ export function PaymentProcessingDialog({
       setTimeout(() => onSuccess(txn), 700);
     }, 1800);
     return () => clearTimeout(t);
-  }, [status, method, reference, onSuccess]);
+  }, [status, method, reference, onSuccess, onFailure, meta.name]);
 
   const promptCopy =
     method === "card"
@@ -53,10 +92,20 @@ export function PaymentProcessingDialog({
     <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4 backdrop-blur-sm">
       <div className="w-full max-w-md rounded-3xl border border-border bg-card p-6 shadow-2xl">
         <div className="flex items-center gap-3">
-          <meta.icon className="size-6 text-primary" />
+          {status === "failed" ? (
+            <div className="grid size-10 place-items-center rounded-full bg-destructive/10">
+              <AlertTriangle className="size-5 text-destructive" />
+            </div>
+          ) : (
+            <meta.icon className="size-6 text-primary" />
+          )}
           <div>
-            <h3 className="font-display text-lg font-semibold">Pay with {meta.name}</h3>
-            <p className="text-xs text-muted-foreground">Secure payment · ${amount.toFixed(2)}</p>
+            <h3 className="font-display text-lg font-semibold">
+              {status === "failed" ? "Payment failed" : `Pay with ${meta.name}`}
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              {status === "failed" ? "Your booking has not been confirmed" : `Secure payment · $${amount.toFixed(2)}`}
+            </p>
           </div>
         </div>
 
@@ -91,10 +140,16 @@ export function PaymentProcessingDialog({
           )}
           {status === "failed" && (
             <div className="flex items-start gap-3 text-destructive">
-              <XCircle className="size-5 mt-0.5" />
-              <div>
-                <div className="font-medium">Payment failed</div>
-                <div className="text-xs text-muted-foreground">{error ?? "The gateway rejected the transaction."}</div>
+              <XCircle className="size-5 mt-0.5 shrink-0" />
+              <div className="min-w-0">
+                <div className="font-medium">{error ?? "Payment could not be completed"}</div>
+                {errorDetail && (
+                  <div className="mt-1 text-xs text-muted-foreground">{errorDetail}</div>
+                )}
+                <div className="mt-3 flex items-center gap-2 rounded-lg bg-destructive/5 p-2.5 text-xs text-destructive">
+                  <AlertTriangle className="size-3.5 shrink-0" />
+                  <span>No money has been deducted. You can retry or choose a different payment method.</span>
+                </div>
               </div>
             </div>
           )}
@@ -122,13 +177,13 @@ export function PaymentProcessingDialog({
           {status === "failed" && (
             <>
               <button onClick={onCancel} className="rounded-full border border-border px-4 py-2 text-sm hover:bg-muted">
-                Close
+                Change method
               </button>
               <button
-                onClick={() => { setError(null); setStatus("prompting"); }}
-                className="rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground"
+                onClick={() => { setError(null); setErrorDetail(null); setStatus("prompting"); }}
+                className="flex items-center gap-1.5 rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground"
               >
-                Try again
+                <RotateCcw className="size-3.5" /> Try again
               </button>
             </>
           )}
@@ -137,3 +192,4 @@ export function PaymentProcessingDialog({
     </div>
   );
 }
+
