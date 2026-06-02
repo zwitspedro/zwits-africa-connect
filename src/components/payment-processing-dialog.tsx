@@ -1,8 +1,38 @@
-import { useEffect, useState } from "react";
-import { Loader2, CheckCircle2, XCircle, ShieldCheck, AlertTriangle, RotateCcw } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Loader2, CheckCircle2, XCircle, ShieldCheck, AlertTriangle, RotateCcw, Phone, Wallet } from "lucide-react";
 import { PAYMENT_METHODS, type PaymentMethod } from "./payment-method-picker";
 
 type Status = "prompting" | "processing" | "succeeded" | "failed";
+
+// Provider-specific MNO prefixes (Zimbabwe). InnBucks supports all networks.
+const MNO_PREFIXES: Record<Exclude<PaymentMethod, "card" | "cash">, { label: string; prefixes: string[] }> = {
+  ecocash: { label: "Econet (EcoCash)", prefixes: ["77", "78"] },
+  onemoney: { label: "NetOne (OneMoney)", prefixes: ["71"] },
+  innbucks: { label: "any Zimbabwean mobile", prefixes: ["71", "73", "77", "78"] },
+};
+
+function normalizePhone(raw: string) {
+  // Strip spaces and a leading +, then drop a leading 263 / 0.
+  const digits = raw.replace(/[^0-9]/g, "");
+  if (digits.startsWith("263")) return digits.slice(3);
+  if (digits.startsWith("0")) return digits.slice(1);
+  return digits;
+}
+
+// Deterministic mock "wallet balance" derived from the phone number so the same
+// number consistently passes or fails the preflight (lets the user fix it).
+function mockBalanceFor(raw: string): number {
+  const digits = normalizePhone(raw);
+  if (digits.length < 6) return 0;
+  const seed = Number(digits.slice(-6)) || 0;
+  return Math.round((seed % 50000) / 100); // 0 – 500 USD
+}
+
+type Preflight =
+  | { state: "idle" }
+  | { state: "checking" }
+  | { state: "ok"; balance: number; phone: string }
+  | { state: "blocked"; code: "format" | "prefix" | "balance"; message: string; detail: string; balance?: number };
 
 export function PaymentProcessingDialog({
   method,
@@ -27,6 +57,71 @@ export function PaymentProcessingDialog({
   const [status, setStatus] = useState<Status>("prompting");
   const [error, setError] = useState<string | null>(null);
   const [errorDetail, setErrorDetail] = useState<string | null>(null);
+  const [preflight, setPreflight] = useState<Preflight>({ state: "idle" });
+
+  const isWallet = method === "ecocash" || method === "onemoney" || method === "innbucks";
+
+  // Run pre-flight checks for wallet methods whenever the reference changes.
+  // Format + prefix are synchronous; balance is simulated with a short delay.
+  useEffect(() => {
+    if (!isWallet) {
+      setPreflight({ state: "idle" });
+      return;
+    }
+    const raw = reference.trim();
+    if (!raw) {
+      setPreflight({
+        state: "blocked",
+        code: "format",
+        message: "Enter your wallet number",
+        detail: `We need your ${meta.name} number to send the payment request.`,
+      });
+      return;
+    }
+    if (!/^\+?[0-9 ]{9,16}$/.test(raw)) {
+      setPreflight({
+        state: "blocked",
+        code: "format",
+        message: "Number format looks off",
+        detail: "Use the international format like +263 77 123 4567, or a local 07x number.",
+      });
+      return;
+    }
+    const phone = normalizePhone(raw);
+    const allowed = MNO_PREFIXES[method as keyof typeof MNO_PREFIXES];
+    const prefix2 = phone.slice(0, 2);
+    if (!allowed.prefixes.includes(prefix2)) {
+      setPreflight({
+        state: "blocked",
+        code: "prefix",
+        message: `This isn't an ${allowed.label} number`,
+        detail: `${meta.name} only works with numbers starting with ${allowed.prefixes.map((p) => `0${p}`).join(", ")}.`,
+      });
+      return;
+    }
+    // Mock async balance lookup
+    setPreflight({ state: "checking" });
+    const t = setTimeout(() => {
+      const balance = mockBalanceFor(phone);
+      if (balance < amount) {
+        setPreflight({
+          state: "blocked",
+          code: "balance",
+          message: "Insufficient wallet balance",
+          detail: `Your ${meta.name} wallet has about $${balance.toFixed(2)}. You need $${amount.toFixed(2)} to complete this booking.`,
+          balance,
+        });
+      } else {
+        setPreflight({ state: "ok", balance, phone });
+      }
+    }, 500);
+    return () => clearTimeout(t);
+  }, [isWallet, method, reference, amount, meta.name]);
+
+  const canStart = useMemo(() => {
+    if (!isWallet) return true; // card / other handled by existing flow
+    return preflight.state === "ok";
+  }, [isWallet, preflight]);
 
   // Auto-advance from prompting -> processing -> succeeded (mock gateway)
   useEffect(() => {
@@ -117,6 +212,60 @@ export function PaymentProcessingDialog({
           {status === "prompting" && (
             <>
               <p>{promptCopy}</p>
+
+              {isWallet && (
+                <div className="mt-4 space-y-2">
+                  <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                    Pre-flight checks
+                  </div>
+                  <PreflightRow
+                    icon={Phone}
+                    label="Wallet number"
+                    ok={preflight.state === "ok" || (preflight.state === "blocked" && preflight.code === "balance")}
+                    checking={false}
+                    blocked={preflight.state === "blocked" && (preflight.code === "format" || preflight.code === "prefix")}
+                    detail={
+                      preflight.state === "blocked" && (preflight.code === "format" || preflight.code === "prefix")
+                        ? preflight.detail
+                        : preflight.state === "ok"
+                        ? `Confirmed on ${meta.name}`
+                        : "Checking format & network…"
+                    }
+                  />
+                  <PreflightRow
+                    icon={Wallet}
+                    label="Wallet balance"
+                    ok={preflight.state === "ok"}
+                    checking={preflight.state === "checking"}
+                    blocked={preflight.state === "blocked" && preflight.code === "balance"}
+                    detail={
+                      preflight.state === "ok"
+                        ? `Approx. $${preflight.balance.toFixed(2)} available · $${amount.toFixed(2)} needed`
+                        : preflight.state === "blocked" && preflight.code === "balance"
+                        ? preflight.detail
+                        : preflight.state === "checking"
+                        ? "Querying wallet…"
+                        : "Waiting on number"
+                    }
+                  />
+
+                  {preflight.state === "blocked" && onChangeReference && (
+                    <label className="mt-2 grid gap-1.5">
+                      <span className="text-[11px] text-muted-foreground">Update {meta.name} number</span>
+                      <input
+                        type="tel"
+                        inputMode="tel"
+                        maxLength={20}
+                        value={reference}
+                        onChange={(e) => onChangeReference(e.target.value)}
+                        placeholder="+263 77 123 4567"
+                        className="rounded-lg border border-input bg-background px-3 py-2 text-sm"
+                      />
+                    </label>
+                  )}
+                </div>
+              )}
+
               <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
                 <ShieldCheck className="size-3.5" /> Booking is only confirmed after payment succeeds.
               </p>
@@ -224,9 +373,14 @@ export function PaymentProcessingDialog({
               </button>
               <button
                 onClick={() => setStatus("processing")}
-                className="rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground"
+                disabled={!canStart}
+                className="rounded-full bg-primary px-5 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {method === "card" ? "Authorise" : "Send request"}
+                {method === "card"
+                  ? "Authorise"
+                  : preflight.state === "checking"
+                  ? "Checking…"
+                  : "Send request"}
               </button>
             </>
           )}
@@ -254,3 +408,45 @@ export function PaymentProcessingDialog({
   );
 }
 
+function PreflightRow({
+  icon: Icon,
+  label,
+  ok,
+  checking,
+  blocked,
+  detail,
+}: {
+  icon: typeof Phone;
+  label: string;
+  ok: boolean;
+  checking: boolean;
+  blocked: boolean;
+  detail: string;
+}) {
+  const tone = blocked
+    ? "border-destructive/30 bg-destructive/5"
+    : ok
+    ? "border-emerald-500/30 bg-emerald-500/5"
+    : "border-border bg-background/60";
+  const statusIcon = checking ? (
+    <Loader2 className="size-4 animate-spin text-muted-foreground" />
+  ) : blocked ? (
+    <XCircle className="size-4 text-destructive" />
+  ) : ok ? (
+    <CheckCircle2 className="size-4 text-emerald-600" />
+  ) : (
+    <Loader2 className="size-4 text-muted-foreground/60" />
+  );
+  return (
+    <div className={`flex items-start gap-3 rounded-xl border p-2.5 ${tone}`}>
+      <Icon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-xs font-medium">{label}</span>
+          {statusIcon}
+        </div>
+        <div className="mt-0.5 text-[11px] text-muted-foreground">{detail}</div>
+      </div>
+    </div>
+  );
+}
