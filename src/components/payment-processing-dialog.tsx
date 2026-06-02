@@ -143,18 +143,75 @@ export function PaymentProcessingDialog({
             </div>
           )}
           {status === "failed" && (
-            <div className="flex items-start gap-3 text-destructive">
-              <XCircle className="size-5 mt-0.5 shrink-0" />
-              <div className="min-w-0">
-                <div className="font-medium">{error ?? "Payment could not be completed"}</div>
-                {errorDetail && (
-                  <div className="mt-1 text-xs text-muted-foreground">{errorDetail}</div>
-                )}
-                <div className="mt-3 flex items-center gap-2 rounded-lg bg-destructive/5 p-2.5 text-xs text-destructive">
-                  <AlertTriangle className="size-3.5 shrink-0" />
-                  <span>No money has been deducted. You can retry or choose a different payment method.</span>
+            <div className="space-y-4">
+              <div className="flex items-start gap-3 text-destructive">
+                <XCircle className="size-5 mt-0.5 shrink-0" />
+                <div className="min-w-0">
+                  <div className="font-medium">{error ?? "Payment could not be completed"}</div>
+                  {errorDetail && (
+                    <div className="mt-1 text-xs text-muted-foreground">{errorDetail}</div>
+                  )}
+                  <div className="mt-3 flex items-center gap-2 rounded-lg bg-destructive/5 p-2.5 text-xs text-destructive">
+                    <AlertTriangle className="size-3.5 shrink-0" />
+                    <span>No money has been deducted. Switch method or retry below.</span>
+                  </div>
                 </div>
               </div>
+
+              {onChangeMethod && (
+                <div className="border-t border-border pt-4">
+                  <div className="mb-2 text-xs font-medium text-foreground">Switch payment method</div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {PAYMENT_METHODS.filter((m) => m.id !== "cash").map((m) => {
+                      const Icon = m.icon;
+                      const active = m.id === method;
+                      return (
+                        <button
+                          key={m.id}
+                          type="button"
+                          onClick={() => {
+                            if (active) return;
+                            onChangeMethod(m.id);
+                            onChangeReference?.("");
+                            setError(null);
+                            setErrorDetail(null);
+                            setStatus("prompting");
+                          }}
+                          className={`flex items-center gap-2 rounded-xl border p-2.5 text-left transition ${
+                            active ? "border-primary bg-primary/10" : "border-border bg-card hover:border-primary/40"
+                          }`}
+                        >
+                          <Icon className={`size-4 ${active ? "text-primary" : "text-muted-foreground"}`} />
+                          <div className="min-w-0">
+                            <div className="truncate text-xs font-medium">{m.name}</div>
+                            <div className="truncate text-[10px] text-muted-foreground">{m.hint}</div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {(() => {
+                    const sel = PAYMENT_METHODS.find((m) => m.id === method);
+                    if (!sel?.needsRef || !onChangeReference) return null;
+                    return (
+                      <label className="mt-3 grid gap-1.5">
+                        <span className="text-[11px] text-muted-foreground">{sel.refLabel}</span>
+                        <input
+                          type={sel.refType}
+                          inputMode={sel.refType === "tel" ? "tel" : "text"}
+                          pattern={sel.refPattern}
+                          maxLength={32}
+                          value={reference}
+                          onChange={(e) => onChangeReference(e.target.value)}
+                          placeholder={sel.refPlaceholder}
+                          className="rounded-lg border border-input bg-background px-3 py-2 text-sm"
+                        />
+                      </label>
+                    );
+                  })()}
+                </div>
+              )}
             </div>
           )}
         </div>
