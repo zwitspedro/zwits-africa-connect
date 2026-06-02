@@ -11,6 +11,8 @@ export function PaymentProcessingDialog({
   onSuccess,
   onFailure,
   onCancel,
+  onChangeMethod,
+  onChangeReference,
 }: {
   method: PaymentMethod;
   amount: number;
@@ -18,6 +20,8 @@ export function PaymentProcessingDialog({
   onSuccess: (transactionId: string) => void;
   onFailure?: (reason: string) => void;
   onCancel: () => void;
+  onChangeMethod?: (m: PaymentMethod) => void;
+  onChangeReference?: (v: string) => void;
 }) {
   const meta = PAYMENT_METHODS.find((m) => m.id === method)!;
   const [status, setStatus] = useState<Status>("prompting");
