@@ -215,9 +215,26 @@ export function PaymentProcessingDialog({
 
               {isWallet && (
                 <div className="mt-4 space-y-2">
-                  <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                    Pre-flight checks
+                  <div className="flex items-center justify-between">
+                    <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                      Pre-flight checks
+                    </div>
+                    {preflight.state === "blocked" && (
+                      <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-destructive">
+                        {preflight.code === "format"
+                          ? "Format error"
+                          : preflight.code === "prefix"
+                          ? "Wrong network"
+                          : "Insufficient funds"}
+                      </span>
+                    )}
+                    {preflight.state === "ok" && (
+                      <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-600">
+                        Ready
+                      </span>
+                    )}
                   </div>
+
                   <PreflightRow
                     icon={Phone}
                     label="Wallet number"
@@ -228,7 +245,7 @@ export function PaymentProcessingDialog({
                       preflight.state === "blocked" && (preflight.code === "format" || preflight.code === "prefix")
                         ? preflight.detail
                         : preflight.state === "ok"
-                        ? `Confirmed on ${meta.name}`
+                        ? `Confirmed on ${meta.name} · ${preflight.phone}`
                         : "Checking format & network…"
                     }
                   />
@@ -249,19 +266,37 @@ export function PaymentProcessingDialog({
                     }
                   />
 
-                  {preflight.state === "blocked" && onChangeReference && (
-                    <label className="mt-2 grid gap-1.5">
-                      <span className="text-[11px] text-muted-foreground">Update {meta.name} number</span>
-                      <input
-                        type="tel"
-                        inputMode="tel"
-                        maxLength={20}
-                        value={reference}
-                        onChange={(e) => onChangeReference(e.target.value)}
-                        placeholder="+263 77 123 4567"
-                        className="rounded-lg border border-input bg-background px-3 py-2 text-sm"
-                      />
-                    </label>
+                  {preflight.state === "blocked" && (
+                    <div className="mt-2 rounded-xl border border-destructive/30 bg-destructive/5 p-3 text-xs">
+                      <div className="flex items-start gap-2 text-destructive">
+                        <AlertTriangle className="mt-0.5 size-3.5 shrink-0" />
+                        <div className="min-w-0">
+                          <div className="font-semibold">{preflight.message}</div>
+                          <div className="mt-0.5 text-muted-foreground">{preflight.detail}</div>
+                          <div className="mt-1.5 text-[11px] font-medium text-destructive">
+                            {preflight.code === "format"
+                              ? "Fix: re-enter the number as +263 7X XXX XXXX or 07X XXX XXXX."
+                              : preflight.code === "prefix"
+                              ? `Fix: use a ${MNO_PREFIXES[method as keyof typeof MNO_PREFIXES].label} number, or switch payment method.`
+                              : `Fix: top up your ${meta.name} wallet, or switch to another method.`}
+                          </div>
+                        </div>
+                      </div>
+                      {onChangeReference && (
+                        <label className="mt-3 grid gap-1.5">
+                          <span className="text-[11px] text-muted-foreground">Update {meta.name} number</span>
+                          <input
+                            type="tel"
+                            inputMode="tel"
+                            maxLength={20}
+                            value={reference}
+                            onChange={(e) => onChangeReference(e.target.value)}
+                            placeholder="+263 77 123 4567"
+                            className="rounded-lg border border-input bg-background px-3 py-2 text-sm"
+                          />
+                        </label>
+                      )}
+                    </div>
                   )}
                 </div>
               )}
