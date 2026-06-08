@@ -153,6 +153,22 @@ function ProviderSetup() {
       business_doc_url: (existing as any).business_doc_url ?? null,
     });
     setHydrated(true);
+  } else if (!existing && !hydrated && user && typeof window !== "undefined") {
+    // Hydrate from the public "Become a provider" prefill, if any.
+    const raw = sessionStorage.getItem("zwits:provider-prefill");
+    if (raw) {
+      try {
+        const p = JSON.parse(raw) as { business_name?: string; city?: string; category?: string; bio?: string };
+        if (p.business_name) setBusinessName(p.business_name);
+        if (p.city) setCity(p.city);
+        if (p.category) setCategory(p.category);
+        if (p.bio) setBio(p.bio);
+      } catch {
+        // ignore malformed prefill
+      }
+      sessionStorage.removeItem("zwits:provider-prefill");
+      setHydrated(true);
+    }
   }
 
   const step1Valid = businessName.trim() && city.trim() && Number(hourlyRate) > 0;
