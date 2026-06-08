@@ -1,6 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Calendar, MapPin, CreditCard, Clock } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import {
+  ArrowLeft, Calendar, MapPin, CreditCard, Clock, MessageSquare, Star,
+  RotateCcw, XCircle, CheckCircle2, CircleDashed, Loader2,
+} from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { LiveTrackingMap } from "@/components/live-tracking-map";
 import { BookingAddressMap } from "@/components/booking-address-map";
@@ -12,9 +17,20 @@ export const Route = createFileRoute("/_authenticated/bookings/$id")({
   component: BookingDetailPage,
 });
 
+type BookingStatus = "pending" | "accepted" | "in_progress" | "completed" | "cancelled";
+
+const STEPS: { key: BookingStatus; label: string; hint: string }[] = [
+  { key: "pending", label: "Requested", hint: "Waiting for a provider" },
+  { key: "accepted", label: "Accepted", hint: "Provider confirmed" },
+  { key: "in_progress", label: "En route", hint: "Provider on the way" },
+  { key: "completed", label: "Completed", hint: "Job finished" },
+];
+
 function BookingDetailPage() {
   const { id } = Route.useParams();
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const qc = useQueryClient();
 
   const { data: booking, isLoading } = useQuery({
     queryKey: ["booking", id],
@@ -22,13 +38,42 @@ function BookingDetailPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("bookings")
-        .select("*, providers(business_name, rating_avg, bio, city)")
+        .select("*, providers(id, business_name, rating_avg, bio, city), ratings(rating)")
         .eq("id", id)
         .eq("customer_id", user!.id)
         .single();
       if (error) throw error;
       return data;
     },
+  });
+
+  // Live updates: refetch when this booking row changes
+  useEffect(() => {
+    if (!user || !id) return;
+    const channel = supabase
+      .channel(`booking:${id}`)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "bookings", filter: `id=eq.${id}` },
+        () => qc.invalidateQueries({ queryKey: ["booking", id] }),
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [id, user, qc]);
+
+  const cancel = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("bookings").update({ status: "cancelled" }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Booking cancelled");
+      qc.invalidateQueries({ queryKey: ["booking", id] });
+      qc.invalidateQueries({ queryKey: ["bookings"] });
+    },
+    onError: (e: any) => toast.error(e.message ?? "Could not cancel"),
   });
 
   return (
@@ -66,6 +111,8 @@ function BookingDetailPage() {
               <StatusBadge status={booking.status} />
             </div>
 
+            <Timeline status={booking.status as BookingStatus} updatedAt={booking.updated_at} createdAt={booking.created_at} />
+
             {(booking.status === "accepted" || booking.status === "in_progress") && (
               <div className="mt-5">
                 <div className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">
@@ -82,13 +129,12 @@ function BookingDetailPage() {
               </div>
             )}
 
-
             <div className="mt-5 space-y-3 text-sm">
               <div className="flex items-start gap-3">
                 <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
                 <span>{booking.address}</span>
               </div>
-              {booking.lat != null && booking.lng != null && (
+              {booking.lat != null && booking.lng != null && booking.status !== "in_progress" && booking.status !== "accepted" && (
                 <BookingAddressMap
                   position={{ lat: booking.lat, lng: booking.lng }}
                   address={booking.address}
@@ -121,6 +167,24 @@ function BookingDetailPage() {
               </div>
             </div>
 
+            <ActionBar
+              booking={booking}
+              cancelling={cancel.isPending}
+              onCancel={() => {
+                if (confirm("Cancel this booking? This cannot be undone.")) cancel.mutate();
+              }}
+              onRebook={() =>
+                navigate({
+                  to: "/book/$category",
+                  params: { category: booking.category },
+                })
+              }
+            />
+
+            {booking.status === "completed" && booking.provider_id && !booking.ratings?.length && (
+              <RatePanel bookingId={booking.id} providerId={booking.provider_id} />
+            )}
+
             <div className="mt-5 border-t border-border pt-4 text-xs text-muted-foreground">
               <p>Reference: {booking.id.slice(0, 8).toUpperCase()}</p>
               <p>Created: {new Date(booking.created_at).toLocaleString()}</p>
@@ -129,6 +193,168 @@ function BookingDetailPage() {
         )}
       </section>
     </SiteShell>
+  );
+}
+
+function Timeline({
+  status,
+  updatedAt,
+  createdAt,
+}: {
+  status: BookingStatus;
+  updatedAt: string;
+  createdAt: string;
+}) {
+  if (status === "cancelled") {
+    return (
+      <div className="mt-5 flex items-center gap-2 rounded-xl border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
+        <XCircle className="size-4" />
+        Cancelled on {new Date(updatedAt).toLocaleString()}
+      </div>
+    );
+  }
+  const order: BookingStatus[] = ["pending", "accepted", "in_progress", "completed"];
+  const currentIdx = order.indexOf(status);
+  return (
+    <ol className="mt-5 grid gap-2">
+      {STEPS.map((step, i) => {
+        const done = i < currentIdx;
+        const active = i === currentIdx;
+        const Icon = done ? CheckCircle2 : active ? Loader2 : CircleDashed;
+        return (
+          <li key={step.key} className="flex items-start gap-3">
+            <Icon
+              className={`mt-0.5 size-5 shrink-0 ${
+                done
+                  ? "text-emerald-400"
+                  : active
+                    ? "animate-spin text-primary"
+                    : "text-muted-foreground/50"
+              }`}
+            />
+            <div className="flex-1">
+              <div className={`text-sm font-medium ${active || done ? "text-foreground" : "text-muted-foreground"}`}>
+                {step.label}
+              </div>
+              <div className="text-xs text-muted-foreground">
+                {active
+                  ? step.hint
+                  : done && i === 0
+                    ? new Date(createdAt).toLocaleString()
+                    : done && i === currentIdx - 1
+                      ? new Date(updatedAt).toLocaleString()
+                      : step.hint}
+              </div>
+            </div>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+function ActionBar({
+  booking,
+  cancelling,
+  onCancel,
+  onRebook,
+}: {
+  booking: any;
+  cancelling: boolean;
+  onCancel: () => void;
+  onRebook: () => void;
+}) {
+  const canMessage = !!booking.provider_id && booking.status !== "cancelled";
+  const canCancel = booking.status === "pending" || booking.status === "accepted";
+  const canRebook = booking.status === "completed" || booking.status === "cancelled";
+
+  return (
+    <div className="mt-5 flex flex-wrap gap-2 border-t border-border pt-4">
+      {canMessage && (
+        <Link
+          to="/messages/$bookingId"
+          params={{ bookingId: booking.id }}
+          className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-xs font-medium text-primary-foreground hover:opacity-90"
+        >
+          <MessageSquare className="size-3.5" /> Message provider
+        </Link>
+      )}
+      {canRebook && (
+        <button
+          onClick={onRebook}
+          className="inline-flex items-center gap-1.5 rounded-full bg-gold px-4 py-2 text-xs font-medium text-background hover:opacity-90"
+        >
+          <RotateCcw className="size-3.5" /> Book again
+        </button>
+      )}
+      {canCancel && (
+        <button
+          onClick={onCancel}
+          disabled={cancelling}
+          className="inline-flex items-center gap-1.5 rounded-full border border-destructive/40 bg-destructive/10 px-4 py-2 text-xs font-medium text-destructive hover:bg-destructive/20 disabled:opacity-50"
+        >
+          <XCircle className="size-3.5" /> {cancelling ? "Cancelling…" : "Cancel booking"}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function RatePanel({ bookingId, providerId }: { bookingId: string; providerId: string }) {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  const [rating, setRating] = useState(5);
+  const [review, setReview] = useState("");
+
+  const submit = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("ratings").insert({
+        booking_id: bookingId,
+        provider_id: providerId,
+        customer_id: user!.id,
+        rating,
+        review,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Thanks for the feedback");
+      qc.invalidateQueries({ queryKey: ["booking", bookingId] });
+      qc.invalidateQueries({ queryKey: ["bookings"] });
+    },
+    onError: (e: any) => toast.error(e.message ?? "Could not submit rating"),
+  });
+
+  return (
+    <div className="mt-5 rounded-2xl border border-gold/40 bg-gold/5 p-4">
+      <div className="flex items-center gap-2 text-sm font-semibold">
+        <Star className="size-4 fill-gold text-gold" />
+        Rate your provider
+      </div>
+      <p className="mt-1 text-xs text-muted-foreground">Help other customers find great pros.</p>
+      <div className="mt-3 flex gap-1">
+        {[1, 2, 3, 4, 5].map((n) => (
+          <button key={n} type="button" onClick={() => setRating(n)} aria-label={`${n} star${n > 1 ? "s" : ""}`}>
+            <Star className={`size-7 ${n <= rating ? "fill-gold text-gold" : "text-muted-foreground/40"}`} />
+          </button>
+        ))}
+      </div>
+      <textarea
+        value={review}
+        onChange={(e) => setReview(e.target.value)}
+        rows={3}
+        placeholder="Leave a review (optional)"
+        className="mt-3 w-full rounded-lg border border-input bg-background p-2 text-sm outline-none focus:border-primary"
+        maxLength={500}
+      />
+      <button
+        onClick={() => submit.mutate()}
+        disabled={submit.isPending}
+        className="mt-3 rounded-full bg-primary px-5 py-2 text-xs font-medium text-primary-foreground disabled:opacity-50"
+      >
+        {submit.isPending ? "Submitting…" : "Submit rating"}
+      </button>
+    </div>
   );
 }
 
