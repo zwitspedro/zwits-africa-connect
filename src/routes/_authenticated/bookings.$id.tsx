@@ -181,7 +181,7 @@ function BookingDetailPage() {
               }
             />
 
-            {booking.status === "completed" && booking.provider_id && !booking.ratings?.length && (
+            {booking.status === "completed" && booking.provider_id && !(Array.isArray(booking.ratings) ? booking.ratings.length : booking.ratings) && (
               <RatePanel bookingId={booking.id} providerId={booking.provider_id} />
             )}
 
