@@ -169,7 +169,7 @@ function BookCategory() {
         category: category!,
         serviceName: service!.name,
         address,
-        scheduledFor: scheduled || null,
+        scheduledFor: scheduled && scheduled !== "ASAP" ? scheduled : null,
         paymentMethod: paymentMethod!,
         paymentReference: paymentMethod === "cash" ? null : paymentReference.trim() || null,
         createdAt: data.created_at,
