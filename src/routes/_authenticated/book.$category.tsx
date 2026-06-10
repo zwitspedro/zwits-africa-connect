@@ -375,7 +375,9 @@ function BookCategory() {
               {scheduled && (
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">When</span>
-                  <span className="font-medium">{new Date(scheduled).toLocaleString()}</span>
+                  <span className="font-medium">
+                    {scheduled === "ASAP" ? "ASAP" : new Date(scheduled).toLocaleString()}
+                  </span>
                 </div>
               )}
               {estimate.distance != null && (
