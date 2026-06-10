@@ -61,6 +61,7 @@ export const services: Service[] = [
     description: "Send anything, anywhere in town. Track your rider in real time.",
     icon: Bike,
     examples: ["Parcels", "Groceries", "Food", "Documents"],
+    scheduling: rules({ hoursStart: 7, hoursEnd: 21, slotMinutes: 30, leadHours: 1, workingDays: [0, 1, 2, 3, 4, 5, 6] }),
   },
   {
     slug: "transport",
@@ -69,6 +70,7 @@ export const services: Service[] = [
     description: "Verified drivers, transparent pricing, cashless payments.",
     icon: Car,
     examples: ["City rides", "Airport", "Inter-town"],
+    scheduling: rules({ hoursStart: 5, hoursEnd: 23, slotMinutes: 15, leadHours: 0, workingDays: [0, 1, 2, 3, 4, 5, 6] }),
   },
   {
     slug: "repairs",
@@ -77,6 +79,7 @@ export const services: Service[] = [
     description: "Plumbers, electricians, appliance and phone repair specialists.",
     icon: Wrench,
     examples: ["Plumbing", "Electrical", "Phones", "Appliances"],
+    scheduling: rules({ hoursStart: 8, hoursEnd: 17, slotMinutes: 60, leadHours: 3 }),
   },
   {
     slug: "cleaning",
@@ -85,6 +88,7 @@ export const services: Service[] = [
     description: "Home, office and post-event cleaning by vetted pros.",
     icon: Sparkles,
     examples: ["Home", "Office", "Deep clean"],
+    scheduling: rules({ hoursStart: 8, hoursEnd: 16, slotMinutes: 120, leadHours: 4, allowAsap: false }),
   },
   {
     slug: "farming",
@@ -93,6 +97,7 @@ export const services: Service[] = [
     description: "Tractor hire, harvesting, irrigation and farm labour.",
     icon: Sprout,
     examples: ["Tractor hire", "Labour", "Irrigation"],
+    scheduling: rules({ hoursStart: 6, hoursEnd: 16, slotMinutes: 240, leadHours: 24, maxDaysAhead: 30, allowAsap: false }),
   },
   {
     slug: "beauty",
@@ -101,6 +106,7 @@ export const services: Service[] = [
     description: "Hair, nails, makeup and skincare professionals on call.",
     icon: Scissors,
     examples: ["Hair", "Nails", "Makeup"],
+    scheduling: rules({ hoursStart: 9, hoursEnd: 19, slotMinutes: 60, leadHours: 2 }),
   },
   {
     slug: "freelance",
@@ -109,6 +115,7 @@ export const services: Service[] = [
     description: "Designers, developers, tutors and writers ready to work.",
     icon: Laptop,
     examples: ["Design", "Dev", "Tutoring", "Writing"],
+    scheduling: rules({ hoursStart: 9, hoursEnd: 18, slotMinutes: 60, leadHours: 12, maxDaysAhead: 30, workingDays: [1, 2, 3, 4, 5], allowAsap: false }),
   },
   {
     slug: "emergency",
@@ -117,6 +124,7 @@ export const services: Service[] = [
     description: "Roadside, locksmith, medical transport and urgent response.",
     icon: Siren,
     examples: ["Roadside", "Locksmith", "Medical"],
+    scheduling: rules({ hoursStart: 0, hoursEnd: 24, slotMinutes: 15, leadHours: 0, maxDaysAhead: 1, workingDays: [0, 1, 2, 3, 4, 5, 6] }),
   },
   {
     slug: "customer-service",
@@ -125,5 +133,7 @@ export const services: Service[] = [
     description: "Book a trained customer service agent for calls, chats, complaints handling and account support.",
     icon: Headphones,
     examples: ["Phone support", "Live chat", "Complaints", "Onboarding calls"],
+    scheduling: rules({ hoursStart: 8, hoursEnd: 20, slotMinutes: 30, leadHours: 1, workingDays: [1, 2, 3, 4, 5, 6] }),
   },
 ];
+
