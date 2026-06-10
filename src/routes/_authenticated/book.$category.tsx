@@ -304,6 +304,7 @@ function BookCategory() {
           onSubmit={(e) => {
             e.preventDefault();
             if (!address) return toast.error("Add an address");
+            if (!scheduled) return toast.error("Pick a time or choose ASAP");
             setStep(2);
           }}
           className="mt-8 grid gap-4 rounded-3xl border border-border bg-card p-6"
