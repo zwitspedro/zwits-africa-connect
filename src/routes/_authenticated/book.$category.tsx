@@ -131,7 +131,7 @@ function BookCategory() {
         category,
         address,
         description,
-        scheduled_for: scheduled || null,
+        scheduled_for: scheduled && scheduled !== "ASAP" ? scheduled : null,
         price: estimate.price || null,
         payment_method: paymentMethod,
         payment_reference: isCash ? null : (txn.transactionId ?? (paymentReference.trim() || null)),
