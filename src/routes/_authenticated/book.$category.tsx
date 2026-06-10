@@ -149,7 +149,7 @@ function BookCategory() {
       const body = [
         `Service: ${service!.name}`,
         `Address: ${address}`,
-        scheduled ? `Scheduled: ${new Date(scheduled).toLocaleString()}` : null,
+        scheduled && scheduled !== "ASAP" ? `Scheduled: ${new Date(scheduled).toLocaleString()}` : "Scheduled: ASAP",
         `Payment: ${methodLabel}${paymentMethod !== "cash" && paymentReference ? ` (${paymentReference.trim()})` : ""}`,
         `Reference: ${ref}`,
         "",
