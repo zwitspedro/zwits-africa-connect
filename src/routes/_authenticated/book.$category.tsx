@@ -320,11 +320,14 @@ function BookCategory() {
             />
           </label>
           {coords && <LocationMap lat={coords.lat} lng={coords.lng} />}
-          <label className="grid gap-1.5">
-            <span className="text-xs text-muted-foreground">When (optional)</span>
-            <input type="datetime-local" value={scheduled} onChange={(e) => setScheduled(e.target.value)}
-              className="rounded-lg border border-input bg-background px-3 py-2.5 text-sm" />
-          </label>
+          <div className="grid gap-1.5">
+            <span className="text-xs text-muted-foreground">When</span>
+            <BookingCalendar
+              rules={service.scheduling}
+              value={scheduled}
+              onChange={setScheduled}
+            />
+          </div>
           <label className="grid gap-1.5">
             <span className="text-xs text-muted-foreground">Details</span>
             <textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)}
