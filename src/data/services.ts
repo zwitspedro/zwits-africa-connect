@@ -11,6 +11,23 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+export type SchedulingRules = {
+  /** Earliest slot start, 24h (e.g. 8 = 08:00) */
+  hoursStart: number;
+  /** Latest slot start, 24h (e.g. 18 = 18:00) */
+  hoursEnd: number;
+  /** Slot length in minutes */
+  slotMinutes: number;
+  /** Minimum hours of lead time before earliest bookable slot */
+  leadHours: number;
+  /** How many days ahead a customer can schedule */
+  maxDaysAhead: number;
+  /** Days of week available (0 = Sun … 6 = Sat) */
+  workingDays: number[];
+  /** Whether ASAP/now bookings are allowed (skip the calendar) */
+  allowAsap: boolean;
+};
+
 export type Service = {
   slug: string;
   name: string;
@@ -18,7 +35,23 @@ export type Service = {
   description: string;
   icon: LucideIcon;
   examples: string[];
+  scheduling: SchedulingRules;
 };
+
+const defaultRules: SchedulingRules = {
+  hoursStart: 8,
+  hoursEnd: 18,
+  slotMinutes: 60,
+  leadHours: 2,
+  maxDaysAhead: 14,
+  workingDays: [1, 2, 3, 4, 5, 6],
+  allowAsap: true,
+};
+
+const rules = (overrides: Partial<SchedulingRules> = {}): SchedulingRules => ({
+  ...defaultRules,
+  ...overrides,
+});
 
 export const services: Service[] = [
   {
