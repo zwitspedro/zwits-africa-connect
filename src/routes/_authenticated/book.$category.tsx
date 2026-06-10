@@ -397,10 +397,10 @@ function BookCategory() {
               <div className="rounded-2xl border border-border bg-background/60 p-4">
                 <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Estimated ETA</div>
                 <div className="mt-1 font-display text-2xl font-bold tabular-nums">
-                  {scheduled ? "Scheduled" : estimate.etaMinutes != null ? `${estimate.etaMinutes} min` : "—"}
+                  {scheduled && scheduled !== "ASAP" ? "Scheduled" : estimate.etaMinutes != null ? `${estimate.etaMinutes} min` : "—"}
                 </div>
                 <div className="text-[11px] text-muted-foreground">
-                  {scheduled ? "At your chosen time" : estimate.etaMinutes != null ? "Based on distance" : "Set address to estimate"}
+                  {scheduled && scheduled !== "ASAP" ? "At your chosen time" : estimate.etaMinutes != null ? "Based on distance" : "Set address to estimate"}
                 </div>
               </div>
             </div>
