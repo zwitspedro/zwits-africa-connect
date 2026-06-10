@@ -9,6 +9,7 @@ import { LocationMap } from "@/components/location-map";
 import { PaymentMethodPicker, type PaymentMethod } from "@/components/payment-method-picker";
 import { PaymentProcessingDialog } from "@/components/payment-processing-dialog";
 import { BookingReceiptDialog, type BookingReceipt } from "@/components/booking-receipt";
+import { BookingCalendar } from "@/components/booking-calendar";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useGoogleMaps } from "@/hooks/use-google-maps";
@@ -130,7 +131,7 @@ function BookCategory() {
         category,
         address,
         description,
-        scheduled_for: scheduled || null,
+        scheduled_for: scheduled && scheduled !== "ASAP" ? scheduled : null,
         price: estimate.price || null,
         payment_method: paymentMethod,
         payment_reference: isCash ? null : (txn.transactionId ?? (paymentReference.trim() || null)),
@@ -148,7 +149,7 @@ function BookCategory() {
       const body = [
         `Service: ${service!.name}`,
         `Address: ${address}`,
-        scheduled ? `Scheduled: ${new Date(scheduled).toLocaleString()}` : null,
+        scheduled && scheduled !== "ASAP" ? `Scheduled: ${new Date(scheduled).toLocaleString()}` : "Scheduled: ASAP",
         `Payment: ${methodLabel}${paymentMethod !== "cash" && paymentReference ? ` (${paymentReference.trim()})` : ""}`,
         `Reference: ${ref}`,
         "",
@@ -168,7 +169,7 @@ function BookCategory() {
         category: category!,
         serviceName: service!.name,
         address,
-        scheduledFor: scheduled || null,
+        scheduledFor: scheduled && scheduled !== "ASAP" ? scheduled : null,
         paymentMethod: paymentMethod!,
         paymentReference: paymentMethod === "cash" ? null : paymentReference.trim() || null,
         createdAt: data.created_at,
@@ -303,6 +304,7 @@ function BookCategory() {
           onSubmit={(e) => {
             e.preventDefault();
             if (!address) return toast.error("Add an address");
+            if (!scheduled) return toast.error("Pick a time or choose ASAP");
             setStep(2);
           }}
           className="mt-8 grid gap-4 rounded-3xl border border-border bg-card p-6"
@@ -319,11 +321,14 @@ function BookCategory() {
             />
           </label>
           {coords && <LocationMap lat={coords.lat} lng={coords.lng} />}
-          <label className="grid gap-1.5">
-            <span className="text-xs text-muted-foreground">When (optional)</span>
-            <input type="datetime-local" value={scheduled} onChange={(e) => setScheduled(e.target.value)}
-              className="rounded-lg border border-input bg-background px-3 py-2.5 text-sm" />
-          </label>
+          <div className="grid gap-1.5">
+            <span className="text-xs text-muted-foreground">When</span>
+            <BookingCalendar
+              rules={service.scheduling}
+              value={scheduled}
+              onChange={setScheduled}
+            />
+          </div>
           <label className="grid gap-1.5">
             <span className="text-xs text-muted-foreground">Details</span>
             <textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)}
@@ -370,7 +375,9 @@ function BookCategory() {
               {scheduled && (
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">When</span>
-                  <span className="font-medium">{new Date(scheduled).toLocaleString()}</span>
+                  <span className="font-medium">
+                    {scheduled === "ASAP" ? "ASAP" : new Date(scheduled).toLocaleString()}
+                  </span>
                 </div>
               )}
               {estimate.distance != null && (
@@ -390,10 +397,10 @@ function BookCategory() {
               <div className="rounded-2xl border border-border bg-background/60 p-4">
                 <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Estimated ETA</div>
                 <div className="mt-1 font-display text-2xl font-bold tabular-nums">
-                  {scheduled ? "Scheduled" : estimate.etaMinutes != null ? `${estimate.etaMinutes} min` : "—"}
+                  {scheduled && scheduled !== "ASAP" ? "Scheduled" : estimate.etaMinutes != null ? `${estimate.etaMinutes} min` : "—"}
                 </div>
                 <div className="text-[11px] text-muted-foreground">
-                  {scheduled ? "At your chosen time" : estimate.etaMinutes != null ? "Based on distance" : "Set address to estimate"}
+                  {scheduled && scheduled !== "ASAP" ? "At your chosen time" : estimate.etaMinutes != null ? "Based on distance" : "Set address to estimate"}
                 </div>
               </div>
             </div>
