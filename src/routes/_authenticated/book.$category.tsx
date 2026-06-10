@@ -327,6 +327,7 @@ function BookCategory() {
               rules={service.scheduling}
               value={scheduled}
               onChange={setScheduled}
+              providerId={providerId}
             />
           </div>
           <label className="grid gap-1.5">

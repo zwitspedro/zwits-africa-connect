@@ -1,7 +1,11 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { CalendarDays, Clock, Zap } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import type { SchedulingRules } from "@/data/services";
+import { getProviderBusySlots } from "@/lib/provider-availability.functions";
+import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -9,6 +13,8 @@ type Props = {
   /** ISO string or "" for ASAP */
   value: string;
   onChange: (iso: string) => void;
+  /** Provider to check availability for. null/undefined = auto-match (no filtering). */
+  providerId?: string | null;
 };
 
 function startOfDay(d: Date) {
@@ -32,10 +38,12 @@ function generateSlots(date: Date, rules: SchedulingRules, now: Date): Date[] {
   return slots;
 }
 
-export function BookingCalendar({ rules, value, onChange }: Props) {
+export function BookingCalendar({ rules, value, onChange, providerId }: Props) {
   const now = useMemo(() => new Date(), []);
+  const qc = useQueryClient();
+  const fetchBusy = useServerFn(getProviderBusySlots);
   const [date, setDate] = useState<Date | undefined>(() => {
-    if (value) return startOfDay(new Date(value));
+    if (value && value !== "ASAP") return startOfDay(new Date(value));
     return undefined;
   });
   const asap = value === "ASAP";
@@ -46,7 +54,55 @@ export function BookingCalendar({ rules, value, onChange }: Props) {
 
   const slots = useMemo(() => (date ? generateSlots(date, rules, now) : []), [date, rules, now]);
 
+  const dayStartIso = date ? startOfDay(date).toISOString() : null;
+  const dayEndIso = date
+    ? new Date(startOfDay(date).getTime() + 24 * 60 * 60 * 1000).toISOString()
+    : null;
+
+  const busyKey = ["provider-busy", providerId, dayStartIso] as const;
+  const { data: busy = [] } = useQuery({
+    queryKey: busyKey,
+    enabled: !!providerId && !!dayStartIso && !!dayEndIso,
+    queryFn: () =>
+      fetchBusy({
+        data: { providerId: providerId!, dayStartIso: dayStartIso!, dayEndIso: dayEndIso! },
+      }),
+    refetchInterval: 30_000,
+    refetchOnWindowFocus: true,
+  });
+
+  // Live updates: when this provider's bookings change, refetch busy slots.
+  useEffect(() => {
+    if (!providerId) return;
+    const channel = supabase
+      .channel(`provider-busy:${providerId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "bookings", filter: `provider_id=eq.${providerId}` },
+        () => qc.invalidateQueries({ queryKey: ["provider-busy", providerId] }),
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [providerId, qc]);
+
+  // Booked slot starts overlapping the service slot length
+  const busyStarts = useMemo(() => {
+    const set = new Set<number>();
+    const slotMs = rules.slotMinutes * 60 * 1000;
+    for (const b of busy) {
+      const t = new Date(b.start).getTime();
+      // Floor to slot grid
+      const dayStart = dayStartIso ? new Date(dayStartIso).getTime() : t;
+      const offset = Math.floor((t - dayStart) / slotMs) * slotMs;
+      set.add(dayStart + offset);
+    }
+    return set;
+  }, [busy, rules.slotMinutes, dayStartIso]);
+
   const selectedTimeIso = !asap && value ? value : null;
+  const availableCount = slots.filter((s) => !busyStarts.has(s.getTime())).length;
 
   return (
     <div className="grid gap-3 rounded-2xl border border-border bg-card/50 p-3">
@@ -89,7 +145,6 @@ export function BookingCalendar({ rules, value, onChange }: Props) {
           onSelect={(d) => {
             setDate(d);
             if (!d) return;
-            // Clear previous time selection when day changes
             if (value && value !== "ASAP") {
               const prev = startOfDay(new Date(value));
               if (prev.getTime() !== startOfDay(d).getTime()) onChange("");
@@ -100,7 +155,6 @@ export function BookingCalendar({ rules, value, onChange }: Props) {
             if (day < today) return true;
             if (day > maxDate) return true;
             if (!rules.workingDays.includes(day.getDay())) return true;
-            // Disable today if no slots remain
             if (day.getTime() === today.getTime()) {
               return generateSlots(day, rules, now).length === 0;
             }
@@ -113,7 +167,7 @@ export function BookingCalendar({ rules, value, onChange }: Props) {
           <div className="mb-2 flex items-center gap-1.5 text-xs text-muted-foreground">
             <Clock className="size-3.5" />
             {date
-              ? `Slots on ${date.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}`
+              ? `${availableCount} of ${slots.length} slots free on ${date.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}`
               : asap
                 ? "ASAP selected — no time slot needed"
                 : "Select a date"}
@@ -128,16 +182,21 @@ export function BookingCalendar({ rules, value, onChange }: Props) {
               {slots.map((s) => {
                 const iso = s.toISOString();
                 const active = selectedTimeIso === iso;
+                const taken = busyStarts.has(s.getTime());
                 return (
                   <button
                     key={iso}
                     type="button"
+                    disabled={taken}
                     onClick={() => onChange(iso)}
+                    title={taken ? "Already booked" : undefined}
                     className={cn(
                       "rounded-lg border px-2 py-1.5 text-xs tabular-nums transition",
-                      active
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border bg-background hover:border-primary/40"
+                      taken
+                        ? "cursor-not-allowed border-dashed border-border bg-muted/40 text-muted-foreground/60 line-through"
+                        : active
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border bg-background hover:border-primary/40"
                     )}
                   >
                     {s.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
@@ -145,6 +204,11 @@ export function BookingCalendar({ rules, value, onChange }: Props) {
                 );
               })}
             </div>
+          )}
+          {!providerId && date && (
+            <p className="mt-2 text-[11px] text-muted-foreground">
+              Auto-match selected — availability will be confirmed once a provider accepts.
+            </p>
           )}
         </div>
       </div>
