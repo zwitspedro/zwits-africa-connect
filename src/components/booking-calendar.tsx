@@ -1,8 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { CalendarDays, Clock, Zap } from "lucide-react";
+import { CalendarDays, Clock, HelpCircle, Zap } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { SchedulingRules } from "@/data/services";
 import { getProviderBusySlots } from "@/lib/provider-availability.functions";
 import { supabase } from "@/integrations/supabase/client";
@@ -104,120 +110,173 @@ export function BookingCalendar({ rules, value, onChange, providerId }: Props) {
   const selectedTimeIso = !asap && value ? value : null;
   const availableCount = slots.filter((s) => !busyStarts.has(s.getTime())).length;
 
+  // Determine why a day might have zero slots (lead-time vs working-hours vs all-booked)
+  const dayHasWorkingHours = date
+    ? generateSlots(date, { ...rules, leadHours: 0 }, now).length > 0
+    : false;
+  const allBooked = dayHasWorkingHours && availableCount === 0 && slots.length > 0;
+
   return (
-    <div className="grid gap-3 rounded-2xl border border-border bg-card/50 p-3">
-      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-        <CalendarDays className="size-3.5" /> Pick a date and time
-        <span className="ml-auto">
-          {rules.slotMinutes >= 60
-            ? `${rules.slotMinutes / 60}h slots`
-            : `${rules.slotMinutes}-min slots`}
-          {" · "}
-          {rules.leadHours > 0 ? `${rules.leadHours}h lead` : "no lead time"}
-        </span>
-      </div>
-
-      {rules.allowAsap && (
-        <button
-          type="button"
-          onClick={() => {
-            onChange("ASAP");
-            setDate(undefined);
-          }}
-          className={cn(
-            "flex items-center justify-between rounded-xl border px-4 py-2.5 text-left text-sm transition",
-            asap
-              ? "border-primary bg-primary/10 text-foreground"
-              : "border-border bg-background hover:border-primary/40"
-          )}
-        >
-          <span className="flex items-center gap-2">
-            <Zap className="size-4 text-primary" /> ASAP — next available
+    <TooltipProvider>
+      <div className="grid gap-3 rounded-2xl border border-border bg-card/50 p-3">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <CalendarDays className="size-3.5" /> Pick a date and time
+          <span className="ml-auto">
+            {rules.slotMinutes >= 60
+              ? `${rules.slotMinutes / 60}h slots`
+              : `${rules.slotMinutes}-min slots`}
+            {" · "}
+            {rules.leadHours > 0 ? `${rules.leadHours}h lead` : "no lead time"}
           </span>
-          <span className="text-xs text-muted-foreground">Recommended</span>
-        </button>
-      )}
-
-      <div className="grid gap-3 sm:grid-cols-[auto,1fr]">
-        <Calendar
-          mode="single"
-          selected={date}
-          onSelect={(d) => {
-            setDate(d);
-            if (!d) return;
-            if (value && value !== "ASAP") {
-              const prev = startOfDay(new Date(value));
-              if (prev.getTime() !== startOfDay(d).getTime()) onChange("");
-            }
-          }}
-          disabled={(d) => {
-            const day = startOfDay(d);
-            if (day < today) return true;
-            if (day > maxDate) return true;
-            if (!rules.workingDays.includes(day.getDay())) return true;
-            if (day.getTime() === today.getTime()) {
-              return generateSlots(day, rules, now).length === 0;
-            }
-            return false;
-          }}
-          className="pointer-events-auto rounded-xl border border-border bg-background p-2"
-        />
-
-        <div className="min-h-[12rem]">
-          <div className="mb-2 flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Clock className="size-3.5" />
-            {date
-              ? `${availableCount} of ${slots.length} slots free on ${date.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}`
-              : asap
-                ? "ASAP selected — no time slot needed"
-                : "Select a date"}
-          </div>
-          {date && (
-            <div className="grid max-h-64 grid-cols-3 gap-1.5 overflow-auto pr-1 sm:grid-cols-2 md:grid-cols-3">
-              {slots.length === 0 && (
-                <p className="col-span-full text-xs text-muted-foreground">
-                  No slots available — pick another day.
-                </p>
-              )}
-              {slots.map((s) => {
-                const iso = s.toISOString();
-                const active = selectedTimeIso === iso;
-                const taken = busyStarts.has(s.getTime());
-                return (
-                  <button
-                    key={iso}
-                    type="button"
-                    disabled={taken}
-                    onClick={() => onChange(iso)}
-                    title={taken ? "Already booked" : undefined}
-                    className={cn(
-                      "rounded-lg border px-2 py-1.5 text-xs tabular-nums transition",
-                      taken
-                        ? "cursor-not-allowed border-dashed border-border bg-muted/40 text-muted-foreground/60 line-through"
-                        : active
-                          ? "border-primary bg-primary text-primary-foreground"
-                          : "border-border bg-background hover:border-primary/40"
-                    )}
-                  >
-                    {s.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-          {!providerId && date && (
-            <p className="mt-2 text-[11px] text-muted-foreground">
-              Auto-match selected — availability will be confirmed once a provider accepts.
-            </p>
-          )}
         </div>
-      </div>
 
-      {value && value !== "ASAP" && (
-        <p className="text-xs text-muted-foreground">
-          Selected: <span className="font-medium text-foreground">{new Date(value).toLocaleString()}</span>
-        </p>
-      )}
-    </div>
+        {rules.allowAsap && (
+          <button
+            type="button"
+            onClick={() => {
+              onChange("ASAP");
+              setDate(undefined);
+            }}
+            className={cn(
+              "flex items-center justify-between rounded-xl border px-4 py-2.5 text-left text-sm transition",
+              asap
+                ? "border-primary bg-primary/10 text-foreground"
+                : "border-border bg-background hover:border-primary/40"
+            )}
+          >
+            <span className="flex items-center gap-2">
+              <Zap className="size-4 text-primary" /> ASAP — next available
+            </span>
+            <span className="text-xs text-muted-foreground">Recommended</span>
+          </button>
+        )}
+
+        <div className="grid gap-3 sm:grid-cols-[auto,1fr]">
+          <Calendar
+            mode="single"
+            selected={date}
+            onSelect={(d) => {
+              setDate(d);
+              if (!d) return;
+              if (value && value !== "ASAP") {
+                const prev = startOfDay(new Date(value));
+                if (prev.getTime() !== startOfDay(d).getTime()) onChange("");
+              }
+            }}
+            disabled={(d) => {
+              const day = startOfDay(d);
+              if (day < today) return true;
+              if (day > maxDate) return true;
+              if (!rules.workingDays.includes(day.getDay())) return true;
+              if (day.getTime() === today.getTime()) {
+                return generateSlots(day, rules, now).length === 0;
+              }
+              return false;
+            }}
+            className="pointer-events-auto rounded-xl border border-border bg-background p-2"
+          />
+
+          <div className="min-h-[12rem]">
+            <div className="mb-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+              <Clock className="size-3.5" />
+              {date
+                ? `${availableCount} of ${slots.length} slots free on ${date.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}`
+                : asap
+                  ? "ASAP selected — no time slot needed"
+                  : "Select a date"}
+            </div>
+            {date && (
+              <div className="grid max-h-64 grid-cols-3 gap-1.5 overflow-auto pr-1 sm:grid-cols-2 md:grid-cols-3">
+                {slots.length === 0 && (
+                  <p className="col-span-full text-xs text-muted-foreground">
+                    {dayHasWorkingHours
+                      ? "All slots are booked for this day. Try another date."
+                      : `No slots available — bookings open ${rules.hoursStart}:00–${rules.hoursEnd}:00 with ${rules.leadHours}h lead time.`}
+                  </p>
+                )}
+                {slots.map((s) => {
+                  const iso = s.toISOString();
+                  const active = selectedTimeIso === iso;
+                  const taken = busyStarts.has(s.getTime());
+                  const button = (
+                    <button
+                      key={iso}
+                      type="button"
+                      disabled={taken}
+                      onClick={() => onChange(iso)}
+                      className={cn(
+                        "rounded-lg border px-2 py-1.5 text-xs tabular-nums transition",
+                        taken
+                          ? "cursor-not-allowed border-dashed border-border bg-muted/40 text-muted-foreground/60 line-through"
+                          : active
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border bg-background hover:border-primary/40"
+                      )}
+                    >
+                      {s.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                    </button>
+                  );
+                  return taken ? (
+                    <Tooltip key={iso}>
+                      <TooltipTrigger asChild>
+                        <span className="inline-flex">{button}</span>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="max-w-[10rem] text-center">
+                        Already booked by another customer
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    button
+                  );
+                })}
+              </div>
+            )}
+            {!providerId && date && (
+              <p className="mt-2 text-[11px] text-muted-foreground">
+                Auto-match selected — availability will be confirmed once a provider accepts.
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Legend */}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-border pt-2">
+          <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
+            <span className="inline-block h-2.5 w-2.5 rounded-sm border border-border bg-background" />
+            Available
+          </span>
+          <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
+            <span className="inline-block h-2.5 w-2.5 rounded-sm border border-primary bg-primary" />
+            Selected
+          </span>
+          <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
+            <span className="inline-block h-2.5 w-2.5 rounded-sm border border-dashed border-border bg-muted/40" />
+            Booked
+          </span>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="ml-auto flex cursor-help items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground">
+                <HelpCircle className="size-3" />
+                Why are some slots missing?
+              </span>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="max-w-[14rem] space-y-1 text-xs">
+              <p className="font-medium">Hidden slots mean:</p>
+              <ul className="list-disc space-y-0.5 pl-3">
+                <li>Outside working hours ({rules.hoursStart}:00–{rules.hoursEnd}:00)</li>
+                <li>Too soon (needs {rules.leadHours}h lead time)</li>
+                <li>Not a working day</li>
+              </ul>
+            </TooltipContent>
+          </Tooltip>
+        </div>
+
+        {value && value !== "ASAP" && (
+          <p className="text-xs text-muted-foreground">
+            Selected: <span className="font-medium text-foreground">{new Date(value).toLocaleString()}</span>
+          </p>
+        )}
+      </div>
+    </TooltipProvider>
   );
 }
