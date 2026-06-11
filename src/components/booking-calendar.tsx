@@ -1,8 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { CalendarDays, Clock, Zap } from "lucide-react";
+import { CalendarDays, Clock, HelpCircle, Zap } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { SchedulingRules } from "@/data/services";
 import { getProviderBusySlots } from "@/lib/provider-availability.functions";
 import { supabase } from "@/integrations/supabase/client";
