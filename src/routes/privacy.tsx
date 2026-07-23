@@ -3,7 +3,14 @@ import { SiteShell } from "@/components/site-shell";
 import { PageHero, Prose } from "@/components/page-hero";
 
 export const Route = createFileRoute("/privacy")({
-  head: () => ({ meta: [{ title: "Privacy Policy — Zwits" }, { name: "description", content: "How Zwits collects, uses and protects your data." }] }),
+  head: () => ({
+    meta: [
+      { title: "Privacy Policy — Zwits" },
+      { name: "description", content: "How Zwits collects, uses and protects your data." },
+      { property: "og:url", content: "https://zwits-africa-connect.lovable.app/privacy" },
+    ],
+    links: [{ rel: "canonical", href: "https://zwits-africa-connect.lovable.app/privacy" }],
+  }),
   component: Privacy,
 });
 
