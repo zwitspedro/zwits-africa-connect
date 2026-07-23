@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /_authenticated/
+Disallow: /admin/
+
+Sitemap: https://zwits-africa-connect.lovable.app/sitemap.xml
