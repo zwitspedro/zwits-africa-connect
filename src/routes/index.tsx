@@ -10,7 +10,7 @@ export const Route = createFileRoute("/")({
       { title: "Zwits — Book trusted services across Africa" },
       { name: "description", content: "Zwits connects you with trusted providers for deliveries, transport, repairs, cleaning, farming, beauty, freelance and emergency help." },
       { property: "og:title", content: "Zwits — Book trusted services across Africa" },
-      { property: "og:description", content: "Deliveries, transport, repairs, cleaning and more. Pay with EcoCash, InnBucks or card." },
+      { property: "og:description", content: "Zwits connects you with trusted providers for deliveries, transport, repairs, cleaning, farming, beauty, freelance and emergency help." },
       { property: "og:url", content: "https://zwits-africa-connect.lovable.app/" },
     ],
     links: [{ rel: "canonical", href: "https://zwits-africa-connect.lovable.app/" }],
