@@ -3,7 +3,14 @@ import { SiteShell } from "@/components/site-shell";
 import { PageHero, Prose } from "@/components/page-hero";
 
 export const Route = createFileRoute("/terms")({
-  head: () => ({ meta: [{ title: "Terms of Service — Zwits" }, { name: "description", content: "The terms that govern your use of Zwits." }] }),
+  head: () => ({
+    meta: [
+      { title: "Terms of Service — Zwits" },
+      { name: "description", content: "The terms that govern your use of Zwits." },
+      { property: "og:url", content: "https://zwits-africa-connect.lovable.app/terms" },
+    ],
+    links: [{ rel: "canonical", href: "https://zwits-africa-connect.lovable.app/terms" }],
+  }),
   component: Terms,
 });
 

@@ -8,7 +8,9 @@ export const Route = createFileRoute("/services")({
     meta: [
       { title: "Services — Zwits" },
       { name: "description", content: "Deliveries, transport, repairs, cleaning, farming, beauty, freelance and emergency services on Zwits." },
+      { property: "og:url", content: "https://zwits-africa-connect.lovable.app/services" },
     ],
+    links: [{ rel: "canonical", href: "https://zwits-africa-connect.lovable.app/services" }],
   }),
   component: ServicesPage,
 });

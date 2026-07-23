@@ -6,7 +6,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 
 export const Route = createFileRoute("/signup")({
-  head: () => ({ meta: [{ title: "Sign up — Zwits" }, { name: "description", content: "Create your Zwits account." }] }),
+  head: () => ({
+    meta: [
+      { title: "Sign up — Zwits" },
+      { name: "description", content: "Create your Zwits account." },
+      { property: "og:url", content: "https://zwits-africa-connect.lovable.app/signup" },
+    ],
+    links: [{ rel: "canonical", href: "https://zwits-africa-connect.lovable.app/signup" }],
+  }),
   component: Signup,
 });
 
