@@ -75,12 +75,9 @@ export function ProviderJobsMap({
     enabled: !!detailJob?.customer_id,
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("profiles")
-        .select("display_name, phone, avatar_url")
-        .eq("user_id", detailJob!.customer_id!)
-        .maybeSingle();
+        .rpc("get_booking_counterpart_profile", { _user_id: detailJob!.customer_id! });
       if (error) throw error;
-      return data;
+      return (data && data[0]) ?? null;
     },
   });
 
