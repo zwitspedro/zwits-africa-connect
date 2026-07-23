@@ -42,10 +42,9 @@ function MessagesPage() {
     enabled: !!customerId,
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("profiles").select("display_name, avatar_url")
-        .eq("user_id", customerId!).maybeSingle();
+        .rpc("get_booking_counterpart_profile", { _user_id: customerId! });
       if (error) throw error;
-      return data;
+      return (data && data[0]) ?? null;
     },
   });
 
