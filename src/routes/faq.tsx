@@ -9,7 +9,9 @@ export const Route = createFileRoute("/faq")({
     meta: [
       { title: "FAQ — Zwits" },
       { name: "description", content: "Answers to the most common questions about Zwits." },
+      { property: "og:url", content: "https://zwits-africa-connect.lovable.app/faq" },
     ],
+    links: [{ rel: "canonical", href: "https://zwits-africa-connect.lovable.app/faq" }],
   }),
   component: Faq,
 });
