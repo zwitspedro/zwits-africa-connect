@@ -9,7 +9,9 @@ export const Route = createFileRoute("/contact")({
     meta: [
       { title: "Contact — Zwits" },
       { name: "description", content: "Get in touch with the Zwits team for support, partnerships or press." },
+      { property: "og:url", content: "https://zwits-africa-connect.lovable.app/contact" },
     ],
+    links: [{ rel: "canonical", href: "https://zwits-africa-connect.lovable.app/contact" }],
   }),
   component: Contact,
 });
