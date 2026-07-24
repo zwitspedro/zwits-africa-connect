@@ -34,6 +34,8 @@ import { Route as AuthenticatedAdminReconciliationRouteImport } from './routes/_
 import { Route as AuthenticatedAdminProvidersRouteImport } from './routes/_authenticated/admin.providers'
 import { Route as AuthenticatedAdminCommissionsRouteImport } from './routes/_authenticated/admin.commissions'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
+import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
+import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as AuthenticatedAdminReconciliationProviderProviderIdRouteImport } from './routes/_authenticated/admin.reconciliation.provider.$providerId'
 import { Route as AuthenticatedAdminReconciliationBookingBookingIdRouteImport } from './routes/_authenticated/admin.reconciliation.booking.$bookingId'
 
@@ -169,6 +171,16 @@ const LovableEmailQueueProcessRoute =
     path: '/lovable/email/queue/process',
     getParentRoute: () => rootRouteImport,
   } as any)
+const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
+  id: '/lovable/email/auth/webhook',
+  path: '/lovable/email/auth/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
+  id: '/lovable/email/auth/preview',
+  path: '/lovable/email/auth/preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminReconciliationProviderProviderIdRoute =
   AuthenticatedAdminReconciliationProviderProviderIdRouteImport.update({
     id: '/provider/$providerId',
@@ -206,6 +218,8 @@ export interface FileRoutesByFullPath {
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/admin/reconciliation/booking/$bookingId': typeof AuthenticatedAdminReconciliationBookingBookingIdRoute
   '/admin/reconciliation/provider/$providerId': typeof AuthenticatedAdminReconciliationProviderProviderIdRoute
@@ -234,6 +248,8 @@ export interface FileRoutesByTo {
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/admin/reconciliation/booking/$bookingId': typeof AuthenticatedAdminReconciliationBookingBookingIdRoute
   '/admin/reconciliation/provider/$providerId': typeof AuthenticatedAdminReconciliationProviderProviderIdRoute
@@ -264,6 +280,8 @@ export interface FileRoutesById {
   '/_authenticated/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/_authenticated/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
+  '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/_authenticated/admin/reconciliation/booking/$bookingId': typeof AuthenticatedAdminReconciliationBookingBookingIdRoute
   '/_authenticated/admin/reconciliation/provider/$providerId': typeof AuthenticatedAdminReconciliationProviderProviderIdRoute
@@ -294,6 +312,8 @@ export interface FileRouteTypes {
     | '/messages/$bookingId'
     | '/provider/setup'
     | '/admin/'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
     | '/admin/reconciliation/booking/$bookingId'
     | '/admin/reconciliation/provider/$providerId'
@@ -322,6 +342,8 @@ export interface FileRouteTypes {
     | '/messages/$bookingId'
     | '/provider/setup'
     | '/admin'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
     | '/admin/reconciliation/booking/$bookingId'
     | '/admin/reconciliation/provider/$providerId'
@@ -351,6 +373,8 @@ export interface FileRouteTypes {
     | '/_authenticated/messages/$bookingId'
     | '/_authenticated/provider/setup'
     | '/_authenticated/admin/'
+    | '/lovable/email/auth/preview'
+    | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
     | '/_authenticated/admin/reconciliation/booking/$bookingId'
     | '/_authenticated/admin/reconciliation/provider/$providerId'
@@ -369,6 +393,8 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
+  LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
+  LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
@@ -549,6 +575,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/auth/webhook': {
+      id: '/lovable/email/auth/webhook'
+      path: '/lovable/email/auth/webhook'
+      fullPath: '/lovable/email/auth/webhook'
+      preLoaderRoute: typeof LovableEmailAuthWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/auth/preview': {
+      id: '/lovable/email/auth/preview'
+      path: '/lovable/email/auth/preview'
+      fullPath: '/lovable/email/auth/preview'
+      preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin/reconciliation/provider/$providerId': {
       id: '/_authenticated/admin/reconciliation/provider/$providerId'
       path: '/provider/$providerId'
@@ -654,6 +694,8 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
+  LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
+  LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
