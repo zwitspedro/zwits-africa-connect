@@ -33,6 +33,7 @@ import { Route as AuthenticatedBookCategoryRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminReconciliationRouteImport } from './routes/_authenticated/admin.reconciliation'
 import { Route as AuthenticatedAdminProvidersRouteImport } from './routes/_authenticated/admin.providers'
 import { Route as AuthenticatedAdminCommissionsRouteImport } from './routes/_authenticated/admin.commissions'
+import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as AuthenticatedAdminReconciliationProviderProviderIdRouteImport } from './routes/_authenticated/admin.reconciliation.provider.$providerId'
 import { Route as AuthenticatedAdminReconciliationBookingBookingIdRouteImport } from './routes/_authenticated/admin.reconciliation.booking.$bookingId'
 
@@ -162,6 +163,12 @@ const AuthenticatedAdminCommissionsRoute =
     path: '/admin/commissions',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const LovableEmailQueueProcessRoute =
+  LovableEmailQueueProcessRouteImport.update({
+    id: '/lovable/email/queue/process',
+    path: '/lovable/email/queue/process',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedAdminReconciliationProviderProviderIdRoute =
   AuthenticatedAdminReconciliationProviderProviderIdRouteImport.update({
     id: '/provider/$providerId',
@@ -199,6 +206,7 @@ export interface FileRoutesByFullPath {
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/admin/reconciliation/booking/$bookingId': typeof AuthenticatedAdminReconciliationBookingBookingIdRoute
   '/admin/reconciliation/provider/$providerId': typeof AuthenticatedAdminReconciliationProviderProviderIdRoute
 }
@@ -226,6 +234,7 @@ export interface FileRoutesByTo {
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/admin/reconciliation/booking/$bookingId': typeof AuthenticatedAdminReconciliationBookingBookingIdRoute
   '/admin/reconciliation/provider/$providerId': typeof AuthenticatedAdminReconciliationProviderProviderIdRoute
 }
@@ -255,6 +264,7 @@ export interface FileRoutesById {
   '/_authenticated/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/_authenticated/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/_authenticated/admin/reconciliation/booking/$bookingId': typeof AuthenticatedAdminReconciliationBookingBookingIdRoute
   '/_authenticated/admin/reconciliation/provider/$providerId': typeof AuthenticatedAdminReconciliationProviderProviderIdRoute
 }
@@ -284,6 +294,7 @@ export interface FileRouteTypes {
     | '/messages/$bookingId'
     | '/provider/setup'
     | '/admin/'
+    | '/lovable/email/queue/process'
     | '/admin/reconciliation/booking/$bookingId'
     | '/admin/reconciliation/provider/$providerId'
   fileRoutesByTo: FileRoutesByTo
@@ -311,6 +322,7 @@ export interface FileRouteTypes {
     | '/messages/$bookingId'
     | '/provider/setup'
     | '/admin'
+    | '/lovable/email/queue/process'
     | '/admin/reconciliation/booking/$bookingId'
     | '/admin/reconciliation/provider/$providerId'
   id:
@@ -339,6 +351,7 @@ export interface FileRouteTypes {
     | '/_authenticated/messages/$bookingId'
     | '/_authenticated/provider/setup'
     | '/_authenticated/admin/'
+    | '/lovable/email/queue/process'
     | '/_authenticated/admin/reconciliation/booking/$bookingId'
     | '/_authenticated/admin/reconciliation/provider/$providerId'
   fileRoutesById: FileRoutesById
@@ -356,6 +369,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
+  LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -528,6 +542,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminCommissionsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/lovable/email/queue/process': {
+      id: '/lovable/email/queue/process'
+      path: '/lovable/email/queue/process'
+      fullPath: '/lovable/email/queue/process'
+      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin/reconciliation/provider/$providerId': {
       id: '/_authenticated/admin/reconciliation/provider/$providerId'
       path: '/provider/$providerId'
@@ -633,17 +654,8 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
+  LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
