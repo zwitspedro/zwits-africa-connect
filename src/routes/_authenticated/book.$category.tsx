@@ -357,6 +357,60 @@ function BookCategory() {
               placeholder={`Describe your ${service.name.toLowerCase()} request…`}
               className="rounded-lg border border-input bg-background px-3 py-2.5 text-sm" />
           </label>
+          <label className="grid gap-1.5">
+            <span className="text-xs text-muted-foreground">Your budget (optional, USD)</span>
+            <input
+              type="number"
+              min={0}
+              step="0.01"
+              value={budget}
+              onChange={(e) => setBudget(e.target.value)}
+              placeholder={estimate.price ? estimate.price.toFixed(2) : "40.00"}
+              className="rounded-lg border border-input bg-background px-3 py-2.5 text-sm"
+            />
+          </label>
+          <div className="grid gap-2">
+            <span className="text-xs text-muted-foreground">Photos (optional, up to 6)</span>
+            <div className="flex flex-wrap gap-2">
+              {photos.map((f, i) => (
+                <div key={`${f.name}-${i}`} className="relative">
+                  <img src={URL.createObjectURL(f)} alt={f.name} className="size-20 rounded-lg border border-border object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => setPhotos((p) => p.filter((_, idx) => idx !== i))}
+                    className="absolute -right-1.5 -top-1.5 grid size-5 place-items-center rounded-full bg-destructive text-destructive-foreground"
+                    aria-label="Remove photo"
+                  >
+                    <X className="size-3" />
+                  </button>
+                </div>
+              ))}
+              {photos.length < 6 && (
+                <label className="grid size-20 cursor-pointer place-items-center rounded-lg border border-dashed border-border text-muted-foreground hover:border-primary/50">
+                  <ImagePlus className="size-5" />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files ?? []).filter((f) => f.size <= 5 * 1024 * 1024);
+                      if (files.length !== (e.target.files?.length ?? 0)) toast.error("Each photo must be under 5 MB");
+                      setPhotos((p) => [...p, ...files].slice(0, 6));
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
+              )}
+            </div>
+          </div>
+          <p className="rounded-xl border border-border bg-background/60 p-3 text-xs text-muted-foreground">
+            {mode === "direct"
+              ? "Your request goes straight to the provider you picked."
+              : mode === "quotes"
+                ? "We'll invite up to 5 verified providers to quote. You compare and choose."
+                : "We'll offer the job to the closest verified providers — first to accept gets it."}
+          </p>
           <button className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground">
             Continue to confirm
           </button>
