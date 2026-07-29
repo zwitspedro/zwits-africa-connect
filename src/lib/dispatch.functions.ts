@@ -11,7 +11,7 @@ const CreateJobSchema = z.object({
   scheduledFor: z.string().nullable().optional(),
   budget: z.number().min(0).max(100000).nullable().optional(),
   price: z.number().min(0).max(100000).nullable().optional(),
-  photos: z.array(z.string().url()).max(6).default([]),
+  photos: z.array(z.string().min(1).max(400)).max(6).default([]),
   paymentMethod: z.string().max(30).default("cash"),
   preferredProviderId: z.string().uuid().nullable().optional(),
   rankedProviderIds: z.array(z.string().uuid()).max(200).default([]),
