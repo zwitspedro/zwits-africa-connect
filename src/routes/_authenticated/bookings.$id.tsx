@@ -116,6 +116,16 @@ function BookingDetailPage() {
 
             <Timeline status={booking.status as BookingStatus} updatedAt={booking.updated_at} createdAt={booking.created_at} />
 
+            {!booking.provider_id && booking.status === "pending" && (
+              <DispatchPanel booking={booking} />
+            )}
+
+            {booking.status === "completed" && !(booking as any).customer_confirmed_at && (
+              <ConfirmCompletion bookingId={booking.id} />
+            )}
+
+
+
             {(booking.status === "accepted" || booking.status === "in_progress") && (
               <div className="mt-5">
                 <div className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">
