@@ -17,6 +17,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as BusinessRouteImport } from './routes/business'
 import { Route as BecomeAProviderRouteImport } from './routes/become-a-provider'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
@@ -77,6 +78,11 @@ const FaqRoute = FaqRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BusinessRoute = BusinessRouteImport.update({
+  id: '/business',
+  path: '/business',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BecomeAProviderRoute = BecomeAProviderRouteImport.update({
@@ -200,6 +206,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/become-a-provider': typeof BecomeAProviderRoute
+  '/business': typeof BusinessRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/login': typeof LoginRoute
@@ -230,6 +237,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/become-a-provider': typeof BecomeAProviderRoute
+  '/business': typeof BusinessRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/login': typeof LoginRoute
@@ -262,6 +270,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
   '/become-a-provider': typeof BecomeAProviderRoute
+  '/business': typeof BusinessRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
   '/login': typeof LoginRoute
@@ -294,6 +303,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/become-a-provider'
+    | '/business'
     | '/contact'
     | '/faq'
     | '/login'
@@ -324,6 +334,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/become-a-provider'
+    | '/business'
     | '/contact'
     | '/faq'
     | '/login'
@@ -355,6 +366,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/about'
     | '/become-a-provider'
+    | '/business'
     | '/contact'
     | '/faq'
     | '/login'
@@ -387,6 +399,7 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AboutRoute: typeof AboutRoute
   BecomeAProviderRoute: typeof BecomeAProviderRoute
+  BusinessRoute: typeof BusinessRoute
   ContactRoute: typeof ContactRoute
   FaqRoute: typeof FaqRoute
   LoginRoute: typeof LoginRoute
@@ -456,6 +469,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/business': {
+      id: '/business'
+      path: '/business'
+      fullPath: '/business'
+      preLoaderRoute: typeof BusinessRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/become-a-provider': {
@@ -654,6 +674,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AboutRoute: AboutRoute,
   BecomeAProviderRoute: BecomeAProviderRoute,
+  BusinessRoute: BusinessRoute,
   ContactRoute: ContactRoute,
   FaqRoute: FaqRoute,
   LoginRoute: LoginRoute,
