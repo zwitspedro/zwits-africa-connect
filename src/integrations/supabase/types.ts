@@ -226,6 +226,206 @@ export type Database = {
           },
         ]
       }
+      deliveries: {
+        Row: {
+          created_at: string
+          customer_id: string
+          delivered_at: string | null
+          dispatch_state: string
+          dispatch_wave: number
+          distance_km: number | null
+          driver_id: string | null
+          dropoff_address: string
+          dropoff_lat: number | null
+          dropoff_lng: number | null
+          id: string
+          notes: string | null
+          parcel_size: string
+          payment_method: string | null
+          payment_status: string
+          picked_up_at: string | null
+          pickup_address: string
+          pickup_lat: number | null
+          pickup_lng: number | null
+          price: number | null
+          proof_photo_url: string | null
+          recipient_name: string | null
+          recipient_phone: string | null
+          service_tier: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          delivered_at?: string | null
+          dispatch_state?: string
+          dispatch_wave?: number
+          distance_km?: number | null
+          driver_id?: string | null
+          dropoff_address: string
+          dropoff_lat?: number | null
+          dropoff_lng?: number | null
+          id?: string
+          notes?: string | null
+          parcel_size?: string
+          payment_method?: string | null
+          payment_status?: string
+          picked_up_at?: string | null
+          pickup_address: string
+          pickup_lat?: number | null
+          pickup_lng?: number | null
+          price?: number | null
+          proof_photo_url?: string | null
+          recipient_name?: string | null
+          recipient_phone?: string | null
+          service_tier?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          delivered_at?: string | null
+          dispatch_state?: string
+          dispatch_wave?: number
+          distance_km?: number | null
+          driver_id?: string | null
+          dropoff_address?: string
+          dropoff_lat?: number | null
+          dropoff_lng?: number | null
+          id?: string
+          notes?: string | null
+          parcel_size?: string
+          payment_method?: string | null
+          payment_status?: string
+          picked_up_at?: string | null
+          pickup_address?: string
+          pickup_lat?: number | null
+          pickup_lng?: number | null
+          price?: number | null
+          proof_photo_url?: string | null
+          recipient_name?: string | null
+          recipient_phone?: string | null
+          service_tier?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      delivery_offers: {
+        Row: {
+          created_at: string
+          delivery_id: string
+          distance_km: number | null
+          driver_user_id: string
+          expires_at: string
+          id: string
+          offered_at: string
+          responded_at: string | null
+          status: string
+          updated_at: string
+          wave: number
+        }
+        Insert: {
+          created_at?: string
+          delivery_id: string
+          distance_km?: number | null
+          driver_user_id: string
+          expires_at?: string
+          id?: string
+          offered_at?: string
+          responded_at?: string | null
+          status?: string
+          updated_at?: string
+          wave?: number
+        }
+        Update: {
+          created_at?: string
+          delivery_id?: string
+          distance_km?: number | null
+          driver_user_id?: string
+          expires_at?: string
+          id?: string
+          offered_at?: string
+          responded_at?: string | null
+          status?: string
+          updated_at?: string
+          wave?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_offers_delivery_id_fkey"
+            columns: ["delivery_id"]
+            isOneToOne: false
+            referencedRelation: "deliveries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      driver_profiles: {
+        Row: {
+          available: boolean
+          city: string
+          created_at: string
+          deliveries_completed: number
+          full_name: string | null
+          id: string
+          id_document_url: string | null
+          licence_url: string | null
+          phone: string | null
+          rating_avg: number
+          ratings_count: number
+          reviewed_at: string | null
+          submitted_at: string | null
+          updated_at: string
+          user_id: string
+          vehicle_doc_url: string | null
+          verification_status: string
+          zone_radius_km: number
+        }
+        Insert: {
+          available?: boolean
+          city?: string
+          created_at?: string
+          deliveries_completed?: number
+          full_name?: string | null
+          id?: string
+          id_document_url?: string | null
+          licence_url?: string | null
+          phone?: string | null
+          rating_avg?: number
+          ratings_count?: number
+          reviewed_at?: string | null
+          submitted_at?: string | null
+          updated_at?: string
+          user_id: string
+          vehicle_doc_url?: string | null
+          verification_status?: string
+          zone_radius_km?: number
+        }
+        Update: {
+          available?: boolean
+          city?: string
+          created_at?: string
+          deliveries_completed?: number
+          full_name?: string | null
+          id?: string
+          id_document_url?: string | null
+          licence_url?: string | null
+          phone?: string | null
+          rating_avg?: number
+          ratings_count?: number
+          reviewed_at?: string | null
+          submitted_at?: string | null
+          updated_at?: string
+          user_id?: string
+          vehicle_doc_url?: string | null
+          verification_status?: string
+          zone_radius_km?: number
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -791,6 +991,48 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      vehicles: {
+        Row: {
+          active: boolean
+          capacity_kg: number | null
+          colour: string | null
+          created_at: string
+          id: string
+          make: string | null
+          model: string | null
+          plate: string
+          updated_at: string
+          user_id: string
+          vehicle_type: string
+        }
+        Insert: {
+          active?: boolean
+          capacity_kg?: number | null
+          colour?: string | null
+          created_at?: string
+          id?: string
+          make?: string | null
+          model?: string | null
+          plate: string
+          updated_at?: string
+          user_id: string
+          vehicle_type?: string
+        }
+        Update: {
+          active?: boolean
+          capacity_kg?: number | null
+          colour?: string | null
+          created_at?: string
+          id?: string
+          make?: string | null
+          model?: string | null
+          plate?: string
+          updated_at?: string
+          user_id?: string
+          vehicle_type?: string
         }
         Relationships: []
       }
