@@ -14,11 +14,15 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as FaqRouteImport } from './routes/faq'
+import { Route as DeliveryRouteImport } from './routes/delivery'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CareersRouteImport } from './routes/careers'
 import { Route as BusinessRouteImport } from './routes/business'
 import { Route as BecomeAProviderRouteImport } from './routes/become-a-provider'
+import { Route as BecomeADriverRouteImport } from './routes/become-a-driver'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
@@ -67,6 +71,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -77,9 +86,19 @@ const FaqRoute = FaqRouteImport.update({
   path: '/faq',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DeliveryRoute = DeliveryRouteImport.update({
+  id: '/delivery',
+  path: '/delivery',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CareersRoute = CareersRouteImport.update({
+  id: '/careers',
+  path: '/careers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BusinessRoute = BusinessRouteImport.update({
@@ -90,6 +109,11 @@ const BusinessRoute = BusinessRouteImport.update({
 const BecomeAProviderRoute = BecomeAProviderRouteImport.update({
   id: '/become-a-provider',
   path: '/become-a-provider',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BecomeADriverRoute = BecomeADriverRouteImport.update({
+  id: '/become-a-driver',
+  path: '/become-a-driver',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -218,11 +242,15 @@ const AuthenticatedAdminReconciliationBookingBookingIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/become-a-driver': typeof BecomeADriverRoute
   '/become-a-provider': typeof BecomeAProviderRoute
   '/business': typeof BusinessRoute
+  '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
+  '/delivery': typeof DeliveryRoute
   '/faq': typeof FaqRoute
   '/login': typeof LoginRoute
+  '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/services': typeof ServicesRoute
   '/signup': typeof SignupRoute
@@ -251,11 +279,15 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/become-a-driver': typeof BecomeADriverRoute
   '/become-a-provider': typeof BecomeAProviderRoute
   '/business': typeof BusinessRoute
+  '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
+  '/delivery': typeof DeliveryRoute
   '/faq': typeof FaqRoute
   '/login': typeof LoginRoute
+  '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/services': typeof ServicesRoute
   '/signup': typeof SignupRoute
@@ -286,11 +318,15 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
+  '/become-a-driver': typeof BecomeADriverRoute
   '/become-a-provider': typeof BecomeAProviderRoute
   '/business': typeof BusinessRoute
+  '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
+  '/delivery': typeof DeliveryRoute
   '/faq': typeof FaqRoute
   '/login': typeof LoginRoute
+  '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/services': typeof ServicesRoute
   '/signup': typeof SignupRoute
@@ -321,11 +357,15 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/become-a-driver'
     | '/become-a-provider'
     | '/business'
+    | '/careers'
     | '/contact'
+    | '/delivery'
     | '/faq'
     | '/login'
+    | '/pricing'
     | '/privacy'
     | '/services'
     | '/signup'
@@ -354,11 +394,15 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/become-a-driver'
     | '/become-a-provider'
     | '/business'
+    | '/careers'
     | '/contact'
+    | '/delivery'
     | '/faq'
     | '/login'
+    | '/pricing'
     | '/privacy'
     | '/services'
     | '/signup'
@@ -388,11 +432,15 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/about'
+    | '/become-a-driver'
     | '/become-a-provider'
     | '/business'
+    | '/careers'
     | '/contact'
+    | '/delivery'
     | '/faq'
     | '/login'
+    | '/pricing'
     | '/privacy'
     | '/services'
     | '/signup'
@@ -423,11 +471,15 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AboutRoute: typeof AboutRoute
+  BecomeADriverRoute: typeof BecomeADriverRoute
   BecomeAProviderRoute: typeof BecomeAProviderRoute
   BusinessRoute: typeof BusinessRoute
+  CareersRoute: typeof CareersRoute
   ContactRoute: typeof ContactRoute
+  DeliveryRoute: typeof DeliveryRoute
   FaqRoute: typeof FaqRoute
   LoginRoute: typeof LoginRoute
+  PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
   ServicesRoute: typeof ServicesRoute
   SignupRoute: typeof SignupRoute
@@ -475,6 +527,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -489,11 +548,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FaqRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/delivery': {
+      id: '/delivery'
+      path: '/delivery'
+      fullPath: '/delivery'
+      preLoaderRoute: typeof DeliveryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact': {
       id: '/contact'
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/careers': {
+      id: '/careers'
+      path: '/careers'
+      fullPath: '/careers'
+      preLoaderRoute: typeof CareersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/business': {
@@ -508,6 +581,13 @@ declare module '@tanstack/react-router' {
       path: '/become-a-provider'
       fullPath: '/become-a-provider'
       preLoaderRoute: typeof BecomeAProviderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/become-a-driver': {
+      id: '/become-a-driver'
+      path: '/become-a-driver'
+      fullPath: '/become-a-driver'
+      preLoaderRoute: typeof BecomeADriverRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -716,11 +796,15 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AboutRoute: AboutRoute,
+  BecomeADriverRoute: BecomeADriverRoute,
   BecomeAProviderRoute: BecomeAProviderRoute,
   BusinessRoute: BusinessRoute,
+  CareersRoute: CareersRoute,
   ContactRoute: ContactRoute,
+  DeliveryRoute: DeliveryRoute,
   FaqRoute: FaqRoute,
   LoginRoute: LoginRoute,
+  PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
   ServicesRoute: ServicesRoute,
   SignupRoute: SignupRoute,
@@ -733,3 +817,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
