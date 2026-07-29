@@ -129,23 +129,34 @@ function BookCategory() {
   }, [selectedProvider, visibleProviders]);
 
   const create = useMutation({
-    mutationFn: async (txn: { transactionId: string | null }) => {
+    mutationFn: async (_txn: { transactionId: string | null }) => {
       if (!paymentMethod) throw new Error("Choose a payment method");
-      const isCash = paymentMethod === "cash";
-      const { data, error } = await supabase.from("bookings").insert({
-        customer_id: user!.id,
-        provider_id: providerId,
-        category,
-        address,
-        description,
-        scheduled_for: scheduled && scheduled !== "ASAP" ? scheduled : null,
-        price: estimate.price || null,
-        payment_method: paymentMethod,
-        payment_reference: isCash ? null : (txn.transactionId ?? (paymentReference.trim() || null)),
-        payment_status: isCash ? "pending" : "paid",
-      }).select("id, created_at").single();
-      if (error) throw error;
-      return data;
+
+      const paths: string[] = [];
+      for (const file of photos) {
+        const ext = file.name.split(".").pop() ?? "jpg";
+        const path = `${user!.id}/${crypto.randomUUID()}.${ext}`;
+        const { error: upErr } = await supabase.storage.from("job-photos").upload(path, file);
+        if (upErr) throw new Error(`Photo upload failed: ${upErr.message}`);
+        paths.push(path);
+      }
+
+      return submitJob({
+        data: {
+          category: category!,
+          address,
+          description: description || null,
+          lat: coords?.lat ?? null,
+          lng: coords?.lng ?? null,
+          scheduledFor: scheduled && scheduled !== "ASAP" ? scheduled : null,
+          budget: budget ? Number(budget) : null,
+          price: estimate.price || null,
+          photos: paths,
+          paymentMethod,
+          preferredProviderId: providerId,
+          rankedProviderIds: visibleProviders.map((p) => p.id),
+        },
+      });
     },
     onSuccess: async (data) => {
       toast.success("Booking confirmed");
