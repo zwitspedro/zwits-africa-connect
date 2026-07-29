@@ -1,27 +1,37 @@
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Menu, X, Bell, ShieldCheck } from "lucide-react";
+import { Menu, X, Bell, ShieldCheck, ChevronDown, ArrowRight } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { useNotificationsRealtime } from "@/hooks/use-notifications-realtime";
 import { useRoles } from "@/hooks/use-role";
+import { services } from "@/data/services";
 
 const links = [
-  { to: "/", label: "Home" },
-  { to: "/services", label: "Services" },
+  { to: "/business", label: "Business" },
+  { to: "/become-a-provider", label: "Partners" },
   { to: "/about", label: "About" },
-  { to: "/become-a-provider", label: "Become a Provider" },
   { to: "/faq", label: "FAQ" },
   { to: "/contact", label: "Contact" },
 ] as const;
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const [mega, setMega] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { user, signOut } = useAuth();
   const { data: roles } = useRoles();
   const isAdmin = (roles ?? []).includes("admin");
   useNotificationsRealtime({ showToast: true });
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   const { data: unread = 0 } = useQuery({
     queryKey: ["notifications-unread", user?.id],
     enabled: !!user,
@@ -35,26 +45,83 @@ export function SiteHeader() {
       return count ?? 0;
     },
   });
+
   return (
-    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/70 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <Link to="/" className="flex items-center gap-2">
-          <span className="grid h-8 w-8 place-items-center rounded-lg bg-primary text-primary-foreground font-display font-bold">Z</span>
-          <span className="font-display text-lg font-bold tracking-tight">Zwits</span>
+    <header
+      className={`sticky top-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "border-b border-border/60 bg-background/70 backdrop-blur-xl"
+          : "border-b border-transparent bg-transparent"
+      }`}
+    >
+      <div className="mx-auto grid h-[70px] max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 sm:px-8 md:flex md:justify-between">
+        <Link to="/" className="flex min-w-0 items-center gap-2.5">
+          <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary font-display text-lg font-bold text-primary-foreground">
+            Z
+          </span>
+          <span className="truncate font-display text-lg font-bold tracking-tight">Zwits</span>
         </Link>
-        <nav className="hidden items-center gap-7 md:flex">
+
+        <nav className="hidden items-center gap-1 md:flex" onMouseLeave={() => setMega(false)}>
+          <button
+            onMouseEnter={() => setMega(true)}
+            onClick={() => setMega((m) => !m)}
+            aria-expanded={mega}
+            className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm text-muted-foreground transition hover:text-foreground"
+          >
+            Services
+            <ChevronDown className={`size-3.5 transition-transform ${mega ? "rotate-180" : ""}`} />
+          </button>
           {links.map((l) => (
             <Link
               key={l.to}
               to={l.to}
-              className="text-sm text-muted-foreground transition hover:text-foreground"
+              onMouseEnter={() => setMega(false)}
+              className="rounded-full px-4 py-2 text-sm text-muted-foreground transition hover:text-foreground"
               activeProps={{ className: "text-foreground" }}
-              activeOptions={{ exact: l.to === "/" }}
             >
               {l.label}
             </Link>
           ))}
+
+          {mega && (
+            <div className="absolute inset-x-0 top-[70px] hidden md:block">
+              <div className="mx-auto max-w-7xl px-5 sm:px-8">
+                <div className="animate-rise overflow-hidden rounded-3xl glass-strong p-6 shadow-glow">
+                  <div className="grid gap-2 sm:grid-cols-3 lg:grid-cols-4">
+                    {services.map((s) => {
+                      const Icon = s.icon;
+                      return (
+                        <Link
+                          key={s.slug}
+                          to="/book/$category"
+                          params={{ category: s.slug }}
+                          onClick={() => setMega(false)}
+                          className="group flex items-start gap-3 rounded-2xl p-3 transition hover:bg-card"
+                        >
+                          <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/12 text-primary transition group-hover:bg-primary group-hover:text-primary-foreground">
+                            <Icon className="size-4" />
+                          </span>
+                          <span className="min-w-0">
+                            <span className="block truncate text-sm font-semibold">{s.name}</span>
+                            <span className="block truncate text-xs text-muted-foreground">{s.tagline}</span>
+                          </span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                  <div className="mt-4 flex items-center justify-between border-t border-border/60 pt-4">
+                    <p className="text-xs text-muted-foreground">More verticals launching soon — Pay, Food, Market, Health.</p>
+                    <Link to="/services" onClick={() => setMega(false)} className="inline-flex items-center gap-1.5 text-sm font-medium text-primary">
+                      All services <ArrowRight className="size-3.5" />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </nav>
+
         <div className="hidden items-center gap-2 md:flex">
           {user ? (
             <>
@@ -66,46 +133,76 @@ export function SiteHeader() {
                   </span>
                 )}
               </Link>
-              <Link to="/dashboard" className="rounded-full px-4 py-2 text-sm hover:text-foreground">Dashboard</Link>
+              <Link to="/dashboard" className="rounded-full px-4 py-2 text-sm text-muted-foreground hover:text-foreground">
+                Dashboard
+              </Link>
               {isAdmin && (
                 <Link to="/admin" className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-2 text-sm text-primary hover:bg-primary/15">
                   <ShieldCheck className="size-4" /> Admin
                 </Link>
               )}
-              <button onClick={() => signOut()} className="rounded-full border border-border px-4 py-2 text-sm hover:bg-muted">Sign out</button>
+              <button onClick={() => signOut()} className="rounded-full glass px-4 py-2 text-sm hover:bg-card">
+                Sign out
+              </button>
             </>
           ) : (
             <>
-              <Link to="/login" className="rounded-full px-4 py-2 text-sm text-foreground/80 hover:text-foreground">Sign in</Link>
-              <Link to="/signup" className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90">
-                Get started
+              <Link to="/login" className="rounded-full px-4 py-2 text-sm text-muted-foreground hover:text-foreground">
+                Sign in
+              </Link>
+              <Link
+                to="/signup"
+                className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
+              >
+                Book Now
               </Link>
             </>
           )}
         </div>
+
         <button
           aria-label="Toggle menu"
-          className="md:hidden rounded-md p-2 text-foreground"
+          className="justify-self-end rounded-xl p-2 text-foreground md:hidden"
           onClick={() => setOpen((o) => !o)}
         >
           {open ? <X className="size-5" /> : <Menu className="size-5" />}
         </button>
       </div>
+
       {open && (
-        <div className="border-t border-border/60 md:hidden">
-          <nav className="mx-auto flex max-w-7xl flex-col px-4 py-3 sm:px-6">
+        <div className="border-t border-border/60 bg-background/95 backdrop-blur-xl md:hidden">
+          <nav className="mx-auto flex max-w-7xl flex-col px-5 py-4 sm:px-8">
+            <p className="px-2 pb-2 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Services</p>
+            <div className="grid grid-cols-2 gap-1">
+              {services.map((s) => (
+                <Link
+                  key={s.slug}
+                  to="/book/$category"
+                  params={{ category: s.slug }}
+                  onClick={() => setOpen(false)}
+                  className="rounded-xl px-2 py-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
+                >
+                  {s.name}
+                </Link>
+              ))}
+            </div>
+            <p className="mt-4 px-2 pb-1 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Company</p>
             {links.map((l) => (
               <Link
                 key={l.to}
                 to={l.to}
                 onClick={() => setOpen(false)}
-                className="rounded-md px-2 py-3 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
+                className="rounded-xl px-2 py-3 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
               >
                 {l.label}
               </Link>
             ))}
-            <Link to="/signup" onClick={() => setOpen(false)} className="mt-2 rounded-full bg-primary px-4 py-3 text-center text-sm font-medium text-primary-foreground">
-              Get the app
+            <Link
+              to="/signup"
+              onClick={() => setOpen(false)}
+              className="mt-3 rounded-full bg-primary px-4 py-3.5 text-center text-sm font-semibold text-primary-foreground"
+            >
+              Book Now
             </Link>
           </nav>
         </div>
