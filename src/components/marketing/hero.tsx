@@ -7,12 +7,12 @@ import { ArrowRight, ShieldCheck, Zap, Globe2 } from "lucide-react";
  */
 export function Hero() {
   return (
-    <section className="relative isolate flex min-h-[92vh] flex-col justify-center overflow-hidden">
+    <section className="relative isolate flex min-h-[88vh] max-h-[1000px] flex-col justify-center overflow-hidden">
       <div className="pointer-events-none absolute inset-0 -z-20 aurora opacity-70" />
       <div className="pointer-events-none absolute inset-0 -z-10 grid-lines" />
       <Skyline />
 
-      <div className="mx-auto w-full max-w-7xl px-5 pt-28 pb-40 sm:px-8 md:pt-36 md:pb-56">
+      <div className="mx-auto w-full max-w-7xl px-5 pt-24 pb-32 sm:px-8 md:pt-28 md:pb-40">
         <div className="animate-rise inline-flex items-center gap-2.5 rounded-full glass px-4 py-1.5 text-[13px] text-muted-foreground">
           <span className="relative flex size-2">
             <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-70" />
@@ -72,7 +72,7 @@ export function Hero() {
 /** Layered SVG skyline with parallax bands, moving riders and connection arcs. */
 function Skyline() {
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[62%] select-none">
+    <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[46%] select-none">
       <svg
         viewBox="0 0 1440 420"
         preserveAspectRatio="xMidYMax slice"
