@@ -14,6 +14,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as ProviderSignupRouteImport } from './routes/provider-signup'
 import { Route as ProviderLoginRouteImport } from './routes/provider-login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricingRouteImport } from './routes/pricing'
@@ -29,6 +30,7 @@ import { Route as BecomeADriverRouteImport } from './routes/become-a-driver'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedWorkspaceRouteImport } from './routes/_authenticated/workspace'
 import { Route as AuthenticatedSendDeliveryRouteImport } from './routes/_authenticated/send-delivery'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedDriverRouteImport } from './routes/_authenticated/driver'
@@ -74,6 +76,11 @@ const ServicesRoute = ServicesRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProviderSignupRoute = ProviderSignupRouteImport.update({
+  id: '/provider-signup',
+  path: '/provider-signup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProviderLoginRoute = ProviderLoginRouteImport.update({
@@ -149,6 +156,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedWorkspaceRoute = AuthenticatedWorkspaceRouteImport.update({
+  id: '/workspace',
+  path: '/workspace',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedSendDeliveryRoute =
   AuthenticatedSendDeliveryRouteImport.update({
@@ -286,6 +298,7 @@ export interface FileRoutesByFullPath {
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/provider-login': typeof ProviderLoginRoute
+  '/provider-signup': typeof ProviderSignupRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/signup': typeof SignupRoute
@@ -296,6 +309,7 @@ export interface FileRoutesByFullPath {
   '/driver': typeof AuthenticatedDriverRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/send-delivery': typeof AuthenticatedSendDeliveryRoute
+  '/workspace': typeof AuthenticatedWorkspaceRoute
   '/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/book/$category': typeof AuthenticatedBookCategoryRoute
@@ -328,6 +342,7 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/provider-login': typeof ProviderLoginRoute
+  '/provider-signup': typeof ProviderSignupRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/signup': typeof SignupRoute
@@ -338,6 +353,7 @@ export interface FileRoutesByTo {
   '/driver': typeof AuthenticatedDriverRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/send-delivery': typeof AuthenticatedSendDeliveryRoute
+  '/workspace': typeof AuthenticatedWorkspaceRoute
   '/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/book/$category': typeof AuthenticatedBookCategoryRoute
@@ -372,6 +388,7 @@ export interface FileRoutesById {
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/provider-login': typeof ProviderLoginRoute
+  '/provider-signup': typeof ProviderSignupRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/signup': typeof SignupRoute
@@ -382,6 +399,7 @@ export interface FileRoutesById {
   '/_authenticated/driver': typeof AuthenticatedDriverRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/send-delivery': typeof AuthenticatedSendDeliveryRoute
+  '/_authenticated/workspace': typeof AuthenticatedWorkspaceRoute
   '/_authenticated/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/_authenticated/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/_authenticated/book/$category': typeof AuthenticatedBookCategoryRoute
@@ -416,6 +434,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/privacy'
     | '/provider-login'
+    | '/provider-signup'
     | '/reset-password'
     | '/services'
     | '/signup'
@@ -426,6 +445,7 @@ export interface FileRouteTypes {
     | '/driver'
     | '/notifications'
     | '/send-delivery'
+    | '/workspace'
     | '/admin/commissions'
     | '/admin/providers'
     | '/book/$category'
@@ -458,6 +478,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/privacy'
     | '/provider-login'
+    | '/provider-signup'
     | '/reset-password'
     | '/services'
     | '/signup'
@@ -468,6 +489,7 @@ export interface FileRouteTypes {
     | '/driver'
     | '/notifications'
     | '/send-delivery'
+    | '/workspace'
     | '/admin/commissions'
     | '/admin/providers'
     | '/book/$category'
@@ -501,6 +523,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/privacy'
     | '/provider-login'
+    | '/provider-signup'
     | '/reset-password'
     | '/services'
     | '/signup'
@@ -511,6 +534,7 @@ export interface FileRouteTypes {
     | '/_authenticated/driver'
     | '/_authenticated/notifications'
     | '/_authenticated/send-delivery'
+    | '/_authenticated/workspace'
     | '/_authenticated/admin/commissions'
     | '/_authenticated/admin/providers'
     | '/_authenticated/book/$category'
@@ -545,6 +569,7 @@ export interface RootRouteChildren {
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
   ProviderLoginRoute: typeof ProviderLoginRoute
+  ProviderSignupRoute: typeof ProviderSignupRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ServicesRoute: typeof ServicesRoute
   SignupRoute: typeof SignupRoute
@@ -590,6 +615,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/provider-signup': {
+      id: '/provider-signup'
+      path: '/provider-signup'
+      fullPath: '/provider-signup'
+      preLoaderRoute: typeof ProviderSignupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/provider-login': {
@@ -696,6 +728,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/workspace': {
+      id: '/_authenticated/workspace'
+      path: '/workspace'
+      fullPath: '/workspace'
+      preLoaderRoute: typeof AuthenticatedWorkspaceRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/send-delivery': {
       id: '/_authenticated/send-delivery'
@@ -853,6 +892,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedDriverRoute: typeof AuthenticatedDriverRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedSendDeliveryRoute: typeof AuthenticatedSendDeliveryRoute
+  AuthenticatedWorkspaceRoute: typeof AuthenticatedWorkspaceRoute
   AuthenticatedAdminCommissionsRoute: typeof AuthenticatedAdminCommissionsRoute
   AuthenticatedAdminProvidersRoute: typeof AuthenticatedAdminProvidersRoute
   AuthenticatedBookCategoryRoute: typeof AuthenticatedBookCategoryRoute
@@ -874,6 +914,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDriverRoute: AuthenticatedDriverRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedSendDeliveryRoute: AuthenticatedSendDeliveryRoute,
+  AuthenticatedWorkspaceRoute: AuthenticatedWorkspaceRoute,
   AuthenticatedAdminCommissionsRoute: AuthenticatedAdminCommissionsRoute,
   AuthenticatedAdminProvidersRoute: AuthenticatedAdminProvidersRoute,
   AuthenticatedBookCategoryRoute: AuthenticatedBookCategoryRoute,
@@ -912,6 +953,7 @@ const rootRouteChildren: RootRouteChildren = {
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
   ProviderLoginRoute: ProviderLoginRoute,
+  ProviderSignupRoute: ProviderSignupRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ServicesRoute: ServicesRoute,
   SignupRoute: SignupRoute,
