@@ -1,21 +1,40 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Star, BadgeCheck, MapPin, ShieldAlert, ShieldX, Clock } from "lucide-react";
+import { Star, BadgeCheck, MapPin, ShieldAlert, ShieldX, Clock, MessageSquare } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useProviderTracking } from "@/hooks/use-provider-tracking";
 import { ProviderJobsMap } from "@/components/provider-jobs-map";
+import { AvailableJobs } from "@/components/provider/available-jobs";
 
 export const Route = createFileRoute("/_authenticated/provider/")({
   head: () => ({ meta: [{ title: "Provider dashboard — Zwits" }] }),
   component: ProviderDashboard,
 });
 
+type Tab = "jobs" | "active" | "schedule" | "earnings" | "ratings" | "profile";
+
+const TABS: { key: Tab; label: string }[] = [
+  { key: "jobs", label: "Available jobs" },
+  { key: "active", label: "Active" },
+  { key: "schedule", label: "Today" },
+  { key: "earnings", label: "Earnings" },
+  { key: "ratings", label: "Ratings" },
+  { key: "profile", label: "Profile" },
+];
+
+function TrackingBridge({ bookingId }: { bookingId: string | null }) {
+  useProviderTracking({ bookingId, enabled: !!bookingId });
+  return null;
+}
+
 function ProviderDashboard() {
   const { user } = useAuth();
   const qc = useQueryClient();
+  const [tab, setTab] = useState<Tab>("jobs");
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ["my-provider", user?.id],
@@ -54,9 +73,26 @@ function ProviderDashboard() {
     },
   });
 
+  const { data: reviews } = useQuery({
+    queryKey: ["provider-reviews", profile?.id],
+    enabled: !!profile?.id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("ratings")
+        .select("id, rating, review, created_at")
+        .eq("provider_id", profile!.id)
+        .order("created_at", { ascending: false })
+        .limit(25);
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const updateStatus = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: "pending" | "accepted" | "in_progress" | "completed" | "cancelled" }) => {
-      const { error } = await supabase.from("bookings").update({ status }).eq("id", id);
+      const patch: Record<string, unknown> = { status };
+      if (status === "completed") patch.completed_at = new Date().toISOString();
+      const { error } = await supabase.from("bookings").update(patch).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -98,11 +134,20 @@ function ProviderDashboard() {
   const gross = completed.reduce((s, j) => s + (Number(j.price) || 0), 0);
   const commissionTotal = completed.reduce((s, j) => s + computeFee(j.category, Number(j.price) || 0), 0);
   const earnings = gross - commissionTotal;
+  const released = completed
+    .filter((j: any) => j.customer_confirmed_at)
+    .reduce((s, j) => s + (Number(j.price) || 0) - computeFee(j.category, Number(j.price) || 0), 0);
+  const pendingPayout = earnings - released;
   const trackingJob = active.find((j) => j.status === "in_progress");
-  useProviderTracking({ bookingId: trackingJob?.id ?? null, enabled: !!trackingJob });
+
+  const today = new Date();
+  const todaysJobs = active
+    .filter((j) => j.scheduled_for && new Date(j.scheduled_for).toDateString() === today.toDateString())
+    .sort((a, b) => new Date(a.scheduled_for!).getTime() - new Date(b.scheduled_for!).getTime());
 
   return (
     <SiteShell>
+      <TrackingBridge bookingId={trackingJob?.id ?? null} />
       <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
@@ -120,7 +165,7 @@ function ProviderDashboard() {
             onClick={() => toggleAvailable.mutate()}
             className={`rounded-full px-4 py-2 text-sm ${profile.available ? "bg-emerald-500/20 text-emerald-400" : "bg-muted text-muted-foreground"}`}
           >
-            {profile.available ? "Available" : "Offline"}
+            {profile.available ? "Online" : "Offline"}
           </button>
         </div>
 
@@ -133,71 +178,170 @@ function ProviderDashboard() {
           <Stat label="Net earnings" value={`$${earnings.toFixed(2)}`} sub={`Gross $${gross.toFixed(0)} · Fees $${commissionTotal.toFixed(2)}`} />
         </div>
 
-        <h2 className="mt-10 font-display text-xl font-semibold">Jobs map</h2>
-        <div className="mt-3">
-          <ProviderJobsMap jobs={active} />
+        <div className="mt-8 flex gap-2 overflow-x-auto border-b border-border pb-px">
+          {TABS.map((t) => (
+            <button
+              key={t.key}
+              onClick={() => setTab(t.key)}
+              className={`whitespace-nowrap rounded-t-lg px-4 py-2 text-sm ${tab === t.key ? "border-b-2 border-primary font-medium text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+            >
+              {t.label}
+            </button>
+          ))}
         </div>
 
-        <h2 className="mt-10 font-display text-xl font-semibold">Active jobs</h2>
-        <ul className="mt-3 grid gap-3">
-          {active.length === 0 && <li className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">No active jobs.</li>}
-          {active.map((j) => (
-            <li key={j.id} className="rounded-2xl border border-border bg-card p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <div className="text-xs uppercase tracking-wider text-primary">{j.category} · {j.status}</div>
-                  <div className="mt-1 font-medium">{j.address}</div>
-                  {j.description && <div className="mt-1 text-sm text-muted-foreground">{j.description}</div>}
-                </div>
-                <div className="flex flex-col gap-2">
-                  {j.status === "pending" && (
-                    <button onClick={() => updateStatus.mutate({ id: j.id, status: "accepted" })} className="rounded-full bg-primary px-3 py-1.5 text-xs text-primary-foreground">Accept</button>
-                  )}
-                  {j.status === "accepted" && (
-                    <button onClick={() => updateStatus.mutate({ id: j.id, status: "in_progress" })} className="rounded-full bg-gold px-3 py-1.5 text-xs text-background">Start</button>
-                  )}
-                  {j.status === "in_progress" && (
-                    <>
-                      <span className="inline-flex items-center gap-1 self-end rounded-full bg-primary/15 px-2 py-0.5 text-[10px] text-primary">
-                        <MapPin className="size-3" /> Sharing live location
-                      </span>
-                      <button onClick={() => updateStatus.mutate({ id: j.id, status: "completed" })} className="rounded-full bg-emerald-500 px-3 py-1.5 text-xs text-background">Complete</button>
-                    </>
-                  )}
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <div className="mt-6">
+          {tab === "jobs" && (
+            <>
+              {!profile.available && (
+                <p className="mb-3 rounded-xl border border-gold/40 bg-gold/10 p-3 text-xs">
+                  You're offline — go online to receive first-wave job offers.
+                </p>
+              )}
+              <AvailableJobs />
+            </>
+          )}
 
-        <h2 className="mt-10 font-display text-xl font-semibold">History & payouts</h2>
-        <p className="mt-1 text-xs text-muted-foreground">Net payout = price − platform commission (latest configured rates).</p>
-        <ul className="mt-3 grid gap-2">
-          {completed.slice(0, 10).map((j) => {
-            const price = Number(j.price) || 0;
-            const fee = computeFee(j.category, price);
-            const net = price - fee;
-            const r: any = ratesByCategory.get(j.category);
-            return (
-              <li key={j.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-card p-3 text-sm">
-                <div className="min-w-0">
-                  <div className="truncate">{j.category} — {j.address}</div>
-                  <div className="text-[11px] text-muted-foreground">
-                    {new Date(j.updated_at).toLocaleDateString()} · ${price.toFixed(2)} gross
-                    {r ? ` · ${Number(r.percent).toFixed(1)}% + $${Number(r.min_fee).toFixed(2)} fee` : " · no rate set"}
+          {tab === "active" && (
+            <>
+              <ProviderJobsMap jobs={active} />
+              <ul className="mt-4 grid gap-3">
+                {active.length === 0 && <li className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">No active jobs.</li>}
+                {active.map((j) => (
+                  <li key={j.id} className="rounded-2xl border border-border bg-card p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="text-xs uppercase tracking-wider text-primary">{j.category} · {j.status}</div>
+                        <div className="mt-1 font-medium">{j.address}</div>
+                        {j.description && <div className="mt-1 text-sm text-muted-foreground">{j.description}</div>}
+                        <Link
+                          to="/messages/$bookingId"
+                          params={{ bookingId: j.id }}
+                          className="mt-2 inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                        >
+                          <MessageSquare className="size-3" /> Chat with customer
+                        </Link>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        {j.status === "pending" && (
+                          <button onClick={() => updateStatus.mutate({ id: j.id, status: "accepted" })} className="rounded-full bg-primary px-3 py-1.5 text-xs text-primary-foreground">Accept</button>
+                        )}
+                        {j.status === "accepted" && (
+                          <button onClick={() => updateStatus.mutate({ id: j.id, status: "in_progress" })} className="rounded-full bg-gold px-3 py-1.5 text-xs text-background">Start</button>
+                        )}
+                        {j.status === "in_progress" && (
+                          <>
+                            <span className="inline-flex items-center gap-1 self-end rounded-full bg-primary/15 px-2 py-0.5 text-[10px] text-primary">
+                              <MapPin className="size-3" /> Sharing live location
+                            </span>
+                            <button onClick={() => updateStatus.mutate({ id: j.id, status: "completed" })} className="rounded-full bg-emerald-500 px-3 py-1.5 text-xs text-background">Mark complete</button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+
+          {tab === "schedule" && (
+            <ul className="grid gap-2">
+              {todaysJobs.length === 0 && (
+                <li className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">Nothing scheduled for today.</li>
+              )}
+              {todaysJobs.map((j) => (
+                <li key={j.id} className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card p-3 text-sm">
+                  <div className="min-w-0">
+                    <div className="font-medium tabular-nums">{new Date(j.scheduled_for!).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>
+                    <div className="truncate text-xs text-muted-foreground">{j.category} — {j.address}</div>
                   </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-xs text-muted-foreground">−${fee.toFixed(2)}</div>
-                  <div className="font-semibold">${net.toFixed(2)}</div>
-                </div>
-              </li>
-            );
-          })}
-          {completed.length === 0 && <li className="rounded-xl border border-dashed border-border p-4 text-center text-xs text-muted-foreground">No completed jobs yet.</li>}
-        </ul>
+                  <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] capitalize">{j.status.replace("_", " ")}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {tab === "earnings" && (
+            <>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                <Stat label="Wallet (released)" value={`$${released.toFixed(2)}`} sub="Customer confirmed" />
+                <Stat label="Pending release" value={`$${pendingPayout.toFixed(2)}`} sub="Awaiting confirmation" />
+                <Stat label="Platform fees" value={`$${commissionTotal.toFixed(2)}`} sub="Lifetime" />
+              </div>
+              <p className="mt-4 text-xs text-muted-foreground">Net payout = price − platform commission (latest configured rates).</p>
+              <ul className="mt-3 grid gap-2">
+                {completed.slice(0, 20).map((j) => {
+                  const price = Number(j.price) || 0;
+                  const fee = computeFee(j.category, price);
+                  const net = price - fee;
+                  const r: any = ratesByCategory.get(j.category);
+                  return (
+                    <li key={j.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-card p-3 text-sm">
+                      <div className="min-w-0">
+                        <div className="truncate">{j.category} — {j.address}</div>
+                        <div className="text-[11px] text-muted-foreground">
+                          {new Date(j.updated_at).toLocaleDateString()} · ${price.toFixed(2)} gross
+                          {r ? ` · ${Number(r.percent).toFixed(1)}% + $${Number(r.min_fee).toFixed(2)} fee` : " · no rate set"}
+                          {(j as any).customer_confirmed_at ? " · released" : " · pending confirmation"}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-xs text-muted-foreground">−${fee.toFixed(2)}</div>
+                        <div className="font-semibold">${net.toFixed(2)}</div>
+                      </div>
+                    </li>
+                  );
+                })}
+                {completed.length === 0 && <li className="rounded-xl border border-dashed border-border p-4 text-center text-xs text-muted-foreground">No completed jobs yet.</li>}
+              </ul>
+            </>
+          )}
+
+          {tab === "ratings" && (
+            <ul className="grid gap-2">
+              {(reviews ?? []).length === 0 && (
+                <li className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">No reviews yet.</li>
+              )}
+              {(reviews ?? []).map((r: any) => (
+                <li key={r.id} className="rounded-xl border border-border bg-card p-3">
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <Star key={n} className={`size-4 ${n <= r.rating ? "fill-gold text-gold" : "text-muted-foreground/40"}`} />
+                    ))}
+                    <span className="ml-2 text-[11px] text-muted-foreground">{new Date(r.created_at).toLocaleDateString()}</span>
+                  </div>
+                  {r.review && <p className="mt-1.5 text-sm text-muted-foreground">{r.review}</p>}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {tab === "profile" && (
+            <div className="grid gap-4 rounded-2xl border border-border bg-card p-5 text-sm">
+              <Row label="Business" value={profile.business_name} />
+              <Row label="Category" value={profile.category} />
+              <Row label="City" value={profile.city} />
+              <Row label="Hourly rate" value={`$${Number(profile.hourly_rate).toFixed(2)}`} />
+              <Row label="Verification" value={String((profile as any).verification_status).replace("_", " ")} />
+              <Row label="Availability" value={profile.available ? "Online" : "Offline"} />
+              <Link to="/provider/setup" className="justify-self-start rounded-full bg-primary px-5 py-2.5 text-xs font-medium text-primary-foreground">
+                Edit profile & documents
+              </Link>
+            </div>
+          )}
+        </div>
       </section>
     </SiteShell>
+  );
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between gap-3 border-b border-border/60 pb-2 last:border-0">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="font-medium capitalize">{value}</span>
+    </div>
   );
 }
 
