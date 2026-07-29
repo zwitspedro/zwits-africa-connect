@@ -42,19 +42,31 @@ export function Hero() {
 
         <div className="animate-rise mt-10 flex flex-col gap-3 sm:flex-row" style={{ animationDelay: "240ms" }}>
           <Link
-            to="/services"
+            to="/login"
             className="group inline-flex items-center justify-center gap-2 rounded-full bg-primary px-8 py-4 text-[15px] font-semibold text-primary-foreground shadow-glow transition hover:opacity-90"
           >
-            Book Now
+            Book a Service
             <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
           </Link>
           <Link
-            to="/become-a-provider"
+            to="/provider-login"
             className="inline-flex items-center justify-center gap-2 rounded-full glass px-8 py-4 text-[15px] font-semibold text-foreground transition hover:bg-card"
           >
-            Become a Partner
+            Provide Services
           </Link>
         </div>
+        <p className="animate-rise mt-4 text-[13px] text-muted-foreground" style={{ animationDelay: "280ms" }}>
+          New here?{" "}
+          <Link to="/signup" className="text-primary hover:underline">
+            Create a customer account
+          </Link>{" "}
+          or{" "}
+          <Link to="/provider-signup" className="text-primary hover:underline">
+            register as a professional
+          </Link>
+          .
+        </p>
+
 
         <div
           className="animate-rise mt-14 flex flex-wrap items-center gap-x-8 gap-y-3 text-[13px] text-muted-foreground"
