@@ -36,6 +36,7 @@ import { Route as AuthenticatedBookingsIndexRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedProviderSetupRouteImport } from './routes/_authenticated/provider.setup'
 import { Route as AuthenticatedMessagesBookingIdRouteImport } from './routes/_authenticated/messages.$bookingId'
+import { Route as AuthenticatedDeliveriesIdRouteImport } from './routes/_authenticated/deliveries.$id'
 import { Route as AuthenticatedBookingsIdRouteImport } from './routes/_authenticated/bookings.$id'
 import { Route as AuthenticatedBookCategoryRouteImport } from './routes/_authenticated/book.$category'
 import { Route as AuthenticatedAdminProvidersRouteImport } from './routes/_authenticated/admin.providers'
@@ -188,6 +189,12 @@ const AuthenticatedMessagesBookingIdRoute =
     path: '/messages/$bookingId',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedDeliveriesIdRoute =
+  AuthenticatedDeliveriesIdRouteImport.update({
+    id: '/deliveries/$id',
+    path: '/deliveries/$id',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedBookingsIdRoute = AuthenticatedBookingsIdRouteImport.update({
   id: '/bookings/$id',
   path: '/bookings/$id',
@@ -272,6 +279,7 @@ export interface FileRoutesByFullPath {
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/book/$category': typeof AuthenticatedBookCategoryRoute
   '/bookings/$id': typeof AuthenticatedBookingsIdRoute
+  '/deliveries/$id': typeof AuthenticatedDeliveriesIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
@@ -310,6 +318,7 @@ export interface FileRoutesByTo {
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/book/$category': typeof AuthenticatedBookCategoryRoute
   '/bookings/$id': typeof AuthenticatedBookingsIdRoute
+  '/deliveries/$id': typeof AuthenticatedDeliveriesIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
@@ -350,6 +359,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/_authenticated/book/$category': typeof AuthenticatedBookCategoryRoute
   '/_authenticated/bookings/$id': typeof AuthenticatedBookingsIdRoute
+  '/_authenticated/deliveries/$id': typeof AuthenticatedDeliveriesIdRoute
   '/_authenticated/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/_authenticated/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
@@ -390,6 +400,7 @@ export interface FileRouteTypes {
     | '/admin/providers'
     | '/book/$category'
     | '/bookings/$id'
+    | '/deliveries/$id'
     | '/messages/$bookingId'
     | '/provider/setup'
     | '/admin/'
@@ -428,6 +439,7 @@ export interface FileRouteTypes {
     | '/admin/providers'
     | '/book/$category'
     | '/bookings/$id'
+    | '/deliveries/$id'
     | '/messages/$bookingId'
     | '/provider/setup'
     | '/admin'
@@ -467,6 +479,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/providers'
     | '/_authenticated/book/$category'
     | '/_authenticated/bookings/$id'
+    | '/_authenticated/deliveries/$id'
     | '/_authenticated/messages/$bookingId'
     | '/_authenticated/provider/setup'
     | '/_authenticated/admin/'
@@ -694,6 +707,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMessagesBookingIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/deliveries/$id': {
+      id: '/_authenticated/deliveries/$id'
+      path: '/deliveries/$id'
+      fullPath: '/deliveries/$id'
+      preLoaderRoute: typeof AuthenticatedDeliveriesIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/bookings/$id': {
       id: '/_authenticated/bookings/$id'
       path: '/bookings/$id'
@@ -777,6 +797,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAdminProvidersRoute: typeof AuthenticatedAdminProvidersRoute
   AuthenticatedBookCategoryRoute: typeof AuthenticatedBookCategoryRoute
   AuthenticatedBookingsIdRoute: typeof AuthenticatedBookingsIdRoute
+  AuthenticatedDeliveriesIdRoute: typeof AuthenticatedDeliveriesIdRoute
   AuthenticatedMessagesBookingIdRoute: typeof AuthenticatedMessagesBookingIdRoute
   AuthenticatedProviderSetupRoute: typeof AuthenticatedProviderSetupRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
@@ -797,6 +818,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminProvidersRoute: AuthenticatedAdminProvidersRoute,
   AuthenticatedBookCategoryRoute: AuthenticatedBookCategoryRoute,
   AuthenticatedBookingsIdRoute: AuthenticatedBookingsIdRoute,
+  AuthenticatedDeliveriesIdRoute: AuthenticatedDeliveriesIdRoute,
   AuthenticatedMessagesBookingIdRoute: AuthenticatedMessagesBookingIdRoute,
   AuthenticatedProviderSetupRoute: AuthenticatedProviderSetupRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
