@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { useNotificationsRealtime } from "@/hooks/use-notifications-realtime";
 import { useRoles } from "@/hooks/use-role";
+import { RoleSwitcher } from "@/components/portal/role-switcher";
 import { services } from "@/data/services";
 
 const links = [
@@ -133,9 +134,7 @@ export function SiteHeader() {
                   </span>
                 )}
               </Link>
-              <Link to="/dashboard" className="rounded-full px-4 py-2 text-sm text-muted-foreground hover:text-foreground">
-                Dashboard
-              </Link>
+              <RoleSwitcher />
               {isAdmin && (
                 <Link to="/admin" className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-2 text-sm text-primary hover:bg-primary/15">
                   <ShieldCheck className="size-4" /> Admin
@@ -197,13 +196,29 @@ export function SiteHeader() {
                 {l.label}
               </Link>
             ))}
-            <Link
-              to="/signup"
-              onClick={() => setOpen(false)}
-              className="mt-3 rounded-full bg-primary px-4 py-3.5 text-center text-sm font-semibold text-primary-foreground"
-            >
-              Book Now
-            </Link>
+            {user ? (
+              <div className="mt-4">
+                <p className="px-2 pb-2 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Portals</p>
+                <RoleSwitcher compact />
+                <button
+                  onClick={() => {
+                    setOpen(false);
+                    signOut();
+                  }}
+                  className="mt-3 w-full rounded-full border border-border px-4 py-3 text-sm"
+                >
+                  Sign out
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/signup"
+                onClick={() => setOpen(false)}
+                className="mt-3 rounded-full bg-primary px-4 py-3.5 text-center text-sm font-semibold text-primary-foreground"
+              >
+                Book Now
+              </Link>
+            )}
           </nav>
         </div>
       )}

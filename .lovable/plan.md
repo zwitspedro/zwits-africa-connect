@@ -1,55 +1,60 @@
-## Goal
+## Zwits Platform Master Architecture — phased build
 
-Turn Zwits from "pick a provider and book" into a real marketplace: customers post a job, the system offers it to the best-matched providers in waves, the first to accept wins (or the customer picks from quotes for higher-value services), then both sides track, complete, and rate.
+This is a multi-release program, not a single change. Below is the architecture and the order I'd build it in, starting from what already exists (public site, customer booking flow, provider dashboard + Growth Center, partial admin).
 
-## How it will work
+### What exists today
+- Public: Home, About, Services, Business, Become a Provider, Contact, FAQ, Privacy, Terms, Login, Register
+- Customer: dashboard, book a service, bookings, booking detail, messages, notifications
+- Provider: full dashboard (jobs, schedule, earnings, wallet, reviews, performance, profile, documents, support, settings) + Growth Center
+- Admin: overview, providers, commissions, reconciliation
+- Backend: single auth, `user_roles` table with `customer | provider | admin`, bookings, dispatch, quotes, ratings, messages, notifications, wallet-adjacent earnings
 
-**1. Customer posts a request**
-Existing booking wizard gains: optional photos, a budget field, and a "how do you want this filled?" mode that is chosen automatically per service:
-- Fast dispatch (deliveries, transport, emergency, customer service) — first provider to accept wins.
-- Quotes (repairs, cleaning, farming, beauty, freelance) — up to 5 providers submit price + ETA + message, customer chooses.
+### Missing pillars
+Driver portal, business portal, role switching, wallets/transactions as real tables, delivery as a first-class object, verification/support/audit modules, and the remaining public pages.
 
-**2. Smart matching in waves**
-On submit, the job is offered to the 10 closest qualified providers (right category, approved, online, sorted by distance, then rating, then response time). Each wave has a countdown (20s for deliveries/transport, 30s for others). If nobody accepts, the radius expands and the next wave is offered. Repeats up to 4 waves, then the job is marked "no providers found" and the customer is told.
+---
 
-**3. Providers get the job**
-Providers see an "Available jobs" feed with live incoming offers (category, area, budget, time, customer first name), a countdown ring, and Accept / Decline. Realtime in-app notification + toast for each offer. Once someone accepts, everyone else's card flips to "Job no longer available."
+### Phase 1 — Platform foundation (role system + shell)
+- Extend the role enum with `driver` and `business`; keep roles in `user_roles` so one account can hold several.
+- Add an active-role concept: a role switcher in the header, persisted per session, driving which portal shell renders.
+- Post-login routing: single role → straight to that dashboard; multiple roles → last-used, with one-tap switching.
+- Route groups: `/app` (customer), `/provider`, `/driver`, `/business`, `/admin`, each behind a role guard under the authenticated layout.
+- One shared portal shell: sidebar + mobile bottom nav + global search + notification bell, reused by all five portals (the provider dashboard kit becomes the shared design system).
 
-**4. Quotes flow**
-For quote services, providers submit price, arrival time, and a short message instead of accepting. Customer sees the offers side by side on the booking page and picks one; the rest are auto-declined.
+### Phase 2 — Public website completion
+Add Delivery, Pricing, Become a Driver, Careers pages; align every page on one design language with per-page SEO metadata.
 
-**5. Live job tracking**
-The booking detail page becomes a shared job view for both parties: status timeline, ETA, live map (already built), chat, call button, and payment status.
+### Phase 3 — Delivery + Driver portal
+- Database: `deliveries`, `driver_profiles`, `vehicles`, `delivery_offers`, `driver_locations`.
+- Driver portal: dashboard, available/accepted deliveries, navigation and live tracking on the existing map stack, route ordering, earnings, wallet, performance, ratings, vehicle info, availability toggle, support, settings.
+- Customer side: Book a Delivery, Track Orders, Live Map.
 
-**6. Completion**
-Provider taps "Mark complete" → customer sees "Confirm completion" → on confirm, payment is marked released and both parties are prompted to rate each other. Provider ratings already exist; a customer rating is added.
+### Phase 4 — Money layer
+- Database: `wallets`, `wallet_transactions`, `payouts`, `invoices`, `promotions`, `referrals`, `rewards`.
+- Real wallet balances, ledger history, invoices and payout requests for customers, providers and drivers; commission engine reuses the existing `commission_rates`.
+- Payment gateway integration is a separate decision point (see questions below).
 
-**7. Provider dashboard rebuild**
-Tabs: Available jobs · My jobs · Today's schedule · Earnings & wallet · Ratings & reviews · Performance · Profile & verification, plus the Online/Offline toggle in the header.
+### Phase 5 — Customer portal completion
+Saved addresses, favourite providers, invoices, reviews hub, rewards, referral program, richer settings and support.
 
-## Technical details
+### Phase 6 — Business portal
+`businesses`, `business_members`, `recurring_bookings`; corporate dashboard, bulk bookings, recurring deliveries, employee accounts, invoices, reports, analytics, business wallet, API keys.
 
-Database (one migration, with GRANTs + RLS):
-- `bookings`: add `budget`, `photos text[]`, `fulfilment_mode` ('dispatch' | 'quotes'), `dispatch_state`, `customer_confirmed_at`, `completed_at`.
-- `job_offers`: booking_id, provider_id, wave, status (offered/accepted/declined/expired/lost), offered_at, expires_at, responded_at. Drives the provider feed, the countdown and response-time stats.
-- `job_quotes`: booking_id, provider_id, price, eta_minutes, message, status.
-- `customer_ratings`: provider rates the customer (mirrors `ratings`).
-- `provider_stats` view/columns for avg response time and acceptance rate.
-- Realtime enabled on `job_offers`, `job_quotes`, `bookings`.
+### Phase 7 — Admin control center
+Live activity map, customers/providers/drivers/businesses management, bookings, deliveries, payments, wallets, disputes, reviews, verification queue, marketing, notifications, support tickets, analytics, reports, CMS, system settings, security, audit logs.
 
-Server functions (`src/lib/dispatch.functions.ts`):
-- `createJob` — inserts booking, computes distance-ranked provider shortlist, writes wave-1 offers.
-- `respondToOffer` — accept/decline with a race-safe conditional update so only one provider can win.
-- `submitQuote` / `acceptQuote`.
-- `advanceDispatch` — expires the current wave, widens the radius, writes the next wave; called from the client countdown and on any offer read (self-healing, no cron needed).
+### Phase 8 — Universal features and hardening
+Global search, unified messaging, real-time updates everywhere, email/SMS/push notification fan-out, 2FA, activity logging, fraud signals, accessibility pass, offline caching for driver/provider job lists.
 
-Frontend:
-- `src/components/provider/job-offer-card.tsx` (countdown ring, accept/decline)
-- `src/components/provider/available-jobs.tsx` (realtime feed)
-- `src/components/quotes-panel.tsx` (customer-side comparison)
-- Rebuild `src/routes/_authenticated/provider.index.tsx` into the tabbed dashboard.
-- Extend `book.$category.tsx` (photos, budget, mode) and `bookings.$id.tsx` (timeline, quotes, completion + mutual rating).
+---
 
-Photos reuse the existing `chat-attachments` bucket pattern via a new private `job-photos` bucket.
+### Technical notes
+- Everything stays one TanStack Start app, one Cloud database, one auth system. Portals are route groups, not separate apps.
+- Access control: roles in `user_roles` + a `has_role` security-definer function, with RLS on every table; portal guards are UI convenience only, never the security boundary.
+- Future modules (Pay, Food, Market, Health, Travel, Jobs, Property, Academy, Logistics, AI) plug in as new route groups plus their own tables, reusing the shared shell, wallet, messaging, notifications and verification services — a `service_verticals` concept keeps bookings/deliveries polymorphic so nothing is rebuilt.
+- Scale: indexed foreign keys, pagination everywhere, no unbounded selects, geospatial filtering for dispatch.
 
-Out of scope for this pass: real push notifications to a phone (needs a native shell / FCM). Providers get realtime in-app notifications and toasts; the existing PWA install path can add push later.
+### Open questions before Phase 1
+1. Which phase should I start with now? (I'd recommend Phase 1, since role switching unblocks every other portal.)
+2. Payments: which gateway do you want — EcoCash/ZimSwitch via a local aggregator, Paynow, Stripe, or wallet-only for now?
+3. Should driver and provider be genuinely separate portals, or one "earner" portal with two modes?
