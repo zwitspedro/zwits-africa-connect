@@ -1,166 +1,171 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { SiteShell } from "@/components/site-shell";
+import { AuthShell } from "@/components/auth/auth-shell";
+import {
+  CheckField,
+  Divider,
+  Field,
+  PasswordField,
+  SocialButtons,
+  SubmitButton,
+} from "@/components/auth/auth-ui";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
+import { resolveLanding } from "@/lib/auth-nav";
+
+const title = "Create your Zwits account — book trusted services";
+const description =
+  "Join Zwits to book verified professionals, track jobs live and pay securely from one account.";
 
 export const Route = createFileRoute("/signup")({
   head: () => ({
     meta: [
-      { title: "Sign up — Zwits" },
-      { name: "description", content: "Create your Zwits account." },
-      { property: "og:url", content: "https://zwits-africa-connect.lovable.app/signup" },
+      { title },
+      { name: "description", content: description },
+      { property: "og:title", content: title },
+      { property: "og:description", content: description },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://zwits.co.zw/signup" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "https://zwits-africa-connect.lovable.app/signup" }],
+    links: [{ rel: "canonical", href: "https://zwits.co.zw/signup" }],
   }),
-  component: Signup,
+  component: CustomerSignup,
 });
 
-type Mode = "email" | "phone";
-
-function Signup() {
+function CustomerSignup() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<Mode>("email");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
+  const [form, setForm] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    city: "",
+    password: "",
+    confirm: "",
+    referral: "",
+  });
+  const [terms, setTerms] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
 
+  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setForm((f) => ({ ...f, [k]: e.target.value }));
 
-  const signupEmail = async (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (form.password.length < 8) return toast.error("Password must be at least 8 characters.");
+    if (form.password !== form.confirm) return toast.error("Passwords don't match.");
+    if (!terms) return toast.error("Please accept the terms to continue.");
+
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
+    const { data, error } = await supabase.auth.signUp({
+      email: form.email.trim(),
+      password: form.password,
       options: {
-        emailRedirectTo: `${window.location.origin}/`,
-        data: { display_name: name },
+        emailRedirectTo: window.location.origin,
+        data: { display_name: form.fullName.trim(), phone: form.phone.trim() },
       },
     });
+
+    if (error) {
+      setLoading(false);
+      toast.error(error.message);
+      return;
+    }
+
+    if (data.session && data.user) {
+      await supabase
+        .from("profiles")
+        .update({
+          display_name: form.fullName.trim(),
+          phone: form.phone.trim() || null,
+          city: form.city.trim() || null,
+          country: "Zimbabwe",
+          referral_code: form.referral.trim() || null,
+          terms_accepted_at: new Date().toISOString(),
+        })
+        .eq("user_id", data.user.id);
+
+      const to = await resolveLanding(data.user.id, "customer");
+      setLoading(false);
+      toast.success("Account created — welcome to Zwits");
+      navigate({ to, replace: true });
+      return;
+    }
+
     setLoading(false);
-    if (error) return toast.error(error.message);
-    setSent(true);
+    toast.success("Check your email to confirm your account.");
   };
 
-
-  const sendOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithOtp({
-      phone,
-      options: { data: { display_name: name } },
-    });
-    setLoading(false);
-    if (error) return toast.error(error.message);
-    setOtpSent(true);
-    toast.success("Code sent to your phone");
+  const afterSocial = async () => {
+    const { data } = await supabase.auth.getUser();
+    if (data.user) navigate({ to: await resolveLanding(data.user.id, "customer"), replace: true });
   };
-
-  const verifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    const { error } = await supabase.auth.verifyOtp({ phone, token: otp, type: "sms" });
-    setLoading(false);
-    if (error) return toast.error(error.message);
-    toast.success("Welcome to Zwits");
-    navigate({ to: "/" });
-  };
-
-  const google = async () => {
-    const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-    if (r.error) toast.error("Google sign-in failed");
-  };
-
-  if (sent) {
-    return (
-      <SiteShell>
-        <section className="mx-auto grid min-h-[70vh] max-w-md place-items-center px-4 py-16 sm:px-6">
-          <div className="w-full rounded-3xl border border-border bg-card p-8 text-center">
-            <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-primary/15 text-2xl">✉️</div>
-            <h1 className="mt-4 font-display text-2xl font-bold">Check your inbox</h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              We sent a confirmation link to <span className="font-medium text-foreground">{email}</span>. Click it to
-              activate your account, then sign in.
-            </p>
-            <p className="mt-3 text-xs text-muted-foreground">
-              Nothing after a few minutes? Check spam, or sign up again with a different address.
-            </p>
-            <Link to="/login" className="mt-6 inline-block rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground">
-              Go to sign in
-            </Link>
-          </div>
-        </section>
-      </SiteShell>
-    );
-  }
 
   return (
-
-    <SiteShell>
-      <section className="mx-auto grid min-h-[70vh] max-w-md place-items-center px-4 py-16 sm:px-6">
-        <div className="w-full rounded-3xl border border-border bg-card p-8">
-          <h1 className="font-display text-3xl font-bold">Create your account</h1>
-          <p className="mt-2 text-sm text-muted-foreground">Book your first service in seconds.</p>
-
-          <button onClick={google} className="mt-6 w-full rounded-full border border-input bg-background px-4 py-3 text-sm font-medium hover:bg-muted">
-            Continue with Google
-          </button>
-
-          <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground">
-            <span className="h-px flex-1 bg-border" /> OR <span className="h-px flex-1 bg-border" />
-          </div>
-
-          <div className="mb-4 grid grid-cols-2 gap-1 rounded-full border border-border p-1 text-xs">
-            <button onClick={() => setMode("email")} className={`rounded-full px-3 py-2 ${mode === "email" ? "bg-primary text-primary-foreground" : ""}`}>Email</button>
-            <button onClick={() => setMode("phone")} className={`rounded-full px-3 py-2 ${mode === "phone" ? "bg-primary text-primary-foreground" : ""}`}>Phone</button>
-          </div>
-
-          {mode === "email" ? (
-            <form className="grid gap-4" onSubmit={signupEmail}>
-              <Field label="Full name" value={name} onChange={setName} required />
-              <Field label="Email" value={email} onChange={setEmail} type="email" required />
-              <Field label="Password (min 6 chars)" value={password} onChange={setPassword} type="password" required />
-              <button disabled={loading} className="mt-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground disabled:opacity-60">
-                {loading ? "Creating…" : "Create account"}
-              </button>
-            </form>
-          ) : (
-            <form className="grid gap-4" onSubmit={otpSent ? verifyOtp : sendOtp}>
-              {!otpSent && <Field label="Full name" value={name} onChange={setName} required />}
-              <Field label="Phone (e.g. +263 77 123 4567)" value={phone} onChange={setPhone} type="tel" required />
-              {otpSent && <Field label="6-digit code" value={otp} onChange={setOtp} required />}
-              <button disabled={loading} className="mt-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground disabled:opacity-60">
-                {loading ? "Please wait…" : otpSent ? "Verify & create account" : "Send code"}
-              </button>
-            </form>
-          )}
-
-          <p className="mt-5 text-center text-sm text-muted-foreground">
-            Already have an account? <Link to="/login" className="text-primary hover:underline">Sign in</Link>
-          </p>
+    <AuthShell
+      variant="customer"
+      title="Join Zwits Today"
+      subtitle="Create your free account and start booking trusted service providers near you."
+      footer={
+        <>
+          Already have an account?{" "}
+          <Link to="/login" className="font-medium text-primary hover:underline">
+            Log in
+          </Link>
+        </>
+      }
+    >
+      <form className="grid gap-4" onSubmit={submit}>
+        <Field label="Full name" value={form.fullName} onChange={set("fullName")} required autoComplete="name" />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Email" type="email" value={form.email} onChange={set("email")} required autoComplete="email" />
+          <Field
+            label="Phone number"
+            value={form.phone}
+            onChange={set("phone")}
+            placeholder="+263 77 123 4567"
+            autoComplete="tel"
+          />
         </div>
-      </section>
-    </SiteShell>
-  );
-}
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="City" value={form.city} onChange={set("city")} placeholder="Harare" />
+          <Field label="Referral code (optional)" value={form.referral} onChange={set("referral")} />
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <PasswordField
+            label="Password"
+            value={form.password}
+            onChange={(v) => setForm((f) => ({ ...f, password: v }))}
+            autoComplete="new-password"
+            hint="At least 8 characters"
+            required
+          />
+          <PasswordField
+            label="Confirm password"
+            value={form.confirm}
+            onChange={(v) => setForm((f) => ({ ...f, confirm: v }))}
+            autoComplete="new-password"
+            required
+          />
+        </div>
 
-function Field({ label, value, onChange, type = "text", required }: { label: string; value: string; onChange: (v: string) => void; type?: string; required?: boolean }) {
-  return (
-    <label className="grid gap-1.5">
-      <span className="text-xs text-muted-foreground">{label}</span>
-      <input
-        type={type}
-        value={value}
-        required={required}
-        onChange={(e) => onChange(e.target.value)}
-        className="rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-primary"
-      />
-    </label>
+        <CheckField checked={terms} onChange={setTerms}>
+          I agree to the{" "}
+          <Link to="/terms" className="text-primary hover:underline">
+            terms of service
+          </Link>{" "}
+          and{" "}
+          <Link to="/privacy" className="text-primary hover:underline">
+            privacy policy
+          </Link>
+          .
+        </CheckField>
+
+        <SubmitButton loading={loading}>Create account</SubmitButton>
+      </form>
+
+      <Divider />
+      <SocialButtons onSignedIn={afterSocial} />
+    </AuthShell>
   );
 }
