@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { useNotificationsRealtime } from "@/hooks/use-notifications-realtime";
 import { useRoles } from "@/hooks/use-role";
+import { RoleSwitcher } from "@/components/portal/role-switcher";
 import { services } from "@/data/services";
 
 const links = [
