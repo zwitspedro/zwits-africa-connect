@@ -43,9 +43,9 @@ function Signup() {
     });
     setLoading(false);
     if (error) return toast.error(error.message);
-    toast.success("Check your email to confirm your account");
-    navigate({ to: "/login" });
+    setSent(true);
   };
+
 
   const sendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
