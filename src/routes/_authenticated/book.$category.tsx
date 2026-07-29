@@ -159,29 +159,32 @@ function BookCategory() {
       });
     },
     onSuccess: async (data) => {
-      toast.success("Booking confirmed");
-      const methodLabel = paymentMethod === "cash"
-        ? "Cash on delivery"
-        : paymentMethod!.toUpperCase();
+      toast.success(
+        data.mode === "quotes"
+          ? "Request sent — providers are preparing quotes"
+          : data.mode === "dispatch"
+            ? "Request sent — finding you a provider"
+            : "Booking confirmed",
+      );
+      const methodLabel = paymentMethod === "cash" ? "Cash on delivery" : paymentMethod!.toUpperCase();
       const ref = data.id.slice(0, 8).toUpperCase();
       const body = [
         `Service: ${service!.name}`,
         `Address: ${address}`,
         scheduled && scheduled !== "ASAP" ? `Scheduled: ${new Date(scheduled).toLocaleString()}` : "Scheduled: ASAP",
-        `Payment: ${methodLabel}${paymentMethod !== "cash" && paymentReference ? ` (${paymentReference.trim()})` : ""}`,
+        `Payment: ${methodLabel}`,
         `Reference: ${ref}`,
-        "",
-        "Mock receipt — payment will be confirmed by the provider.",
       ].filter(Boolean).join("\n");
       await supabase.from("notifications").insert({
         user_id: user!.id,
-        title: `Booking confirmed — ${service!.name}`,
+        title: `Request sent — ${service!.name}`,
         body,
         link: `/bookings/${data.id}`,
         kind: "booking",
       });
       qc.invalidateQueries({ queryKey: ["notifications-unread"] });
       qc.invalidateQueries({ queryKey: ["notifications"] });
+      qc.invalidateQueries({ queryKey: ["bookings"] });
       setReceipt({
         id: data.id,
         category: category!,
@@ -190,7 +193,7 @@ function BookCategory() {
         scheduledFor: scheduled && scheduled !== "ASAP" ? scheduled : null,
         paymentMethod: paymentMethod!,
         paymentReference: paymentMethod === "cash" ? null : paymentReference.trim() || null,
-        createdAt: data.created_at,
+        createdAt: data.createdAt,
       });
     },
     onError: (e: any) => toast.error(e.message),
