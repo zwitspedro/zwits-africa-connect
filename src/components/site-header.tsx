@@ -196,13 +196,29 @@ export function SiteHeader() {
                 {l.label}
               </Link>
             ))}
-            <Link
-              to="/signup"
-              onClick={() => setOpen(false)}
-              className="mt-3 rounded-full bg-primary px-4 py-3.5 text-center text-sm font-semibold text-primary-foreground"
-            >
-              Book Now
-            </Link>
+            {user ? (
+              <div className="mt-4">
+                <p className="px-2 pb-2 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Portals</p>
+                <RoleSwitcher compact />
+                <button
+                  onClick={() => {
+                    setOpen(false);
+                    signOut();
+                  }}
+                  className="mt-3 w-full rounded-full border border-border px-4 py-3 text-sm"
+                >
+                  Sign out
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/signup"
+                onClick={() => setOpen(false)}
+                className="mt-3 rounded-full bg-primary px-4 py-3.5 text-center text-sm font-semibold text-primary-foreground"
+              >
+                Book Now
+              </Link>
+            )}
           </nav>
         </div>
       )}
