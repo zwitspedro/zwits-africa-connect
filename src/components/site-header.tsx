@@ -10,10 +10,11 @@ import { RoleSwitcher } from "@/components/portal/role-switcher";
 import { services } from "@/data/services";
 
 const links = [
+  { to: "/delivery", label: "Delivery" },
+  { to: "/pricing", label: "Pricing" },
   { to: "/business", label: "Business" },
   { to: "/become-a-provider", label: "Partners" },
   { to: "/about", label: "About" },
-  { to: "/faq", label: "FAQ" },
   { to: "/contact", label: "Contact" },
 ] as const;
 

@@ -15,8 +15,15 @@ export function SiteFooter() {
         </div>
         <FooterCol title="Platform" items={[
           ["Services", "/services"],
-          ["Become a Provider", "/become-a-provider"],
+          ["Delivery", "/delivery"],
+          ["Pricing", "/pricing"],
+          ["Business", "/business"],
           ["About", "/about"],
+        ]} />
+        <FooterCol title="Join Zwits" items={[
+          ["Become a Provider", "/become-a-provider"],
+          ["Become a Driver", "/become-a-driver"],
+          ["Careers", "/careers"],
           ["Contact", "/contact"],
         ]} />
         <FooterCol title="Support" items={[
