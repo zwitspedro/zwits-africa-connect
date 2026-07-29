@@ -26,6 +26,7 @@ import { Route as BecomeADriverRouteImport } from './routes/become-a-driver'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedSendDeliveryRouteImport } from './routes/_authenticated/send-delivery'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedDriverRouteImport } from './routes/_authenticated/driver'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -35,6 +36,7 @@ import { Route as AuthenticatedBookingsIndexRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedProviderSetupRouteImport } from './routes/_authenticated/provider.setup'
 import { Route as AuthenticatedMessagesBookingIdRouteImport } from './routes/_authenticated/messages.$bookingId'
+import { Route as AuthenticatedDeliveriesIdRouteImport } from './routes/_authenticated/deliveries.$id'
 import { Route as AuthenticatedBookingsIdRouteImport } from './routes/_authenticated/bookings.$id'
 import { Route as AuthenticatedBookCategoryRouteImport } from './routes/_authenticated/book.$category'
 import { Route as AuthenticatedAdminProvidersRouteImport } from './routes/_authenticated/admin.providers'
@@ -130,6 +132,12 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedSendDeliveryRoute =
+  AuthenticatedSendDeliveryRouteImport.update({
+    id: '/send-delivery',
+    path: '/send-delivery',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedNotificationsRoute =
   AuthenticatedNotificationsRouteImport.update({
     id: '/notifications',
@@ -179,6 +187,12 @@ const AuthenticatedMessagesBookingIdRoute =
   AuthenticatedMessagesBookingIdRouteImport.update({
     id: '/messages/$bookingId',
     path: '/messages/$bookingId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedDeliveriesIdRoute =
+  AuthenticatedDeliveriesIdRouteImport.update({
+    id: '/deliveries/$id',
+    path: '/deliveries/$id',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedBookingsIdRoute = AuthenticatedBookingsIdRouteImport.update({
@@ -260,10 +274,12 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/driver': typeof AuthenticatedDriverRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
+  '/send-delivery': typeof AuthenticatedSendDeliveryRoute
   '/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/book/$category': typeof AuthenticatedBookCategoryRoute
   '/bookings/$id': typeof AuthenticatedBookingsIdRoute
+  '/deliveries/$id': typeof AuthenticatedDeliveriesIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
@@ -297,10 +313,12 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/driver': typeof AuthenticatedDriverRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
+  '/send-delivery': typeof AuthenticatedSendDeliveryRoute
   '/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/book/$category': typeof AuthenticatedBookCategoryRoute
   '/bookings/$id': typeof AuthenticatedBookingsIdRoute
+  '/deliveries/$id': typeof AuthenticatedDeliveriesIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
@@ -336,10 +354,12 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/driver': typeof AuthenticatedDriverRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
+  '/_authenticated/send-delivery': typeof AuthenticatedSendDeliveryRoute
   '/_authenticated/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/_authenticated/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/_authenticated/book/$category': typeof AuthenticatedBookCategoryRoute
   '/_authenticated/bookings/$id': typeof AuthenticatedBookingsIdRoute
+  '/_authenticated/deliveries/$id': typeof AuthenticatedDeliveriesIdRoute
   '/_authenticated/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/_authenticated/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
@@ -375,10 +395,12 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/driver'
     | '/notifications'
+    | '/send-delivery'
     | '/admin/commissions'
     | '/admin/providers'
     | '/book/$category'
     | '/bookings/$id'
+    | '/deliveries/$id'
     | '/messages/$bookingId'
     | '/provider/setup'
     | '/admin/'
@@ -412,10 +434,12 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/driver'
     | '/notifications'
+    | '/send-delivery'
     | '/admin/commissions'
     | '/admin/providers'
     | '/book/$category'
     | '/bookings/$id'
+    | '/deliveries/$id'
     | '/messages/$bookingId'
     | '/provider/setup'
     | '/admin'
@@ -450,10 +474,12 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/driver'
     | '/_authenticated/notifications'
+    | '/_authenticated/send-delivery'
     | '/_authenticated/admin/commissions'
     | '/_authenticated/admin/providers'
     | '/_authenticated/book/$category'
     | '/_authenticated/bookings/$id'
+    | '/_authenticated/deliveries/$id'
     | '/_authenticated/messages/$bookingId'
     | '/_authenticated/provider/setup'
     | '/_authenticated/admin/'
@@ -611,6 +637,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/send-delivery': {
+      id: '/_authenticated/send-delivery'
+      path: '/send-delivery'
+      fullPath: '/send-delivery'
+      preLoaderRoute: typeof AuthenticatedSendDeliveryRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/notifications': {
       id: '/_authenticated/notifications'
       path: '/notifications'
@@ -672,6 +705,13 @@ declare module '@tanstack/react-router' {
       path: '/messages/$bookingId'
       fullPath: '/messages/$bookingId'
       preLoaderRoute: typeof AuthenticatedMessagesBookingIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/deliveries/$id': {
+      id: '/_authenticated/deliveries/$id'
+      path: '/deliveries/$id'
+      fullPath: '/deliveries/$id'
+      preLoaderRoute: typeof AuthenticatedDeliveriesIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/bookings/$id': {
@@ -752,10 +792,12 @@ interface AuthenticatedRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDriverRoute: typeof AuthenticatedDriverRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
+  AuthenticatedSendDeliveryRoute: typeof AuthenticatedSendDeliveryRoute
   AuthenticatedAdminCommissionsRoute: typeof AuthenticatedAdminCommissionsRoute
   AuthenticatedAdminProvidersRoute: typeof AuthenticatedAdminProvidersRoute
   AuthenticatedBookCategoryRoute: typeof AuthenticatedBookCategoryRoute
   AuthenticatedBookingsIdRoute: typeof AuthenticatedBookingsIdRoute
+  AuthenticatedDeliveriesIdRoute: typeof AuthenticatedDeliveriesIdRoute
   AuthenticatedMessagesBookingIdRoute: typeof AuthenticatedMessagesBookingIdRoute
   AuthenticatedProviderSetupRoute: typeof AuthenticatedProviderSetupRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
@@ -771,10 +813,12 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDriverRoute: AuthenticatedDriverRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
+  AuthenticatedSendDeliveryRoute: AuthenticatedSendDeliveryRoute,
   AuthenticatedAdminCommissionsRoute: AuthenticatedAdminCommissionsRoute,
   AuthenticatedAdminProvidersRoute: AuthenticatedAdminProvidersRoute,
   AuthenticatedBookCategoryRoute: AuthenticatedBookCategoryRoute,
   AuthenticatedBookingsIdRoute: AuthenticatedBookingsIdRoute,
+  AuthenticatedDeliveriesIdRoute: AuthenticatedDeliveriesIdRoute,
   AuthenticatedMessagesBookingIdRoute: AuthenticatedMessagesBookingIdRoute,
   AuthenticatedProviderSetupRoute: AuthenticatedProviderSetupRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
@@ -817,13 +861,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
