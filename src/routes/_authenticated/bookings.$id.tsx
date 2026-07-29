@@ -1,16 +1,19 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   ArrowLeft, Calendar, MapPin, CreditCard, Clock, MessageSquare, Star,
-  RotateCcw, XCircle, CheckCircle2, CircleDashed, Loader2,
+  RotateCcw, XCircle, CheckCircle2, CircleDashed, Loader2, Radar, Timer,
 } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { LiveTrackingMap } from "@/components/live-tracking-map";
 import { BookingAddressMap } from "@/components/booking-address-map";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { advanceDispatch, acceptQuote, confirmCompletion } from "@/lib/dispatch.functions";
+import { MAX_WAVES } from "@/lib/dispatch-config";
 
 export const Route = createFileRoute("/_authenticated/bookings/$id")({
   head: () => ({ meta: [{ title: "Booking details — Zwits" }] }),
@@ -112,6 +115,16 @@ function BookingDetailPage() {
             </div>
 
             <Timeline status={booking.status as BookingStatus} updatedAt={booking.updated_at} createdAt={booking.created_at} />
+
+            {!booking.provider_id && booking.status === "pending" && (
+              <DispatchPanel booking={booking} />
+            )}
+
+            {booking.status === "completed" && !(booking as any).customer_confirmed_at && (
+              <ConfirmCompletion bookingId={booking.id} />
+            )}
+
+
 
             {(booking.status === "accepted" || booking.status === "in_progress") && (
               <div className="mt-5">
@@ -370,5 +383,147 @@ function StatusBadge({ status }: { status: string }) {
     <span className={`rounded-full px-2.5 py-1 text-xs ${map[status] ?? ""}`}>
       {status.replace("_", " ")}
     </span>
+  );
+}
+
+function DispatchPanel({ booking }: { booking: any }) {
+  const qc = useQueryClient();
+  const advance = useServerFn(advanceDispatch);
+  const accept = useServerFn(acceptQuote);
+  const isQuotes = booking.fulfilment_mode === "quotes";
+
+  const { data: quotes = [] } = useQuery({
+    queryKey: ["job-quotes", booking.id],
+    enabled: isQuotes,
+    refetchInterval: 5000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("job_quotes")
+        .select("id, price, eta_minutes, message, status, provider_id, providers(business_name, rating_avg, city)")
+        .eq("booking_id", booking.id)
+        .eq("status", "submitted")
+        .order("price", { ascending: true });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  // Keep the dispatch waves moving while the customer is on this page.
+  useEffect(() => {
+    if (booking.dispatch_state === "no_providers") return;
+    let cancelled = false;
+    const tick = async () => {
+      try {
+        await advance({ data: { bookingId: booking.id, rankedProviderIds: [] } });
+        if (!cancelled) qc.invalidateQueries({ queryKey: ["booking", booking.id] });
+      } catch {
+        /* transient — the next tick retries */
+      }
+    };
+    tick();
+    const t = setInterval(tick, 6000);
+    return () => {
+      cancelled = true;
+      clearInterval(t);
+    };
+  }, [booking.id, booking.dispatch_state, advance, qc]);
+
+  const choose = useMutation({
+    mutationFn: (quoteId: string) => accept({ data: { quoteId } }),
+    onSuccess: () => {
+      toast.success("Provider booked");
+      qc.invalidateQueries({ queryKey: ["booking", booking.id] });
+      qc.invalidateQueries({ queryKey: ["job-quotes", booking.id] });
+    },
+    onError: (e: any) => toast.error(e.message ?? "Could not accept quote"),
+  });
+
+  return (
+    <div className="mt-5 rounded-2xl border border-primary/30 bg-primary/5 p-4">
+      <div className="flex items-center gap-2 text-sm font-semibold">
+        {booking.dispatch_state === "no_providers" ? (
+          <>
+            <Timer className="size-4 text-destructive" /> No provider available yet
+          </>
+        ) : (
+          <>
+            <Radar className="size-4 animate-pulse text-primary" />
+            {isQuotes ? "Collecting quotes" : "Finding you a provider"}
+          </>
+        )}
+      </div>
+      <p className="mt-1 text-xs text-muted-foreground">
+        {booking.dispatch_state === "no_providers"
+          ? "We couldn't reach an available provider. Try again shortly or widen your timing."
+          : isQuotes
+            ? "Verified providers are sending offers — compare and pick the one you like."
+            : `Search round ${Math.min(booking.dispatch_wave ?? 1, MAX_WAVES)} of ${MAX_WAVES} — expanding until someone accepts.`}
+      </p>
+
+      {isQuotes && (
+        <ul className="mt-4 grid gap-2">
+          {quotes.length === 0 && (
+            <li className="rounded-xl border border-dashed border-border p-4 text-center text-xs text-muted-foreground">
+              No quotes yet.
+            </li>
+          )}
+          {quotes.map((q: any) => (
+            <li key={q.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card p-3">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  {q.providers?.business_name ?? "Provider"}
+                  <span className="flex items-center gap-0.5 text-xs text-muted-foreground">
+                    <Star className="size-3 fill-gold text-gold" /> {Number(q.providers?.rating_avg ?? 0).toFixed(1)}
+                  </span>
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  Arrives in ~{q.eta_minutes} min{q.providers?.city ? ` · ${q.providers.city}` : ""}
+                </div>
+                {q.message && <p className="mt-1 text-xs text-muted-foreground">{q.message}</p>}
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="font-display text-lg font-bold tabular-nums">${Number(q.price).toFixed(2)}</span>
+                <button
+                  disabled={choose.isPending}
+                  onClick={() => choose.mutate(q.id)}
+                  className="rounded-full bg-primary px-4 py-2 text-xs font-medium text-primary-foreground disabled:opacity-60"
+                >
+                  Choose
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function ConfirmCompletion({ bookingId }: { bookingId: string }) {
+  const qc = useQueryClient();
+  const confirm = useServerFn(confirmCompletion);
+  const submit = useMutation({
+    mutationFn: () => confirm({ data: { bookingId } }),
+    onSuccess: () => {
+      toast.success("Thanks — payment released");
+      qc.invalidateQueries({ queryKey: ["booking", bookingId] });
+    },
+    onError: (e: any) => toast.error(e.message ?? "Could not confirm"),
+  });
+
+  return (
+    <div className="mt-5 rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4">
+      <div className="flex items-center gap-2 text-sm font-semibold">
+        <CheckCircle2 className="size-4 text-emerald-400" /> Provider marked this job complete
+      </div>
+      <p className="mt-1 text-xs text-muted-foreground">Confirm the work is done to release payment and leave a rating.</p>
+      <button
+        disabled={submit.isPending}
+        onClick={() => submit.mutate()}
+        className="mt-3 rounded-full bg-emerald-500 px-5 py-2 text-xs font-medium text-background disabled:opacity-60"
+      >
+        {submit.isPending ? "Confirming…" : "Confirm & release payment"}
+      </button>
+    </div>
   );
 }

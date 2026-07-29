@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Star, BadgeCheck, MapPin } from "lucide-react";
+import { Star, BadgeCheck, MapPin, ImagePlus, X } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { AddressAutocomplete } from "@/components/address-autocomplete";
 import { LocationMap } from "@/components/location-map";
@@ -14,6 +15,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useGoogleMaps } from "@/hooks/use-google-maps";
 import { services } from "@/data/services";
+import { createJob } from "@/lib/dispatch.functions";
+import { fulfilmentModeFor } from "@/lib/dispatch-config";
 
 function haversineKm(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
   const R = 6371;
@@ -49,7 +52,11 @@ function BookCategory() {
   const [cityCoords, setCityCoords] = useState<Record<string, { lat: number; lng: number } | null>>({});
   const [step, setStep] = useState<1 | 2>(1);
   const [payDialogOpen, setPayDialogOpen] = useState(false);
+  const [budget, setBudget] = useState("");
+  const [photos, setPhotos] = useState<File[]>([]);
   const { ready: mapsReady } = useGoogleMaps();
+  const submitJob = useServerFn(createJob);
+  const mode = providerId ? "direct" : fulfilmentModeFor(category);
 
   const { data: providers } = useQuery({
     queryKey: ["providers", category],
@@ -122,48 +129,62 @@ function BookCategory() {
   }, [selectedProvider, visibleProviders]);
 
   const create = useMutation({
-    mutationFn: async (txn: { transactionId: string | null }) => {
+    mutationFn: async (_txn: { transactionId: string | null }) => {
       if (!paymentMethod) throw new Error("Choose a payment method");
-      const isCash = paymentMethod === "cash";
-      const { data, error } = await supabase.from("bookings").insert({
-        customer_id: user!.id,
-        provider_id: providerId,
-        category,
-        address,
-        description,
-        scheduled_for: scheduled && scheduled !== "ASAP" ? scheduled : null,
-        price: estimate.price || null,
-        payment_method: paymentMethod,
-        payment_reference: isCash ? null : (txn.transactionId ?? (paymentReference.trim() || null)),
-        payment_status: isCash ? "pending" : "paid",
-      }).select("id, created_at").single();
-      if (error) throw error;
-      return data;
+
+      const paths: string[] = [];
+      for (const file of photos) {
+        const ext = file.name.split(".").pop() ?? "jpg";
+        const path = `${user!.id}/${crypto.randomUUID()}.${ext}`;
+        const { error: upErr } = await supabase.storage.from("job-photos").upload(path, file);
+        if (upErr) throw new Error(`Photo upload failed: ${upErr.message}`);
+        paths.push(path);
+      }
+
+      return submitJob({
+        data: {
+          category: category!,
+          address,
+          description: description || null,
+          lat: coords?.lat ?? null,
+          lng: coords?.lng ?? null,
+          scheduledFor: scheduled && scheduled !== "ASAP" ? scheduled : null,
+          budget: budget ? Number(budget) : null,
+          price: estimate.price || null,
+          photos: paths,
+          paymentMethod,
+          preferredProviderId: providerId,
+          rankedProviderIds: visibleProviders.map((p) => p.id),
+        },
+      });
     },
     onSuccess: async (data) => {
-      toast.success("Booking confirmed");
-      const methodLabel = paymentMethod === "cash"
-        ? "Cash on delivery"
-        : paymentMethod!.toUpperCase();
+      toast.success(
+        data.mode === "quotes"
+          ? "Request sent — providers are preparing quotes"
+          : data.mode === "dispatch"
+            ? "Request sent — finding you a provider"
+            : "Booking confirmed",
+      );
+      const methodLabel = paymentMethod === "cash" ? "Cash on delivery" : paymentMethod!.toUpperCase();
       const ref = data.id.slice(0, 8).toUpperCase();
       const body = [
         `Service: ${service!.name}`,
         `Address: ${address}`,
         scheduled && scheduled !== "ASAP" ? `Scheduled: ${new Date(scheduled).toLocaleString()}` : "Scheduled: ASAP",
-        `Payment: ${methodLabel}${paymentMethod !== "cash" && paymentReference ? ` (${paymentReference.trim()})` : ""}`,
+        `Payment: ${methodLabel}`,
         `Reference: ${ref}`,
-        "",
-        "Mock receipt — payment will be confirmed by the provider.",
       ].filter(Boolean).join("\n");
       await supabase.from("notifications").insert({
         user_id: user!.id,
-        title: `Booking confirmed — ${service!.name}`,
+        title: `Request sent — ${service!.name}`,
         body,
         link: `/bookings/${data.id}`,
         kind: "booking",
       });
       qc.invalidateQueries({ queryKey: ["notifications-unread"] });
       qc.invalidateQueries({ queryKey: ["notifications"] });
+      qc.invalidateQueries({ queryKey: ["bookings"] });
       setReceipt({
         id: data.id,
         category: category!,
@@ -172,7 +193,7 @@ function BookCategory() {
         scheduledFor: scheduled && scheduled !== "ASAP" ? scheduled : null,
         paymentMethod: paymentMethod!,
         paymentReference: paymentMethod === "cash" ? null : paymentReference.trim() || null,
-        createdAt: data.created_at,
+        createdAt: data.createdAt,
       });
     },
     onError: (e: any) => toast.error(e.message),
@@ -187,6 +208,8 @@ function BookCategory() {
     setScheduled("");
     setPaymentMethod(null);
     setPaymentReference("");
+    setBudget("");
+    setPhotos([]);
     setStep(1);
   };
 
@@ -336,6 +359,60 @@ function BookCategory() {
               placeholder={`Describe your ${service.name.toLowerCase()} request…`}
               className="rounded-lg border border-input bg-background px-3 py-2.5 text-sm" />
           </label>
+          <label className="grid gap-1.5">
+            <span className="text-xs text-muted-foreground">Your budget (optional, USD)</span>
+            <input
+              type="number"
+              min={0}
+              step="0.01"
+              value={budget}
+              onChange={(e) => setBudget(e.target.value)}
+              placeholder={estimate.price ? estimate.price.toFixed(2) : "40.00"}
+              className="rounded-lg border border-input bg-background px-3 py-2.5 text-sm"
+            />
+          </label>
+          <div className="grid gap-2">
+            <span className="text-xs text-muted-foreground">Photos (optional, up to 6)</span>
+            <div className="flex flex-wrap gap-2">
+              {photos.map((f, i) => (
+                <div key={`${f.name}-${i}`} className="relative">
+                  <img src={URL.createObjectURL(f)} alt={f.name} className="size-20 rounded-lg border border-border object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => setPhotos((p) => p.filter((_, idx) => idx !== i))}
+                    className="absolute -right-1.5 -top-1.5 grid size-5 place-items-center rounded-full bg-destructive text-destructive-foreground"
+                    aria-label="Remove photo"
+                  >
+                    <X className="size-3" />
+                  </button>
+                </div>
+              ))}
+              {photos.length < 6 && (
+                <label className="grid size-20 cursor-pointer place-items-center rounded-lg border border-dashed border-border text-muted-foreground hover:border-primary/50">
+                  <ImagePlus className="size-5" />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files ?? []).filter((f) => f.size <= 5 * 1024 * 1024);
+                      if (files.length !== (e.target.files?.length ?? 0)) toast.error("Each photo must be under 5 MB");
+                      setPhotos((p) => [...p, ...files].slice(0, 6));
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
+              )}
+            </div>
+          </div>
+          <p className="rounded-xl border border-border bg-background/60 p-3 text-xs text-muted-foreground">
+            {mode === "direct"
+              ? "Your request goes straight to the provider you picked."
+              : mode === "quotes"
+                ? "We'll invite up to 5 verified providers to quote. You compare and choose."
+                : "We'll offer the job to the closest verified providers — first to accept gets it."}
+          </p>
           <button className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground">
             Continue to confirm
           </button>

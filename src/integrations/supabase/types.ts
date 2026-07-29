@@ -17,16 +17,25 @@ export type Database = {
       bookings: {
         Row: {
           address: string
+          budget: number | null
           category: string
+          completed_at: string | null
           created_at: string
+          customer_confirmed_at: string | null
           customer_id: string
           description: string | null
+          dispatch_radius_km: number
+          dispatch_state: string
+          dispatch_updated_at: string | null
+          dispatch_wave: number
+          fulfilment_mode: string
           id: string
           lat: number | null
           lng: number | null
           payment_method: string | null
           payment_reference: string | null
           payment_status: string
+          photos: string[]
           price: number | null
           provider_id: string | null
           scheduled_for: string | null
@@ -35,16 +44,25 @@ export type Database = {
         }
         Insert: {
           address: string
+          budget?: number | null
           category: string
+          completed_at?: string | null
           created_at?: string
+          customer_confirmed_at?: string | null
           customer_id: string
           description?: string | null
+          dispatch_radius_km?: number
+          dispatch_state?: string
+          dispatch_updated_at?: string | null
+          dispatch_wave?: number
+          fulfilment_mode?: string
           id?: string
           lat?: number | null
           lng?: number | null
           payment_method?: string | null
           payment_reference?: string | null
           payment_status?: string
+          photos?: string[]
           price?: number | null
           provider_id?: string | null
           scheduled_for?: string | null
@@ -53,16 +71,25 @@ export type Database = {
         }
         Update: {
           address?: string
+          budget?: number | null
           category?: string
+          completed_at?: string | null
           created_at?: string
+          customer_confirmed_at?: string | null
           customer_id?: string
           description?: string | null
+          dispatch_radius_km?: number
+          dispatch_state?: string
+          dispatch_updated_at?: string | null
+          dispatch_wave?: number
+          fulfilment_mode?: string
           id?: string
           lat?: number | null
           lng?: number | null
           payment_method?: string | null
           payment_reference?: string | null
           payment_status?: string
+          photos?: string[]
           price?: number | null
           provider_id?: string | null
           scheduled_for?: string | null
@@ -151,6 +178,54 @@ export type Database = {
         }
         Relationships: []
       }
+      customer_ratings: {
+        Row: {
+          booking_id: string
+          created_at: string
+          customer_id: string
+          id: string
+          provider_id: string
+          provider_user_id: string
+          rating: number
+          review: string | null
+        }
+        Insert: {
+          booking_id: string
+          created_at?: string
+          customer_id: string
+          id?: string
+          provider_id: string
+          provider_user_id: string
+          rating: number
+          review?: string | null
+        }
+        Update: {
+          booking_id?: string
+          created_at?: string
+          customer_id?: string
+          id?: string
+          provider_id?: string
+          provider_user_id?: string
+          rating?: number
+          review?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_ratings_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_ratings_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -237,6 +312,120 @@ export type Database = {
           used_at?: string | null
         }
         Relationships: []
+      }
+      job_offers: {
+        Row: {
+          booking_id: string
+          created_at: string
+          distance_km: number | null
+          expires_at: string
+          id: string
+          offered_at: string
+          provider_id: string
+          provider_user_id: string
+          responded_at: string | null
+          status: string
+          updated_at: string
+          wave: number
+        }
+        Insert: {
+          booking_id: string
+          created_at?: string
+          distance_km?: number | null
+          expires_at: string
+          id?: string
+          offered_at?: string
+          provider_id: string
+          provider_user_id: string
+          responded_at?: string | null
+          status?: string
+          updated_at?: string
+          wave?: number
+        }
+        Update: {
+          booking_id?: string
+          created_at?: string
+          distance_km?: number | null
+          expires_at?: string
+          id?: string
+          offered_at?: string
+          provider_id?: string
+          provider_user_id?: string
+          responded_at?: string | null
+          status?: string
+          updated_at?: string
+          wave?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_offers_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_offers_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_quotes: {
+        Row: {
+          booking_id: string
+          created_at: string
+          eta_minutes: number
+          id: string
+          message: string | null
+          price: number
+          provider_id: string
+          provider_user_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          booking_id: string
+          created_at?: string
+          eta_minutes: number
+          id?: string
+          message?: string | null
+          price: number
+          provider_id: string
+          provider_user_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          booking_id?: string
+          created_at?: string
+          eta_minutes?: number
+          id?: string
+          message?: string | null
+          price?: number
+          provider_id?: string
+          provider_user_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_quotes_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_quotes_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       messages: {
         Row: {
