@@ -708,30 +708,42 @@ export type Database = {
         Row: {
           account_type: string
           avatar_url: string | null
+          city: string | null
+          country: string | null
           created_at: string
           display_name: string | null
           id: string
           phone: string | null
+          referral_code: string | null
+          terms_accepted_at: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           account_type?: string
           avatar_url?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string
           display_name?: string | null
           id?: string
           phone?: string | null
+          referral_code?: string | null
+          terms_accepted_at?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           account_type?: string
           avatar_url?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string
           display_name?: string | null
           id?: string
           phone?: string | null
+          referral_code?: string | null
+          terms_accepted_at?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -828,6 +840,105 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      provider_onboarding: {
+        Row: {
+          background_check_consent: boolean
+          bank_account: string | null
+          bank_name: string | null
+          business_address: string | null
+          business_reg_url: string | null
+          business_type: string | null
+          certificate_url: string | null
+          city: string | null
+          completed_step: number
+          country: string | null
+          created_at: string
+          emergency_services: boolean
+          id: string
+          max_travel_km: number
+          mobile_money_number: string | null
+          national_id: string | null
+          payout_method: string | null
+          portfolio_urls: string[]
+          proof_of_address_url: string | null
+          service_areas: string[]
+          service_categories: string[]
+          social_handle: string | null
+          tax_number: string | null
+          updated_at: string
+          user_id: string
+          website: string | null
+          work_end: string | null
+          work_start: string | null
+          working_days: string[]
+          years_experience: number | null
+        }
+        Insert: {
+          background_check_consent?: boolean
+          bank_account?: string | null
+          bank_name?: string | null
+          business_address?: string | null
+          business_reg_url?: string | null
+          business_type?: string | null
+          certificate_url?: string | null
+          city?: string | null
+          completed_step?: number
+          country?: string | null
+          created_at?: string
+          emergency_services?: boolean
+          id?: string
+          max_travel_km?: number
+          mobile_money_number?: string | null
+          national_id?: string | null
+          payout_method?: string | null
+          portfolio_urls?: string[]
+          proof_of_address_url?: string | null
+          service_areas?: string[]
+          service_categories?: string[]
+          social_handle?: string | null
+          tax_number?: string | null
+          updated_at?: string
+          user_id: string
+          website?: string | null
+          work_end?: string | null
+          work_start?: string | null
+          working_days?: string[]
+          years_experience?: number | null
+        }
+        Update: {
+          background_check_consent?: boolean
+          bank_account?: string | null
+          bank_name?: string | null
+          business_address?: string | null
+          business_reg_url?: string | null
+          business_type?: string | null
+          certificate_url?: string | null
+          city?: string | null
+          completed_step?: number
+          country?: string | null
+          created_at?: string
+          emergency_services?: boolean
+          id?: string
+          max_travel_km?: number
+          mobile_money_number?: string | null
+          national_id?: string | null
+          payout_method?: string | null
+          portfolio_urls?: string[]
+          proof_of_address_url?: string | null
+          service_areas?: string[]
+          service_categories?: string[]
+          social_handle?: string | null
+          tax_number?: string | null
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+          work_end?: string | null
+          work_start?: string | null
+          working_days?: string[]
+          years_experience?: number | null
+        }
+        Relationships: []
       }
       providers: {
         Row: {
