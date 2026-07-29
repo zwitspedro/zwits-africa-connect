@@ -1,0 +1,23 @@
+{
+  "name": "Zwits — Digital Services Ecosystem",
+  "short_name": "Zwits",
+  "description": "Book trusted delivery, transport, repairs, cleaning, beauty and emergency services across Zimbabwe.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0f0c",
+  "theme_color": "#0a0f0c",
+  "categories": ["business", "travel", "lifestyle"],
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Book a service", "url": "/services" },
+    { "name": "My bookings", "url": "/bookings" },
+    { "name": "Become a partner", "url": "/become-a-provider" }
+  ]
+}
