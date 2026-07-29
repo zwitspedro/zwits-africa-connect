@@ -208,6 +208,8 @@ function BookCategory() {
     setScheduled("");
     setPaymentMethod(null);
     setPaymentReference("");
+    setBudget("");
+    setPhotos([]);
     setStep(1);
   };
 
