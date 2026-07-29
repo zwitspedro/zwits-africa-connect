@@ -7,6 +7,7 @@ import {
   Wallet,
   Star,
   BarChart3,
+  Rocket,
   Bell,
   User,
   FileText,
@@ -24,6 +25,7 @@ export type SectionKey =
   | "wallet"
   | "reviews"
   | "performance"
+  | "growth"
   | "notifications"
   | "profile"
   | "documents"
@@ -39,6 +41,7 @@ export const NAV: { key: SectionKey; label: string; icon: any }[] = [
   { key: "wallet", label: "Wallet", icon: Wallet },
   { key: "reviews", label: "Reviews", icon: Star },
   { key: "performance", label: "Performance", icon: BarChart3 },
+  { key: "growth", label: "Growth Center", icon: Rocket },
   { key: "notifications", label: "Notifications", icon: Bell },
   { key: "profile", label: "Profile", icon: User },
   { key: "documents", label: "Documents", icon: FileText },
