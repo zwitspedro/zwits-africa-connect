@@ -1,16 +1,19 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   ArrowLeft, Calendar, MapPin, CreditCard, Clock, MessageSquare, Star,
-  RotateCcw, XCircle, CheckCircle2, CircleDashed, Loader2,
+  RotateCcw, XCircle, CheckCircle2, CircleDashed, Loader2, Radar, Timer,
 } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { LiveTrackingMap } from "@/components/live-tracking-map";
 import { BookingAddressMap } from "@/components/booking-address-map";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
+import { advanceDispatch, acceptQuote, confirmCompletion } from "@/lib/dispatch.functions";
+import { MAX_WAVES } from "@/lib/dispatch-config";
 
 export const Route = createFileRoute("/_authenticated/bookings/$id")({
   head: () => ({ meta: [{ title: "Booking details — Zwits" }] }),
