@@ -73,7 +73,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { name: "theme-color", content: "#1a1410" },
+      { name: "theme-color", content: "#0a0f0c" },
       { title: "Zwits — Book trusted services across Africa" },
       { name: "description", content: "Zwits connects you with trusted providers for deliveries, transport, repairs, cleaning, farming, beauty, freelance and emergency help." },
       { property: "og:type", content: "website" },
