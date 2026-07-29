@@ -41,7 +41,7 @@ function BookCategory() {
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [description, setDescription] = useState("");
   const [scheduled, setScheduled] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>("cash");
   const [paymentReference, setPaymentReference] = useState("");
   const [receipt, setReceipt] = useState<BookingReceipt | null>(null);
   const [availableOnly, setAvailableOnly] = useState(true);
