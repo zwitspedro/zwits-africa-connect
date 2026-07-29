@@ -316,10 +316,40 @@ export const listMyOffers = createServerFn({ method: "POST" })
 export const signJobPhotos = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => z.object({ paths: z.array(z.string().min(1)).max(6) }).parse(input))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
     if (!data.paths.length) return [] as string[];
+    const { supabase, userId } = context;
+
+    // Only sign paths the caller is actually entitled to: their own uploads,
+    // photos on bookings visible to them under RLS (customer / assigned
+    // provider), or any path when the caller is an admin.
+    const { data: isAdmin } = await supabase.rpc("has_role", {
+      _user_id: userId,
+      _role: "admin",
+    });
+
+    let allowed: string[];
+    if (isAdmin) {
+      allowed = data.paths;
+    } else {
+      const { data: bookings } = await supabase
+        .from("bookings")
+        .select("photos")
+        .overlaps("photos", data.paths);
+      const bookingPaths = new Set<string>();
+      for (const b of bookings ?? []) {
+        for (const p of (b.photos ?? []) as string[]) bookingPaths.add(p);
+      }
+      allowed = data.paths.filter(
+        (p) => p.split("/")[0] === userId || bookingPaths.has(p),
+      );
+    }
+
+    if (!allowed.length) return [] as string[];
+
     const { admin } = await import("./dispatch.server");
     const db = await admin();
-    const { data: signed } = await db.storage.from("job-photos").createSignedUrls(data.paths, 3600);
+    const { data: signed } = await db.storage.from("job-photos").createSignedUrls(allowed, 3600);
     return (signed ?? []).map((s: any) => s.signedUrl as string).filter(Boolean);
   });
+
