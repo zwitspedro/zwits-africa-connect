@@ -21,18 +21,18 @@ import { Route as BecomeAProviderRouteImport } from './routes/become-a-provider'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedProviderRouteImport } from './routes/_authenticated/provider'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as AuthenticatedBookingsRouteImport } from './routes/_authenticated/bookings'
+import { Route as AuthenticatedProviderIndexRouteImport } from './routes/_authenticated/provider.index'
+import { Route as AuthenticatedBookingsIndexRouteImport } from './routes/_authenticated/bookings.index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedProviderSetupRouteImport } from './routes/_authenticated/provider.setup'
 import { Route as AuthenticatedMessagesBookingIdRouteImport } from './routes/_authenticated/messages.$bookingId'
 import { Route as AuthenticatedBookingsIdRouteImport } from './routes/_authenticated/bookings.$id'
 import { Route as AuthenticatedBookCategoryRouteImport } from './routes/_authenticated/book.$category'
-import { Route as AuthenticatedAdminReconciliationRouteImport } from './routes/_authenticated/admin.reconciliation'
 import { Route as AuthenticatedAdminProvidersRouteImport } from './routes/_authenticated/admin.providers'
 import { Route as AuthenticatedAdminCommissionsRouteImport } from './routes/_authenticated/admin.commissions'
+import { Route as AuthenticatedAdminReconciliationIndexRouteImport } from './routes/_authenticated/admin.reconciliation.index'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
@@ -98,11 +98,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedProviderRoute = AuthenticatedProviderRouteImport.update({
-  id: '/provider',
-  path: '/provider',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
 const AuthenticatedNotificationsRoute =
   AuthenticatedNotificationsRouteImport.update({
     id: '/notifications',
@@ -114,11 +109,18 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedBookingsRoute = AuthenticatedBookingsRouteImport.update({
-  id: '/bookings',
-  path: '/bookings',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
+const AuthenticatedProviderIndexRoute =
+  AuthenticatedProviderIndexRouteImport.update({
+    id: '/provider/',
+    path: '/provider/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedBookingsIndexRoute =
+  AuthenticatedBookingsIndexRouteImport.update({
+    id: '/bookings/',
+    path: '/bookings/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
@@ -126,9 +128,9 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
 } as any)
 const AuthenticatedProviderSetupRoute =
   AuthenticatedProviderSetupRouteImport.update({
-    id: '/setup',
-    path: '/setup',
-    getParentRoute: () => AuthenticatedProviderRoute,
+    id: '/provider/setup',
+    path: '/provider/setup',
+    getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedMessagesBookingIdRoute =
   AuthenticatedMessagesBookingIdRouteImport.update({
@@ -137,20 +139,14 @@ const AuthenticatedMessagesBookingIdRoute =
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedBookingsIdRoute = AuthenticatedBookingsIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => AuthenticatedBookingsRoute,
+  id: '/bookings/$id',
+  path: '/bookings/$id',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedBookCategoryRoute =
   AuthenticatedBookCategoryRouteImport.update({
     id: '/book/$category',
     path: '/book/$category',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
-const AuthenticatedAdminReconciliationRoute =
-  AuthenticatedAdminReconciliationRouteImport.update({
-    id: '/admin/reconciliation',
-    path: '/admin/reconciliation',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedAdminProvidersRoute =
@@ -163,6 +159,12 @@ const AuthenticatedAdminCommissionsRoute =
   AuthenticatedAdminCommissionsRouteImport.update({
     id: '/admin/commissions',
     path: '/admin/commissions',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAdminReconciliationIndexRoute =
+  AuthenticatedAdminReconciliationIndexRouteImport.update({
+    id: '/admin/reconciliation/',
+    path: '/admin/reconciliation/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const LovableEmailQueueProcessRoute =
@@ -183,15 +185,15 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
 } as any)
 const AuthenticatedAdminReconciliationProviderProviderIdRoute =
   AuthenticatedAdminReconciliationProviderProviderIdRouteImport.update({
-    id: '/provider/$providerId',
-    path: '/provider/$providerId',
-    getParentRoute: () => AuthenticatedAdminReconciliationRoute,
+    id: '/admin/reconciliation/provider/$providerId',
+    path: '/admin/reconciliation/provider/$providerId',
+    getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedAdminReconciliationBookingBookingIdRoute =
   AuthenticatedAdminReconciliationBookingBookingIdRouteImport.update({
-    id: '/booking/$bookingId',
-    path: '/booking/$bookingId',
-    getParentRoute: () => AuthenticatedAdminReconciliationRoute,
+    id: '/admin/reconciliation/booking/$bookingId',
+    path: '/admin/reconciliation/booking/$bookingId',
+    getParentRoute: () => AuthenticatedRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -206,21 +208,21 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
-  '/bookings': typeof AuthenticatedBookingsRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
-  '/provider': typeof AuthenticatedProviderRouteWithChildren
   '/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
-  '/admin/reconciliation': typeof AuthenticatedAdminReconciliationRouteWithChildren
   '/book/$category': typeof AuthenticatedBookCategoryRoute
   '/bookings/$id': typeof AuthenticatedBookingsIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/bookings/': typeof AuthenticatedBookingsIndexRoute
+  '/provider/': typeof AuthenticatedProviderIndexRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
+  '/admin/reconciliation/': typeof AuthenticatedAdminReconciliationIndexRoute
   '/admin/reconciliation/booking/$bookingId': typeof AuthenticatedAdminReconciliationBookingBookingIdRoute
   '/admin/reconciliation/provider/$providerId': typeof AuthenticatedAdminReconciliationProviderProviderIdRoute
 }
@@ -236,21 +238,21 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
-  '/bookings': typeof AuthenticatedBookingsRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
-  '/provider': typeof AuthenticatedProviderRouteWithChildren
   '/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
-  '/admin/reconciliation': typeof AuthenticatedAdminReconciliationRouteWithChildren
   '/book/$category': typeof AuthenticatedBookCategoryRoute
   '/bookings/$id': typeof AuthenticatedBookingsIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/bookings': typeof AuthenticatedBookingsIndexRoute
+  '/provider': typeof AuthenticatedProviderIndexRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
+  '/admin/reconciliation': typeof AuthenticatedAdminReconciliationIndexRoute
   '/admin/reconciliation/booking/$bookingId': typeof AuthenticatedAdminReconciliationBookingBookingIdRoute
   '/admin/reconciliation/provider/$providerId': typeof AuthenticatedAdminReconciliationProviderProviderIdRoute
 }
@@ -268,21 +270,21 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
-  '/_authenticated/bookings': typeof AuthenticatedBookingsRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
-  '/_authenticated/provider': typeof AuthenticatedProviderRouteWithChildren
   '/_authenticated/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/_authenticated/admin/providers': typeof AuthenticatedAdminProvidersRoute
-  '/_authenticated/admin/reconciliation': typeof AuthenticatedAdminReconciliationRouteWithChildren
   '/_authenticated/book/$category': typeof AuthenticatedBookCategoryRoute
   '/_authenticated/bookings/$id': typeof AuthenticatedBookingsIdRoute
   '/_authenticated/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/_authenticated/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/bookings/': typeof AuthenticatedBookingsIndexRoute
+  '/_authenticated/provider/': typeof AuthenticatedProviderIndexRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
+  '/_authenticated/admin/reconciliation/': typeof AuthenticatedAdminReconciliationIndexRoute
   '/_authenticated/admin/reconciliation/booking/$bookingId': typeof AuthenticatedAdminReconciliationBookingBookingIdRoute
   '/_authenticated/admin/reconciliation/provider/$providerId': typeof AuthenticatedAdminReconciliationProviderProviderIdRoute
 }
@@ -300,21 +302,21 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/terms'
-    | '/bookings'
     | '/dashboard'
     | '/notifications'
-    | '/provider'
     | '/admin/commissions'
     | '/admin/providers'
-    | '/admin/reconciliation'
     | '/book/$category'
     | '/bookings/$id'
     | '/messages/$bookingId'
     | '/provider/setup'
     | '/admin/'
+    | '/bookings/'
+    | '/provider/'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
+    | '/admin/reconciliation/'
     | '/admin/reconciliation/booking/$bookingId'
     | '/admin/reconciliation/provider/$providerId'
   fileRoutesByTo: FileRoutesByTo
@@ -330,21 +332,21 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/terms'
-    | '/bookings'
     | '/dashboard'
     | '/notifications'
-    | '/provider'
     | '/admin/commissions'
     | '/admin/providers'
-    | '/admin/reconciliation'
     | '/book/$category'
     | '/bookings/$id'
     | '/messages/$bookingId'
     | '/provider/setup'
     | '/admin'
+    | '/bookings'
+    | '/provider'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
+    | '/admin/reconciliation'
     | '/admin/reconciliation/booking/$bookingId'
     | '/admin/reconciliation/provider/$providerId'
   id:
@@ -361,21 +363,21 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/terms'
-    | '/_authenticated/bookings'
     | '/_authenticated/dashboard'
     | '/_authenticated/notifications'
-    | '/_authenticated/provider'
     | '/_authenticated/admin/commissions'
     | '/_authenticated/admin/providers'
-    | '/_authenticated/admin/reconciliation'
     | '/_authenticated/book/$category'
     | '/_authenticated/bookings/$id'
     | '/_authenticated/messages/$bookingId'
     | '/_authenticated/provider/setup'
     | '/_authenticated/admin/'
+    | '/_authenticated/bookings/'
+    | '/_authenticated/provider/'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
+    | '/_authenticated/admin/reconciliation/'
     | '/_authenticated/admin/reconciliation/booking/$bookingId'
     | '/_authenticated/admin/reconciliation/provider/$providerId'
   fileRoutesById: FileRoutesById
@@ -484,13 +486,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/provider': {
-      id: '/_authenticated/provider'
-      path: '/provider'
-      fullPath: '/provider'
-      preLoaderRoute: typeof AuthenticatedProviderRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
     '/_authenticated/notifications': {
       id: '/_authenticated/notifications'
       path: '/notifications'
@@ -505,11 +500,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/bookings': {
-      id: '/_authenticated/bookings'
+    '/_authenticated/provider/': {
+      id: '/_authenticated/provider/'
+      path: '/provider'
+      fullPath: '/provider/'
+      preLoaderRoute: typeof AuthenticatedProviderIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/bookings/': {
+      id: '/_authenticated/bookings/'
       path: '/bookings'
-      fullPath: '/bookings'
-      preLoaderRoute: typeof AuthenticatedBookingsRouteImport
+      fullPath: '/bookings/'
+      preLoaderRoute: typeof AuthenticatedBookingsIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/admin/': {
@@ -521,10 +523,10 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/provider/setup': {
       id: '/_authenticated/provider/setup'
-      path: '/setup'
+      path: '/provider/setup'
       fullPath: '/provider/setup'
       preLoaderRoute: typeof AuthenticatedProviderSetupRouteImport
-      parentRoute: typeof AuthenticatedProviderRoute
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/messages/$bookingId': {
       id: '/_authenticated/messages/$bookingId'
@@ -535,23 +537,16 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/bookings/$id': {
       id: '/_authenticated/bookings/$id'
-      path: '/$id'
+      path: '/bookings/$id'
       fullPath: '/bookings/$id'
       preLoaderRoute: typeof AuthenticatedBookingsIdRouteImport
-      parentRoute: typeof AuthenticatedBookingsRoute
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/book/$category': {
       id: '/_authenticated/book/$category'
       path: '/book/$category'
       fullPath: '/book/$category'
       preLoaderRoute: typeof AuthenticatedBookCategoryRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/admin/reconciliation': {
-      id: '/_authenticated/admin/reconciliation'
-      path: '/admin/reconciliation'
-      fullPath: '/admin/reconciliation'
-      preLoaderRoute: typeof AuthenticatedAdminReconciliationRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/admin/providers': {
@@ -566,6 +561,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/commissions'
       fullPath: '/admin/commissions'
       preLoaderRoute: typeof AuthenticatedAdminCommissionsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin/reconciliation/': {
+      id: '/_authenticated/admin/reconciliation/'
+      path: '/admin/reconciliation'
+      fullPath: '/admin/reconciliation/'
+      preLoaderRoute: typeof AuthenticatedAdminReconciliationIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/lovable/email/queue/process': {
@@ -591,90 +593,56 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/admin/reconciliation/provider/$providerId': {
       id: '/_authenticated/admin/reconciliation/provider/$providerId'
-      path: '/provider/$providerId'
+      path: '/admin/reconciliation/provider/$providerId'
       fullPath: '/admin/reconciliation/provider/$providerId'
       preLoaderRoute: typeof AuthenticatedAdminReconciliationProviderProviderIdRouteImport
-      parentRoute: typeof AuthenticatedAdminReconciliationRoute
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/admin/reconciliation/booking/$bookingId': {
       id: '/_authenticated/admin/reconciliation/booking/$bookingId'
-      path: '/booking/$bookingId'
+      path: '/admin/reconciliation/booking/$bookingId'
       fullPath: '/admin/reconciliation/booking/$bookingId'
       preLoaderRoute: typeof AuthenticatedAdminReconciliationBookingBookingIdRouteImport
-      parentRoute: typeof AuthenticatedAdminReconciliationRoute
+      parentRoute: typeof AuthenticatedRoute
     }
   }
 }
 
-interface AuthenticatedBookingsRouteChildren {
+interface AuthenticatedRouteChildren {
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
+  AuthenticatedAdminCommissionsRoute: typeof AuthenticatedAdminCommissionsRoute
+  AuthenticatedAdminProvidersRoute: typeof AuthenticatedAdminProvidersRoute
+  AuthenticatedBookCategoryRoute: typeof AuthenticatedBookCategoryRoute
   AuthenticatedBookingsIdRoute: typeof AuthenticatedBookingsIdRoute
-}
-
-const AuthenticatedBookingsRouteChildren: AuthenticatedBookingsRouteChildren = {
-  AuthenticatedBookingsIdRoute: AuthenticatedBookingsIdRoute,
-}
-
-const AuthenticatedBookingsRouteWithChildren =
-  AuthenticatedBookingsRoute._addFileChildren(
-    AuthenticatedBookingsRouteChildren,
-  )
-
-interface AuthenticatedProviderRouteChildren {
+  AuthenticatedMessagesBookingIdRoute: typeof AuthenticatedMessagesBookingIdRoute
   AuthenticatedProviderSetupRoute: typeof AuthenticatedProviderSetupRoute
-}
-
-const AuthenticatedProviderRouteChildren: AuthenticatedProviderRouteChildren = {
-  AuthenticatedProviderSetupRoute: AuthenticatedProviderSetupRoute,
-}
-
-const AuthenticatedProviderRouteWithChildren =
-  AuthenticatedProviderRoute._addFileChildren(
-    AuthenticatedProviderRouteChildren,
-  )
-
-interface AuthenticatedAdminReconciliationRouteChildren {
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedBookingsIndexRoute: typeof AuthenticatedBookingsIndexRoute
+  AuthenticatedProviderIndexRoute: typeof AuthenticatedProviderIndexRoute
+  AuthenticatedAdminReconciliationIndexRoute: typeof AuthenticatedAdminReconciliationIndexRoute
   AuthenticatedAdminReconciliationBookingBookingIdRoute: typeof AuthenticatedAdminReconciliationBookingBookingIdRoute
   AuthenticatedAdminReconciliationProviderProviderIdRoute: typeof AuthenticatedAdminReconciliationProviderProviderIdRoute
 }
 
-const AuthenticatedAdminReconciliationRouteChildren: AuthenticatedAdminReconciliationRouteChildren =
-  {
-    AuthenticatedAdminReconciliationBookingBookingIdRoute:
-      AuthenticatedAdminReconciliationBookingBookingIdRoute,
-    AuthenticatedAdminReconciliationProviderProviderIdRoute:
-      AuthenticatedAdminReconciliationProviderProviderIdRoute,
-  }
-
-const AuthenticatedAdminReconciliationRouteWithChildren =
-  AuthenticatedAdminReconciliationRoute._addFileChildren(
-    AuthenticatedAdminReconciliationRouteChildren,
-  )
-
-interface AuthenticatedRouteChildren {
-  AuthenticatedBookingsRoute: typeof AuthenticatedBookingsRouteWithChildren
-  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
-  AuthenticatedProviderRoute: typeof AuthenticatedProviderRouteWithChildren
-  AuthenticatedAdminCommissionsRoute: typeof AuthenticatedAdminCommissionsRoute
-  AuthenticatedAdminProvidersRoute: typeof AuthenticatedAdminProvidersRoute
-  AuthenticatedAdminReconciliationRoute: typeof AuthenticatedAdminReconciliationRouteWithChildren
-  AuthenticatedBookCategoryRoute: typeof AuthenticatedBookCategoryRoute
-  AuthenticatedMessagesBookingIdRoute: typeof AuthenticatedMessagesBookingIdRoute
-  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
-}
-
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
-  AuthenticatedBookingsRoute: AuthenticatedBookingsRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
-  AuthenticatedProviderRoute: AuthenticatedProviderRouteWithChildren,
   AuthenticatedAdminCommissionsRoute: AuthenticatedAdminCommissionsRoute,
   AuthenticatedAdminProvidersRoute: AuthenticatedAdminProvidersRoute,
-  AuthenticatedAdminReconciliationRoute:
-    AuthenticatedAdminReconciliationRouteWithChildren,
   AuthenticatedBookCategoryRoute: AuthenticatedBookCategoryRoute,
+  AuthenticatedBookingsIdRoute: AuthenticatedBookingsIdRoute,
   AuthenticatedMessagesBookingIdRoute: AuthenticatedMessagesBookingIdRoute,
+  AuthenticatedProviderSetupRoute: AuthenticatedProviderSetupRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedBookingsIndexRoute: AuthenticatedBookingsIndexRoute,
+  AuthenticatedProviderIndexRoute: AuthenticatedProviderIndexRoute,
+  AuthenticatedAdminReconciliationIndexRoute:
+    AuthenticatedAdminReconciliationIndexRoute,
+  AuthenticatedAdminReconciliationBookingBookingIdRoute:
+    AuthenticatedAdminReconciliationBookingBookingIdRoute,
+  AuthenticatedAdminReconciliationProviderProviderIdRoute:
+    AuthenticatedAdminReconciliationProviderProviderIdRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(

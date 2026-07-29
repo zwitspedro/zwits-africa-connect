@@ -7,7 +7,7 @@ import { SiteShell } from "@/components/site-shell";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 
-export const Route = createFileRoute("/_authenticated/bookings")({
+export const Route = createFileRoute("/_authenticated/bookings/")({
   head: () => ({ meta: [{ title: "My bookings — Zwits" }] }),
   component: BookingsPage,
 });

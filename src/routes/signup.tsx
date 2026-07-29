@@ -29,6 +29,8 @@ function Signup() {
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
+
 
   const signupEmail = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,9 +45,9 @@ function Signup() {
     });
     setLoading(false);
     if (error) return toast.error(error.message);
-    toast.success("Check your email to confirm your account");
-    navigate({ to: "/login" });
+    setSent(true);
   };
+
 
   const sendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,7 +77,31 @@ function Signup() {
     if (r.error) toast.error("Google sign-in failed");
   };
 
+  if (sent) {
+    return (
+      <SiteShell>
+        <section className="mx-auto grid min-h-[70vh] max-w-md place-items-center px-4 py-16 sm:px-6">
+          <div className="w-full rounded-3xl border border-border bg-card p-8 text-center">
+            <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-primary/15 text-2xl">✉️</div>
+            <h1 className="mt-4 font-display text-2xl font-bold">Check your inbox</h1>
+            <p className="mt-2 text-sm text-muted-foreground">
+              We sent a confirmation link to <span className="font-medium text-foreground">{email}</span>. Click it to
+              activate your account, then sign in.
+            </p>
+            <p className="mt-3 text-xs text-muted-foreground">
+              Nothing after a few minutes? Check spam, or sign up again with a different address.
+            </p>
+            <Link to="/login" className="mt-6 inline-block rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground">
+              Go to sign in
+            </Link>
+          </div>
+        </section>
+      </SiteShell>
+    );
+  }
+
   return (
+
     <SiteShell>
       <section className="mx-auto grid min-h-[70vh] max-w-md place-items-center px-4 py-16 sm:px-6">
         <div className="w-full rounded-3xl border border-border bg-card p-8">
