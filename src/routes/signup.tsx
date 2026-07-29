@@ -29,6 +29,8 @@ function Signup() {
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
+
 
   const signupEmail = async (e: React.FormEvent) => {
     e.preventDefault();
