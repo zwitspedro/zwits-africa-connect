@@ -126,4 +126,82 @@
     color: transparent;
   }
   .ring-gold { box-shadow: 0 0 0 1px color-mix(in oklab, var(--gold) 40%, transparent); }
+
+  /* --- Premium surface language --- */
+  .glass {
+    background: color-mix(in oklab, var(--card) 55%, transparent);
+    backdrop-filter: blur(24px) saturate(140%);
+    border: 1px solid color-mix(in oklab, var(--foreground) 8%, transparent);
+  }
+  .glass-strong {
+    background: color-mix(in oklab, var(--card) 82%, transparent);
+    backdrop-filter: blur(32px) saturate(150%);
+    border: 1px solid color-mix(in oklab, var(--foreground) 10%, transparent);
+  }
+  .surface-elevated {
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--foreground) 5%, transparent),
+      color-mix(in oklab, var(--foreground) 1%, transparent)
+    );
+  }
+  .text-balance-tight { text-wrap: balance; }
+
+  .grid-lines {
+    background-image:
+      linear-gradient(color-mix(in oklab, var(--foreground) 4%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in oklab, var(--foreground) 4%, transparent) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 75%);
+  }
+
+  .aurora {
+    background:
+      radial-gradient(60% 50% at 15% 10%, color-mix(in oklab, var(--primary) 28%, transparent), transparent 60%),
+      radial-gradient(50% 45% at 85% 20%, color-mix(in oklab, var(--gold) 20%, transparent), transparent 60%),
+      radial-gradient(55% 50% at 50% 95%, color-mix(in oklab, var(--primary) 16%, transparent), transparent 65%);
+    animation: aurora-drift 18s ease-in-out infinite alternate;
+  }
+
+  .animate-float { animation: float 7s ease-in-out infinite; }
+  .animate-rise { animation: rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .animate-dash { stroke-dasharray: 6 10; animation: dash 1.4s linear infinite; }
+  .animate-shimmer {
+    background-size: 200% 100%;
+    animation: shimmer 3.5s linear infinite;
+  }
+  .hover-lift {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.3s ease;
+  }
+  .hover-lift:hover { transform: translateY(-4px); }
 }
+
+@keyframes aurora-drift {
+  0%   { transform: translate3d(0, 0, 0) scale(1); opacity: 0.85; }
+  100% { transform: translate3d(0, -3%, 0) scale(1.08); opacity: 1; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes dash {
+  to { stroke-dashoffset: -32; }
+}
+@keyframes shimmer {
+  to { background-position: -200% 0; }
+}
+@keyframes ride {
+  from { offset-distance: 0%; }
+  to   { offset-distance: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora, .animate-float, .animate-rise, .animate-dash, .animate-shimmer {
+    animation: none !important;
+  }
+}
+
