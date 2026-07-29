@@ -85,9 +85,10 @@ function DeliveryPage() {
             <p className="mt-2 text-muted-foreground">Create an account and book your first delivery in under a minute.</p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link to="/signup" className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground">
+            <Link to="/send-delivery" className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground">
               Send a parcel <ArrowRight className="size-4" />
             </Link>
+
             <Link to="/become-a-driver" className="inline-flex items-center rounded-full border border-border px-6 py-3 text-sm font-semibold">
               Drive with us
             </Link>
