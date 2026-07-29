@@ -25,6 +25,7 @@ import { ScheduleSection } from "@/components/provider/schedule-section";
 import { EarningsSection } from "@/components/provider/earnings-section";
 import { WalletSection } from "@/components/provider/wallet-section";
 import { ReviewsSection } from "@/components/provider/reviews-section";
+import { GrowthSection } from "@/components/provider/growth/growth-section";
 import { PerformanceSection } from "@/components/provider/performance-section";
 import { NotificationsSection } from "@/components/provider/notifications-section";
 import { ProfileSection } from "@/components/provider/profile-section";
@@ -173,6 +174,7 @@ function ProviderDashboard() {
             {section === "wallet" && <WalletSection data={data} />}
             {section === "reviews" && <ReviewsSection data={data} />}
             {section === "performance" && <PerformanceSection data={data} />}
+            {section === "growth" && <GrowthSection data={data} />}
             {section === "notifications" && <NotificationsSection notifications={notifications} />}
             {section === "profile" && <ProfileSection data={data} />}
             {section === "documents" && <DocumentsSection data={data} />}
