@@ -253,3 +253,73 @@ export const confirmCompletion = createServerFn({ method: "POST" })
     }
     return { ok: true };
   });
+
+export const listMyOffers = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { admin } = await import("./dispatch.server");
+    const db = await admin();
+
+    const { data: offers, error } = await db
+      .from("job_offers")
+      .select("id, booking_id, provider_id, wave, status, offered_at, expires_at")
+      .eq("provider_user_id", context.userId)
+      .in("status", ["offered", "quoted"])
+      .order("offered_at", { ascending: false })
+      .limit(30);
+    if (error) throw new Error(error.message);
+    if (!offers?.length) return [];
+
+    const ids = offers.map((o: any) => o.booking_id);
+    const { data: bookings } = await db
+      .from("bookings")
+      .select("id, customer_id, category, description, address, lat, lng, budget, price, scheduled_for, photos, fulfilment_mode, status, provider_id")
+      .in("id", ids);
+    const byId = new Map((bookings ?? []).map((b: any) => [b.id, b]));
+
+    const customerIds = Array.from(new Set((bookings ?? []).map((b: any) => b.customer_id)));
+    const { data: profiles } = await db
+      .from("profiles")
+      .select("user_id, display_name")
+      .in("user_id", customerIds.length ? customerIds : ["00000000-0000-0000-0000-000000000000"]);
+    const nameById = new Map((profiles ?? []).map((p: any) => [p.user_id, p.display_name as string | null]));
+
+    return offers
+      .map((o: any) => {
+        const b: any = byId.get(o.booking_id);
+        if (!b || b.status !== "pending" || b.provider_id) return null;
+        const full = (nameById.get(b.customer_id) ?? "Customer").trim();
+        const first = full.split(" ")[0];
+        const initial = full.split(" ")[1]?.[0];
+        return {
+          offerId: o.id as string,
+          status: o.status as string,
+          expiresAt: o.expires_at as string,
+          wave: o.wave as number,
+          booking: {
+            id: b.id as string,
+            category: b.category as string,
+            description: (b.description ?? null) as string | null,
+            address: b.address as string,
+            budget: b.budget != null ? Number(b.budget) : null,
+            price: b.price != null ? Number(b.price) : null,
+            scheduledFor: (b.scheduled_for ?? null) as string | null,
+            photos: (b.photos ?? []) as string[],
+            fulfilmentMode: b.fulfilment_mode as string,
+            customerName: initial ? `${first} ${initial}.` : first,
+          },
+        };
+      })
+      .filter(Boolean);
+  });
+
+export const signJobPhotos = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => z.object({ paths: z.array(z.string().min(1)).max(6) }).parse(input))
+  .handler(async ({ data }) => {
+    if (!data.paths.length) return [] as string[];
+    const { admin } = await import("./dispatch.server");
+    const db = await admin();
+    const { data: signed } = await db.storage.from("job-photos").createSignedUrls(data.paths, 3600);
+    return (signed ?? []).map((s: any) => s.signedUrl as string).filter(Boolean);
+  });
