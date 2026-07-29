@@ -13,9 +13,12 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as ProviderLoginRouteImport } from './routes/provider-login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as DeliveryRouteImport } from './routes/delivery'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -68,6 +71,16 @@ const ServicesRoute = ServicesRouteImport.update({
   path: '/services',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProviderLoginRoute = ProviderLoginRouteImport.update({
+  id: '/provider-login',
+  path: '/provider-login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
@@ -81,6 +94,11 @@ const PricingRoute = PricingRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FaqRoute = FaqRouteImport.update({
@@ -263,9 +281,12 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/delivery': typeof DeliveryRoute
   '/faq': typeof FaqRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/provider-login': typeof ProviderLoginRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -302,9 +323,12 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/delivery': typeof DeliveryRoute
   '/faq': typeof FaqRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/provider-login': typeof ProviderLoginRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -343,9 +367,12 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/delivery': typeof DeliveryRoute
   '/faq': typeof FaqRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
+  '/provider-login': typeof ProviderLoginRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -384,9 +411,12 @@ export interface FileRouteTypes {
     | '/contact'
     | '/delivery'
     | '/faq'
+    | '/forgot-password'
     | '/login'
     | '/pricing'
     | '/privacy'
+    | '/provider-login'
+    | '/reset-password'
     | '/services'
     | '/signup'
     | '/sitemap.xml'
@@ -423,9 +453,12 @@ export interface FileRouteTypes {
     | '/contact'
     | '/delivery'
     | '/faq'
+    | '/forgot-password'
     | '/login'
     | '/pricing'
     | '/privacy'
+    | '/provider-login'
+    | '/reset-password'
     | '/services'
     | '/signup'
     | '/sitemap.xml'
@@ -463,9 +496,12 @@ export interface FileRouteTypes {
     | '/contact'
     | '/delivery'
     | '/faq'
+    | '/forgot-password'
     | '/login'
     | '/pricing'
     | '/privacy'
+    | '/provider-login'
+    | '/reset-password'
     | '/services'
     | '/signup'
     | '/sitemap.xml'
@@ -504,9 +540,12 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   DeliveryRoute: typeof DeliveryRoute
   FaqRoute: typeof FaqRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
+  ProviderLoginRoute: typeof ProviderLoginRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ServicesRoute: typeof ServicesRoute
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -546,6 +585,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/provider-login': {
+      id: '/provider-login'
+      path: '/provider-login'
+      fullPath: '/provider-login'
+      preLoaderRoute: typeof ProviderLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/privacy': {
       id: '/privacy'
       path: '/privacy'
@@ -565,6 +618,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faq': {
@@ -847,9 +907,12 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   DeliveryRoute: DeliveryRoute,
   FaqRoute: FaqRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
+  ProviderLoginRoute: ProviderLoginRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ServicesRoute: ServicesRoute,
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
