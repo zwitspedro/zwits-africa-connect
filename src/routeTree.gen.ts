@@ -25,6 +25,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedDriverRouteImport } from './routes/_authenticated/driver'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedBusinessPortalRouteImport } from './routes/_authenticated/business-portal'
 import { Route as AuthenticatedProviderIndexRouteImport } from './routes/_authenticated/provider.index'
 import { Route as AuthenticatedBookingsIndexRouteImport } from './routes/_authenticated/bookings.index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
@@ -121,6 +122,12 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedBusinessPortalRoute =
+  AuthenticatedBusinessPortalRouteImport.update({
+    id: '/business-portal',
+    path: '/business-portal',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedProviderIndexRoute =
   AuthenticatedProviderIndexRouteImport.update({
     id: '/provider/',
@@ -221,6 +228,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/business-portal': typeof AuthenticatedBusinessPortalRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/driver': typeof AuthenticatedDriverRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
@@ -253,6 +261,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/business-portal': typeof AuthenticatedBusinessPortalRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/driver': typeof AuthenticatedDriverRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
@@ -287,6 +296,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/_authenticated/business-portal': typeof AuthenticatedBusinessPortalRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/driver': typeof AuthenticatedDriverRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
@@ -321,6 +331,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/terms'
+    | '/business-portal'
     | '/dashboard'
     | '/driver'
     | '/notifications'
@@ -353,6 +364,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/terms'
+    | '/business-portal'
     | '/dashboard'
     | '/driver'
     | '/notifications'
@@ -386,6 +398,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/terms'
+    | '/_authenticated/business-portal'
     | '/_authenticated/dashboard'
     | '/_authenticated/driver'
     | '/_authenticated/notifications'
@@ -539,6 +552,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/business-portal': {
+      id: '/_authenticated/business-portal'
+      path: '/business-portal'
+      fullPath: '/business-portal'
+      preLoaderRoute: typeof AuthenticatedBusinessPortalRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/provider/': {
       id: '/_authenticated/provider/'
       path: '/provider'
@@ -648,6 +668,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedBusinessPortalRoute: typeof AuthenticatedBusinessPortalRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDriverRoute: typeof AuthenticatedDriverRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
@@ -666,6 +687,7 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedBusinessPortalRoute: AuthenticatedBusinessPortalRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDriverRoute: AuthenticatedDriverRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,

@@ -133,9 +133,7 @@ export function SiteHeader() {
                   </span>
                 )}
               </Link>
-              <Link to="/dashboard" className="rounded-full px-4 py-2 text-sm text-muted-foreground hover:text-foreground">
-                Dashboard
-              </Link>
+              <RoleSwitcher />
               {isAdmin && (
                 <Link to="/admin" className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-2 text-sm text-primary hover:bg-primary/15">
                   <ShieldCheck className="size-4" /> Admin
