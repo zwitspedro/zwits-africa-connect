@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useProviderTracking } from "@/hooks/use-provider-tracking";
 import { ProviderJobsMap } from "@/components/provider-jobs-map";
 
-export const Route = createFileRoute("/_authenticated/provider")({
+export const Route = createFileRoute("/_authenticated/provider/")({
   head: () => ({ meta: [{ title: "Provider dashboard — Zwits" }] }),
   component: ProviderDashboard,
 });

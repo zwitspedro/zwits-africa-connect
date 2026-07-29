@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
 
-export const Route = createFileRoute("/_authenticated/admin/reconciliation")({
+export const Route = createFileRoute("/_authenticated/admin/reconciliation/")({
   head: () => ({ meta: [{ title: "Reconciliation — Admin — Zwits" }] }),
   component: ReconciliationScreen,
 });
