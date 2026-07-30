@@ -23,8 +23,8 @@ export function ServiceCategories() {
           return (
             <Reveal key={s.slug} delay={i * 50}>
               <Link
-                to="/book/$category"
-                params={{ category: s.slug }}
+                to="/services/$slug"
+                params={{ slug: s.slug }}
                 className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-border/70 bg-card/50 p-7 hover-lift hover:border-primary/50 hover:shadow-glow"
               >
                 <div
@@ -44,7 +44,7 @@ export function ServiceCategories() {
                   ))}
                 </div>
                 <span className="relative mt-7 inline-flex items-center gap-1.5 text-sm font-medium text-primary">
-                  Book
+                  View service
                   <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </span>
               </Link>
