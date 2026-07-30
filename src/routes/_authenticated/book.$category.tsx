@@ -29,17 +29,21 @@ function haversineKm(a: { lat: number; lng: number }, b: { lat: number; lng: num
 }
 
 export const Route = createFileRoute("/_authenticated/book/$category")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    provider: typeof search.provider === "string" ? search.provider : undefined,
+  }),
   head: () => ({ meta: [{ title: "Book a service — Zwits" }] }),
   component: BookCategory,
 });
 
 function BookCategory() {
   const { category } = Route.useParams();
+  const { provider: preselectedProvider } = Route.useSearch();
   const { user } = useAuth();
   const qc = useQueryClient();
   const service = services.find((s) => s.slug === category);
 
-  const [providerId, setProviderId] = useState<string | null>(null);
+  const [providerId, setProviderId] = useState<string | null>(preselectedProvider ?? null);
   const [address, setAddress] = useState("");
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [description, setDescription] = useState("");
@@ -227,7 +231,12 @@ function BookCategory() {
   return (
     <SiteShell>
       <section className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-        <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">← Dashboard</Link>
+        <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+          <Link to="/dashboard" className="hover:text-foreground">← Dashboard</Link>
+          <Link to="/services" className="hover:text-foreground">All services</Link>
+          <Link to="/services/$slug" params={{ slug: category }} className="hover:text-foreground">{service?.name ?? "Service"} details</Link>
+          <Link to="/contact" className="hover:text-foreground">Support</Link>
+        </div>
         <div className="mt-4 flex items-center gap-3">
           <service.icon className="size-8 text-primary" />
           <div>

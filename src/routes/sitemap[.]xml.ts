@@ -1,6 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 
+const serviceSlugs = [
+  "deliveries",
+  "transport",
+  "repairs",
+  "cleaning",
+  "farming",
+  "beauty",
+  "freelance",
+  "emergency",
+  "customer-service",
+];
+
 const BASE_URL = "https://zwits-africa-connect.lovable.app";
 
 interface SitemapEntry {
@@ -17,6 +29,7 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/", changefreq: "weekly", priority: "1.0" },
           { path: "/about", changefreq: "monthly", priority: "0.7" },
           { path: "/services", changefreq: "weekly", priority: "0.9" },
+          ...serviceSlugs.map((slug) => ({ path: `/services/${slug}`, changefreq: "weekly" as const, priority: "0.8" })),
           { path: "/delivery", changefreq: "weekly", priority: "0.9" },
           { path: "/pricing", changefreq: "monthly", priority: "0.8" },
           { path: "/business", changefreq: "monthly", priority: "0.8" },
