@@ -30,6 +30,8 @@ import { Route as BecomeADriverRouteImport } from './routes/become-a-driver'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ServicesIndexRouteImport } from './routes/services.index'
+import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
 import { Route as AuthenticatedWorkspaceRouteImport } from './routes/_authenticated/workspace'
 import { Route as AuthenticatedSendDeliveryRouteImport } from './routes/_authenticated/send-delivery'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
@@ -156,6 +158,16 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesIndexRoute = ServicesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ServicesRoute,
+} as any)
+const ServicesSlugRoute = ServicesSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ServicesRoute,
 } as any)
 const AuthenticatedWorkspaceRoute = AuthenticatedWorkspaceRouteImport.update({
   id: '/workspace',
@@ -300,7 +312,7 @@ export interface FileRoutesByFullPath {
   '/provider-login': typeof ProviderLoginRoute
   '/provider-signup': typeof ProviderSignupRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/services': typeof ServicesRoute
+  '/services': typeof ServicesRouteWithChildren
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
@@ -310,6 +322,8 @@ export interface FileRoutesByFullPath {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/send-delivery': typeof AuthenticatedSendDeliveryRoute
   '/workspace': typeof AuthenticatedWorkspaceRoute
+  '/services/$slug': typeof ServicesSlugRoute
+  '/services/': typeof ServicesIndexRoute
   '/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/book/$category': typeof AuthenticatedBookCategoryRoute
@@ -344,7 +358,6 @@ export interface FileRoutesByTo {
   '/provider-login': typeof ProviderLoginRoute
   '/provider-signup': typeof ProviderSignupRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/services': typeof ServicesRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
@@ -354,6 +367,8 @@ export interface FileRoutesByTo {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/send-delivery': typeof AuthenticatedSendDeliveryRoute
   '/workspace': typeof AuthenticatedWorkspaceRoute
+  '/services/$slug': typeof ServicesSlugRoute
+  '/services': typeof ServicesIndexRoute
   '/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/book/$category': typeof AuthenticatedBookCategoryRoute
@@ -390,7 +405,7 @@ export interface FileRoutesById {
   '/provider-login': typeof ProviderLoginRoute
   '/provider-signup': typeof ProviderSignupRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/services': typeof ServicesRoute
+  '/services': typeof ServicesRouteWithChildren
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
@@ -400,6 +415,8 @@ export interface FileRoutesById {
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/send-delivery': typeof AuthenticatedSendDeliveryRoute
   '/_authenticated/workspace': typeof AuthenticatedWorkspaceRoute
+  '/services/$slug': typeof ServicesSlugRoute
+  '/services/': typeof ServicesIndexRoute
   '/_authenticated/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/_authenticated/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/_authenticated/book/$category': typeof AuthenticatedBookCategoryRoute
@@ -446,6 +463,8 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/send-delivery'
     | '/workspace'
+    | '/services/$slug'
+    | '/services/'
     | '/admin/commissions'
     | '/admin/providers'
     | '/book/$category'
@@ -480,7 +499,6 @@ export interface FileRouteTypes {
     | '/provider-login'
     | '/provider-signup'
     | '/reset-password'
-    | '/services'
     | '/signup'
     | '/sitemap.xml'
     | '/terms'
@@ -490,6 +508,8 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/send-delivery'
     | '/workspace'
+    | '/services/$slug'
+    | '/services'
     | '/admin/commissions'
     | '/admin/providers'
     | '/book/$category'
@@ -535,6 +555,8 @@ export interface FileRouteTypes {
     | '/_authenticated/notifications'
     | '/_authenticated/send-delivery'
     | '/_authenticated/workspace'
+    | '/services/$slug'
+    | '/services/'
     | '/_authenticated/admin/commissions'
     | '/_authenticated/admin/providers'
     | '/_authenticated/book/$category'
@@ -571,7 +593,7 @@ export interface RootRouteChildren {
   ProviderLoginRoute: typeof ProviderLoginRoute
   ProviderSignupRoute: typeof ProviderSignupRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
-  ServicesRoute: typeof ServicesRoute
+  ServicesRoute: typeof ServicesRouteWithChildren
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
@@ -728,6 +750,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/services/': {
+      id: '/services/'
+      path: '/'
+      fullPath: '/services/'
+      preLoaderRoute: typeof ServicesIndexRouteImport
+      parentRoute: typeof ServicesRoute
+    }
+    '/services/$slug': {
+      id: '/services/$slug'
+      path: '/$slug'
+      fullPath: '/services/$slug'
+      preLoaderRoute: typeof ServicesSlugRouteImport
+      parentRoute: typeof ServicesRoute
     }
     '/_authenticated/workspace': {
       id: '/_authenticated/workspace'
@@ -937,6 +973,20 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
+interface ServicesRouteChildren {
+  ServicesSlugRoute: typeof ServicesSlugRoute
+  ServicesIndexRoute: typeof ServicesIndexRoute
+}
+
+const ServicesRouteChildren: ServicesRouteChildren = {
+  ServicesSlugRoute: ServicesSlugRoute,
+  ServicesIndexRoute: ServicesIndexRoute,
+}
+
+const ServicesRouteWithChildren = ServicesRoute._addFileChildren(
+  ServicesRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
@@ -955,7 +1005,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProviderLoginRoute: ProviderLoginRoute,
   ProviderSignupRoute: ProviderSignupRoute,
   ResetPasswordRoute: ResetPasswordRoute,
-  ServicesRoute: ServicesRoute,
+  ServicesRoute: ServicesRouteWithChildren,
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
@@ -966,13 +1016,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
