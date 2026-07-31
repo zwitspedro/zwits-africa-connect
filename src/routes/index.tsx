@@ -40,6 +40,7 @@ function Home() {
       <Hero />
       <LiveStats />
       <ServiceCategories />
+      <FeaturedProviders />
       <WhyZwits />
       <HowItWorks />
       <BusinessSolutions />
