@@ -35,7 +35,7 @@ export function Hero() {
           style={{ animationDelay: "140ms" }}
         >
           Book verified plumbers, electricians, cleaners, riders and more — vetted, rated and
-          near you. Pay with EcoCash, Innbucks, ZIPIT or cash on completion.
+          near you. Pay with EcoCash, InnBucks, card or cash on completion.
         </p>
 
         <div className="animate-rise mt-8" style={{ animationDelay: "200ms" }}>
