@@ -3,6 +3,7 @@ import { SiteShell } from "@/components/site-shell";
 import { Hero } from "@/components/marketing/hero";
 import { LiveStats } from "@/components/marketing/live-stats";
 import { ServiceCategories } from "@/components/marketing/service-categories";
+import { FeaturedProviders } from "@/components/marketing/featured-providers";
 import { WhyZwits } from "@/components/marketing/why-zwits";
 import { HowItWorks } from "@/components/marketing/how-it-works";
 import { BusinessSolutions } from "@/components/marketing/business-solutions";
@@ -39,6 +40,7 @@ function Home() {
       <Hero />
       <LiveStats />
       <ServiceCategories />
+      <FeaturedProviders />
       <WhyZwits />
       <HowItWorks />
       <BusinessSolutions />

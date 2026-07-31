@@ -3,7 +3,25 @@
 export type FulfilmentMode = "dispatch" | "quotes";
 
 /** Services where the customer compares offers instead of first-come-first-served. */
-const QUOTE_CATEGORIES = new Set(["repairs", "cleaning", "farming", "beauty", "freelance"]);
+const QUOTE_CATEGORIES = new Set([
+  "repairs",
+  "cleaning",
+  "farming",
+  "beauty",
+  "freelance",
+  "painting",
+  "carpentry",
+  "welding",
+  "solar",
+  "borehole",
+  "moving",
+  "gardening",
+  "security",
+  "tutors",
+  "it-services",
+  "appliance-repairs",
+  "wifi-installation",
+]);
 
 /** Fast-dispatch services with a tight accept window (Uber-style). */
 const FAST_CATEGORIES = new Set(["deliveries", "transport", "emergency"]);

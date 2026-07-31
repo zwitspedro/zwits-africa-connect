@@ -131,12 +131,18 @@ function ServiceDetail() {
           <div className="rounded-2xl border border-border bg-card p-6">
             <p className="text-xs uppercase tracking-wide text-muted-foreground">Typical rate</p>
             <p className="mt-2 font-display text-3xl font-bold">
-              {avg ? `$${avg.toFixed(0)}` : "—"}<span className="text-base font-normal text-muted-foreground">/hr</span>
+              {avg ? `$${avg.toFixed(0)}` : `$${service.estimate.from}–${service.estimate.to}`}
+              <span className="text-base font-normal text-muted-foreground">
+                /{avg ? "hr" : service.estimate.unit}
+              </span>
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
-              {low != null && high != null ? `Range $${low.toFixed(0)} – $${high.toFixed(0)}` : "Rates shown once providers list in your area"}
+              {low != null && high != null
+                ? `Range $${low.toFixed(0)} – $${high.toFixed(0)}`
+                : "Indicative guide — you get a firm price before you confirm"}
             </p>
           </div>
+
           <div className="rounded-2xl border border-border bg-card p-6">
             <p className="text-xs uppercase tracking-wide text-muted-foreground">How you're matched</p>
             <p className="mt-2 font-display text-xl font-semibold">
