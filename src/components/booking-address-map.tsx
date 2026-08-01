@@ -1,9 +1,8 @@
-/// <reference types="google.maps" />
 import { useEffect, useRef } from "react";
-import { useGoogleMaps } from "@/hooks/use-google-maps";
+import type { Marker } from "maplibre-gl";
 import { Navigation } from "lucide-react";
-
-type LatLng = { lat: number; lng: number };
+import { useMapLibre, markerEl } from "@/components/map/use-maplibre";
+import { MARKER_COLORS, directionsUrl, type LatLng } from "@/lib/map-config";
 
 export function BookingAddressMap({
   position,
@@ -14,55 +13,35 @@ export function BookingAddressMap({
   address?: string;
   className?: string;
 }) {
-  const { ready } = useGoogleMaps();
-  const ref = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<google.maps.Map | null>(null);
-  const markerRef = useRef<google.maps.Marker | null>(null);
-
-  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-    address ?? `${position.lat},${position.lng}`
-  )}`;
+  const { containerRef, mapRef, maplibre } = useMapLibre({ center: position, zoom: 15 });
+  const markerRef = useRef<Marker | null>(null);
+  const navUrl = directionsUrl(position);
 
   useEffect(() => {
-    if (!ready || !ref.current) return;
-    if (!mapRef.current) {
-      mapRef.current = new google.maps.Map(ref.current, {
-        center: position,
-        zoom: 15,
-        disableDefaultUI: true,
-        zoomControl: true,
-      });
-    } else {
-      mapRef.current.setCenter(position);
-    }
-  }, [ready, position]);
-
-  useEffect(() => {
-    if (!mapRef.current) return;
+    const map = mapRef.current;
+    if (!map || !maplibre) return;
+    map.setCenter([position.lng, position.lat]);
     if (!markerRef.current) {
-      markerRef.current = new google.maps.Marker({
-        map: mapRef.current,
-        position,
-        title: address ?? "Booking location",
-      });
-
-      markerRef.current.addListener("click", () => {
-        window.open(mapsUrl, "_blank", "noopener,noreferrer");
-      });
+      const el = markerEl(MARKER_COLORS.destination);
+      el.title = address ?? "Booking location";
+      el.addEventListener("click", () => window.open(navUrl, "_blank", "noopener,noreferrer"));
+      markerRef.current = new maplibre.Marker({ element: el })
+        .setLngLat([position.lng, position.lat])
+        .addTo(map);
     } else {
-      markerRef.current.setPosition(position);
+      markerRef.current.setLngLat([position.lng, position.lat]);
     }
-  }, [position, address, ready, mapsUrl]);
+  }, [position, address, maplibre, mapRef, navUrl]);
 
   return (
     <div className="group/map relative">
       <div
-        ref={ref}
-        className={className ?? "h-56 w-full rounded-2xl border border-border bg-muted"}
+        ref={containerRef}
+        className={className ?? "h-56 w-full overflow-hidden rounded-2xl border border-border bg-muted"}
       />
       <button
         type="button"
-        onClick={() => window.open(mapsUrl, "_blank", "noopener,noreferrer")}
+        onClick={() => window.open(navUrl, "_blank", "noopener,noreferrer")}
         className="absolute bottom-2 right-2 flex items-center gap-1.5 rounded-full bg-background/90 px-2.5 py-1.5 text-xs font-medium shadow-sm backdrop-blur transition-colors hover:bg-background"
       >
         <Navigation className="size-3.5 text-primary" />
