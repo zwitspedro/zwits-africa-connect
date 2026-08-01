@@ -1,16 +1,17 @@
-/// <reference types="google.maps" />
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import type { Marker } from "maplibre-gl";
 import { Clock } from "lucide-react";
-import { useGoogleMaps } from "@/hooks/use-google-maps";
+import { useMapLibre, markerEl } from "@/components/map/use-maplibre";
 import { supabase } from "@/integrations/supabase/client";
-import { getDrivingEta } from "@/lib/eta.functions";
-
-type LatLng = { lat: number; lng: number };
+import { getDrivingRoute } from "@/lib/geo.functions";
+import { MARKER_COLORS, formatEta, formatDistance, type LatLng } from "@/lib/map-config";
 
 // Round coords to ~50m so small jitter doesn't trigger refetches
 const roundCoord = (n: number) => Math.round(n * 2000) / 2000;
+
+const ROUTE_SOURCE = "live-route";
 
 export function LiveTrackingMap({
   bookingId,
@@ -21,11 +22,12 @@ export function LiveTrackingMap({
   destination: LatLng | null;
   className?: string;
 }) {
-  const { ready } = useGoogleMaps();
-  const ref = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<google.maps.Map | null>(null);
-  const destMarker = useRef<google.maps.Marker | null>(null);
-  const providerMarker = useRef<google.maps.Marker | null>(null);
+  const { containerRef, mapRef, maplibre, ready } = useMapLibre({
+    center: destination,
+    zoom: 13,
+  });
+  const destMarker = useRef<Marker | null>(null);
+  const providerMarker = useRef<Marker | null>(null);
 
   // Latest known provider position (initial load + realtime updates)
   const { data: initialPos } = useQuery({
@@ -72,81 +74,94 @@ export function LiveTrackingMap({
     };
   }, [bookingId]);
 
-  // Init map
-  useEffect(() => {
-    if (!ready || !ref.current) return;
-    const center = pos ?? destination ?? { lat: 0, lng: 0 };
-    if (!mapRef.current) {
-      mapRef.current = new google.maps.Map(ref.current, {
-        center,
-        zoom: 14,
-        disableDefaultUI: true,
-        zoomControl: true,
-      });
-    }
-  }, [ready, pos, destination]);
-
   // Destination marker
   useEffect(() => {
-    if (!mapRef.current || !destination) return;
+    const map = mapRef.current;
+    if (!map || !maplibre || !destination) return;
     if (!destMarker.current) {
-      destMarker.current = new google.maps.Marker({
-        map: mapRef.current,
-        position: destination,
-        label: { text: "A", color: "#fff" },
-      });
+      destMarker.current = new maplibre.Marker({ element: markerEl(MARKER_COLORS.destination, "A") })
+        .setLngLat([destination.lng, destination.lat])
+        .addTo(map);
     } else {
-      destMarker.current.setPosition(destination);
+      destMarker.current.setLngLat([destination.lng, destination.lat]);
     }
-  }, [destination, ready]);
+  }, [destination, maplibre, mapRef]);
 
   // Provider marker + auto-fit
   useEffect(() => {
-    if (!mapRef.current || !pos) return;
+    const map = mapRef.current;
+    if (!map || !maplibre || !pos) return;
     if (!providerMarker.current) {
-      providerMarker.current = new google.maps.Marker({
-        map: mapRef.current,
-        position: pos,
-        icon: {
-          path: google.maps.SymbolPath.CIRCLE,
-          scale: 9,
-          fillColor: "#3b82f6",
-          fillOpacity: 1,
-          strokeColor: "#fff",
-          strokeWeight: 2,
-        },
-        title: "Provider",
-      });
+      providerMarker.current = new maplibre.Marker({ element: markerEl(MARKER_COLORS.provider) })
+        .setLngLat([pos.lng, pos.lat])
+        .addTo(map);
     } else {
-      providerMarker.current.setPosition(pos);
+      providerMarker.current.setLngLat([pos.lng, pos.lat]);
     }
 
     if (destination) {
-      const bounds = new google.maps.LatLngBounds();
-      bounds.extend(pos);
-      bounds.extend(destination);
-      mapRef.current.fitBounds(bounds, 60);
+      const bounds = new maplibre.LngLatBounds(
+        [pos.lng, pos.lat],
+        [pos.lng, pos.lat],
+      ).extend([destination.lng, destination.lat]);
+      map.fitBounds(bounds, { padding: 64, maxZoom: 15, duration: 600 });
     } else {
-      mapRef.current.panTo(pos);
+      map.easeTo({ center: [pos.lng, pos.lat], duration: 600 });
     }
-  }, [pos, destination]);
+  }, [pos, destination, maplibre, mapRef]);
 
-  // ETA via Routes API (server fn). Keyed on rounded coords so it only
-  // refetches when the provider has actually moved a meaningful distance.
-  const fetchEta = useServerFn(getDrivingEta);
-  const etaKey = pos && destination
-    ? [roundCoord(pos.lat), roundCoord(pos.lng), roundCoord(destination.lat), roundCoord(destination.lng)]
-    : null;
+  // Route + ETA via OpenRouteService (server fn). Keyed on rounded coords so it
+  // only refetches when the provider has actually moved a meaningful distance.
+  const fetchRoute = useServerFn(getDrivingRoute);
+  const etaKey =
+    pos && destination
+      ? [roundCoord(pos.lat), roundCoord(pos.lng), roundCoord(destination.lat), roundCoord(destination.lng)]
+      : null;
   const { data: eta } = useQuery({
-    queryKey: ["eta", bookingId, etaKey],
+    queryKey: ["route", bookingId, etaKey],
     enabled: !!pos && !!destination,
     staleTime: 20_000,
-    queryFn: () => fetchEta({ data: { origin: pos!, destination: destination! } }),
+    queryFn: () => fetchRoute({ data: { origin: pos!, destination: destination! } }),
   });
+
+  // Draw the route line
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    const coords = eta?.geometry;
+    const geojson = {
+      type: "Feature" as const,
+      properties: {},
+      geometry: { type: "LineString" as const, coordinates: coords ?? [] },
+    };
+    const src = map.getSource(ROUTE_SOURCE) as
+      | { setData: (d: typeof geojson) => void }
+      | undefined;
+    if (src) {
+      src.setData(geojson);
+      return;
+    }
+    if (!coords?.length) return;
+    map.addSource(ROUTE_SOURCE, { type: "geojson", data: geojson });
+    map.addLayer({
+      id: `${ROUTE_SOURCE}-line`,
+      type: "line",
+      source: ROUTE_SOURCE,
+      layout: { "line-cap": "round", "line-join": "round" },
+      paint: {
+        "line-color": MARKER_COLORS.provider,
+        "line-width": 5,
+        "line-opacity": 0.85,
+      },
+    });
+  }, [eta, ready, mapRef]);
 
   return (
     <div className="relative">
-      <div ref={ref} className={className ?? "h-72 w-full rounded-2xl border border-border bg-muted"} />
+      <div
+        ref={containerRef}
+        className={className ?? "h-72 w-full overflow-hidden rounded-2xl border border-border bg-muted"}
+      />
       {!pos && (
         <div className="pointer-events-none absolute inset-x-0 top-2 mx-auto w-fit rounded-full bg-background/80 px-3 py-1 text-xs text-muted-foreground backdrop-blur">
           Waiting for provider location…
@@ -155,7 +170,9 @@ export function LiveTrackingMap({
       {pos && eta?.durationSeconds != null && (
         <div className="pointer-events-none absolute left-3 top-3 flex items-center gap-2 rounded-full bg-background/90 px-3 py-1.5 text-xs font-medium shadow-md backdrop-blur">
           <Clock className="size-3.5 text-primary" />
-          <span>ETA {formatEta(eta.durationSeconds)}</span>
+          <span>
+            {eta.estimated ? "~" : ""}ETA {formatEta(eta.durationSeconds)}
+          </span>
           {eta.distanceMeters != null && (
             <span className="text-muted-foreground">· {formatDistance(eta.distanceMeters)}</span>
           )}
@@ -163,18 +180,4 @@ export function LiveTrackingMap({
       )}
     </div>
   );
-}
-
-function formatEta(seconds: number) {
-  if (seconds < 60) return "<1 min";
-  const mins = Math.round(seconds / 60);
-  if (mins < 60) return `${mins} min`;
-  const h = Math.floor(mins / 60);
-  const m = mins % 60;
-  return `${h}h ${m}m`;
-}
-
-function formatDistance(meters: number) {
-  if (meters < 1000) return `${Math.round(meters)} m`;
-  return `${(meters / 1000).toFixed(1)} km`;
 }

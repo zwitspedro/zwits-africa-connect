@@ -1,29 +1,24 @@
-/// <reference types="google.maps" />
 import { useEffect, useRef } from "react";
-import { useGoogleMaps } from "@/hooks/use-google-maps";
+import type { Marker } from "maplibre-gl";
+import { useMapLibre, markerEl } from "@/components/map/use-maplibre";
+import { MARKER_COLORS } from "@/lib/map-config";
 
 export function LocationMap({ lat, lng, className }: { lat: number; lng: number; className?: string }) {
-  const { ready } = useGoogleMaps();
-  const ref = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<google.maps.Map | null>(null);
-  const markerRef = useRef<google.maps.Marker | null>(null);
+  const { containerRef, mapRef, maplibre } = useMapLibre({ center: { lat, lng }, zoom: 15 });
+  const markerRef = useRef<Marker | null>(null);
 
   useEffect(() => {
-    if (!ready || !ref.current) return;
-    const center = { lat, lng };
-    if (!mapRef.current) {
-      mapRef.current = new google.maps.Map(ref.current, {
-        center,
-        zoom: 15,
-        disableDefaultUI: true,
-        zoomControl: true,
-      });
-      markerRef.current = new google.maps.Marker({ map: mapRef.current, position: center });
+    const map = mapRef.current;
+    if (!map || !maplibre) return;
+    map.setCenter([lng, lat]);
+    if (!markerRef.current) {
+      markerRef.current = new maplibre.Marker({ element: markerEl(MARKER_COLORS.destination) })
+        .setLngLat([lng, lat])
+        .addTo(map);
     } else {
-      mapRef.current.setCenter(center);
-      markerRef.current?.setPosition(center);
+      markerRef.current.setLngLat([lng, lat]);
     }
-  }, [ready, lat, lng]);
+  }, [lat, lng, maplibre, mapRef]);
 
-  return <div ref={ref} className={className ?? "h-56 w-full rounded-2xl border border-border bg-muted"} />;
+  return <div ref={containerRef} className={className ?? "h-56 w-full overflow-hidden rounded-2xl border border-border bg-muted"} />;
 }

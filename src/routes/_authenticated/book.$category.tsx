@@ -13,7 +13,7 @@ import { BookingReceiptDialog, type BookingReceipt } from "@/components/booking-
 import { BookingCalendar } from "@/components/booking-calendar";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { useGoogleMaps } from "@/hooks/use-google-maps";
+import { searchAddress } from "@/lib/geo.functions";
 import { services } from "@/data/services";
 import { createJob } from "@/lib/dispatch.functions";
 import { fulfilmentModeFor } from "@/lib/dispatch-config";
@@ -58,7 +58,7 @@ function BookCategory() {
   const [payDialogOpen, setPayDialogOpen] = useState(false);
   const [budget, setBudget] = useState("");
   const [photos, setPhotos] = useState<File[]>([]);
-  const { ready: mapsReady } = useGoogleMaps();
+  const geocodeCity = useServerFn(searchAddress);
   const submitJob = useServerFn(createJob);
   const mode = providerId ? "direct" : fulfilmentModeFor(category);
 
@@ -75,25 +75,24 @@ function BookCategory() {
     },
   });
 
-  // Geocode unique provider cities once Google Maps is ready
+  // Geocode unique provider cities via Nominatim (OpenStreetMap)
   useEffect(() => {
-    if (!mapsReady || !providers || !coords) return;
-    const geocoder = new google.maps.Geocoder();
+    if (!providers || !coords) return;
     const cities = Array.from(new Set(providers.map((p) => p.city).filter(Boolean)));
     cities.forEach((city) => {
       if (city in cityCoords) return;
-      geocoder
-        .geocode({ address: city })
+      geocodeCity({ data: { query: `${city}, Zimbabwe`, limit: 1 } })
         .then((res) => {
-          const loc = res.results[0]?.geometry.location;
+          const hit = res[0];
           setCityCoords((prev) => ({
             ...prev,
-            [city]: loc ? { lat: loc.lat(), lng: loc.lng() } : null,
+            [city]: hit ? { lat: hit.lat, lng: hit.lng } : null,
           }));
         })
         .catch(() => setCityCoords((prev) => ({ ...prev, [city]: null })));
     });
-  }, [mapsReady, providers, coords, cityCoords]);
+  }, [providers, coords, cityCoords, geocodeCity]);
+
 
   const visibleProviders = useMemo(() => {
     if (!providers) return [];

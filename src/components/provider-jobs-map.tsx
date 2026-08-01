@@ -1,15 +1,27 @@
-/// <reference types="google.maps" />
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import type { GeoJSONSource, MapGeoJSONFeature } from "maplibre-gl";
 import {
-  MarkerClusterer,
-  SuperClusterAlgorithm,
-  type Cluster,
-} from "@googlemaps/markerclusterer";
-import { ChevronRight, X, MapPin, User, FileText, Tag, Calendar, ExternalLink, Phone, MessageCircle } from "lucide-react";
-import { useGoogleMaps } from "@/hooks/use-google-maps";
+  ChevronRight,
+  X,
+  MapPin,
+  User,
+  FileText,
+  Tag,
+  Calendar,
+  ExternalLink,
+  Phone,
+  MessageCircle,
+} from "lucide-react";
+import { useMapLibre } from "@/components/map/use-maplibre";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  MARKER_COLORS,
+  DEFAULT_CENTER,
+  isWithinServiceArea,
+  type LatLng,
+} from "@/lib/map-config";
 import {
   Sheet,
   SheetContent,
@@ -31,42 +43,40 @@ type Job = {
   price?: number | string | null;
 };
 
-const STATUS_COLORS: Record<string, string> = {
-  pending: "#f59e0b",
-  accepted: "#3b82f6",
-  in_progress: "#10b981",
-};
+const SRC = "jobs";
+const RADIUS_OPTIONS = [0, 5, 10, 25] as const;
 
-export function ProviderJobsMap({
-  jobs,
-  className,
-}: {
-  jobs: Job[];
-  className?: string;
-}) {
-  const { ready } = useGoogleMaps();
+export function ProviderJobsMap({ jobs, className }: { jobs: Job[]; className?: string }) {
   const navigate = useNavigate();
-  const ref = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<google.maps.Map | null>(null);
-  const markersRef = useRef<Map<google.maps.Marker, string>>(new Map());
-  const clustererRef = useRef<MarkerClusterer | null>(null);
-
-  const points = useMemo(
-    () =>
-      jobs.filter(
-        (j): j is Job & { lat: number; lng: number } =>
-          j.lat != null && j.lng != null,
-      ),
-    [jobs],
-  );
+  const { containerRef, mapRef, maplibre, ready } = useMapLibre({ zoom: 11 });
 
   // null = show all; otherwise restrict to these booking IDs
   const [selectedIds, setSelectedIds] = useState<string[] | null>(null);
   const [highlightId, setHighlightId] = useState<string | null>(null);
   const [detailId, setDetailId] = useState<string | null>(null);
 
+  // Service-area filtering around the provider's own position
+  const [radiusKm, setRadiusKm] = useState<number>(0);
+  const [origin, setOrigin] = useState<LatLng>(DEFAULT_CENTER);
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (p) => setOrigin({ lat: p.coords.latitude, lng: p.coords.longitude }),
+      () => {},
+      { enableHighAccuracy: false, timeout: 8000 },
+    );
+  }, []);
+
+  const points = useMemo(
+    () =>
+      jobs
+        .filter((j): j is Job & { lat: number; lng: number } => j.lat != null && j.lng != null)
+        .filter((j) => !radiusKm || isWithinServiceArea({ lat: j.lat, lng: j.lng }, origin, radiusKm)),
+    [jobs, radiusKm, origin],
+  );
+
   const detailJob = useMemo(
-    () => (detailId ? jobs.find((j) => j.id === detailId) ?? null : null),
+    () => (detailId ? (jobs.find((j) => j.id === detailId) ?? null) : null),
     [detailId, jobs],
   );
 
@@ -74,89 +84,124 @@ export function ProviderJobsMap({
     queryKey: ["booking-customer", detailJob?.customer_id],
     enabled: !!detailJob?.customer_id,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .rpc("get_booking_counterpart_profile", { _user_id: detailJob!.customer_id! });
+      const { data, error } = await supabase.rpc("get_booking_counterpart_profile", {
+        _user_id: detailJob!.customer_id!,
+      });
       if (error) throw error;
       return (data && data[0]) ?? null;
     },
   });
 
-  useEffect(() => {
-    if (!ready || !ref.current) return;
-    if (!mapRef.current) {
-      mapRef.current = new google.maps.Map(ref.current, {
-        center: points[0] ?? { lat: 0, lng: 0 },
-        zoom: 12,
-        disableDefaultUI: true,
-        zoomControl: true,
-      });
-    }
-  }, [ready, points]);
+  const geojson = useMemo(
+    () => ({
+      type: "FeatureCollection" as const,
+      features: points.map((j) => ({
+        type: "Feature" as const,
+        properties: { id: j.id, status: j.status, category: j.category, address: j.address },
+        geometry: { type: "Point" as const, coordinates: [j.lng, j.lat] },
+      })),
+    }),
+    [points],
+  );
 
+  // Build clustered source + layers once the style is loaded
   useEffect(() => {
-    if (!mapRef.current) return;
     const map = mapRef.current;
+    if (!map || !ready) return;
 
-    clustererRef.current?.clearMarkers();
-    markersRef.current.forEach((_, m) => m.setMap(null));
-    markersRef.current = new Map();
-
-    if (points.length === 0) return;
-
-    const bounds = new google.maps.LatLngBounds();
-    const markers: google.maps.Marker[] = [];
-    for (const j of points) {
-      const marker = new google.maps.Marker({
-        position: { lat: j.lat, lng: j.lng },
-        title: `${j.category} — ${j.address}`,
-        icon: {
-          path: google.maps.SymbolPath.CIRCLE,
-          scale: 9,
-          fillColor: STATUS_COLORS[j.status] ?? "#6b7280",
-          fillOpacity: 1,
-          strokeColor: "#0a0a0a",
-          strokeWeight: 2,
+    const existing = map.getSource(SRC) as GeoJSONSource | undefined;
+    if (existing) {
+      existing.setData(geojson);
+    } else {
+      map.addSource(SRC, {
+        type: "geojson",
+        data: geojson,
+        cluster: true,
+        clusterRadius: 60,
+        clusterMaxZoom: 15,
+      });
+      map.addLayer({
+        id: "clusters",
+        type: "circle",
+        source: SRC,
+        filter: ["has", "point_count"],
+        paint: {
+          "circle-color": MARKER_COLORS.provider,
+          "circle-radius": ["step", ["get", "point_count"], 16, 10, 22, 30, 28],
+          "circle-stroke-width": 3,
+          "circle-stroke-color": "#ffffff",
         },
       });
-      marker.addListener("click", () => {
-        setSelectedIds([j.id]);
-        setHighlightId(j.id);
-        map.panTo({ lat: j.lat, lng: j.lng });
+      map.addLayer({
+        id: "cluster-count",
+        type: "symbol",
+        source: SRC,
+        filter: ["has", "point_count"],
+        layout: { "text-field": ["get", "point_count_abbreviated"], "text-size": 12 },
+        paint: { "text-color": "#ffffff" },
       });
-      markers.push(marker);
-      markersRef.current.set(marker, j.id);
-      bounds.extend({ lat: j.lat, lng: j.lng });
-    }
+      map.addLayer({
+        id: "job-point",
+        type: "circle",
+        source: SRC,
+        filter: ["!", ["has", "point_count"]],
+        paint: {
+          "circle-radius": 9,
+          "circle-color": [
+            "match",
+            ["get", "status"],
+            "pending",
+            MARKER_COLORS.pending,
+            "accepted",
+            MARKER_COLORS.accepted,
+            "in_progress",
+            MARKER_COLORS.in_progress,
+            MARKER_COLORS.default,
+          ],
+          "circle-stroke-width": 2,
+          "circle-stroke-color": "#ffffff",
+        },
+      });
 
-    clustererRef.current = new MarkerClusterer({
-      map,
-      markers,
-      algorithm: new SuperClusterAlgorithm({ radius: 80, maxZoom: 16 }),
-      onClusterClick: (_event, cluster: Cluster, m) => {
-        const ids = cluster.markers
-          ?.map((mk) => markersRef.current.get(mk as google.maps.Marker))
-          .filter((v): v is string => !!v) ?? [];
-        setSelectedIds(ids);
+      const pointer = (v: string) => () => (map.getCanvas().style.cursor = v);
+      for (const layer of ["clusters", "job-point"]) {
+        map.on("mouseenter", layer, pointer("pointer"));
+        map.on("mouseleave", layer, pointer(""));
+      }
+
+      map.on("click", "job-point", (e) => {
+        const f = e.features?.[0] as MapGeoJSONFeature | undefined;
+        const id = f?.properties?.["id"] as string | undefined;
+        if (!id) return;
+        setSelectedIds([id]);
+        setHighlightId(id);
+        map.easeTo({ center: e.lngLat, duration: 500 });
+      });
+
+      map.on("click", "clusters", async (e) => {
+        const f = e.features?.[0];
+        const clusterId = f?.properties?.["point_count"] ? f.properties["cluster_id"] : null;
+        const source = map.getSource(SRC) as GeoJSONSource;
+        if (clusterId == null) return;
+        const leaves = await source.getClusterLeaves(Number(clusterId), 100, 0);
+        setSelectedIds(
+          leaves.map((l) => l.properties?.["id"] as string).filter((v): v is string => !!v),
+        );
         setHighlightId(null);
-        // Preserve default zoom-in behavior
-        if (cluster.bounds) m.fitBounds(cluster.bounds);
-      },
-    });
-
-    if (points.length === 1) {
-      map.setCenter({ lat: points[0].lat, lng: points[0].lng });
-      map.setZoom(14);
-    } else {
-      map.fitBounds(bounds, 60);
+        const zoom = await source.getClusterExpansionZoom(Number(clusterId));
+        map.easeTo({ center: e.lngLat, zoom, duration: 500 });
+      });
     }
-  }, [points]);
 
-  useEffect(() => {
-    return () => {
-      clustererRef.current?.clearMarkers();
-      clustererRef.current = null;
-    };
-  }, []);
+    if (points.length && maplibre) {
+      const bounds = new maplibre.LngLatBounds(
+        [points[0].lng, points[0].lat],
+        [points[0].lng, points[0].lat],
+      );
+      points.forEach((p) => bounds.extend([p.lng, p.lat]));
+      map.fitBounds(bounds, { padding: 64, maxZoom: 14, duration: 500 });
+    }
+  }, [geojson, ready, mapRef, maplibre, points]);
 
   // Reset selection when underlying jobs change shape
   useEffect(() => {
@@ -168,16 +213,14 @@ export function ProviderJobsMap({
     }
   }, [points, selectedIds]);
 
-  const visibleJobs = selectedIds
-    ? points.filter((p) => selectedIds.includes(p.id))
-    : points;
+  const visibleJobs = selectedIds ? points.filter((p) => selectedIds.includes(p.id)) : points;
 
   return (
     <div className="grid gap-3 md:grid-cols-[1fr_320px]">
       <div className="relative">
         <div
-          ref={ref}
-          className={className ?? "h-72 w-full rounded-2xl border border-border bg-muted md:h-[420px]"}
+          ref={containerRef}
+          className={className ?? "h-72 w-full overflow-hidden rounded-2xl border border-border bg-muted md:h-[420px]"}
         />
         {points.length === 0 && (
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center text-sm text-muted-foreground">
@@ -185,9 +228,25 @@ export function ProviderJobsMap({
           </div>
         )}
         <div className="absolute left-2 top-2 flex flex-wrap gap-1.5 text-[10px]">
-          <Legend color="#f59e0b" label="Pending" />
-          <Legend color="#3b82f6" label="Accepted" />
-          <Legend color="#10b981" label="In progress" />
+          <Legend color={MARKER_COLORS.pending} label="Pending" />
+          <Legend color={MARKER_COLORS.accepted} label="Accepted" />
+          <Legend color={MARKER_COLORS.in_progress} label="In progress" />
+        </div>
+        <div className="absolute bottom-8 left-2 flex flex-wrap gap-1.5">
+          {RADIUS_OPTIONS.map((r) => (
+            <button
+              key={r}
+              type="button"
+              onClick={() => setRadiusKm(r)}
+              className={`rounded-full px-2.5 py-1 text-[10px] font-medium shadow-sm backdrop-blur transition-colors ${
+                radiusKm === r
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-background/90 text-muted-foreground hover:bg-background"
+              }`}
+            >
+              {r === 0 ? "All areas" : `${r} km`}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -224,9 +283,7 @@ export function ProviderJobsMap({
                   onClick={() => {
                     setDetailId(j.id);
                     setHighlightId(j.id);
-                    if (mapRef.current && j.lat != null && j.lng != null) {
-                      mapRef.current.panTo({ lat: j.lat, lng: j.lng });
-                    }
+                    mapRef.current?.easeTo({ center: [j.lng, j.lat], duration: 500 });
                   }}
                   className={`flex w-full items-start gap-2 px-3 py-2.5 text-left transition-colors hover:bg-muted/60 ${
                     isHighlighted ? "bg-muted" : ""
@@ -234,7 +291,7 @@ export function ProviderJobsMap({
                 >
                   <span
                     className="mt-1.5 size-2 shrink-0 rounded-full"
-                    style={{ background: STATUS_COLORS[j.status] ?? "#6b7280" }}
+                    style={{ background: MARKER_COLORS[j.status] ?? MARKER_COLORS.default }}
                   />
                   <div className="min-w-0 flex-1">
                     <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
@@ -258,15 +315,13 @@ export function ProviderJobsMap({
                 <div className="flex items-center gap-2">
                   <span
                     className="size-2.5 rounded-full"
-                    style={{ background: STATUS_COLORS[detailJob.status] ?? "#6b7280" }}
+                    style={{ background: MARKER_COLORS[detailJob.status] ?? MARKER_COLORS.default }}
                   />
                   <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
                     {detailJob.status.replace("_", " ")}
                   </span>
                 </div>
-                <SheetTitle className="font-display text-2xl">
-                  {detailJob.category}
-                </SheetTitle>
+                <SheetTitle className="font-display text-2xl">{detailJob.category}</SheetTitle>
                 <SheetDescription>Booking #{detailJob.id.slice(0, 8)}</SheetDescription>
               </SheetHeader>
 
@@ -350,9 +405,7 @@ function Field({
     <div className="flex items-start gap-3 rounded-xl border border-border bg-card p-3">
       <span className="mt-0.5 text-muted-foreground">{icon}</span>
       <div className="min-w-0 flex-1">
-        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-          {label}
-        </div>
+        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
         <div className="mt-0.5 text-sm">{children}</div>
       </div>
     </div>
