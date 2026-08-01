@@ -13,7 +13,7 @@ import { BookingReceiptDialog, type BookingReceipt } from "@/components/booking-
 import { BookingCalendar } from "@/components/booking-calendar";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { useGoogleMaps } from "@/hooks/use-google-maps";
+import { searchAddress } from "@/lib/geo.functions";
 import { services } from "@/data/services";
 import { createJob } from "@/lib/dispatch.functions";
 import { fulfilmentModeFor } from "@/lib/dispatch-config";
