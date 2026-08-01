@@ -58,7 +58,7 @@ function BookCategory() {
   const [payDialogOpen, setPayDialogOpen] = useState(false);
   const [budget, setBudget] = useState("");
   const [photos, setPhotos] = useState<File[]>([]);
-  const { ready: mapsReady } = useGoogleMaps();
+  const geocodeCity = useServerFn(searchAddress);
   const submitJob = useServerFn(createJob);
   const mode = providerId ? "direct" : fulfilmentModeFor(category);
 
