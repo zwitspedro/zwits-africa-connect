@@ -12,6 +12,8 @@ import { ActiveDelivery } from "@/components/driver/active-delivery";
 import { DriverEarnings } from "@/components/driver/driver-earnings";
 import { VehicleSection } from "@/components/driver/vehicle-section";
 import { DriverSettings } from "@/components/driver/driver-settings";
+import { OnboardingChecklist, ReadyBanner } from "@/components/driver/onboarding-checklist";
+import { buildDriverOnboarding, type OnboardingStepKey } from "@/components/driver/use-driver-onboarding";
 import { supabase } from "@/integrations/supabase/client";
 
 const title = "Driver Portal — Zwits Deliveries";
@@ -39,7 +41,7 @@ const NAV = [
   { key: "route" as const, label: "Route", icon: RouteIcon },
   { key: "earnings" as const, label: "Earnings", icon: Wallet },
   { key: "vehicle" as const, label: "Vehicle", icon: Truck },
-  { key: "settings" as const, label: "Settings", icon: Settings },
+  { key: "settings" as const, label: "Profile", icon: Settings },
 ];
 
 function DriverRoute() {
@@ -53,41 +55,65 @@ function DriverRoute() {
 function DriverPortal() {
   const [section, setSection] = useState<Key>("home");
   const qc = useQueryClient();
-  const { user, profile, vehicles, active, completed, metrics } = useDriverData();
+  const { user, profile, userProfile, vehicles, active, completed, metrics } = useDriverData();
   const online = !!profile.data?.available;
+
+  const onboarding = buildDriverOnboarding({
+    vehicles: vehicles.data ?? [],
+    profile: profile.data,
+    online,
+  });
+  const setupDone = onboarding.steps[0]!.done && onboarding.steps[1]!.done;
 
   const toggleOnline = useMutation({
     mutationFn: async (next: boolean) => {
+      if (next && !setupDone) throw new Error("Finish your vehicle and profile setup first");
       const { error } = await supabase
         .from("driver_profiles")
-        .upsert({ user_id: user!.id, available: next }, { onConflict: "user_id" });
+        .upsert(
+          { user_id: user!.id, available: next, ...(next ? { onboarding_completed_at: new Date().toISOString() } : {}) },
+          { onConflict: "user_id" },
+        );
       if (error) throw error;
       return next;
     },
     onSuccess: (next) => {
-      toast.success(next ? "You are online" : "You are offline");
+      toast.success(next ? "You're online — you're ready to receive jobs" : "You're offline");
       qc.invalidateQueries({ queryKey: ["driver-profile"] });
     },
     onError: (e: any) => toast.error(e.message ?? "Could not update availability"),
   });
+
+  const goStep = (k: OnboardingStepKey) => {
+    if (k === "vehicle") setSection("vehicle");
+    else if (k === "profile") setSection("settings");
+    else {
+      setSection("home");
+      if (!online) toggleOnline.mutate(true);
+    }
+  };
 
   return (
     <PortalShell role="driver" nav={NAV} current={section} onChange={setSection} mobileKeys={["home", "jobs", "route", "earnings"]}>
       <div className="space-y-5">
         <header className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h1 className="font-display text-2xl font-bold">Driver portal</h1>
+            <h1 className="font-display text-2xl font-bold">Zwits driver</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              {online ? "You are online — offers are being dispatched to you." : "You are offline. Go online to receive deliveries."}
+              {online
+                ? "You are online — offers are being dispatched to you."
+                : setupDone
+                  ? "Go online when you're ready to receive jobs."
+                  : "Finish setup to start receiving jobs."}
             </p>
           </div>
           <button
-            disabled={toggleOnline.isPending || !user}
+            disabled={toggleOnline.isPending || !user || (!online && !setupDone)}
             onClick={() => toggleOnline.mutate(!online)}
             className={
               online
-                ? "inline-flex items-center gap-2 rounded-full bg-emerald-500/15 px-4 py-2 text-sm font-semibold text-emerald-400 ring-1 ring-emerald-500/30"
-                : "inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
+                ? "inline-flex min-h-11 items-center gap-2 rounded-full bg-emerald-500/15 px-5 text-sm font-semibold text-emerald-600 ring-1 ring-emerald-500/30"
+                : "inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground disabled:opacity-50"
             }
           >
             <Power className="size-4" />
@@ -104,28 +130,23 @@ function DriverPortal() {
 
         {section === "home" && (
           <div className="space-y-4">
+            {onboarding.completed < onboarding.total ? (
+              <OnboardingChecklist
+                steps={onboarding.steps}
+                completed={onboarding.completed}
+                total={onboarding.total}
+                next={onboarding.next}
+                onGo={goStep}
+              />
+            ) : (
+              <ReadyBanner online={online} busy={toggleOnline.isPending} onToggle={() => toggleOnline.mutate(!online)} />
+            )}
+
             {active.length > 0 && <ActiveDelivery active={active} />}
-            <Panel title="Live offers" description="Respond before the timer runs out">
+
+            <Panel title="Live offers" description={online ? "Respond before the timer runs out" : "Go online to receive offers"}>
               <DeliveryOffers online={online} />
             </Panel>
-            {vehicles.data?.length === 0 && (
-              <Panel title="Getting started" description="Complete these to start receiving delivery offers">
-                <ol className="space-y-3 text-sm">
-                  {[
-                    "Add your vehicle details and licence plate",
-                    "Fill in your driver profile and delivery zone",
-                    "Turn on availability to join the dispatch queue",
-                  ].map((s, i) => (
-                    <li key={s} className="flex items-start gap-3">
-                      <span className="grid size-6 shrink-0 place-items-center rounded-full bg-primary/12 text-xs font-semibold text-primary">
-                        {i + 1}
-                      </span>
-                      <span className="text-muted-foreground">{s}</span>
-                    </li>
-                  ))}
-                </ol>
-              </Panel>
-            )}
           </div>
         )}
 
@@ -139,9 +160,24 @@ function DriverPortal() {
 
         {section === "earnings" && <DriverEarnings completed={completed} metrics={metrics} />}
 
-        {section === "vehicle" && user && <VehicleSection userId={user.id} vehicles={vehicles.data ?? []} />}
+        {section === "vehicle" && user && (
+          <VehicleSection
+            userId={user.id}
+            vehicles={vehicles.data ?? []}
+            profile={profile.data}
+            onDone={() => setSection("settings")}
+          />
+        )}
 
-        {section === "settings" && user && <DriverSettings userId={user.id} profile={profile.data} />}
+        {section === "settings" && user && (
+          <DriverSettings
+            userId={user.id}
+            email={user.email}
+            profile={profile.data}
+            avatarUrl={userProfile.data?.avatar_url ?? null}
+            onDone={() => setSection("home")}
+          />
+        )}
       </div>
     </PortalShell>
   );
