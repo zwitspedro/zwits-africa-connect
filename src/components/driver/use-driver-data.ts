@@ -42,6 +42,20 @@ export function useDriverData() {
     },
   });
 
+  const userProfile = useQuery({
+    queryKey: ["driver-user-profile", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("display_name, avatar_url, phone")
+        .eq("user_id", user!.id)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const vehicles = useQuery({
     queryKey: ["driver-vehicles", user?.id],
     enabled: !!user,
@@ -86,6 +100,7 @@ export function useDriverData() {
   return {
     user,
     profile,
+    userProfile,
     vehicles,
     deliveries,
     rows,

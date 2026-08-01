@@ -365,6 +365,7 @@ export type Database = {
       }
       driver_profiles: {
         Row: {
+          address: string | null
           available: boolean
           city: string
           created_at: string
@@ -372,19 +373,26 @@ export type Database = {
           full_name: string | null
           id: string
           id_document_url: string | null
+          insurance_expiry: string | null
+          insurance_provider: string | null
           licence_url: string | null
+          onboarding_completed_at: string | null
           phone: string | null
           rating_avg: number
           ratings_count: number
           reviewed_at: string | null
+          services: string[]
           submitted_at: string | null
           updated_at: string
           user_id: string
           vehicle_doc_url: string | null
           verification_status: string
+          work_end: string | null
+          work_start: string | null
           zone_radius_km: number
         }
         Insert: {
+          address?: string | null
           available?: boolean
           city?: string
           created_at?: string
@@ -392,19 +400,26 @@ export type Database = {
           full_name?: string | null
           id?: string
           id_document_url?: string | null
+          insurance_expiry?: string | null
+          insurance_provider?: string | null
           licence_url?: string | null
+          onboarding_completed_at?: string | null
           phone?: string | null
           rating_avg?: number
           ratings_count?: number
           reviewed_at?: string | null
+          services?: string[]
           submitted_at?: string | null
           updated_at?: string
           user_id: string
           vehicle_doc_url?: string | null
           verification_status?: string
+          work_end?: string | null
+          work_start?: string | null
           zone_radius_km?: number
         }
         Update: {
+          address?: string | null
           available?: boolean
           city?: string
           created_at?: string
@@ -412,16 +427,22 @@ export type Database = {
           full_name?: string | null
           id?: string
           id_document_url?: string | null
+          insurance_expiry?: string | null
+          insurance_provider?: string | null
           licence_url?: string | null
+          onboarding_completed_at?: string | null
           phone?: string | null
           rating_avg?: number
           ratings_count?: number
           reviewed_at?: string | null
+          services?: string[]
           submitted_at?: string | null
           updated_at?: string
           user_id?: string
           vehicle_doc_url?: string | null
           verification_status?: string
+          work_end?: string | null
+          work_start?: string | null
           zone_radius_km?: number
         }
         Relationships: []
@@ -1114,6 +1135,7 @@ export type Database = {
           id: string
           make: string | null
           model: string | null
+          photo_url: string | null
           plate: string
           updated_at: string
           user_id: string
@@ -1127,6 +1149,7 @@ export type Database = {
           id?: string
           make?: string | null
           model?: string | null
+          photo_url?: string | null
           plate: string
           updated_at?: string
           user_id: string
@@ -1140,6 +1163,7 @@ export type Database = {
           id?: string
           make?: string | null
           model?: string | null
+          photo_url?: string | null
           plate?: string
           updated_at?: string
           user_id?: string
