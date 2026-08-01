@@ -18,6 +18,8 @@ import { cn } from "@/lib/utils";
 
 export type SectionKey =
   | "home"
+  | "messages"
+  | "completed"
   | "available"
   | "active"
   | "schedule"
