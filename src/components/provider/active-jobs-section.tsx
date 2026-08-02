@@ -1,22 +1,17 @@
-import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { MapPin, MessageSquare, Phone, Navigation, CheckCircle2, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProviderJobsMap } from "@/components/provider-jobs-map";
+import { LIFECYCLE, NEXT_ACTION, STATUS_LABEL, stageIndex, type JobStatus } from "@/lib/job-lifecycle";
 import { EmptyState, Panel } from "./dashboard-kit";
 import type { Booking } from "./use-provider-data";
 
-const TIMELINE = [
-  { key: "accepted", label: "On my way" },
-  { key: "in_progress", label: "Work started" },
-  { key: "completed", label: "Completed" },
-] as const;
+const TIMELINE = LIFECYCLE.filter((s) => s !== "pending").map((s) => ({ key: s, label: STATUS_LABEL[s] }));
 
 export function ActiveJobsSection({ jobs }: { jobs: Booking[] }) {
   const qc = useQueryClient();
-  const [arrived, setArrived] = useState<Record<string, boolean>>({});
 
   const updateStatus = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
@@ -32,6 +27,7 @@ export function ActiveJobsSection({ jobs }: { jobs: Booking[] }) {
     onError: (e: any) => toast.error(e.message ?? "Could not update"),
   });
 
+
   return (
     <div className="grid gap-4">
       <Panel title="Live job map" description="Tap a marker to open job details and navigation.">
@@ -41,7 +37,8 @@ export function ActiveJobsSection({ jobs }: { jobs: Booking[] }) {
       {jobs.length === 0 && <EmptyState title="No active jobs right now." hint="Accepted jobs appear here with navigation and chat." />}
 
       {jobs.map((j) => {
-        const stepIndex = j.status === "completed" ? 2 : j.status === "in_progress" ? 1 : j.status === "accepted" ? 0 : -1;
+        const stepIndex = stageIndex(j.status) - 1;
+        const action = NEXT_ACTION[j.status as JobStatus];
         const maps = j.lat && j.lng
           ? `https://www.google.com/maps/dir/?api=1&destination=${j.lat},${j.lng}`
           : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(j.address)}`;
@@ -110,32 +107,25 @@ export function ActiveJobsSection({ jobs }: { jobs: Booking[] }) {
               </a>
             </div>
 
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="mt-3 flex flex-wrap items-center gap-2">
               {j.status === "pending" && (
                 <ActionButton onClick={() => updateStatus.mutate({ id: j.id, status: "accepted" })}>Accept job</ActionButton>
               )}
-              {j.status === "accepted" && (
-                <>
-                  <ActionButton
-                    variant={arrived[j.id] ? "ghost" : "gold"}
-                    onClick={() => setArrived((a) => ({ ...a, [j.id]: true }))}
-                  >
-                    {arrived[j.id] ? "Arrived ✓" : "Arrived"}
-                  </ActionButton>
-                  <ActionButton onClick={() => updateStatus.mutate({ id: j.id, status: "in_progress" })}>Work started</ActionButton>
-                </>
+              {(j.status === "travelling" || j.status === "in_progress") && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-3 py-2 text-[11px] text-primary">
+                  <MapPin className="size-3" /> Sharing live location
+                </span>
               )}
-              {j.status === "in_progress" && (
-                <>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-3 py-2 text-[11px] text-primary">
-                    <MapPin className="size-3" /> Sharing live location
-                  </span>
-                  <ActionButton variant="positive" onClick={() => updateStatus.mutate({ id: j.id, status: "completed" })}>
-                    Work completed
-                  </ActionButton>
-                </>
+              {action && (
+                <ActionButton
+                  variant={action.next === "completed" ? "positive" : "primary"}
+                  onClick={() => updateStatus.mutate({ id: j.id, status: action.next })}
+                >
+                  {action.label}
+                </ActionButton>
               )}
             </div>
+
           </Panel>
         );
       })}

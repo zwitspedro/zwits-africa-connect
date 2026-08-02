@@ -15,11 +15,15 @@ import {
   FileText,
   LifeBuoy,
   Settings,
+  Navigation,
+  MapPinned,
+  Banknote,
+  Car,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { SectionKey } from "./dashboard-nav";
 
-export type TabKey = "home" | "jobs" | "wallet" | "messages" | "profile";
+export type TabKey = "home" | "jobs" | "route" | "earnings" | "profile";
 
 export type TabDef = {
   key: TabKey;
@@ -46,27 +50,24 @@ export const TABS: TabDef[] = [
     sections: [
       { key: "available", label: "New requests", icon: Briefcase },
       { key: "active", label: "Active", icon: Hammer },
-      { key: "schedule", label: "Scheduled", icon: CalendarDays },
+      { key: "schedule", label: "Upcoming", icon: CalendarDays },
       { key: "completed", label: "Completed", icon: CheckCircle2 },
     ],
   },
   {
-    key: "wallet",
-    label: "Wallet",
-    icon: Wallet,
-    sections: [
-      { key: "wallet", label: "Balance", icon: Wallet },
-      { key: "earnings", label: "Earnings", icon: DollarSign },
-    ],
+    key: "route",
+    label: "Route",
+    icon: Navigation,
+    sections: [{ key: "route", label: "Current route", icon: Navigation }],
   },
   {
-    key: "messages",
-    label: "Messages",
-    icon: MessageCircle,
+    key: "earnings",
+    label: "Earnings",
+    icon: DollarSign,
     sections: [
-      { key: "messages", label: "Chats", icon: MessageCircle },
-      { key: "notifications", label: "Alerts", icon: Bell },
-      { key: "support", label: "Support", icon: LifeBuoy },
+      { key: "earnings", label: "Earnings", icon: DollarSign },
+      { key: "wallet", label: "Wallet", icon: Wallet },
+      { key: "payout", label: "Payout details", icon: Banknote },
     ],
   },
   {
@@ -76,7 +77,12 @@ export const TABS: TabDef[] = [
     sections: [
       { key: "profile", label: "Details", icon: User },
       { key: "documents", label: "Documents", icon: FileText },
+      { key: "vehicle", label: "Vehicle", icon: Car },
+      { key: "area", label: "Service area", icon: MapPinned },
       { key: "reviews", label: "Ratings", icon: Star },
+      { key: "messages", label: "Messages", icon: MessageCircle },
+      { key: "notifications", label: "Alerts", icon: Bell },
+      { key: "support", label: "Support", icon: LifeBuoy },
       { key: "settings", label: "Settings", icon: Settings },
     ],
   },

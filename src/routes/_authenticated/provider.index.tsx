@@ -26,6 +26,11 @@ import { ProfileSection } from "@/components/provider/profile-section";
 import { DocumentsSection } from "@/components/provider/documents-section";
 import { SupportSection } from "@/components/provider/support-section";
 import { SettingsSection } from "@/components/provider/settings-section";
+import { RouteSection } from "@/components/provider/route-section";
+import { ServiceAreaSection } from "@/components/provider/service-area-section";
+import { PayoutSection } from "@/components/provider/payout-section";
+import { VehicleInfoSection } from "@/components/provider/vehicle-info-section";
+import { OnboardingPanel } from "@/components/provider/onboarding-panel";
 
 export const Route = createFileRoute("/_authenticated/provider/")({
   head: () => ({
@@ -74,7 +79,7 @@ function ProviderDashboard() {
   };
   const tabBadges: Partial<Record<TabKey, number>> = {
     jobs: active.length || undefined,
-    messages: unread || undefined,
+    profile: unread || undefined,
   };
 
   const goto = (t: TabKey, s: SectionKey) => {
@@ -159,20 +164,33 @@ function ProviderDashboard() {
             <SubTabs tab={currentTab} current={section} onChange={setSection} badges={sectionBadges} />
 
             {section === "home" && (
-              <HomeSection
-                data={data}
-                online={!!provider.available}
-                busy={toggleAvailable.isPending || revoked}
-                onToggle={() => toggleAvailable.mutate(!provider.available)}
-                onNavigate={jumpTo}
-              />
+              <>
+                {!data.onboarding.ready && (
+                  <OnboardingPanel
+                    steps={data.onboarding.steps}
+                    completed={data.onboarding.completed}
+                    total={data.onboarding.total}
+                    next={data.onboarding.next}
+                    onGo={(s) => jumpTo(s)}
+                  />
+                )}
+                <HomeSection
+                  data={data}
+                  online={!!provider.available}
+                  busy={toggleAvailable.isPending || revoked}
+                  onToggle={() => toggleAvailable.mutate(!provider.available)}
+                  onNavigate={jumpTo}
+                />
+              </>
             )}
             {section === "available" && <AvailableJobsSection online={!!provider.available} />}
             {section === "active" && <ActiveJobsSection jobs={active} />}
+            {section === "route" && <RouteSection jobs={active} />}
             {section === "completed" && <CompletedJobsSection data={data} />}
             {section === "schedule" && <ScheduleSection jobs={data.jobs} />}
             {section === "earnings" && <EarningsSection data={data} />}
             {section === "wallet" && <WalletSection data={data} />}
+            {section === "payout" && <PayoutSection data={data} />}
             {section === "messages" && <MessagesSection />}
             {section === "reviews" && <ReviewsSection data={data} />}
             {section === "performance" && <PerformanceSection data={data} />}
@@ -180,6 +198,8 @@ function ProviderDashboard() {
             {section === "notifications" && <NotificationsSection notifications={notifications} />}
             {section === "profile" && <ProfileSection data={data} />}
             {section === "documents" && <DocumentsSection data={data} />}
+            {section === "vehicle" && <VehicleInfoSection data={data} />}
+            {section === "area" && <ServiceAreaSection data={data} />}
             {section === "support" && <SupportSection />}
             {section === "settings" && <SettingsSection data={data} />}
           </main>
