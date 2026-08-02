@@ -164,20 +164,33 @@ function ProviderDashboard() {
             <SubTabs tab={currentTab} current={section} onChange={setSection} badges={sectionBadges} />
 
             {section === "home" && (
-              <HomeSection
-                data={data}
-                online={!!provider.available}
-                busy={toggleAvailable.isPending || revoked}
-                onToggle={() => toggleAvailable.mutate(!provider.available)}
-                onNavigate={jumpTo}
-              />
+              <>
+                {!data.onboarding.ready && (
+                  <OnboardingPanel
+                    steps={data.onboarding.steps}
+                    completed={data.onboarding.completed}
+                    total={data.onboarding.total}
+                    next={data.onboarding.next}
+                    onGo={(s) => jumpTo(s)}
+                  />
+                )}
+                <HomeSection
+                  data={data}
+                  online={!!provider.available}
+                  busy={toggleAvailable.isPending || revoked}
+                  onToggle={() => toggleAvailable.mutate(!provider.available)}
+                  onNavigate={jumpTo}
+                />
+              </>
             )}
             {section === "available" && <AvailableJobsSection online={!!provider.available} />}
             {section === "active" && <ActiveJobsSection jobs={active} />}
+            {section === "route" && <RouteSection jobs={active} />}
             {section === "completed" && <CompletedJobsSection data={data} />}
             {section === "schedule" && <ScheduleSection jobs={data.jobs} />}
             {section === "earnings" && <EarningsSection data={data} />}
             {section === "wallet" && <WalletSection data={data} />}
+            {section === "payout" && <PayoutSection data={data} />}
             {section === "messages" && <MessagesSection />}
             {section === "reviews" && <ReviewsSection data={data} />}
             {section === "performance" && <PerformanceSection data={data} />}
@@ -185,6 +198,8 @@ function ProviderDashboard() {
             {section === "notifications" && <NotificationsSection notifications={notifications} />}
             {section === "profile" && <ProfileSection data={data} />}
             {section === "documents" && <DocumentsSection data={data} />}
+            {section === "vehicle" && <VehicleInfoSection data={data} />}
+            {section === "area" && <ServiceAreaSection data={data} />}
             {section === "support" && <SupportSection />}
             {section === "settings" && <SettingsSection data={data} />}
           </main>
