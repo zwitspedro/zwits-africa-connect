@@ -262,6 +262,13 @@ export function useProviderData() {
     };
   }, [jobs, rates, offersQuery.data]);
 
+  const onboarding = buildProviderOnboarding({
+    provider,
+    profile: profileQuery.data,
+    onboarding: onboardingQuery.data,
+    vehicles: vehiclesQuery.data ?? [],
+  });
+
   return {
     user,
     provider,
@@ -270,6 +277,10 @@ export function useProviderData() {
     reviews: reviewsQuery.data ?? [],
     notifications: notificationsQuery.data ?? [],
     documents: documentsQuery.data ?? [],
+    onboardingRow: onboardingQuery.data,
+    vehicles: vehiclesQuery.data ?? [],
+    withdrawals: withdrawalsQuery.data ?? [],
+    onboarding,
     isLoading: providerQuery.isLoading,
     ...derived,
   };
