@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      booking_status_history: {
+        Row: {
+          booking_id: string
+          changed_by: string | null
+          created_at: string
+          id: string
+          note: string | null
+          status: string
+        }
+        Insert: {
+          booking_id: string
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          note?: string | null
+          status: string
+        }
+        Update: {
+          booking_id?: string
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          note?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_status_history_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bookings: {
         Row: {
           address: string
@@ -961,6 +996,45 @@ export type Database = {
         }
         Relationships: []
       }
+      provider_withdrawals: {
+        Row: {
+          amount: number
+          created_at: string
+          destination: string
+          id: string
+          method: string
+          note: string | null
+          processed_at: string | null
+          provider_user_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          destination: string
+          id?: string
+          method: string
+          note?: string | null
+          processed_at?: string | null
+          provider_user_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          destination?: string
+          id?: string
+          method?: string
+          note?: string | null
+          processed_at?: string | null
+          provider_user_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       providers: {
         Row: {
           available: boolean
@@ -974,6 +1048,7 @@ export type Database = {
           id: string
           id_document_url: string | null
           jobs_completed: number
+          onboarding_completed_at: string | null
           rating_avg: number
           ratings_count: number
           reviewed_at: string | null
@@ -998,6 +1073,7 @@ export type Database = {
           id?: string
           id_document_url?: string | null
           jobs_completed?: number
+          onboarding_completed_at?: string | null
           rating_avg?: number
           ratings_count?: number
           reviewed_at?: string | null
@@ -1022,6 +1098,7 @@ export type Database = {
           id?: string
           id_document_url?: string | null
           jobs_completed?: number
+          onboarding_completed_at?: string | null
           rating_avg?: number
           ratings_count?: number
           reviewed_at?: string | null
@@ -1223,6 +1300,8 @@ export type Database = {
       booking_status:
         | "pending"
         | "accepted"
+        | "travelling"
+        | "arrived"
         | "in_progress"
         | "completed"
         | "cancelled"
@@ -1362,6 +1441,8 @@ export const Constants = {
       booking_status: [
         "pending",
         "accepted",
+        "travelling",
+        "arrived",
         "in_progress",
         "completed",
         "cancelled",
