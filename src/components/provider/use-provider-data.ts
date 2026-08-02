@@ -2,6 +2,8 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { isOpen } from "@/lib/job-lifecycle";
+import { buildProviderOnboarding } from "./use-provider-onboarding";
 
 export type Booking = any;
 
