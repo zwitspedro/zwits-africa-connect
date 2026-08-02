@@ -26,6 +26,11 @@ import { ProfileSection } from "@/components/provider/profile-section";
 import { DocumentsSection } from "@/components/provider/documents-section";
 import { SupportSection } from "@/components/provider/support-section";
 import { SettingsSection } from "@/components/provider/settings-section";
+import { RouteSection } from "@/components/provider/route-section";
+import { ServiceAreaSection } from "@/components/provider/service-area-section";
+import { PayoutSection } from "@/components/provider/payout-section";
+import { VehicleInfoSection } from "@/components/provider/vehicle-info-section";
+import { OnboardingPanel } from "@/components/provider/onboarding-panel";
 
 export const Route = createFileRoute("/_authenticated/provider/")({
   head: () => ({
