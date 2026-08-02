@@ -290,42 +290,49 @@ function MessagesPage() {
           </div>
         )}
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (text.trim() || pendingFile) sendMessage.mutate();
-          }}
-          className="flex items-center gap-2 border-t border-border py-3"
-        >
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*,application/pdf,.doc,.docx,.txt"
-            className="hidden"
-            onChange={handlePickFile}
-          />
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
-            aria-label="Attach file"
+        {booking && !jobActive ? (
+          <p className="border-t border-border py-4 text-center text-xs text-muted-foreground">
+            This job is {statusLabel(booking.status).toLowerCase()} — the chat is now read-only.
+          </p>
+        ) : (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (text.trim() || pendingFile) sendMessage.mutate();
+            }}
+            className="flex items-center gap-2 border-t border-border py-3"
           >
-            <Paperclip className="size-4" />
-          </button>
-          <input
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Type a message..."
-            className="flex-1 rounded-full bg-muted px-4 py-2 text-sm outline-none ring-primary focus:ring-2"
-          />
-          <button
-            type="submit"
-            disabled={(!text.trim() && !pendingFile) || sendMessage.isPending || uploading}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground disabled:opacity-50"
-          >
-            <Send className="size-4" />
-          </button>
-        </form>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*,application/pdf,.doc,.docx,.txt"
+              className="hidden"
+              onChange={handlePickFile}
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="inline-flex size-11 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
+              aria-label="Attach file"
+            >
+              <Paperclip className="size-4" />
+            </button>
+            <input
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="Type a message..."
+              className="min-h-11 flex-1 rounded-full bg-muted px-4 text-sm outline-none ring-primary focus:ring-2"
+            />
+            <button
+              type="submit"
+              disabled={(!text.trim() && !pendingFile) || sendMessage.isPending || uploading}
+              className="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground disabled:opacity-50"
+            >
+              <Send className="size-4" />
+            </button>
+          </form>
+        )}
+
       </div>
     </SiteShell>
   );
