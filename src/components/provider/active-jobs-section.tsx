@@ -107,32 +107,25 @@ export function ActiveJobsSection({ jobs }: { jobs: Booking[] }) {
               </a>
             </div>
 
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="mt-3 flex flex-wrap items-center gap-2">
               {j.status === "pending" && (
                 <ActionButton onClick={() => updateStatus.mutate({ id: j.id, status: "accepted" })}>Accept job</ActionButton>
               )}
-              {j.status === "accepted" && (
-                <>
-                  <ActionButton
-                    variant={arrived[j.id] ? "ghost" : "gold"}
-                    onClick={() => setArrived((a) => ({ ...a, [j.id]: true }))}
-                  >
-                    {arrived[j.id] ? "Arrived ✓" : "Arrived"}
-                  </ActionButton>
-                  <ActionButton onClick={() => updateStatus.mutate({ id: j.id, status: "in_progress" })}>Work started</ActionButton>
-                </>
+              {(j.status === "travelling" || j.status === "in_progress") && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-3 py-2 text-[11px] text-primary">
+                  <MapPin className="size-3" /> Sharing live location
+                </span>
               )}
-              {j.status === "in_progress" && (
-                <>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-3 py-2 text-[11px] text-primary">
-                    <MapPin className="size-3" /> Sharing live location
-                  </span>
-                  <ActionButton variant="positive" onClick={() => updateStatus.mutate({ id: j.id, status: "completed" })}>
-                    Work completed
-                  </ActionButton>
-                </>
+              {action && (
+                <ActionButton
+                  variant={action.next === "completed" ? "positive" : "primary"}
+                  onClick={() => updateStatus.mutate({ id: j.id, status: action.next })}
+                >
+                  {action.label}
+                </ActionButton>
               )}
             </div>
+
           </Panel>
         );
       })}
