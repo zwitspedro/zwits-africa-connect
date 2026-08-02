@@ -5,6 +5,7 @@ import { ArrowLeft, Paperclip, Send, User, X, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { SiteShell } from "@/components/site-shell";
+import { isOpen, statusLabel } from "@/lib/job-lifecycle";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/messages/$bookingId")({
