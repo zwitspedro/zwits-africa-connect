@@ -22,6 +22,7 @@ export type SectionKey =
   | "completed"
   | "available"
   | "active"
+  | "route"
   | "schedule"
   | "earnings"
   | "wallet"
@@ -31,6 +32,9 @@ export type SectionKey =
   | "notifications"
   | "profile"
   | "documents"
+  | "vehicle"
+  | "area"
+  | "payout"
   | "support"
   | "settings";
 
