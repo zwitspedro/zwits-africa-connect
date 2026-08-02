@@ -5,6 +5,7 @@ import { ArrowLeft, Paperclip, Send, User, X, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { SiteShell } from "@/components/site-shell";
+import { isOpen, statusLabel } from "@/lib/job-lifecycle";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/messages/$bookingId")({
@@ -104,6 +105,27 @@ function MessagesPage() {
     return () => { supabase.removeChannel(channel); };
   }, [bookingId, qc]);
 
+  // Keep the job status in the chat header live for both parties.
+  useEffect(() => {
+    if (!bookingId) return;
+    const channel = supabase
+      .channel(`booking-status-${bookingId}`)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "bookings", filter: `id=eq.${bookingId}` },
+        (payload) => {
+          qc.setQueryData(["booking-for-messages", bookingId], payload.new);
+        },
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [bookingId, qc]);
+
+  const isCustomer = !!booking && booking.customer_id === user?.id;
+  const jobActive = !!booking && isOpen(booking.status);
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -176,18 +198,41 @@ function MessagesPage() {
   return (
     <SiteShell>
       <div className="mx-auto flex h-[calc(100dvh-64px)] max-w-2xl flex-col px-4 sm:px-6">
-        <header className="flex items-center gap-3 border-b border-border py-3">
-          <Link to="/provider" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="size-4" />
-          </Link>
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
+        <header className="grid grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-border py-3">
+          {isCustomer ? (
+            <Link
+              to="/bookings/$id"
+              params={{ id: bookingId }}
+              className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
+              aria-label="Back to booking"
+            >
+              <ArrowLeft className="size-4" />
+            </Link>
+          ) : (
+            <Link to="/provider" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground" aria-label="Back to dashboard">
+              <ArrowLeft className="size-4" />
+            </Link>
+          )}
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted">
             <User className="size-4 text-muted-foreground" />
           </div>
-          <div>
-            <div className="text-sm font-medium">{otherName}</div>
-            <div className="text-[10px] text-muted-foreground">Booking #{bookingId.slice(0, 8)}</div>
+          <div className="min-w-0">
+            <div className="truncate text-sm font-medium">{otherName}</div>
+            <div className="truncate text-[10px] text-muted-foreground">
+              {booking ? <span className="capitalize">{booking.category}</span> : null} · #{bookingId.slice(0, 8)}
+            </div>
           </div>
+          {booking && (
+            <span
+              className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-medium ${
+                jobActive ? "bg-emerald-500/12 text-emerald-600" : "bg-muted text-muted-foreground"
+              }`}
+            >
+              {statusLabel(booking.status)}
+            </span>
+          )}
         </header>
+
 
         <div className="flex-1 overflow-y-auto py-4">
           {messages?.length === 0 && (
@@ -245,42 +290,49 @@ function MessagesPage() {
           </div>
         )}
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (text.trim() || pendingFile) sendMessage.mutate();
-          }}
-          className="flex items-center gap-2 border-t border-border py-3"
-        >
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*,application/pdf,.doc,.docx,.txt"
-            className="hidden"
-            onChange={handlePickFile}
-          />
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
-            aria-label="Attach file"
+        {booking && !jobActive ? (
+          <p className="border-t border-border py-4 text-center text-xs text-muted-foreground">
+            This job is {statusLabel(booking.status).toLowerCase()} — the chat is now read-only.
+          </p>
+        ) : (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (text.trim() || pendingFile) sendMessage.mutate();
+            }}
+            className="flex items-center gap-2 border-t border-border py-3"
           >
-            <Paperclip className="size-4" />
-          </button>
-          <input
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Type a message..."
-            className="flex-1 rounded-full bg-muted px-4 py-2 text-sm outline-none ring-primary focus:ring-2"
-          />
-          <button
-            type="submit"
-            disabled={(!text.trim() && !pendingFile) || sendMessage.isPending || uploading}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground disabled:opacity-50"
-          >
-            <Send className="size-4" />
-          </button>
-        </form>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*,application/pdf,.doc,.docx,.txt"
+              className="hidden"
+              onChange={handlePickFile}
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="inline-flex size-11 shrink-0 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
+              aria-label="Attach file"
+            >
+              <Paperclip className="size-4" />
+            </button>
+            <input
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="Type a message..."
+              className="min-h-11 flex-1 rounded-full bg-muted px-4 text-sm outline-none ring-primary focus:ring-2"
+            />
+            <button
+              type="submit"
+              disabled={(!text.trim() && !pendingFile) || sendMessage.isPending || uploading}
+              className="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground disabled:opacity-50"
+            >
+              <Send className="size-4" />
+            </button>
+          </form>
+        )}
+
       </div>
     </SiteShell>
   );
