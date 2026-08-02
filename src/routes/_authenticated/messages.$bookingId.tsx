@@ -105,6 +105,27 @@ function MessagesPage() {
     return () => { supabase.removeChannel(channel); };
   }, [bookingId, qc]);
 
+  // Keep the job status in the chat header live for both parties.
+  useEffect(() => {
+    if (!bookingId) return;
+    const channel = supabase
+      .channel(`booking-status-${bookingId}`)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "bookings", filter: `id=eq.${bookingId}` },
+        (payload) => {
+          qc.setQueryData(["booking-for-messages", bookingId], payload.new);
+        },
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [bookingId, qc]);
+
+  const isCustomer = !!booking && booking.customer_id === user?.id;
+  const jobActive = !!booking && isOpen(booking.status);
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
