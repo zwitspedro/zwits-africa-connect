@@ -79,7 +79,7 @@ function ProviderDashboard() {
   };
   const tabBadges: Partial<Record<TabKey, number>> = {
     jobs: active.length || undefined,
-    messages: unread || undefined,
+    profile: unread || undefined,
   };
 
   const goto = (t: TabKey, s: SectionKey) => {
