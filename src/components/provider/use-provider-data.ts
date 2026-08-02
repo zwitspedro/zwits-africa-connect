@@ -125,6 +125,49 @@ export function useProviderData() {
     },
   });
 
+  const onboardingQuery = useQuery({
+    queryKey: ["provider-onboarding-row", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("provider_onboarding")
+        .select("*")
+        .eq("user_id", user!.id)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const vehiclesQuery = useQuery({
+    queryKey: ["provider-vehicles", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("vehicles")
+        .select("*")
+        .eq("user_id", user!.id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const withdrawalsQuery = useQuery({
+    queryKey: ["provider-withdrawals", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("provider_withdrawals")
+        .select("*")
+        .eq("provider_user_id", user!.id)
+        .order("created_at", { ascending: false })
+        .limit(30);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
   const jobs: Booking[] = jobsQuery.data ?? [];
   const rates = ratesQuery.data ?? [];
 
@@ -140,7 +183,7 @@ export function useProviderData() {
       return price - feeFor(j.category, price);
     };
 
-    const active = jobs.filter((j) => ["pending", "accepted", "in_progress"].includes(j.status));
+    const active = jobs.filter((j) => isOpen(j.status));
     const completed = jobs.filter((j) => j.status === "completed");
     const cancelled = jobs.filter((j) => j.status === "cancelled");
 
