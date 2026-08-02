@@ -198,18 +198,41 @@ function MessagesPage() {
   return (
     <SiteShell>
       <div className="mx-auto flex h-[calc(100dvh-64px)] max-w-2xl flex-col px-4 sm:px-6">
-        <header className="flex items-center gap-3 border-b border-border py-3">
-          <Link to="/provider" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="size-4" />
-          </Link>
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
+        <header className="grid grid-cols-[auto_auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-border py-3">
+          {isCustomer ? (
+            <Link
+              to="/bookings/$id"
+              params={{ id: bookingId }}
+              className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
+              aria-label="Back to booking"
+            >
+              <ArrowLeft className="size-4" />
+            </Link>
+          ) : (
+            <Link to="/provider" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground" aria-label="Back to dashboard">
+              <ArrowLeft className="size-4" />
+            </Link>
+          )}
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted">
             <User className="size-4 text-muted-foreground" />
           </div>
-          <div>
-            <div className="text-sm font-medium">{otherName}</div>
-            <div className="text-[10px] text-muted-foreground">Booking #{bookingId.slice(0, 8)}</div>
+          <div className="min-w-0">
+            <div className="truncate text-sm font-medium">{otherName}</div>
+            <div className="truncate text-[10px] text-muted-foreground">
+              {booking ? <span className="capitalize">{booking.category}</span> : null} · #{bookingId.slice(0, 8)}
+            </div>
           </div>
+          {booking && (
+            <span
+              className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-medium ${
+                jobActive ? "bg-emerald-500/12 text-emerald-600" : "bg-muted text-muted-foreground"
+              }`}
+            >
+              {statusLabel(booking.status)}
+            </span>
+          )}
         </header>
+
 
         <div className="flex-1 overflow-y-auto py-4">
           {messages?.length === 0 && (
