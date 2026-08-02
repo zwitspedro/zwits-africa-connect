@@ -30,7 +30,11 @@ export function RouteSection({ jobs }: { jobs: Booking[] }) {
     <div className="grid gap-4">
       <Panel title="Current route" description={STATUS_LABEL[current.status as JobStatus] ?? current.status}>
         <div className="overflow-hidden rounded-2xl">
-          <LiveTrackingMap bookingId={current.id} destination={{ lat: current.lat, lng: current.lng, address: current.address }} />
+          <LiveTrackingMap
+            bookingId={current.id}
+            destination={current.lat != null && current.lng != null ? { lat: current.lat, lng: current.lng } : null}
+          />
+
         </div>
 
         <div className="mt-4 grid grid-cols-[auto_minmax(0,1fr)] items-start gap-3">
