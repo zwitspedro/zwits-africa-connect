@@ -1,22 +1,17 @@
-import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { MapPin, MessageSquare, Phone, Navigation, CheckCircle2, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProviderJobsMap } from "@/components/provider-jobs-map";
+import { LIFECYCLE, NEXT_ACTION, STATUS_LABEL, stageIndex, type JobStatus } from "@/lib/job-lifecycle";
 import { EmptyState, Panel } from "./dashboard-kit";
 import type { Booking } from "./use-provider-data";
 
-const TIMELINE = [
-  { key: "accepted", label: "On my way" },
-  { key: "in_progress", label: "Work started" },
-  { key: "completed", label: "Completed" },
-] as const;
+const TIMELINE = LIFECYCLE.filter((s) => s !== "pending").map((s) => ({ key: s, label: STATUS_LABEL[s] }));
 
 export function ActiveJobsSection({ jobs }: { jobs: Booking[] }) {
   const qc = useQueryClient();
-  const [arrived, setArrived] = useState<Record<string, boolean>>({});
 
   const updateStatus = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
@@ -31,6 +26,7 @@ export function ActiveJobsSection({ jobs }: { jobs: Booking[] }) {
     },
     onError: (e: any) => toast.error(e.message ?? "Could not update"),
   });
+
 
   return (
     <div className="grid gap-4">
