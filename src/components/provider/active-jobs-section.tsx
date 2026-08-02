@@ -37,7 +37,8 @@ export function ActiveJobsSection({ jobs }: { jobs: Booking[] }) {
       {jobs.length === 0 && <EmptyState title="No active jobs right now." hint="Accepted jobs appear here with navigation and chat." />}
 
       {jobs.map((j) => {
-        const stepIndex = j.status === "completed" ? 2 : j.status === "in_progress" ? 1 : j.status === "accepted" ? 0 : -1;
+        const stepIndex = stageIndex(j.status) - 1;
+        const action = NEXT_ACTION[j.status as JobStatus];
         const maps = j.lat && j.lng
           ? `https://www.google.com/maps/dir/?api=1&destination=${j.lat},${j.lng}`
           : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(j.address)}`;
