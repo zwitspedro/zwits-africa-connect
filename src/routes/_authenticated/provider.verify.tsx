@@ -1,7 +1,12 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/provider/verify")({
-  beforeLoad: () => {
-    throw redirect({ to: "/provider/setup", replace: true });
+  beforeLoad: ({ location }) => {
+    throw redirect({
+      to: "/provider/setup",
+      search: (location.search ?? {}) as never,
+      hash: location.hash || undefined,
+      replace: true,
+    });
   },
 });
