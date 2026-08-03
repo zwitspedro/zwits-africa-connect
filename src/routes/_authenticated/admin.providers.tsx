@@ -45,20 +45,6 @@ function AdminProviders() {
     },
     onError: (e: any) => toast.error(e.message ?? "Update failed"),
   });
-
-
-  if (rolesLoading) return <SiteShell><div className="p-10 text-sm text-muted-foreground">Loading…</div></SiteShell>;
-  if (!isAdmin) {
-    return (
-      <SiteShell>
-        <section className="mx-auto max-w-md px-4 py-16 text-center">
-          <h1 className="font-display text-2xl font-bold">Admins only</h1>
-          <p className="mt-2 text-sm text-muted-foreground">You don't have access to this page.</p>
-        </section>
-      </SiteShell>
-    );
-  }
-
   const { data: allAudits } = useQuery({
     queryKey: ["admin-all-audits"],
     enabled: !!user && isAdmin,
@@ -72,6 +58,19 @@ function AdminProviders() {
       return data;
     },
   });
+
+  if (rolesLoading) return <SiteShell><div className="p-10 text-sm text-muted-foreground">Loading…</div></SiteShell>;
+  if (!isAdmin) {
+    return (
+      <SiteShell>
+        <section className="mx-auto max-w-md px-4 py-16 text-center">
+          <h1 className="font-display text-2xl font-bold">Admins only</h1>
+          <p className="mt-2 text-sm text-muted-foreground">You don't have access to this page.</p>
+        </section>
+      </SiteShell>
+    );
+  }
+
 
   return (
     <SiteShell>
