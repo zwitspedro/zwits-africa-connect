@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
 import { DiscrepancyBanner, type DiscrepancyIssue } from "@/components/discrepancy-banner";
+import { RoleGate } from "@/components/portal/role-gate";
 
 export const Route = createFileRoute(
   "/_authenticated/admin/reconciliation/provider/$providerId",
@@ -16,7 +17,7 @@ export const Route = createFileRoute(
     to: typeof s.to === "string" ? s.to : undefined,
   }),
   head: () => ({ meta: [{ title: "Provider payout breakdown — Admin — Zwits" }] }),
-  component: ProviderBreakdown,
+  component: AdminProviderBreakdownRoute,
 });
 
 type Rate = { category: string; percent: number; min_fee: number; active: boolean };
@@ -535,5 +536,13 @@ function Table({ headers, rows }: { headers: string[]; rows: React.ReactNode[][]
         </tbody>
       </table>
     </div>
+  );
+}
+
+function AdminProviderBreakdownRoute() {
+  return (
+    <RoleGate role="admin">
+      <ProviderBreakdown />
+    </RoleGate>
   );
 }

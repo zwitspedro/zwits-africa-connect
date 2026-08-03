@@ -9,10 +9,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
 import { setProviderVerification } from "@/lib/admin.functions";
+import { RoleGate } from "@/components/portal/role-gate";
 
 export const Route = createFileRoute("/_authenticated/admin/providers")({
   head: () => ({ meta: [{ title: "Admin — Providers — Zwits" }] }),
-  component: AdminProviders,
+  component: AdminAdminProvidersRoute,
 });
 
 function AdminProviders() {
@@ -45,20 +46,6 @@ function AdminProviders() {
     },
     onError: (e: any) => toast.error(e.message ?? "Update failed"),
   });
-
-
-  if (rolesLoading) return <SiteShell><div className="p-10 text-sm text-muted-foreground">Loading…</div></SiteShell>;
-  if (!isAdmin) {
-    return (
-      <SiteShell>
-        <section className="mx-auto max-w-md px-4 py-16 text-center">
-          <h1 className="font-display text-2xl font-bold">Admins only</h1>
-          <p className="mt-2 text-sm text-muted-foreground">You don't have access to this page.</p>
-        </section>
-      </SiteShell>
-    );
-  }
-
   const { data: allAudits } = useQuery({
     queryKey: ["admin-all-audits"],
     enabled: !!user && isAdmin,
@@ -72,6 +59,19 @@ function AdminProviders() {
       return data;
     },
   });
+
+  if (rolesLoading) return <SiteShell><div className="p-10 text-sm text-muted-foreground">Loading…</div></SiteShell>;
+  if (!isAdmin) {
+    return (
+      <SiteShell>
+        <section className="mx-auto max-w-md px-4 py-16 text-center">
+          <h1 className="font-display text-2xl font-bold">Admins only</h1>
+          <p className="mt-2 text-sm text-muted-foreground">You don't have access to this page.</p>
+        </section>
+      </SiteShell>
+    );
+  }
+
 
   return (
     <SiteShell>
@@ -235,5 +235,13 @@ function DocLink({ path, label }: { path: string | null; label: string }) {
        className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-2 py-1 text-[11px] text-primary hover:bg-primary/25">
       <FileText className="size-3" /> {label}
     </a>
+  );
+}
+
+function AdminAdminProvidersRoute() {
+  return (
+    <RoleGate role="admin">
+      <AdminProviders />
+    </RoleGate>
   );
 }

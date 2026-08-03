@@ -25,7 +25,7 @@ export function DocumentsSection({ data }: { data: ProviderData }) {
         description="Keep your documents current to stay eligible for jobs."
         action={
           <Link
-            to="/provider/verify"
+            to="/provider/setup"
             className="inline-flex min-h-10 items-center gap-1.5 rounded-full bg-primary px-4 text-xs font-semibold text-primary-foreground"
           >
             <Upload className="size-3.5" /> Upload

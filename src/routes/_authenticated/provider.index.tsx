@@ -32,6 +32,8 @@ import { PayoutSection } from "@/components/provider/payout-section";
 import { VehicleInfoSection } from "@/components/provider/vehicle-info-section";
 import { OnboardingPanel } from "@/components/provider/onboarding-panel";
 
+import { RoleGate } from "@/components/portal/role-gate";
+
 export const Route = createFileRoute("/_authenticated/provider/")({
   head: () => ({
     meta: [
@@ -43,8 +45,16 @@ export const Route = createFileRoute("/_authenticated/provider/")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: ProviderDashboard,
+  component: ProviderRoute,
 });
+
+function ProviderRoute() {
+  return (
+    <RoleGate role="provider">
+      <ProviderDashboard />
+    </RoleGate>
+  );
+}
 
 function TrackingBridge({ bookingId }: { bookingId: string | null }) {
   useProviderTracking({ bookingId, enabled: !!bookingId });
@@ -105,7 +115,7 @@ function ProviderDashboard() {
         <div className="mx-auto max-w-2xl px-4 py-16 text-center">
           <h1 className="font-display text-3xl font-bold">Become a Zwits provider</h1>
           <p className="mt-2 text-muted-foreground">Create your provider profile to start receiving jobs.</p>
-          <Link to="/provider/apply" className="mt-6 inline-flex min-h-12 items-center rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground">
+          <Link to="/provider/setup" className="mt-6 inline-flex min-h-12 items-center rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground">
             Get started
           </Link>
         </div>

@@ -6,12 +6,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
 import { DiscrepancyBanner, type DiscrepancyIssue } from "@/components/discrepancy-banner";
+import { RoleGate } from "@/components/portal/role-gate";
 
 export const Route = createFileRoute(
   "/_authenticated/admin/reconciliation/booking/$bookingId",
 )({
   head: () => ({ meta: [{ title: "Booking payout breakdown — Admin — Zwits" }] }),
-  component: BookingBreakdown,
+  component: AdminBookingBreakdownRoute,
 });
 
 type Rate = {
@@ -344,5 +345,13 @@ function Field({
       <dt className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</dt>
       <dd className="mt-0.5 break-words">{value}</dd>
     </div>
+  );
+}
+
+function AdminBookingBreakdownRoute() {
+  return (
+    <RoleGate role="admin">
+      <BookingBreakdown />
+    </RoleGate>
   );
 }
