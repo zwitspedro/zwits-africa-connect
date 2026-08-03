@@ -6,10 +6,11 @@ import { SiteShell } from "@/components/site-shell";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
+import { RoleGate } from "@/components/portal/role-gate";
 
 export const Route = createFileRoute("/_authenticated/admin/reconciliation/")({
   head: () => ({ meta: [{ title: "Reconciliation — Admin — Zwits" }] }),
-  component: ReconciliationScreen,
+  component: AdminReconciliationScreenRoute,
 });
 
 type Booking = {
@@ -431,5 +432,13 @@ function Table({ headers, rows }: { headers: string[]; rows: React.ReactNode[][]
         </tbody>
       </table>
     </div>
+  );
+}
+
+function AdminReconciliationScreenRoute() {
+  return (
+    <RoleGate role="admin">
+      <ReconciliationScreen />
+    </RoleGate>
   );
 }

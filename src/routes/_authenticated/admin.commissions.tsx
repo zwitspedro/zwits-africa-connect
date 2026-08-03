@@ -8,10 +8,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
 import { services } from "@/data/services";
+import { RoleGate } from "@/components/portal/role-gate";
 
 export const Route = createFileRoute("/_authenticated/admin/commissions")({
   head: () => ({ meta: [{ title: "Commissions — Admin — Zwits" }] }),
-  component: CommissionsScreen,
+  component: AdminCommissionsScreenRoute,
 });
 
 type Row = {
@@ -466,4 +467,12 @@ function Field({ label, children, className = "" }: { label: string; children: R
 function avg(rows: Row[]) {
   if (!rows.length) return 0;
   return rows.reduce((s, r) => s + Number(r.percent), 0) / rows.length;
+}
+
+function AdminCommissionsScreenRoute() {
+  return (
+    <RoleGate role="admin">
+      <CommissionsScreen />
+    </RoleGate>
+  );
 }

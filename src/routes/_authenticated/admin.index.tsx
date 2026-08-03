@@ -6,10 +6,11 @@ import { AuditExportButtons } from "@/components/audit-export-buttons";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
+import { RoleGate } from "@/components/portal/role-gate";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   head: () => ({ meta: [{ title: "Admin dashboard — Zwits" }] }),
-  component: AdminDashboard,
+  component: AdminAdminDashboardRoute,
 });
 
 function AdminDashboard() {
@@ -277,4 +278,12 @@ function StatusChip({ status }: { status: string }) {
       ? "bg-amber-500/15 text-amber-400"
       : "bg-muted text-muted-foreground";
   return <span className={`rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider ${tone}`}>{status}</span>;
+}
+
+function AdminAdminDashboardRoute() {
+  return (
+    <RoleGate role="admin">
+      <AdminDashboard />
+    </RoleGate>
+  );
 }

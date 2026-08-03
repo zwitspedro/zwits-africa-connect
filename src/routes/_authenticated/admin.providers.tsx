@@ -9,10 +9,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
 import { setProviderVerification } from "@/lib/admin.functions";
+import { RoleGate } from "@/components/portal/role-gate";
 
 export const Route = createFileRoute("/_authenticated/admin/providers")({
   head: () => ({ meta: [{ title: "Admin — Providers — Zwits" }] }),
-  component: AdminProviders,
+  component: AdminAdminProvidersRoute,
 });
 
 function AdminProviders() {
@@ -234,5 +235,13 @@ function DocLink({ path, label }: { path: string | null; label: string }) {
        className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-2 py-1 text-[11px] text-primary hover:bg-primary/25">
       <FileText className="size-3" /> {label}
     </a>
+  );
+}
+
+function AdminAdminProvidersRoute() {
+  return (
+    <RoleGate role="admin">
+      <AdminProviders />
+    </RoleGate>
   );
 }
