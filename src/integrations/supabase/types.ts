@@ -1277,6 +1277,11 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_booking_participant: {
+        Args: { _booking_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_trusted_writer: { Args: never; Returns: boolean }
       move_to_dlq: {
         Args: {
           dlq_name: string
