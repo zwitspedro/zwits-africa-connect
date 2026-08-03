@@ -118,7 +118,7 @@ export function ProfileSection({ data }: { data: ProviderData }) {
               Upload your ID, a selfie and a business document to get verified.
             </p>
             <Link
-              to="/provider/verify"
+              to="/provider/setup"
               className="inline-flex min-h-10 items-center rounded-full bg-primary px-5 text-xs font-semibold text-primary-foreground"
             >
               Continue verification

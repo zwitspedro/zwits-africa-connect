@@ -105,7 +105,7 @@ function ProviderDashboard() {
         <div className="mx-auto max-w-2xl px-4 py-16 text-center">
           <h1 className="font-display text-3xl font-bold">Become a Zwits provider</h1>
           <p className="mt-2 text-muted-foreground">Create your provider profile to start receiving jobs.</p>
-          <Link to="/provider/apply" className="mt-6 inline-flex min-h-12 items-center rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground">
+          <Link to="/provider/setup" className="mt-6 inline-flex min-h-12 items-center rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground">
             Get started
           </Link>
         </div>

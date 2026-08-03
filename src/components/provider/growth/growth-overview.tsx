@@ -169,7 +169,7 @@ function ChecklistPanel({ growth }: { growth: GrowthData }) {
           </li>
         ))}
       </ul>
-      <Link to="/provider/verify" className="mt-4 inline-flex min-h-10 items-center rounded-full bg-primary px-5 text-xs font-semibold text-primary-foreground">
+      <Link to="/provider/setup" className="mt-4 inline-flex min-h-10 items-center rounded-full bg-primary px-5 text-xs font-semibold text-primary-foreground">
         Finish verification
       </Link>
     </Panel>
