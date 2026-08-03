@@ -41,7 +41,9 @@ import { Route as AuthenticatedBusinessPortalRouteImport } from './routes/_authe
 import { Route as AuthenticatedProviderIndexRouteImport } from './routes/_authenticated/provider.index'
 import { Route as AuthenticatedBookingsIndexRouteImport } from './routes/_authenticated/bookings.index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedProviderVerifyRouteImport } from './routes/_authenticated/provider.verify'
 import { Route as AuthenticatedProviderSetupRouteImport } from './routes/_authenticated/provider.setup'
+import { Route as AuthenticatedProviderApplyRouteImport } from './routes/_authenticated/provider.apply'
 import { Route as AuthenticatedMessagesBookingIdRouteImport } from './routes/_authenticated/messages.$bookingId'
 import { Route as AuthenticatedDeliveriesIdRouteImport } from './routes/_authenticated/deliveries.$id'
 import { Route as AuthenticatedBookingsIdRouteImport } from './routes/_authenticated/bookings.$id'
@@ -219,10 +221,22 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedProviderVerifyRoute =
+  AuthenticatedProviderVerifyRouteImport.update({
+    id: '/provider/verify',
+    path: '/provider/verify',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedProviderSetupRoute =
   AuthenticatedProviderSetupRouteImport.update({
     id: '/provider/setup',
     path: '/provider/setup',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedProviderApplyRoute =
+  AuthenticatedProviderApplyRouteImport.update({
+    id: '/provider/apply',
+    path: '/provider/apply',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedMessagesBookingIdRoute =
@@ -330,7 +344,9 @@ export interface FileRoutesByFullPath {
   '/bookings/$id': typeof AuthenticatedBookingsIdRoute
   '/deliveries/$id': typeof AuthenticatedDeliveriesIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
+  '/provider/apply': typeof AuthenticatedProviderApplyRoute
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
+  '/provider/verify': typeof AuthenticatedProviderVerifyRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/bookings/': typeof AuthenticatedBookingsIndexRoute
   '/provider/': typeof AuthenticatedProviderIndexRoute
@@ -375,7 +391,9 @@ export interface FileRoutesByTo {
   '/bookings/$id': typeof AuthenticatedBookingsIdRoute
   '/deliveries/$id': typeof AuthenticatedDeliveriesIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
+  '/provider/apply': typeof AuthenticatedProviderApplyRoute
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
+  '/provider/verify': typeof AuthenticatedProviderVerifyRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/bookings': typeof AuthenticatedBookingsIndexRoute
   '/provider': typeof AuthenticatedProviderIndexRoute
@@ -423,7 +441,9 @@ export interface FileRoutesById {
   '/_authenticated/bookings/$id': typeof AuthenticatedBookingsIdRoute
   '/_authenticated/deliveries/$id': typeof AuthenticatedDeliveriesIdRoute
   '/_authenticated/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
+  '/_authenticated/provider/apply': typeof AuthenticatedProviderApplyRoute
   '/_authenticated/provider/setup': typeof AuthenticatedProviderSetupRoute
+  '/_authenticated/provider/verify': typeof AuthenticatedProviderVerifyRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/bookings/': typeof AuthenticatedBookingsIndexRoute
   '/_authenticated/provider/': typeof AuthenticatedProviderIndexRoute
@@ -471,7 +491,9 @@ export interface FileRouteTypes {
     | '/bookings/$id'
     | '/deliveries/$id'
     | '/messages/$bookingId'
+    | '/provider/apply'
     | '/provider/setup'
+    | '/provider/verify'
     | '/admin/'
     | '/bookings/'
     | '/provider/'
@@ -516,7 +538,9 @@ export interface FileRouteTypes {
     | '/bookings/$id'
     | '/deliveries/$id'
     | '/messages/$bookingId'
+    | '/provider/apply'
     | '/provider/setup'
+    | '/provider/verify'
     | '/admin'
     | '/bookings'
     | '/provider'
@@ -563,7 +587,9 @@ export interface FileRouteTypes {
     | '/_authenticated/bookings/$id'
     | '/_authenticated/deliveries/$id'
     | '/_authenticated/messages/$bookingId'
+    | '/_authenticated/provider/apply'
     | '/_authenticated/provider/setup'
+    | '/_authenticated/provider/verify'
     | '/_authenticated/admin/'
     | '/_authenticated/bookings/'
     | '/_authenticated/provider/'
@@ -828,11 +854,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/provider/verify': {
+      id: '/_authenticated/provider/verify'
+      path: '/provider/verify'
+      fullPath: '/provider/verify'
+      preLoaderRoute: typeof AuthenticatedProviderVerifyRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/provider/setup': {
       id: '/_authenticated/provider/setup'
       path: '/provider/setup'
       fullPath: '/provider/setup'
       preLoaderRoute: typeof AuthenticatedProviderSetupRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/provider/apply': {
+      id: '/_authenticated/provider/apply'
+      path: '/provider/apply'
+      fullPath: '/provider/apply'
+      preLoaderRoute: typeof AuthenticatedProviderApplyRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/messages/$bookingId': {
@@ -935,7 +975,9 @@ interface AuthenticatedRouteChildren {
   AuthenticatedBookingsIdRoute: typeof AuthenticatedBookingsIdRoute
   AuthenticatedDeliveriesIdRoute: typeof AuthenticatedDeliveriesIdRoute
   AuthenticatedMessagesBookingIdRoute: typeof AuthenticatedMessagesBookingIdRoute
+  AuthenticatedProviderApplyRoute: typeof AuthenticatedProviderApplyRoute
   AuthenticatedProviderSetupRoute: typeof AuthenticatedProviderSetupRoute
+  AuthenticatedProviderVerifyRoute: typeof AuthenticatedProviderVerifyRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedBookingsIndexRoute: typeof AuthenticatedBookingsIndexRoute
   AuthenticatedProviderIndexRoute: typeof AuthenticatedProviderIndexRoute
@@ -957,7 +999,9 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedBookingsIdRoute: AuthenticatedBookingsIdRoute,
   AuthenticatedDeliveriesIdRoute: AuthenticatedDeliveriesIdRoute,
   AuthenticatedMessagesBookingIdRoute: AuthenticatedMessagesBookingIdRoute,
+  AuthenticatedProviderApplyRoute: AuthenticatedProviderApplyRoute,
   AuthenticatedProviderSetupRoute: AuthenticatedProviderSetupRoute,
+  AuthenticatedProviderVerifyRoute: AuthenticatedProviderVerifyRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedBookingsIndexRoute: AuthenticatedBookingsIndexRoute,
   AuthenticatedProviderIndexRoute: AuthenticatedProviderIndexRoute,
@@ -1016,3 +1060,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
