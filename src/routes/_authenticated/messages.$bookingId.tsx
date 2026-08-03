@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Paperclip, Send, User, X, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { secureUpload, MB } from "@/lib/secure-upload";
 import { useAuth } from "@/hooks/use-auth";
 import { SiteShell } from "@/components/site-shell";
 import { isOpen, statusLabel } from "@/lib/job-lifecycle";
@@ -165,16 +166,20 @@ function MessagesPage() {
 
       if (pendingFile) {
         setUploading(true);
-        const ext = pendingFile.name.split(".").pop() ?? "bin";
-        const path = `${user.id}/${bookingId}/${crypto.randomUUID()}.${ext}`;
-        const { error: upErr } = await supabase.storage
-          .from("chat-attachments")
-          .upload(path, pendingFile, { contentType: pendingFile.type, upsert: false });
-        setUploading(false);
-        if (upErr) throw upErr;
-        attachment_url = path;
-        attachment_type = pendingFile.type;
-        attachment_name = pendingFile.name;
+        try {
+          const uploaded = await secureUpload(pendingFile, {
+            bucket: "chat-attachments",
+            userId: user.id,
+            scope: bookingId,
+            allowed: ["image/jpeg", "image/png", "image/webp", "image/gif", "application/pdf"],
+            maxBytes: 10 * MB,
+          });
+          attachment_url = uploaded.path;
+          attachment_type = uploaded.contentType;
+          attachment_name = pendingFile.name.slice(0, 120);
+        } finally {
+          setUploading(false);
+        }
       }
 
       const { error } = await supabase.from("messages").insert({
