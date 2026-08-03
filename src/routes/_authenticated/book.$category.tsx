@@ -12,6 +12,7 @@ import { PaymentProcessingDialog } from "@/components/payment-processing-dialog"
 import { BookingReceiptDialog, type BookingReceipt } from "@/components/booking-receipt";
 import { BookingCalendar } from "@/components/booking-calendar";
 import { supabase } from "@/integrations/supabase/client";
+import { secureUpload, MB } from "@/lib/secure-upload";
 import { useAuth } from "@/hooks/use-auth";
 import { searchAddress } from "@/lib/geo.functions";
 import { services } from "@/data/services";
@@ -137,10 +138,12 @@ function BookCategory() {
 
       const paths: string[] = [];
       for (const file of photos) {
-        const ext = file.name.split(".").pop() ?? "jpg";
-        const path = `${user!.id}/${crypto.randomUUID()}.${ext}`;
-        const { error: upErr } = await supabase.storage.from("job-photos").upload(path, file);
-        if (upErr) throw new Error(`Photo upload failed: ${upErr.message}`);
+        const { path } = await secureUpload(file, {
+          bucket: "job-photos",
+          userId: user!.id,
+          allowed: ["image/jpeg", "image/png", "image/webp"],
+          maxBytes: 10 * MB,
+        });
         paths.push(path);
       }
 

@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Check, User } from "lucide-react";
 import { Panel } from "@/components/provider/dashboard-kit";
 import { supabase } from "@/integrations/supabase/client";
+import { secureUpload, MB } from "@/lib/secure-upload";
 import { TIERS } from "@/lib/delivery-config";
 
 const field = "w-full rounded-xl border border-border bg-background px-3 py-3 text-sm outline-none focus:border-primary";
@@ -43,12 +44,13 @@ export function DriverSettings({
 
   const uploadAvatar = useMutation({
     mutationFn: async (file: File) => {
-      const ext = file.name.split(".").pop() ?? "jpg";
-      const path = `${userId}/avatar-${Date.now()}.${ext}`;
-      const { error } = await supabase.storage
-        .from("provider-verification")
-        .upload(path, file, { upsert: true, contentType: file.type });
-      if (error) throw error;
+      const { path } = await secureUpload(file, {
+        bucket: "provider-verification",
+        userId,
+        prefix: "avatar",
+        allowed: ["image/jpeg", "image/png", "image/webp"],
+        maxBytes: 5 * MB,
+      });
       const { data } = await supabase.storage.from("provider-verification").createSignedUrl(path, 60 * 60 * 24 * 365);
       const url = data?.signedUrl ?? null;
       const { error: pe } = await supabase.from("profiles").update({ avatar_url: url }).eq("user_id", userId);

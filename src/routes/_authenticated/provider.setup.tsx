@@ -6,6 +6,7 @@ import { Upload, Check, FileText, IdCard, Camera, ChevronLeft, ChevronRight, Shi
 import { SiteShell } from "@/components/site-shell";
 import { AuditExportButtons } from "@/components/audit-export-buttons";
 import { supabase } from "@/integrations/supabase/client";
+import { secureUpload } from "@/lib/secure-upload";
 import { useAuth } from "@/hooks/use-auth";
 import { services } from "@/data/services";
 
@@ -201,7 +202,7 @@ function ProviderSetup() {
       }
     },
     onSuccess: () => {
-      toast.success("Profile submitted — you're verified!");
+      toast.success("Submitted for review — an admin will verify your documents shortly.");
       navigate({ to: "/provider" });
     },
     onError: (e: any) => toast.error(e.message ?? "Could not submit"),
@@ -425,10 +426,15 @@ function DocUpload({ docKey, userId, value, onChange }: { docKey: DocKey; userId
 
     setUploading(true);
     try {
-      const ext = (file.name.split(".").pop() ?? "bin").toLowerCase();
-      const path = `${userId}/${docKey}-${Date.now()}.${ext}`;
-      const { error } = await supabase.storage.from("provider-verification").upload(path, file, { upsert: true, contentType: file.type });
-      if (error) throw error;
+      const { path } = await secureUpload(file, {
+        bucket: "provider-verification",
+        userId,
+        prefix: docKey,
+        allowed: meta.mimes as any,
+        maxBytes: meta.maxBytes,
+        minBytes: 20 * 1024,
+        upsert: true,
+      });
       onChange(path);
       toast.success(`${meta.label} uploaded`);
       await writeAudit({ status: "uploaded", file, dimensions, errors: [], storage_path: path });

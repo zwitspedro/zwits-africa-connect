@@ -8,6 +8,7 @@ import { AuditExportButtons } from "@/components/audit-export-buttons";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
+import { setProviderVerification } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/providers")({
   head: () => ({ meta: [{ title: "Admin — Providers — Zwits" }] }),
@@ -35,21 +36,8 @@ function AdminProviders() {
 
   const setStatus = useMutation({
     mutationFn: async ({ id, status, reason }: { id: string; status: "approved" | "revoked"; reason?: string }) => {
-      const payload: any = {
-        verification_status: status,
-        reviewed_at: new Date().toISOString(),
-        reviewed_by: user!.id,
-      };
-      if (status === "revoked") {
-        payload.revoke_reason = reason ?? "Revoked by admin";
-        payload.verified = false;
-        payload.available = false;
-      } else {
-        payload.revoke_reason = null;
-        payload.verified = true;
-      }
-      const { error } = await supabase.from("providers").update(payload).eq("id", id);
-      if (error) throw error;
+      // Server-side admin authorization — never a client-side role check.
+      await setProviderVerification({ data: { providerId: id, status, reason: reason ?? null } });
     },
     onSuccess: () => {
       toast.success("Provider updated");
@@ -57,6 +45,7 @@ function AdminProviders() {
     },
     onError: (e: any) => toast.error(e.message ?? "Update failed"),
   });
+
 
   if (rolesLoading) return <SiteShell><div className="p-10 text-sm text-muted-foreground">Loading…</div></SiteShell>;
   if (!isAdmin) {
