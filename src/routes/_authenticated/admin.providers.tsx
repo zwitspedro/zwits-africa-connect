@@ -8,6 +8,7 @@ import { AuditExportButtons } from "@/components/audit-export-buttons";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
+import { setProviderVerification } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/providers")({
   head: () => ({ meta: [{ title: "Admin — Providers — Zwits" }] }),

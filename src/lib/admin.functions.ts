@@ -34,7 +34,7 @@ export const setProviderVerification = createServerFn({ method: "POST" })
     if (findError) throw new Error(findError.message);
     if (!provider) throw new Error("Provider not found");
 
-    const patch: Record<string, unknown> = {
+    const patch: Record<string, any> = {
       verification_status: data.status,
       reviewed_at: new Date().toISOString(),
       reviewed_by: context.userId,
@@ -54,7 +54,7 @@ export const setProviderVerification = createServerFn({ method: "POST" })
 
     const { error: updateError } = await supabaseAdmin
       .from("providers")
-      .update(patch)
+      .update(patch as never)
       .eq("id", provider.id);
     if (updateError) throw new Error(updateError.message);
 
