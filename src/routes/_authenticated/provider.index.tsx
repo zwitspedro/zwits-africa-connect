@@ -32,6 +32,8 @@ import { PayoutSection } from "@/components/provider/payout-section";
 import { VehicleInfoSection } from "@/components/provider/vehicle-info-section";
 import { OnboardingPanel } from "@/components/provider/onboarding-panel";
 
+import { RoleGate } from "@/components/portal/role-gate";
+
 export const Route = createFileRoute("/_authenticated/provider/")({
   head: () => ({
     meta: [
@@ -43,8 +45,16 @@ export const Route = createFileRoute("/_authenticated/provider/")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: ProviderDashboard,
+  component: ProviderRoute,
 });
+
+function ProviderRoute() {
+  return (
+    <RoleGate role="provider">
+      <ProviderDashboard />
+    </RoleGate>
+  );
+}
 
 function TrackingBridge({ bookingId }: { bookingId: string | null }) {
   useProviderTracking({ bookingId, enabled: !!bookingId });
