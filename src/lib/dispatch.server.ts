@@ -161,6 +161,11 @@ export async function createOffers(db: Admin, booking: BookingRow, wave: number,
       kind: mode === "quotes" ? "job_quote_request" : "job_offer",
     })),
   );
+  await logEvent(db, booking.id, "dispatch_offered", null, {
+    wave,
+    providers: picks.length,
+    mode,
+  });
   return picks.length;
 }
 
