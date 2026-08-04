@@ -51,7 +51,7 @@ export const createJob = createServerFn({ method: "POST" })
       .from("bookings")
       .insert({
         customer_id: context.userId,
-        provider_id: data.preferredProviderId ?? null,
+        provider_id: preferredProviderId,
         category: data.category,
         address: data.address,
         description: data.description ?? null,
@@ -72,16 +72,31 @@ export const createJob = createServerFn({ method: "POST" })
       .single();
     if (error) throw new Error(error.message);
 
+    await logEvent(db, booking.id as string, "booking_created", context.userId, {
+      category: data.category,
+      mode,
+      direct: !!preferredProviderId,
+    });
+
     let offered = 0;
-    if (!data.preferredProviderId) {
+    if (!preferredProviderId) {
       offered = await createOffers(db, booking as any, 1, data.rankedProviderIds);
       if (offered === 0) {
-        await db
-          .from("bookings")
-          .update({ dispatch_state: mode === "quotes" ? "collecting_quotes" : "no_providers" })
-          .eq("id", booking.id);
+        const finalState = mode === "quotes" ? "collecting_quotes" : "no_providers";
+        await db.from("bookings").update({ dispatch_state: finalState }).eq("id", booking.id);
+        if (finalState === "no_providers") {
+          await db.from("notifications").insert({
+            user_id: context.userId,
+            title: "No provider available yet",
+            body: `We could not find an available ${data.category} provider. You can retry or reschedule.`,
+            link: `/bookings/${booking.id}`,
+            kind: "no_providers",
+          });
+        }
+        await logEvent(db, booking.id as string, `dispatch_${finalState}`, null, { wave: 1 });
       }
     }
+
 
     return { id: booking.id as string, createdAt: booking.created_at as string, mode, offered };
   });
