@@ -16,6 +16,7 @@ export async function admin(): Promise<Admin> {
 
 type BookingRow = {
   id: string;
+  customer_id?: string | null;
   category: string;
   address: string;
   budget: number | null;
@@ -28,9 +29,36 @@ type BookingRow = {
   status: string;
 };
 
+/** Max concurrent open jobs a provider may hold before we stop offering more. */
+export const PROVIDER_CAPACITY = 3;
+
+/** Records a marketplace lifecycle event on the booking audit trail. */
+export async function logEvent(
+  db: Admin,
+  bookingId: string,
+  event: string,
+  actor: string | null = null,
+  metadata: Record<string, unknown> | null = null,
+) {
+  try {
+    await db.rpc("log_marketplace_event", {
+      _booking_id: bookingId,
+      _event: event,
+      _actor: actor,
+      _metadata: metadata as any,
+    });
+  } catch {
+    /* auditing must never break the marketplace flow */
+  }
+}
+
 /**
- * Ranked shortlist for a wave. Providers the client already distance-ranked come
- * first; everything else is ordered by rating, then completed jobs.
+ * Server-authoritative shortlist for a wave.
+ *
+ * `rankedProviderIds` is a CLIENT HINT ONLY: it may reorder providers the
+ * server has already independently judged eligible, and can never add one.
+ * Eligibility is decided here from approved verification status, online flag,
+ * category, server-side working hours / leave, and current capacity.
  */
 export async function pickWaveProviders(
   db: Admin,
@@ -40,22 +68,17 @@ export async function pickWaveProviders(
 ) {
   const { data, error } = await db
     .from("providers")
-    .select("id, user_id, rating_avg, jobs_completed, available")
+    .select("id, user_id, rating_avg, jobs_completed, available, verification_status, category, onboarding_completed_at")
     .eq("category", booking.category)
     .eq("verification_status", "approved")
+    .not("onboarding_completed_at", "is", null)
     .order("rating_avg", { ascending: false })
     .order("jobs_completed", { ascending: false });
   if (error) throw new Error(error.message);
 
-  const all = data ?? [];
+  const all = (data ?? []).filter((p) => p.verification_status === "approved");
   // Wave 1-2 stay with providers that are online; later waves widen to everyone.
   const pool = wave <= 2 ? all.filter((p) => p.available) : all;
-  const rank = new Map(rankedProviderIds.map((id, i) => [id, i]));
-  const sorted = [...pool].sort((a, b) => {
-    const ra = rank.has(a.id) ? rank.get(a.id)! : Number.MAX_SAFE_INTEGER;
-    const rb = rank.has(b.id) ? rank.get(b.id)! : Number.MAX_SAFE_INTEGER;
-    return ra - rb;
-  });
 
   const { data: existing } = await db
     .from("job_offers")
@@ -63,8 +86,48 @@ export async function pickWaveProviders(
     .eq("booking_id", booking.id);
   const already = new Set((existing ?? []).map((o: any) => o.provider_id));
 
-  return sorted.filter((p) => !already.has(p.id)).slice(0, WAVE_SIZE);
+  const candidates = pool.filter((p) => !already.has(p.id));
+  if (candidates.length === 0) return [];
+
+  // Capacity: exclude providers already holding too many open jobs.
+  const { data: openJobs } = await db
+    .from("bookings")
+    .select("provider_id")
+    .in("status", ["accepted", "travelling", "arrived", "in_progress"])
+    .in(
+      "provider_id",
+      candidates.map((p) => p.id),
+    );
+  const load = new Map<string, number>();
+  for (const j of openJobs ?? []) {
+    const id = (j as any).provider_id as string;
+    load.set(id, (load.get(id) ?? 0) + 1);
+  }
+
+  const at = booking.scheduled_for ?? new Date().toISOString();
+  const withCapacity = candidates.filter((p) => (load.get(p.id) ?? 0) < PROVIDER_CAPACITY);
+
+  // Working hours / leave, authoritative on the server.
+  const eligible: typeof withCapacity = [];
+  for (const p of withCapacity) {
+    const { data: ok } = await db.rpc("is_provider_available_at", {
+      _user_id: p.user_id,
+      _at: at,
+    });
+    if (ok !== false) eligible.push(p);
+  }
+
+  // Client hints may only reorder the server-approved set.
+  const rank = new Map(rankedProviderIds.map((id, i) => [id, i]));
+  const sorted = [...eligible].sort((a, b) => {
+    const ra = rank.has(a.id) ? rank.get(a.id)! : Number.MAX_SAFE_INTEGER;
+    const rb = rank.has(b.id) ? rank.get(b.id)! : Number.MAX_SAFE_INTEGER;
+    return ra - rb;
+  });
+
+  return sorted.slice(0, WAVE_SIZE);
 }
+
 
 export async function createOffers(db: Admin, booking: BookingRow, wave: number, rankedProviderIds: string[]) {
   const picks = await pickWaveProviders(db, booking, wave, rankedProviderIds);
@@ -100,6 +163,11 @@ export async function createOffers(db: Admin, booking: BookingRow, wave: number,
       kind: mode === "quotes" ? "job_quote_request" : "job_offer",
     })),
   );
+  await logEvent(db, booking.id, "dispatch_offered", null, {
+    wave,
+    providers: picks.length,
+    mode,
+  });
   return picks.length;
 }
 
@@ -114,6 +182,34 @@ export async function expireOffers(db: Admin, bookingId: string) {
 }
 
 /**
+ * Ends dispatch when nobody eligible remains. Idempotent: the customer is only
+ * notified the first time the booking moves into the terminal dispatch state.
+ */
+async function settleUnfulfilled(db: Admin, b: BookingRow) {
+  const finalState = b.fulfilment_mode === "quotes" ? "collecting_quotes" : "no_providers";
+  if (b.dispatch_state === finalState) return finalState;
+
+  await db
+    .from("bookings")
+    .update({ dispatch_state: finalState, dispatch_updated_at: new Date().toISOString() })
+    .eq("id", b.id)
+    .neq("dispatch_state", finalState);
+
+  if (finalState === "no_providers" && b.customer_id) {
+    await db.from("notifications").insert({
+      user_id: b.customer_id,
+      title: "No provider available yet",
+      body: `We could not find an available ${b.category} provider. You can retry or reschedule.`,
+      link: `/bookings/${b.id}`,
+      kind: "no_providers",
+    });
+  }
+  await logEvent(db, b.id, `dispatch_${finalState}`, null, { wave: b.dispatch_wave });
+  return finalState;
+}
+
+/**
+
  * Moves the job to the next wave when the current one produced nothing.
  * Safe to call repeatedly from the client while a job is dispatching.
  */
@@ -146,23 +242,14 @@ export async function advance(db: Admin, bookingId: string, rankedProviderIds: s
 
   const nextWave = b.dispatch_wave + 1;
   if (nextWave > MAX_WAVES) {
-    const finalState = b.fulfilment_mode === "quotes" ? "collecting_quotes" : "no_providers";
-    await db
-      .from("bookings")
-      .update({ dispatch_state: finalState, dispatch_updated_at: new Date().toISOString() })
-      .eq("id", bookingId);
-    return { state: finalState, wave: b.dispatch_wave };
+    return { state: await settleUnfulfilled(db, b), wave: b.dispatch_wave };
   }
 
   const created = await createOffers(db, b, nextWave, rankedProviderIds);
   if (created === 0) {
-    const finalState = b.fulfilment_mode === "quotes" ? "collecting_quotes" : "no_providers";
-    await db
-      .from("bookings")
-      .update({ dispatch_state: finalState, dispatch_updated_at: new Date().toISOString() })
-      .eq("id", bookingId);
-    return { state: finalState, wave: b.dispatch_wave };
+    return { state: await settleUnfulfilled(db, b), wave: b.dispatch_wave };
   }
+
 
   await db
     .from("bookings")
@@ -188,6 +275,19 @@ export async function claimJob(db: Admin, offerId: string, userId: string) {
   if (new Date(offer.expires_at).getTime() < Date.now()) {
     await db.from("job_offers").update({ status: "expired" }).eq("id", offerId);
     return { won: false, reason: "The offer window closed." };
+  }
+
+  // Re-verify eligibility at the moment of assignment: an approval can be
+  // revoked between the offer and the accept.
+  const { data: prov } = await db
+    .from("providers")
+    .select("id, verification_status")
+    .eq("id", offer.provider_id)
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (!prov || prov.verification_status !== "approved") {
+    await db.from("job_offers").update({ status: "lost" }).eq("id", offerId);
+    return { won: false, reason: "Your account is not approved for this job." };
   }
 
   const { data: claimed } = await db
@@ -230,17 +330,33 @@ export async function claimJob(db: Admin, offerId: string, userId: string) {
     link: `/bookings/${claimed.id}`,
     kind: "booking_accepted",
   });
+  await logEvent(db, claimed.id as string, "provider_accepted", userId, {
+    provider_id: offer.provider_id,
+    offer_id: offerId,
+  });
 
   return { won: true, bookingId: offer.booking_id };
 }
 
 export async function declineOffer(db: Admin, offerId: string, userId: string) {
-  const { error } = await db
+  const { data: declined, error } = await db
     .from("job_offers")
     .update({ status: "declined", responded_at: new Date().toISOString() })
     .eq("id", offerId)
     .eq("provider_user_id", userId)
-    .eq("status", "offered");
+    .eq("status", "offered")
+    .select("id, booking_id")
+    .maybeSingle();
   if (error) throw new Error(error.message);
+  if (!declined) return { ok: true };
+
+  await logEvent(db, declined.booking_id as string, "provider_declined", userId, { offer_id: offerId });
+  // Move the job on immediately rather than waiting for the offer to time out.
+  try {
+    await advance(db, declined.booking_id as string, []);
+  } catch {
+    /* the dispatch poller will retry */
+  }
   return { ok: true };
 }
+

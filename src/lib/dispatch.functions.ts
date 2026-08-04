@@ -21,22 +21,37 @@ export const createJob = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => CreateJobSchema.parse(input))
   .handler(async ({ data, context }) => {
-    const { admin, createOffers } = await import("./dispatch.server");
+    const { admin, createOffers, logEvent } = await import("./dispatch.server");
     const { fulfilmentModeFor } = await import("./dispatch-config");
     const db = await admin();
 
-    const mode = data.preferredProviderId ? "direct" : fulfilmentModeFor(data.category);
-    const dispatchState = data.preferredProviderId
+    // A directly requested provider is only honoured when the server agrees
+    // they are approved and accepting work.
+    let preferredProviderId: string | null = null;
+    if (data.preferredProviderId) {
+      const { data: prov } = await db
+        .from("providers")
+        .select("id, verification_status, available")
+        .eq("id", data.preferredProviderId)
+        .eq("verification_status", "approved")
+        .maybeSingle();
+      if (!prov) throw new Error("That provider is not available for booking.");
+      preferredProviderId = prov.id as string;
+    }
+
+    const mode = preferredProviderId ? "direct" : fulfilmentModeFor(data.category);
+    const dispatchState = preferredProviderId
       ? "assigned"
       : mode === "quotes"
         ? "collecting_quotes"
         : "dispatching";
 
+
     const { data: booking, error } = await db
       .from("bookings")
       .insert({
         customer_id: context.userId,
-        provider_id: data.preferredProviderId ?? null,
+        provider_id: preferredProviderId,
         category: data.category,
         address: data.address,
         description: data.description ?? null,
@@ -57,16 +72,31 @@ export const createJob = createServerFn({ method: "POST" })
       .single();
     if (error) throw new Error(error.message);
 
+    await logEvent(db, booking.id as string, "booking_created", context.userId, {
+      category: data.category,
+      mode,
+      direct: !!preferredProviderId,
+    });
+
     let offered = 0;
-    if (!data.preferredProviderId) {
+    if (!preferredProviderId) {
       offered = await createOffers(db, booking as any, 1, data.rankedProviderIds);
       if (offered === 0) {
-        await db
-          .from("bookings")
-          .update({ dispatch_state: mode === "quotes" ? "collecting_quotes" : "no_providers" })
-          .eq("id", booking.id);
+        const finalState = mode === "quotes" ? "collecting_quotes" : "no_providers";
+        await db.from("bookings").update({ dispatch_state: finalState }).eq("id", booking.id);
+        if (finalState === "no_providers") {
+          await db.from("notifications").insert({
+            user_id: context.userId,
+            title: "No provider available yet",
+            body: `We could not find an available ${data.category} provider. You can retry or reschedule.`,
+            link: `/bookings/${booking.id}`,
+            kind: "no_providers",
+          });
+        }
+        await logEvent(db, booking.id as string, `dispatch_${finalState}`, null, { wave: 1 });
       }
     }
+
 
     return { id: booking.id as string, createdAt: booking.created_at as string, mode, offered };
   });
@@ -223,17 +253,32 @@ export const confirmCompletion = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => z.object({ bookingId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
-    const { admin } = await import("./dispatch.server");
+    const { admin, logEvent } = await import("./dispatch.server");
     const db = await admin();
+    // `.is("customer_confirmed_at", null)` makes a retried confirmation a no-op
+    // instead of a second payment release / notification.
     const { data: booking } = await db
       .from("bookings")
       .update({ customer_confirmed_at: new Date().toISOString(), payment_status: "paid" })
       .eq("id", data.bookingId)
       .eq("customer_id", context.userId)
       .eq("status", "completed")
+      .is("customer_confirmed_at", null)
       .select("id, provider_id, category")
       .maybeSingle();
-    if (!booking) throw new Error("Booking is not ready to confirm.");
+    if (!booking) {
+      const { data: already } = await db
+        .from("bookings")
+        .select("id")
+        .eq("id", data.bookingId)
+        .eq("customer_id", context.userId)
+        .not("customer_confirmed_at", "is", null)
+        .maybeSingle();
+      if (already) return { ok: true, alreadyConfirmed: true };
+      throw new Error("Booking is not ready to confirm.");
+    }
+    await logEvent(db, booking.id as string, "customer_confirmed", context.userId, null);
+
 
     if (booking.provider_id) {
       const { data: provider } = await db

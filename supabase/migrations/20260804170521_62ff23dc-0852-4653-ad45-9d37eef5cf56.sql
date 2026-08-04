@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.is_provider_available_at(uuid, timestamptz) FROM authenticated;
