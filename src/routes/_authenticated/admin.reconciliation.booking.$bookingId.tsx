@@ -275,6 +275,7 @@ function BookingBreakdown() {
               <Link
                 to="/admin/reconciliation/provider/$providerId"
                 params={{ providerId: provider.id }}
+                search={{ from: undefined, to: undefined }}
                 className="rounded-full border border-border px-3 py-1.5 text-xs hover:bg-muted"
               >
                 View provider breakdown →

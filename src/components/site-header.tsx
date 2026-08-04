@@ -98,6 +98,7 @@ export function SiteHeader() {
                           key={s.slug}
                           to="/book/$category"
                           params={{ category: s.slug }}
+                          search={{ provider: undefined }}
                           onClick={() => setMega(false)}
                           className="group flex items-start gap-3 rounded-2xl p-3 transition hover:bg-card"
                         >
@@ -179,6 +180,7 @@ export function SiteHeader() {
                   key={s.slug}
                   to="/book/$category"
                   params={{ category: s.slug }}
+                  search={{ provider: undefined }}
                   onClick={() => setOpen(false)}
                   className="rounded-xl px-2 py-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
                 >

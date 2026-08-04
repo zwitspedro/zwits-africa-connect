@@ -82,6 +82,7 @@ function BusinessPortal() {
           <Link
             to="/book/$category"
             params={{ category: "cleaning" }}
+            search={{ provider: undefined }}
             className="inline-flex min-h-10 items-center justify-center rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
           >
             New booking
