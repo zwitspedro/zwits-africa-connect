@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const InputSchema = z.object({
   providerId: z.string().uuid(),
@@ -9,10 +10,12 @@ const InputSchema = z.object({
 
 /**
  * Returns booked start times for a provider on a given day.
- * Uses the admin client so customers can see real availability
- * without us exposing any other customer's PII — only `scheduled_for` is returned.
+ * Requires an authenticated caller; uses the admin client so customers can see
+ * real availability without exposing any other customer's PII — only
+ * `scheduled_for` is returned.
  */
 export const getProviderBusySlots = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input) => InputSchema.parse(input))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
