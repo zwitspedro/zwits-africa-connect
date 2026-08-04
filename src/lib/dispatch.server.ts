@@ -68,9 +68,10 @@ export async function pickWaveProviders(
 ) {
   const { data, error } = await db
     .from("providers")
-    .select("id, user_id, rating_avg, jobs_completed, available, verification_status, category")
+    .select("id, user_id, rating_avg, jobs_completed, available, verification_status, category, onboarding_completed_at")
     .eq("category", booking.category)
     .eq("verification_status", "approved")
+    .not("onboarding_completed_at", "is", null)
     .order("rating_avg", { ascending: false })
     .order("jobs_completed", { ascending: false });
   if (error) throw new Error(error.message);
