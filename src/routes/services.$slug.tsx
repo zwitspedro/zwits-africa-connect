@@ -264,7 +264,7 @@ function ServiceDetail() {
             <Link to="/services" className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 hover:border-primary/50">
               <Search className="size-4" /> Search services
             </Link>
-            <Link to="/book/$category" params={{ category: slug }} className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 hover:border-primary/50">
+            <Link to="/book/$category" params={{ category: slug }} search={{ provider: undefined }} className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 hover:border-primary/50">
               Request a quote
             </Link>
             <Link to="/contact" className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 hover:border-primary/50">
