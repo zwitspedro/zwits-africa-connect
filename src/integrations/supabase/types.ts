@@ -1270,6 +1270,14 @@ export type Database = {
           phone: string
         }[]
       }
+      get_provider_documents: {
+        Args: { _provider_id: string }
+        Returns: {
+          business_doc_url: string
+          id_document_url: string
+          selfie_url: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

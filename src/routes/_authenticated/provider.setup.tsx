@@ -6,6 +6,7 @@ import { Upload, Check, FileText, IdCard, Camera, ChevronLeft, ChevronRight, Shi
 import { SiteShell } from "@/components/site-shell";
 import { AuditExportButtons } from "@/components/audit-export-buttons";
 import { supabase } from "@/integrations/supabase/client";
+import { PROVIDER_SAFE_COLUMNS, fetchProviderDocuments } from "@/lib/provider-columns";
 import { secureUpload } from "@/lib/secure-upload";
 import { useAuth } from "@/hooks/use-auth";
 import { services } from "@/data/services";
@@ -124,9 +125,16 @@ function ProviderSetup() {
     queryKey: ["my-provider-setup", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase.from("providers").select("*").eq("user_id", user!.id).maybeSingle();
+      const { data, error } = await supabase
+        .from("providers")
+        .select(PROVIDER_SAFE_COLUMNS)
+        .eq("user_id", user!.id)
+        .maybeSingle();
       if (error) throw error;
-      return data;
+      if (!data) return null;
+      // Document paths are column-restricted; fetch them through the authorized RPC.
+      const docs = await fetchProviderDocuments(data.id);
+      return { ...data, ...docs };
     },
   });
 
