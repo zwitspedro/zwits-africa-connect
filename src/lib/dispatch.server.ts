@@ -16,6 +16,7 @@ export async function admin(): Promise<Admin> {
 
 type BookingRow = {
   id: string;
+  customer_id?: string | null;
   category: string;
   address: string;
   budget: number | null;
