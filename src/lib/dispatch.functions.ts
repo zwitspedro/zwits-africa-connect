@@ -253,17 +253,32 @@ export const confirmCompletion = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => z.object({ bookingId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
-    const { admin } = await import("./dispatch.server");
+    const { admin, logEvent } = await import("./dispatch.server");
     const db = await admin();
+    // `.is("customer_confirmed_at", null)` makes a retried confirmation a no-op
+    // instead of a second payment release / notification.
     const { data: booking } = await db
       .from("bookings")
       .update({ customer_confirmed_at: new Date().toISOString(), payment_status: "paid" })
       .eq("id", data.bookingId)
       .eq("customer_id", context.userId)
       .eq("status", "completed")
+      .is("customer_confirmed_at", null)
       .select("id, provider_id, category")
       .maybeSingle();
-    if (!booking) throw new Error("Booking is not ready to confirm.");
+    if (!booking) {
+      const { data: already } = await db
+        .from("bookings")
+        .select("id")
+        .eq("id", data.bookingId)
+        .eq("customer_id", context.userId)
+        .not("customer_confirmed_at", "is", null)
+        .maybeSingle();
+      if (already) return { ok: true, alreadyConfirmed: true };
+      throw new Error("Booking is not ready to confirm.");
+    }
+    await logEvent(db, booking.id as string, "customer_confirmed", context.userId, null);
+
 
     if (booking.provider_id) {
       const { data: provider } = await db
