@@ -190,6 +190,7 @@ function BookingDetailPage() {
                 navigate({
                   to: "/book/$category",
                   params: { category: booking.category },
+                  search: { provider: undefined },
                 })
               }
             />

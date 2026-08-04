@@ -60,7 +60,7 @@ function BookingsPage() {
         <ul className="mt-6 grid gap-3">
           {bookings?.map((b: any) => (
             <li key={b.id} className="rounded-2xl border border-border bg-card p-4 hover:border-primary/30 transition-colors">
-              <Link to={`/bookings/${b.id}`} className="block">
+              <Link to="/bookings/$id" params={{ id: b.id }} className="block">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <div className="text-xs uppercase tracking-wider text-primary">{b.category}</div>

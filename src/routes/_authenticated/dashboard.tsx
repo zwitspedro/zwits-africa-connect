@@ -58,6 +58,7 @@ function Dashboard() {
               key={s.slug}
               to="/book/$category"
               params={{ category: s.slug }}
+              search={{ provider: undefined }}
               className="group rounded-2xl border border-border bg-card p-4 transition hover:border-primary"
             >
               <s.icon className="size-6 text-primary" />
