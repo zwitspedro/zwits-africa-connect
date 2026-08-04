@@ -28,9 +28,36 @@ type BookingRow = {
   status: string;
 };
 
+/** Max concurrent open jobs a provider may hold before we stop offering more. */
+export const PROVIDER_CAPACITY = 3;
+
+/** Records a marketplace lifecycle event on the booking audit trail. */
+export async function logEvent(
+  db: Admin,
+  bookingId: string,
+  event: string,
+  actor: string | null = null,
+  metadata: Record<string, unknown> | null = null,
+) {
+  try {
+    await db.rpc("log_marketplace_event", {
+      _booking_id: bookingId,
+      _event: event,
+      _actor: actor,
+      _metadata: metadata as any,
+    });
+  } catch {
+    /* auditing must never break the marketplace flow */
+  }
+}
+
 /**
- * Ranked shortlist for a wave. Providers the client already distance-ranked come
- * first; everything else is ordered by rating, then completed jobs.
+ * Server-authoritative shortlist for a wave.
+ *
+ * `rankedProviderIds` is a CLIENT HINT ONLY: it may reorder providers the
+ * server has already independently judged eligible, and can never add one.
+ * Eligibility is decided here from approved verification status, online flag,
+ * category, server-side working hours / leave, and current capacity.
  */
 export async function pickWaveProviders(
   db: Admin,
@@ -40,22 +67,16 @@ export async function pickWaveProviders(
 ) {
   const { data, error } = await db
     .from("providers")
-    .select("id, user_id, rating_avg, jobs_completed, available")
+    .select("id, user_id, rating_avg, jobs_completed, available, verification_status, category")
     .eq("category", booking.category)
     .eq("verification_status", "approved")
     .order("rating_avg", { ascending: false })
     .order("jobs_completed", { ascending: false });
   if (error) throw new Error(error.message);
 
-  const all = data ?? [];
+  const all = (data ?? []).filter((p) => p.verification_status === "approved");
   // Wave 1-2 stay with providers that are online; later waves widen to everyone.
   const pool = wave <= 2 ? all.filter((p) => p.available) : all;
-  const rank = new Map(rankedProviderIds.map((id, i) => [id, i]));
-  const sorted = [...pool].sort((a, b) => {
-    const ra = rank.has(a.id) ? rank.get(a.id)! : Number.MAX_SAFE_INTEGER;
-    const rb = rank.has(b.id) ? rank.get(b.id)! : Number.MAX_SAFE_INTEGER;
-    return ra - rb;
-  });
 
   const { data: existing } = await db
     .from("job_offers")
@@ -63,8 +84,48 @@ export async function pickWaveProviders(
     .eq("booking_id", booking.id);
   const already = new Set((existing ?? []).map((o: any) => o.provider_id));
 
-  return sorted.filter((p) => !already.has(p.id)).slice(0, WAVE_SIZE);
+  const candidates = pool.filter((p) => !already.has(p.id));
+  if (candidates.length === 0) return [];
+
+  // Capacity: exclude providers already holding too many open jobs.
+  const { data: openJobs } = await db
+    .from("bookings")
+    .select("provider_id")
+    .in("status", ["accepted", "travelling", "arrived", "in_progress"])
+    .in(
+      "provider_id",
+      candidates.map((p) => p.id),
+    );
+  const load = new Map<string, number>();
+  for (const j of openJobs ?? []) {
+    const id = (j as any).provider_id as string;
+    load.set(id, (load.get(id) ?? 0) + 1);
+  }
+
+  const at = booking.scheduled_for ?? new Date().toISOString();
+  const withCapacity = candidates.filter((p) => (load.get(p.id) ?? 0) < PROVIDER_CAPACITY);
+
+  // Working hours / leave, authoritative on the server.
+  const eligible: typeof withCapacity = [];
+  for (const p of withCapacity) {
+    const { data: ok } = await db.rpc("is_provider_available_at", {
+      _user_id: p.user_id,
+      _at: at,
+    });
+    if (ok !== false) eligible.push(p);
+  }
+
+  // Client hints may only reorder the server-approved set.
+  const rank = new Map(rankedProviderIds.map((id, i) => [id, i]));
+  const sorted = [...eligible].sort((a, b) => {
+    const ra = rank.has(a.id) ? rank.get(a.id)! : Number.MAX_SAFE_INTEGER;
+    const rb = rank.has(b.id) ? rank.get(b.id)! : Number.MAX_SAFE_INTEGER;
+    return ra - rb;
+  });
+
+  return sorted.slice(0, WAVE_SIZE);
 }
+
 
 export async function createOffers(db: Admin, booking: BookingRow, wave: number, rankedProviderIds: string[]) {
   const picks = await pickWaveProviders(db, booking, wave, rankedProviderIds);
