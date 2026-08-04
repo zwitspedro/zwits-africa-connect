@@ -21,16 +21,31 @@ export const createJob = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => CreateJobSchema.parse(input))
   .handler(async ({ data, context }) => {
-    const { admin, createOffers } = await import("./dispatch.server");
+    const { admin, createOffers, logEvent } = await import("./dispatch.server");
     const { fulfilmentModeFor } = await import("./dispatch-config");
     const db = await admin();
 
-    const mode = data.preferredProviderId ? "direct" : fulfilmentModeFor(data.category);
-    const dispatchState = data.preferredProviderId
+    // A directly requested provider is only honoured when the server agrees
+    // they are approved and accepting work.
+    let preferredProviderId: string | null = null;
+    if (data.preferredProviderId) {
+      const { data: prov } = await db
+        .from("providers")
+        .select("id, verification_status, available")
+        .eq("id", data.preferredProviderId)
+        .eq("verification_status", "approved")
+        .maybeSingle();
+      if (!prov) throw new Error("That provider is not available for booking.");
+      preferredProviderId = prov.id as string;
+    }
+
+    const mode = preferredProviderId ? "direct" : fulfilmentModeFor(data.category);
+    const dispatchState = preferredProviderId
       ? "assigned"
       : mode === "quotes"
         ? "collecting_quotes"
         : "dispatching";
+
 
     const { data: booking, error } = await db
       .from("bookings")
