@@ -276,6 +276,19 @@ export async function claimJob(db: Admin, offerId: string, userId: string) {
     return { won: false, reason: "The offer window closed." };
   }
 
+  // Re-verify eligibility at the moment of assignment: an approval can be
+  // revoked between the offer and the accept.
+  const { data: prov } = await db
+    .from("providers")
+    .select("id, verification_status")
+    .eq("id", offer.provider_id)
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (!prov || prov.verification_status !== "approved") {
+    await db.from("job_offers").update({ status: "lost" }).eq("id", offerId);
+    return { won: false, reason: "Your account is not approved for this job." };
+  }
+
   const { data: claimed } = await db
     .from("bookings")
     .update({
@@ -316,17 +329,33 @@ export async function claimJob(db: Admin, offerId: string, userId: string) {
     link: `/bookings/${claimed.id}`,
     kind: "booking_accepted",
   });
+  await logEvent(db, claimed.id as string, "provider_accepted", userId, {
+    provider_id: offer.provider_id,
+    offer_id: offerId,
+  });
 
   return { won: true, bookingId: offer.booking_id };
 }
 
 export async function declineOffer(db: Admin, offerId: string, userId: string) {
-  const { error } = await db
+  const { data: declined, error } = await db
     .from("job_offers")
     .update({ status: "declined", responded_at: new Date().toISOString() })
     .eq("id", offerId)
     .eq("provider_user_id", userId)
-    .eq("status", "offered");
+    .eq("status", "offered")
+    .select("id, booking_id")
+    .maybeSingle();
   if (error) throw new Error(error.message);
+  if (!declined) return { ok: true };
+
+  await logEvent(db, declined.booking_id as string, "provider_declined", userId, { offer_id: offerId });
+  // Move the job on immediately rather than waiting for the offer to time out.
+  try {
+    await advance(db, declined.booking_id as string, []);
+  } catch {
+    /* the dispatch poller will retry */
+  }
   return { ok: true };
 }
+
