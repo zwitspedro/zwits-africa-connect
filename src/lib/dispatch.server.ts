@@ -180,6 +180,34 @@ export async function expireOffers(db: Admin, bookingId: string) {
 }
 
 /**
+ * Ends dispatch when nobody eligible remains. Idempotent: the customer is only
+ * notified the first time the booking moves into the terminal dispatch state.
+ */
+async function settleUnfulfilled(db: Admin, b: BookingRow) {
+  const finalState = b.fulfilment_mode === "quotes" ? "collecting_quotes" : "no_providers";
+  if (b.dispatch_state === finalState) return finalState;
+
+  await db
+    .from("bookings")
+    .update({ dispatch_state: finalState, dispatch_updated_at: new Date().toISOString() })
+    .eq("id", b.id)
+    .neq("dispatch_state", finalState);
+
+  if (finalState === "no_providers" && b.customer_id) {
+    await db.from("notifications").insert({
+      user_id: b.customer_id,
+      title: "No provider available yet",
+      body: `We could not find an available ${b.category} provider. You can retry or reschedule.`,
+      link: `/bookings/${b.id}`,
+      kind: "no_providers",
+    });
+  }
+  await logEvent(db, b.id, `dispatch_${finalState}`, null, { wave: b.dispatch_wave });
+  return finalState;
+}
+
+/**
+
  * Moves the job to the next wave when the current one produced nothing.
  * Safe to call repeatedly from the client while a job is dispatching.
  */
