@@ -6,6 +6,7 @@ import { ShieldCheck, ShieldX, FileText, History } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { AuditExportButtons } from "@/components/audit-export-buttons";
 import { supabase } from "@/integrations/supabase/client";
+import { PROVIDER_SAFE_COLUMNS, fetchProviderDocuments } from "@/lib/provider-columns";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
 import { setProviderVerification } from "@/lib/admin.functions";
@@ -28,7 +29,7 @@ function AdminProviders() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("providers")
-        .select("*")
+        .select(PROVIDER_SAFE_COLUMNS)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
@@ -120,6 +121,12 @@ function AdminProviderRow({ provider, onApprove, onRevoke }: { provider: any; on
     : status === "revoked" ? "text-destructive bg-destructive/15"
     : "text-muted-foreground bg-muted";
 
+  // Admins read document paths through the authorized RPC, not the table.
+  const { data: docs } = useQuery({
+    queryKey: ["admin-provider-docs", provider.id],
+    queryFn: () => fetchProviderDocuments(provider.id),
+  });
+
   const { data: audits } = useQuery({
     queryKey: ["admin-provider-audits", provider.user_id],
     enabled: showAudit,
@@ -161,9 +168,9 @@ function AdminProviderRow({ provider, onApprove, onRevoke }: { provider: any; on
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
-        <DocLink path={provider.id_document_url} label="ID" />
-        <DocLink path={provider.selfie_url} label="Selfie" />
-        <DocLink path={provider.business_doc_url} label="Business doc" />
+        <DocLink path={docs?.id_document_url ?? null} label="ID" />
+        <DocLink path={docs?.selfie_url ?? null} label="Selfie" />
+        <DocLink path={docs?.business_doc_url ?? null} label="Business doc" />
       </div>
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border/60 pt-3">

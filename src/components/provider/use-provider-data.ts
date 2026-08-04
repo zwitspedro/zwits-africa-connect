@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { PROVIDER_SAFE_COLUMNS, fetchProviderDocuments } from "@/lib/provider-columns";
 import { useAuth } from "@/hooks/use-auth";
 import { isOpen } from "@/lib/job-lifecycle";
 import { buildProviderOnboarding } from "./use-provider-onboarding";
@@ -16,11 +17,14 @@ export function useProviderData() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("providers")
-        .select("*")
+        .select(PROVIDER_SAFE_COLUMNS)
         .eq("user_id", user!.id)
         .maybeSingle();
       if (error) throw error;
-      return data;
+      if (!data) return null;
+      // Verification-document paths are only readable by the owner/admin via RPC.
+      const docs = await fetchProviderDocuments(data.id);
+      return { ...data, ...docs };
     },
   });
 
