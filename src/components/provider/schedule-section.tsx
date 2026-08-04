@@ -1,12 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CalendarDays, Save } from "lucide-react";
 import { toast } from "sonner";
 import { Calendar } from "@/components/ui/calendar";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 import { Panel, EmptyState } from "./dashboard-kit";
 import type { Booking } from "./use-provider-data";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const STORAGE_KEY = "zwits.provider.availability";
+/** DAYS index -> Postgres weekday (0 = Sunday), matching is_provider_available_at. */
+const WEEKDAY = [1, 2, 3, 4, 5, 6, 0];
 
 type Availability = {
   hours: Record<string, { on: boolean; from: string; to: string }>;
@@ -18,18 +22,44 @@ const DEFAULT: Availability = {
   leave: [],
 };
 
+const hhmm = (t: string) => t.slice(0, 5);
+
 export function ScheduleSection({ jobs }: { jobs: Booking[] }) {
+  const { user } = useAuth();
+  const qc = useQueryClient();
   const [selected, setSelected] = useState<Date | undefined>(new Date());
   const [availability, setAvailability] = useState<Availability>(DEFAULT);
+  const [saving, setSaving] = useState(false);
+
+  // Availability is server-authoritative: dispatch reads the same rows.
+  const { data: remote } = useQuery({
+    queryKey: ["provider-availability", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const [{ data: hours, error: hErr }, { data: leave, error: lErr }] = await Promise.all([
+        supabase.from("provider_availability").select("weekday, enabled, start_time, end_time").eq("user_id", user!.id),
+        supabase.from("provider_time_off").select("day").eq("user_id", user!.id).order("day"),
+      ]);
+      if (hErr) throw hErr;
+      if (lErr) throw lErr;
+      return { hours: hours ?? [], leave: (leave ?? []).map((r) => r.day as string) };
+    },
+  });
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setAvailability({ ...DEFAULT, ...JSON.parse(raw) });
-    } catch {
-      /* ignore */
+    if (!remote) return;
+    const next: Availability = { hours: { ...DEFAULT.hours }, leave: remote.leave };
+    for (const row of remote.hours) {
+      const label = DAYS[WEEKDAY.indexOf(row.weekday as number)];
+      if (!label) continue;
+      next.hours[label] = {
+        on: !!row.enabled,
+        from: hhmm(String(row.start_time)),
+        to: hhmm(String(row.end_time)),
+      };
     }
-  }, []);
+    setAvailability(next);
+  }, [remote]);
 
   const upcoming = useMemo(
     () =>
@@ -48,10 +78,43 @@ export function ScheduleSection({ jobs }: { jobs: Booking[] }) {
     ? upcoming.filter((j) => new Date(j.scheduled_for).toDateString() === selected.toDateString())
     : [];
 
-  const save = () => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(availability));
-    toast.success("Availability saved on this device");
+  const save = async () => {
+    if (!user) return;
+    setSaving(true);
+    try {
+      const rows = DAYS.map((d, i) => {
+        const row = availability.hours[d] ?? DEFAULT.hours[d];
+        return {
+          user_id: user.id,
+          weekday: WEEKDAY[i],
+          enabled: row.on,
+          start_time: row.from,
+          end_time: row.to,
+        };
+      });
+      const { error } = await supabase
+        .from("provider_availability")
+        .upsert(rows, { onConflict: "user_id,weekday" });
+      if (error) throw error;
+
+      const { error: delErr } = await supabase.from("provider_time_off").delete().eq("user_id", user.id);
+      if (delErr) throw delErr;
+      if (availability.leave.length) {
+        const { error: insErr } = await supabase
+          .from("provider_time_off")
+          .insert(availability.leave.map((day) => ({ user_id: user.id, day })));
+        if (insErr) throw insErr;
+      }
+
+      await qc.invalidateQueries({ queryKey: ["provider-availability", user.id] });
+      toast.success("Availability saved");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Could not save availability");
+    } finally {
+      setSaving(false);
+    }
   };
+
 
   return (
     <div className="grid gap-4 lg:grid-cols-[auto_minmax(0,1fr)]">
