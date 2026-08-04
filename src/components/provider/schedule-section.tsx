@@ -172,10 +172,14 @@ export function ScheduleSection({ jobs }: { jobs: Booking[] }) {
 
         <Panel
           title="Working hours & leave"
-          description="Recurring weekly availability. Saved on this device for now."
+          description="Recurring weekly availability. Used when matching you to new jobs."
           action={
-            <button onClick={save} className="inline-flex min-h-10 items-center gap-1.5 rounded-full bg-primary px-4 text-xs font-semibold text-primary-foreground">
-              <Save className="size-3.5" /> Save
+            <button
+              onClick={save}
+              disabled={saving}
+              className="inline-flex min-h-10 items-center gap-1.5 rounded-full bg-primary px-4 text-xs font-semibold text-primary-foreground disabled:opacity-60"
+            >
+              <Save className="size-3.5" /> {saving ? "Saving…" : "Save"}
             </button>
           }
         >
