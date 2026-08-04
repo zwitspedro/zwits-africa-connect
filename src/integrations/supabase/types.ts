@@ -805,6 +805,39 @@ export type Database = {
         }
         Relationships: []
       }
+      provider_availability: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          end_time: string
+          id: string
+          start_time: string
+          updated_at: string
+          user_id: string
+          weekday: number
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          end_time?: string
+          id?: string
+          start_time?: string
+          updated_at?: string
+          user_id: string
+          weekday: number
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          end_time?: string
+          id?: string
+          start_time?: string
+          updated_at?: string
+          user_id?: string
+          weekday?: number
+        }
+        Relationships: []
+      }
       provider_document_audits: {
         Row: {
           created_at: string
@@ -993,6 +1026,33 @@ export type Database = {
           work_start?: string | null
           working_days?: string[]
           years_experience?: number | null
+        }
+        Relationships: []
+      }
+      provider_time_off: {
+        Row: {
+          created_at: string
+          day: string
+          id: string
+          reason: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          day: string
+          id?: string
+          reason?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          day?: string
+          id?: string
+          reason?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -1289,7 +1349,20 @@ export type Database = {
         Args: { _booking_id: string; _user_id: string }
         Returns: boolean
       }
+      is_provider_available_at: {
+        Args: { _at: string; _user_id: string }
+        Returns: boolean
+      }
       is_trusted_writer: { Args: never; Returns: boolean }
+      log_marketplace_event: {
+        Args: {
+          _actor?: string
+          _booking_id: string
+          _event: string
+          _metadata?: Json
+        }
+        Returns: undefined
+      }
       move_to_dlq: {
         Args: {
           dlq_name: string
