@@ -212,23 +212,14 @@ export async function advance(db: Admin, bookingId: string, rankedProviderIds: s
 
   const nextWave = b.dispatch_wave + 1;
   if (nextWave > MAX_WAVES) {
-    const finalState = b.fulfilment_mode === "quotes" ? "collecting_quotes" : "no_providers";
-    await db
-      .from("bookings")
-      .update({ dispatch_state: finalState, dispatch_updated_at: new Date().toISOString() })
-      .eq("id", bookingId);
-    return { state: finalState, wave: b.dispatch_wave };
+    return { state: await settleUnfulfilled(db, b), wave: b.dispatch_wave };
   }
 
   const created = await createOffers(db, b, nextWave, rankedProviderIds);
   if (created === 0) {
-    const finalState = b.fulfilment_mode === "quotes" ? "collecting_quotes" : "no_providers";
-    await db
-      .from("bookings")
-      .update({ dispatch_state: finalState, dispatch_updated_at: new Date().toISOString() })
-      .eq("id", bookingId);
-    return { state: finalState, wave: b.dispatch_wave };
+    return { state: await settleUnfulfilled(db, b), wave: b.dispatch_wave };
   }
+
 
   await db
     .from("bookings")
