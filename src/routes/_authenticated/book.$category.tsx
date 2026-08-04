@@ -12,6 +12,7 @@ import { PaymentProcessingDialog } from "@/components/payment-processing-dialog"
 import { BookingReceiptDialog, type BookingReceipt } from "@/components/booking-receipt";
 import { BookingCalendar } from "@/components/booking-calendar";
 import { supabase } from "@/integrations/supabase/client";
+import { PROVIDER_SAFE_COLUMNS } from "@/lib/provider-columns";
 import { secureUpload, MB } from "@/lib/secure-upload";
 import { useAuth } from "@/hooks/use-auth";
 import { searchAddress } from "@/lib/geo.functions";
@@ -68,7 +69,7 @@ function BookCategory() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("providers")
-        .select("*")
+        .select(PROVIDER_SAFE_COLUMNS)
         .eq("category", category)
         .order("rating_avg", { ascending: false });
       if (error) throw error;
