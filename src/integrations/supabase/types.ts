@@ -348,6 +348,44 @@ export type Database = {
         }
         Relationships: []
       }
+      delivery_events: {
+        Row: {
+          actor: string | null
+          created_at: string
+          dedupe_key: string | null
+          delivery_id: string
+          event: string
+          id: string
+          metadata: Json | null
+        }
+        Insert: {
+          actor?: string | null
+          created_at?: string
+          dedupe_key?: string | null
+          delivery_id: string
+          event: string
+          id?: string
+          metadata?: Json | null
+        }
+        Update: {
+          actor?: string | null
+          created_at?: string
+          dedupe_key?: string | null
+          delivery_id?: string
+          event?: string
+          id?: string
+          metadata?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_events_delivery_id_fkey"
+            columns: ["delivery_id"]
+            isOneToOne: false
+            referencedRelation: "deliveries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       delivery_offers: {
         Row: {
           created_at: string
@@ -1354,6 +1392,16 @@ export type Database = {
         Returns: boolean
       }
       is_trusted_writer: { Args: never; Returns: boolean }
+      log_delivery_event: {
+        Args: {
+          _actor?: string
+          _dedupe_key?: string
+          _delivery_id: string
+          _event: string
+          _metadata?: Json
+        }
+        Returns: undefined
+      }
       log_marketplace_event: {
         Args: {
           _actor?: string
@@ -1371,6 +1419,12 @@ export type Database = {
           source_queue: string
         }
         Returns: number
+      }
+      providers_available_at: {
+        Args: { _at: string; _user_ids: string[] }
+        Returns: {
+          user_id: string
+        }[]
       }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
