@@ -71,7 +71,11 @@ export function useMobileTheme() {
     return () => mql.removeEventListener("change", onChange);
   }, [settings.theme]);
 
-  return { theme, preference: settings.theme, setTheme: (t: MobileSettings["theme"]) => update({ theme: t }) };
+  return {
+    theme,
+    preference: settings.theme,
+    setTheme: (t: MobileSettings["theme"]) => update({ theme: t }),
+  };
 }
 
 /** Dismisses the native splash once the first screen is ready. */

@@ -24,7 +24,8 @@ export type PermissionState = "granted" | "denied" | "prompt" | "unknown";
 
 export async function requestLocationPermission(): Promise<PermissionState> {
   const mod = await nativeOnly(() => import("@capacitor/geolocation"));
-  if (!mod) return typeof navigator !== "undefined" && "geolocation" in navigator ? "prompt" : "denied";
+  if (!mod)
+    return typeof navigator !== "undefined" && "geolocation" in navigator ? "prompt" : "denied";
   try {
     const res = await mod.Geolocation.requestPermissions();
     return (res.location as PermissionState) ?? "unknown";
@@ -37,7 +38,10 @@ export async function currentPosition(): Promise<LatLng | null> {
   const mod = await nativeOnly(() => import("@capacitor/geolocation"));
   if (mod) {
     try {
-      const p = await mod.Geolocation.getCurrentPosition({ enableHighAccuracy: true, timeout: 10_000 });
+      const p = await mod.Geolocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 10_000,
+      });
       return { lat: p.coords.latitude, lng: p.coords.longitude };
     } catch {
       return null;

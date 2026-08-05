@@ -18,6 +18,7 @@ import { Route as ProviderSignupRouteImport } from './routes/provider-signup'
 import { Route as ProviderLoginRouteImport } from './routes/provider-login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as MRouteImport } from './routes/m'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FaqRouteImport } from './routes/faq'
@@ -31,16 +32,42 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
+import { Route as MIndexRouteImport } from './routes/m.index'
 import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
+import { Route as MSettingsRouteImport } from './routes/m.settings'
+import { Route as MProviderRouteImport } from './routes/m.provider'
+import { Route as MNotificationsRouteImport } from './routes/m.notifications'
+import { Route as MDriverRouteImport } from './routes/m.driver'
+import { Route as MCustomerRouteImport } from './routes/m.customer'
 import { Route as AuthenticatedWorkspaceRouteImport } from './routes/_authenticated/workspace'
 import { Route as AuthenticatedSendDeliveryRouteImport } from './routes/_authenticated/send-delivery'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedDriverRouteImport } from './routes/_authenticated/driver'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedBusinessPortalRouteImport } from './routes/_authenticated/business-portal'
+import { Route as MProviderIndexRouteImport } from './routes/m.provider.index'
+import { Route as MDriverIndexRouteImport } from './routes/m.driver.index'
+import { Route as MCustomerIndexRouteImport } from './routes/m.customer.index'
 import { Route as AuthenticatedProviderIndexRouteImport } from './routes/_authenticated/provider.index'
 import { Route as AuthenticatedBookingsIndexRouteImport } from './routes/_authenticated/bookings.index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as MProviderProfileRouteImport } from './routes/m.provider.profile'
+import { Route as MProviderMessagesRouteImport } from './routes/m.provider.messages'
+import { Route as MProviderJobsRouteImport } from './routes/m.provider.jobs'
+import { Route as MProviderCalendarRouteImport } from './routes/m.provider.calendar'
+import { Route as MDriverProfileRouteImport } from './routes/m.driver.profile'
+import { Route as MDriverMessagesRouteImport } from './routes/m.driver.messages'
+import { Route as MDriverMapRouteImport } from './routes/m.driver.map'
+import { Route as MDriverDeliveriesRouteImport } from './routes/m.driver.deliveries'
+import { Route as MCustomerWalletRouteImport } from './routes/m.customer.wallet'
+import { Route as MCustomerReferralsRouteImport } from './routes/m.customer.referrals'
+import { Route as MCustomerProfileRouteImport } from './routes/m.customer.profile'
+import { Route as MCustomerMessagesRouteImport } from './routes/m.customer.messages'
+import { Route as MCustomerFavouritesRouteImport } from './routes/m.customer.favourites'
+import { Route as MCustomerCategoriesRouteImport } from './routes/m.customer.categories'
+import { Route as MCustomerBookingsRouteImport } from './routes/m.customer.bookings'
+import { Route as MCustomerAddressesRouteImport } from './routes/m.customer.addresses'
+import { Route as MChatBookingIdRouteImport } from './routes/m.chat.$bookingId'
 import { Route as AuthenticatedProviderVerifyRouteImport } from './routes/_authenticated/provider.verify'
 import { Route as AuthenticatedProviderSetupRouteImport } from './routes/_authenticated/provider.setup'
 import { Route as AuthenticatedProviderApplyRouteImport } from './routes/_authenticated/provider.apply'
@@ -51,6 +78,11 @@ import { Route as AuthenticatedBookCategoryRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminProvidersRouteImport } from './routes/_authenticated/admin.providers'
 import { Route as AuthenticatedAdminCommissionsRouteImport } from './routes/_authenticated/admin.commissions'
 import { Route as AuthenticatedAdminReconciliationIndexRouteImport } from './routes/_authenticated/admin.reconciliation.index'
+import { Route as MProviderJobsIdRouteImport } from './routes/m.provider.jobs.$id'
+import { Route as MDriverDeliveriesIdRouteImport } from './routes/m.driver.deliveries.$id'
+import { Route as MCustomerTrackIdRouteImport } from './routes/m.customer.track.$id'
+import { Route as MCustomerProviderIdRouteImport } from './routes/m.customer.provider.$id'
+import { Route as MCustomerBookCategoryRouteImport } from './routes/m.customer.book.$category'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
@@ -101,6 +133,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
   path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MRoute = MRouteImport.update({
+  id: '/m',
+  path: '/m',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -167,10 +204,40 @@ const ServicesIndexRoute = ServicesIndexRouteImport.update({
   path: '/',
   getParentRoute: () => ServicesRoute,
 } as any)
+const MIndexRoute = MIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MRoute,
+} as any)
 const ServicesSlugRoute = ServicesSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => ServicesRoute,
+} as any)
+const MSettingsRoute = MSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => MRoute,
+} as any)
+const MProviderRoute = MProviderRouteImport.update({
+  id: '/provider',
+  path: '/provider',
+  getParentRoute: () => MRoute,
+} as any)
+const MNotificationsRoute = MNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => MRoute,
+} as any)
+const MDriverRoute = MDriverRouteImport.update({
+  id: '/driver',
+  path: '/driver',
+  getParentRoute: () => MRoute,
+} as any)
+const MCustomerRoute = MCustomerRouteImport.update({
+  id: '/customer',
+  path: '/customer',
+  getParentRoute: () => MRoute,
 } as any)
 const AuthenticatedWorkspaceRoute = AuthenticatedWorkspaceRouteImport.update({
   id: '/workspace',
@@ -205,6 +272,21 @@ const AuthenticatedBusinessPortalRoute =
     path: '/business-portal',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const MProviderIndexRoute = MProviderIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MProviderRoute,
+} as any)
+const MDriverIndexRoute = MDriverIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MDriverRoute,
+} as any)
+const MCustomerIndexRoute = MCustomerIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MCustomerRoute,
+} as any)
 const AuthenticatedProviderIndexRoute =
   AuthenticatedProviderIndexRouteImport.update({
     id: '/provider/',
@@ -221,6 +303,91 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
   getParentRoute: () => AuthenticatedRoute,
+} as any)
+const MProviderProfileRoute = MProviderProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => MProviderRoute,
+} as any)
+const MProviderMessagesRoute = MProviderMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => MProviderRoute,
+} as any)
+const MProviderJobsRoute = MProviderJobsRouteImport.update({
+  id: '/jobs',
+  path: '/jobs',
+  getParentRoute: () => MProviderRoute,
+} as any)
+const MProviderCalendarRoute = MProviderCalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
+  getParentRoute: () => MProviderRoute,
+} as any)
+const MDriverProfileRoute = MDriverProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => MDriverRoute,
+} as any)
+const MDriverMessagesRoute = MDriverMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => MDriverRoute,
+} as any)
+const MDriverMapRoute = MDriverMapRouteImport.update({
+  id: '/map',
+  path: '/map',
+  getParentRoute: () => MDriverRoute,
+} as any)
+const MDriverDeliveriesRoute = MDriverDeliveriesRouteImport.update({
+  id: '/deliveries',
+  path: '/deliveries',
+  getParentRoute: () => MDriverRoute,
+} as any)
+const MCustomerWalletRoute = MCustomerWalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
+  getParentRoute: () => MCustomerRoute,
+} as any)
+const MCustomerReferralsRoute = MCustomerReferralsRouteImport.update({
+  id: '/referrals',
+  path: '/referrals',
+  getParentRoute: () => MCustomerRoute,
+} as any)
+const MCustomerProfileRoute = MCustomerProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => MCustomerRoute,
+} as any)
+const MCustomerMessagesRoute = MCustomerMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => MCustomerRoute,
+} as any)
+const MCustomerFavouritesRoute = MCustomerFavouritesRouteImport.update({
+  id: '/favourites',
+  path: '/favourites',
+  getParentRoute: () => MCustomerRoute,
+} as any)
+const MCustomerCategoriesRoute = MCustomerCategoriesRouteImport.update({
+  id: '/categories',
+  path: '/categories',
+  getParentRoute: () => MCustomerRoute,
+} as any)
+const MCustomerBookingsRoute = MCustomerBookingsRouteImport.update({
+  id: '/bookings',
+  path: '/bookings',
+  getParentRoute: () => MCustomerRoute,
+} as any)
+const MCustomerAddressesRoute = MCustomerAddressesRouteImport.update({
+  id: '/addresses',
+  path: '/addresses',
+  getParentRoute: () => MCustomerRoute,
+} as any)
+const MChatBookingIdRoute = MChatBookingIdRouteImport.update({
+  id: '/chat/$bookingId',
+  path: '/chat/$bookingId',
+  getParentRoute: () => MRoute,
 } as any)
 const AuthenticatedProviderVerifyRoute =
   AuthenticatedProviderVerifyRouteImport.update({
@@ -281,6 +448,31 @@ const AuthenticatedAdminReconciliationIndexRoute =
     path: '/admin/reconciliation/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const MProviderJobsIdRoute = MProviderJobsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => MProviderJobsRoute,
+} as any)
+const MDriverDeliveriesIdRoute = MDriverDeliveriesIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => MDriverDeliveriesRoute,
+} as any)
+const MCustomerTrackIdRoute = MCustomerTrackIdRouteImport.update({
+  id: '/track/$id',
+  path: '/track/$id',
+  getParentRoute: () => MCustomerRoute,
+} as any)
+const MCustomerProviderIdRoute = MCustomerProviderIdRouteImport.update({
+  id: '/provider/$id',
+  path: '/provider/$id',
+  getParentRoute: () => MCustomerRoute,
+} as any)
+const MCustomerBookCategoryRoute = MCustomerBookCategoryRouteImport.update({
+  id: '/book/$category',
+  path: '/book/$category',
+  getParentRoute: () => MCustomerRoute,
+} as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -328,6 +520,7 @@ export interface FileRoutesByFullPath {
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/m': typeof MRouteWithChildren
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/provider-login': typeof ProviderLoginRoute
@@ -343,7 +536,13 @@ export interface FileRoutesByFullPath {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/send-delivery': typeof AuthenticatedSendDeliveryRoute
   '/workspace': typeof AuthenticatedWorkspaceRoute
+  '/m/customer': typeof MCustomerRouteWithChildren
+  '/m/driver': typeof MDriverRouteWithChildren
+  '/m/notifications': typeof MNotificationsRoute
+  '/m/provider': typeof MProviderRouteWithChildren
+  '/m/settings': typeof MSettingsRoute
   '/services/$slug': typeof ServicesSlugRoute
+  '/m/': typeof MIndexRoute
   '/services/': typeof ServicesIndexRoute
   '/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
@@ -354,13 +553,38 @@ export interface FileRoutesByFullPath {
   '/provider/apply': typeof AuthenticatedProviderApplyRoute
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/provider/verify': typeof AuthenticatedProviderVerifyRoute
+  '/m/chat/$bookingId': typeof MChatBookingIdRoute
+  '/m/customer/addresses': typeof MCustomerAddressesRoute
+  '/m/customer/bookings': typeof MCustomerBookingsRoute
+  '/m/customer/categories': typeof MCustomerCategoriesRoute
+  '/m/customer/favourites': typeof MCustomerFavouritesRoute
+  '/m/customer/messages': typeof MCustomerMessagesRoute
+  '/m/customer/profile': typeof MCustomerProfileRoute
+  '/m/customer/referrals': typeof MCustomerReferralsRoute
+  '/m/customer/wallet': typeof MCustomerWalletRoute
+  '/m/driver/deliveries': typeof MDriverDeliveriesRouteWithChildren
+  '/m/driver/map': typeof MDriverMapRoute
+  '/m/driver/messages': typeof MDriverMessagesRoute
+  '/m/driver/profile': typeof MDriverProfileRoute
+  '/m/provider/calendar': typeof MProviderCalendarRoute
+  '/m/provider/jobs': typeof MProviderJobsRouteWithChildren
+  '/m/provider/messages': typeof MProviderMessagesRoute
+  '/m/provider/profile': typeof MProviderProfileRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/bookings/': typeof AuthenticatedBookingsIndexRoute
   '/provider/': typeof AuthenticatedProviderIndexRoute
+  '/m/customer/': typeof MCustomerIndexRoute
+  '/m/driver/': typeof MDriverIndexRoute
+  '/m/provider/': typeof MProviderIndexRoute
   '/api/public/hooks/dispatch-sweep': typeof ApiPublicHooksDispatchSweepRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
+  '/m/customer/book/$category': typeof MCustomerBookCategoryRoute
+  '/m/customer/provider/$id': typeof MCustomerProviderIdRoute
+  '/m/customer/track/$id': typeof MCustomerTrackIdRoute
+  '/m/driver/deliveries/$id': typeof MDriverDeliveriesIdRoute
+  '/m/provider/jobs/$id': typeof MProviderJobsIdRoute
   '/admin/reconciliation/': typeof AuthenticatedAdminReconciliationIndexRoute
   '/admin/reconciliation/booking/$bookingId': typeof AuthenticatedAdminReconciliationBookingBookingIdRoute
   '/admin/reconciliation/provider/$providerId': typeof AuthenticatedAdminReconciliationProviderProviderIdRoute
@@ -391,7 +615,10 @@ export interface FileRoutesByTo {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/send-delivery': typeof AuthenticatedSendDeliveryRoute
   '/workspace': typeof AuthenticatedWorkspaceRoute
+  '/m/notifications': typeof MNotificationsRoute
+  '/m/settings': typeof MSettingsRoute
   '/services/$slug': typeof ServicesSlugRoute
+  '/m': typeof MIndexRoute
   '/services': typeof ServicesIndexRoute
   '/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
@@ -402,13 +629,38 @@ export interface FileRoutesByTo {
   '/provider/apply': typeof AuthenticatedProviderApplyRoute
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/provider/verify': typeof AuthenticatedProviderVerifyRoute
+  '/m/chat/$bookingId': typeof MChatBookingIdRoute
+  '/m/customer/addresses': typeof MCustomerAddressesRoute
+  '/m/customer/bookings': typeof MCustomerBookingsRoute
+  '/m/customer/categories': typeof MCustomerCategoriesRoute
+  '/m/customer/favourites': typeof MCustomerFavouritesRoute
+  '/m/customer/messages': typeof MCustomerMessagesRoute
+  '/m/customer/profile': typeof MCustomerProfileRoute
+  '/m/customer/referrals': typeof MCustomerReferralsRoute
+  '/m/customer/wallet': typeof MCustomerWalletRoute
+  '/m/driver/deliveries': typeof MDriverDeliveriesRouteWithChildren
+  '/m/driver/map': typeof MDriverMapRoute
+  '/m/driver/messages': typeof MDriverMessagesRoute
+  '/m/driver/profile': typeof MDriverProfileRoute
+  '/m/provider/calendar': typeof MProviderCalendarRoute
+  '/m/provider/jobs': typeof MProviderJobsRouteWithChildren
+  '/m/provider/messages': typeof MProviderMessagesRoute
+  '/m/provider/profile': typeof MProviderProfileRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/bookings': typeof AuthenticatedBookingsIndexRoute
   '/provider': typeof AuthenticatedProviderIndexRoute
+  '/m/customer': typeof MCustomerIndexRoute
+  '/m/driver': typeof MDriverIndexRoute
+  '/m/provider': typeof MProviderIndexRoute
   '/api/public/hooks/dispatch-sweep': typeof ApiPublicHooksDispatchSweepRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
+  '/m/customer/book/$category': typeof MCustomerBookCategoryRoute
+  '/m/customer/provider/$id': typeof MCustomerProviderIdRoute
+  '/m/customer/track/$id': typeof MCustomerTrackIdRoute
+  '/m/driver/deliveries/$id': typeof MDriverDeliveriesIdRoute
+  '/m/provider/jobs/$id': typeof MProviderJobsIdRoute
   '/admin/reconciliation': typeof AuthenticatedAdminReconciliationIndexRoute
   '/admin/reconciliation/booking/$bookingId': typeof AuthenticatedAdminReconciliationBookingBookingIdRoute
   '/admin/reconciliation/provider/$providerId': typeof AuthenticatedAdminReconciliationProviderProviderIdRoute
@@ -427,6 +679,7 @@ export interface FileRoutesById {
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/m': typeof MRouteWithChildren
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/provider-login': typeof ProviderLoginRoute
@@ -442,7 +695,13 @@ export interface FileRoutesById {
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/send-delivery': typeof AuthenticatedSendDeliveryRoute
   '/_authenticated/workspace': typeof AuthenticatedWorkspaceRoute
+  '/m/customer': typeof MCustomerRouteWithChildren
+  '/m/driver': typeof MDriverRouteWithChildren
+  '/m/notifications': typeof MNotificationsRoute
+  '/m/provider': typeof MProviderRouteWithChildren
+  '/m/settings': typeof MSettingsRoute
   '/services/$slug': typeof ServicesSlugRoute
+  '/m/': typeof MIndexRoute
   '/services/': typeof ServicesIndexRoute
   '/_authenticated/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/_authenticated/admin/providers': typeof AuthenticatedAdminProvidersRoute
@@ -453,13 +712,38 @@ export interface FileRoutesById {
   '/_authenticated/provider/apply': typeof AuthenticatedProviderApplyRoute
   '/_authenticated/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/_authenticated/provider/verify': typeof AuthenticatedProviderVerifyRoute
+  '/m/chat/$bookingId': typeof MChatBookingIdRoute
+  '/m/customer/addresses': typeof MCustomerAddressesRoute
+  '/m/customer/bookings': typeof MCustomerBookingsRoute
+  '/m/customer/categories': typeof MCustomerCategoriesRoute
+  '/m/customer/favourites': typeof MCustomerFavouritesRoute
+  '/m/customer/messages': typeof MCustomerMessagesRoute
+  '/m/customer/profile': typeof MCustomerProfileRoute
+  '/m/customer/referrals': typeof MCustomerReferralsRoute
+  '/m/customer/wallet': typeof MCustomerWalletRoute
+  '/m/driver/deliveries': typeof MDriverDeliveriesRouteWithChildren
+  '/m/driver/map': typeof MDriverMapRoute
+  '/m/driver/messages': typeof MDriverMessagesRoute
+  '/m/driver/profile': typeof MDriverProfileRoute
+  '/m/provider/calendar': typeof MProviderCalendarRoute
+  '/m/provider/jobs': typeof MProviderJobsRouteWithChildren
+  '/m/provider/messages': typeof MProviderMessagesRoute
+  '/m/provider/profile': typeof MProviderProfileRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/bookings/': typeof AuthenticatedBookingsIndexRoute
   '/_authenticated/provider/': typeof AuthenticatedProviderIndexRoute
+  '/m/customer/': typeof MCustomerIndexRoute
+  '/m/driver/': typeof MDriverIndexRoute
+  '/m/provider/': typeof MProviderIndexRoute
   '/api/public/hooks/dispatch-sweep': typeof ApiPublicHooksDispatchSweepRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
+  '/m/customer/book/$category': typeof MCustomerBookCategoryRoute
+  '/m/customer/provider/$id': typeof MCustomerProviderIdRoute
+  '/m/customer/track/$id': typeof MCustomerTrackIdRoute
+  '/m/driver/deliveries/$id': typeof MDriverDeliveriesIdRoute
+  '/m/provider/jobs/$id': typeof MProviderJobsIdRoute
   '/_authenticated/admin/reconciliation/': typeof AuthenticatedAdminReconciliationIndexRoute
   '/_authenticated/admin/reconciliation/booking/$bookingId': typeof AuthenticatedAdminReconciliationBookingBookingIdRoute
   '/_authenticated/admin/reconciliation/provider/$providerId': typeof AuthenticatedAdminReconciliationProviderProviderIdRoute
@@ -478,6 +762,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/forgot-password'
     | '/login'
+    | '/m'
     | '/pricing'
     | '/privacy'
     | '/provider-login'
@@ -493,7 +778,13 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/send-delivery'
     | '/workspace'
+    | '/m/customer'
+    | '/m/driver'
+    | '/m/notifications'
+    | '/m/provider'
+    | '/m/settings'
     | '/services/$slug'
+    | '/m/'
     | '/services/'
     | '/admin/commissions'
     | '/admin/providers'
@@ -504,13 +795,38 @@ export interface FileRouteTypes {
     | '/provider/apply'
     | '/provider/setup'
     | '/provider/verify'
+    | '/m/chat/$bookingId'
+    | '/m/customer/addresses'
+    | '/m/customer/bookings'
+    | '/m/customer/categories'
+    | '/m/customer/favourites'
+    | '/m/customer/messages'
+    | '/m/customer/profile'
+    | '/m/customer/referrals'
+    | '/m/customer/wallet'
+    | '/m/driver/deliveries'
+    | '/m/driver/map'
+    | '/m/driver/messages'
+    | '/m/driver/profile'
+    | '/m/provider/calendar'
+    | '/m/provider/jobs'
+    | '/m/provider/messages'
+    | '/m/provider/profile'
     | '/admin/'
     | '/bookings/'
     | '/provider/'
+    | '/m/customer/'
+    | '/m/driver/'
+    | '/m/provider/'
     | '/api/public/hooks/dispatch-sweep'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
+    | '/m/customer/book/$category'
+    | '/m/customer/provider/$id'
+    | '/m/customer/track/$id'
+    | '/m/driver/deliveries/$id'
+    | '/m/provider/jobs/$id'
     | '/admin/reconciliation/'
     | '/admin/reconciliation/booking/$bookingId'
     | '/admin/reconciliation/provider/$providerId'
@@ -541,7 +857,10 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/send-delivery'
     | '/workspace'
+    | '/m/notifications'
+    | '/m/settings'
     | '/services/$slug'
+    | '/m'
     | '/services'
     | '/admin/commissions'
     | '/admin/providers'
@@ -552,13 +871,38 @@ export interface FileRouteTypes {
     | '/provider/apply'
     | '/provider/setup'
     | '/provider/verify'
+    | '/m/chat/$bookingId'
+    | '/m/customer/addresses'
+    | '/m/customer/bookings'
+    | '/m/customer/categories'
+    | '/m/customer/favourites'
+    | '/m/customer/messages'
+    | '/m/customer/profile'
+    | '/m/customer/referrals'
+    | '/m/customer/wallet'
+    | '/m/driver/deliveries'
+    | '/m/driver/map'
+    | '/m/driver/messages'
+    | '/m/driver/profile'
+    | '/m/provider/calendar'
+    | '/m/provider/jobs'
+    | '/m/provider/messages'
+    | '/m/provider/profile'
     | '/admin'
     | '/bookings'
     | '/provider'
+    | '/m/customer'
+    | '/m/driver'
+    | '/m/provider'
     | '/api/public/hooks/dispatch-sweep'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
+    | '/m/customer/book/$category'
+    | '/m/customer/provider/$id'
+    | '/m/customer/track/$id'
+    | '/m/driver/deliveries/$id'
+    | '/m/provider/jobs/$id'
     | '/admin/reconciliation'
     | '/admin/reconciliation/booking/$bookingId'
     | '/admin/reconciliation/provider/$providerId'
@@ -576,6 +920,7 @@ export interface FileRouteTypes {
     | '/faq'
     | '/forgot-password'
     | '/login'
+    | '/m'
     | '/pricing'
     | '/privacy'
     | '/provider-login'
@@ -591,7 +936,13 @@ export interface FileRouteTypes {
     | '/_authenticated/notifications'
     | '/_authenticated/send-delivery'
     | '/_authenticated/workspace'
+    | '/m/customer'
+    | '/m/driver'
+    | '/m/notifications'
+    | '/m/provider'
+    | '/m/settings'
     | '/services/$slug'
+    | '/m/'
     | '/services/'
     | '/_authenticated/admin/commissions'
     | '/_authenticated/admin/providers'
@@ -602,13 +953,38 @@ export interface FileRouteTypes {
     | '/_authenticated/provider/apply'
     | '/_authenticated/provider/setup'
     | '/_authenticated/provider/verify'
+    | '/m/chat/$bookingId'
+    | '/m/customer/addresses'
+    | '/m/customer/bookings'
+    | '/m/customer/categories'
+    | '/m/customer/favourites'
+    | '/m/customer/messages'
+    | '/m/customer/profile'
+    | '/m/customer/referrals'
+    | '/m/customer/wallet'
+    | '/m/driver/deliveries'
+    | '/m/driver/map'
+    | '/m/driver/messages'
+    | '/m/driver/profile'
+    | '/m/provider/calendar'
+    | '/m/provider/jobs'
+    | '/m/provider/messages'
+    | '/m/provider/profile'
     | '/_authenticated/admin/'
     | '/_authenticated/bookings/'
     | '/_authenticated/provider/'
+    | '/m/customer/'
+    | '/m/driver/'
+    | '/m/provider/'
     | '/api/public/hooks/dispatch-sweep'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
+    | '/m/customer/book/$category'
+    | '/m/customer/provider/$id'
+    | '/m/customer/track/$id'
+    | '/m/driver/deliveries/$id'
+    | '/m/provider/jobs/$id'
     | '/_authenticated/admin/reconciliation/'
     | '/_authenticated/admin/reconciliation/booking/$bookingId'
     | '/_authenticated/admin/reconciliation/provider/$providerId'
@@ -627,6 +1003,7 @@ export interface RootRouteChildren {
   FaqRoute: typeof FaqRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
+  MRoute: typeof MRouteWithChildren
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
   ProviderLoginRoute: typeof ProviderLoginRoute
@@ -705,6 +1082,13 @@ declare module '@tanstack/react-router' {
       path: '/pricing'
       fullPath: '/pricing'
       preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/m': {
+      id: '/m'
+      path: '/m'
+      fullPath: '/m'
+      preLoaderRoute: typeof MRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -798,12 +1182,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesIndexRouteImport
       parentRoute: typeof ServicesRoute
     }
+    '/m/': {
+      id: '/m/'
+      path: '/'
+      fullPath: '/m/'
+      preLoaderRoute: typeof MIndexRouteImport
+      parentRoute: typeof MRoute
+    }
     '/services/$slug': {
       id: '/services/$slug'
       path: '/$slug'
       fullPath: '/services/$slug'
       preLoaderRoute: typeof ServicesSlugRouteImport
       parentRoute: typeof ServicesRoute
+    }
+    '/m/settings': {
+      id: '/m/settings'
+      path: '/settings'
+      fullPath: '/m/settings'
+      preLoaderRoute: typeof MSettingsRouteImport
+      parentRoute: typeof MRoute
+    }
+    '/m/provider': {
+      id: '/m/provider'
+      path: '/provider'
+      fullPath: '/m/provider'
+      preLoaderRoute: typeof MProviderRouteImport
+      parentRoute: typeof MRoute
+    }
+    '/m/notifications': {
+      id: '/m/notifications'
+      path: '/notifications'
+      fullPath: '/m/notifications'
+      preLoaderRoute: typeof MNotificationsRouteImport
+      parentRoute: typeof MRoute
+    }
+    '/m/driver': {
+      id: '/m/driver'
+      path: '/driver'
+      fullPath: '/m/driver'
+      preLoaderRoute: typeof MDriverRouteImport
+      parentRoute: typeof MRoute
+    }
+    '/m/customer': {
+      id: '/m/customer'
+      path: '/customer'
+      fullPath: '/m/customer'
+      preLoaderRoute: typeof MCustomerRouteImport
+      parentRoute: typeof MRoute
     }
     '/_authenticated/workspace': {
       id: '/_authenticated/workspace'
@@ -847,6 +1273,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBusinessPortalRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/m/provider/': {
+      id: '/m/provider/'
+      path: '/'
+      fullPath: '/m/provider/'
+      preLoaderRoute: typeof MProviderIndexRouteImport
+      parentRoute: typeof MProviderRoute
+    }
+    '/m/driver/': {
+      id: '/m/driver/'
+      path: '/'
+      fullPath: '/m/driver/'
+      preLoaderRoute: typeof MDriverIndexRouteImport
+      parentRoute: typeof MDriverRoute
+    }
+    '/m/customer/': {
+      id: '/m/customer/'
+      path: '/'
+      fullPath: '/m/customer/'
+      preLoaderRoute: typeof MCustomerIndexRouteImport
+      parentRoute: typeof MCustomerRoute
+    }
     '/_authenticated/provider/': {
       id: '/_authenticated/provider/'
       path: '/provider'
@@ -867,6 +1314,125 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/m/provider/profile': {
+      id: '/m/provider/profile'
+      path: '/profile'
+      fullPath: '/m/provider/profile'
+      preLoaderRoute: typeof MProviderProfileRouteImport
+      parentRoute: typeof MProviderRoute
+    }
+    '/m/provider/messages': {
+      id: '/m/provider/messages'
+      path: '/messages'
+      fullPath: '/m/provider/messages'
+      preLoaderRoute: typeof MProviderMessagesRouteImport
+      parentRoute: typeof MProviderRoute
+    }
+    '/m/provider/jobs': {
+      id: '/m/provider/jobs'
+      path: '/jobs'
+      fullPath: '/m/provider/jobs'
+      preLoaderRoute: typeof MProviderJobsRouteImport
+      parentRoute: typeof MProviderRoute
+    }
+    '/m/provider/calendar': {
+      id: '/m/provider/calendar'
+      path: '/calendar'
+      fullPath: '/m/provider/calendar'
+      preLoaderRoute: typeof MProviderCalendarRouteImport
+      parentRoute: typeof MProviderRoute
+    }
+    '/m/driver/profile': {
+      id: '/m/driver/profile'
+      path: '/profile'
+      fullPath: '/m/driver/profile'
+      preLoaderRoute: typeof MDriverProfileRouteImport
+      parentRoute: typeof MDriverRoute
+    }
+    '/m/driver/messages': {
+      id: '/m/driver/messages'
+      path: '/messages'
+      fullPath: '/m/driver/messages'
+      preLoaderRoute: typeof MDriverMessagesRouteImport
+      parentRoute: typeof MDriverRoute
+    }
+    '/m/driver/map': {
+      id: '/m/driver/map'
+      path: '/map'
+      fullPath: '/m/driver/map'
+      preLoaderRoute: typeof MDriverMapRouteImport
+      parentRoute: typeof MDriverRoute
+    }
+    '/m/driver/deliveries': {
+      id: '/m/driver/deliveries'
+      path: '/deliveries'
+      fullPath: '/m/driver/deliveries'
+      preLoaderRoute: typeof MDriverDeliveriesRouteImport
+      parentRoute: typeof MDriverRoute
+    }
+    '/m/customer/wallet': {
+      id: '/m/customer/wallet'
+      path: '/wallet'
+      fullPath: '/m/customer/wallet'
+      preLoaderRoute: typeof MCustomerWalletRouteImport
+      parentRoute: typeof MCustomerRoute
+    }
+    '/m/customer/referrals': {
+      id: '/m/customer/referrals'
+      path: '/referrals'
+      fullPath: '/m/customer/referrals'
+      preLoaderRoute: typeof MCustomerReferralsRouteImport
+      parentRoute: typeof MCustomerRoute
+    }
+    '/m/customer/profile': {
+      id: '/m/customer/profile'
+      path: '/profile'
+      fullPath: '/m/customer/profile'
+      preLoaderRoute: typeof MCustomerProfileRouteImport
+      parentRoute: typeof MCustomerRoute
+    }
+    '/m/customer/messages': {
+      id: '/m/customer/messages'
+      path: '/messages'
+      fullPath: '/m/customer/messages'
+      preLoaderRoute: typeof MCustomerMessagesRouteImport
+      parentRoute: typeof MCustomerRoute
+    }
+    '/m/customer/favourites': {
+      id: '/m/customer/favourites'
+      path: '/favourites'
+      fullPath: '/m/customer/favourites'
+      preLoaderRoute: typeof MCustomerFavouritesRouteImport
+      parentRoute: typeof MCustomerRoute
+    }
+    '/m/customer/categories': {
+      id: '/m/customer/categories'
+      path: '/categories'
+      fullPath: '/m/customer/categories'
+      preLoaderRoute: typeof MCustomerCategoriesRouteImport
+      parentRoute: typeof MCustomerRoute
+    }
+    '/m/customer/bookings': {
+      id: '/m/customer/bookings'
+      path: '/bookings'
+      fullPath: '/m/customer/bookings'
+      preLoaderRoute: typeof MCustomerBookingsRouteImport
+      parentRoute: typeof MCustomerRoute
+    }
+    '/m/customer/addresses': {
+      id: '/m/customer/addresses'
+      path: '/addresses'
+      fullPath: '/m/customer/addresses'
+      preLoaderRoute: typeof MCustomerAddressesRouteImport
+      parentRoute: typeof MCustomerRoute
+    }
+    '/m/chat/$bookingId': {
+      id: '/m/chat/$bookingId'
+      path: '/chat/$bookingId'
+      fullPath: '/m/chat/$bookingId'
+      preLoaderRoute: typeof MChatBookingIdRouteImport
+      parentRoute: typeof MRoute
     }
     '/_authenticated/provider/verify': {
       id: '/_authenticated/provider/verify'
@@ -937,6 +1503,41 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/reconciliation/'
       preLoaderRoute: typeof AuthenticatedAdminReconciliationIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/m/provider/jobs/$id': {
+      id: '/m/provider/jobs/$id'
+      path: '/$id'
+      fullPath: '/m/provider/jobs/$id'
+      preLoaderRoute: typeof MProviderJobsIdRouteImport
+      parentRoute: typeof MProviderJobsRoute
+    }
+    '/m/driver/deliveries/$id': {
+      id: '/m/driver/deliveries/$id'
+      path: '/$id'
+      fullPath: '/m/driver/deliveries/$id'
+      preLoaderRoute: typeof MDriverDeliveriesIdRouteImport
+      parentRoute: typeof MDriverDeliveriesRoute
+    }
+    '/m/customer/track/$id': {
+      id: '/m/customer/track/$id'
+      path: '/track/$id'
+      fullPath: '/m/customer/track/$id'
+      preLoaderRoute: typeof MCustomerTrackIdRouteImport
+      parentRoute: typeof MCustomerRoute
+    }
+    '/m/customer/provider/$id': {
+      id: '/m/customer/provider/$id'
+      path: '/provider/$id'
+      fullPath: '/m/customer/provider/$id'
+      preLoaderRoute: typeof MCustomerProviderIdRouteImport
+      parentRoute: typeof MCustomerRoute
+    }
+    '/m/customer/book/$category': {
+      id: '/m/customer/book/$category'
+      path: '/book/$category'
+      fullPath: '/m/customer/book/$category'
+      preLoaderRoute: typeof MCustomerBookCategoryRouteImport
+      parentRoute: typeof MCustomerRoute
     }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
@@ -1038,6 +1639,124 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
+interface MCustomerRouteChildren {
+  MCustomerAddressesRoute: typeof MCustomerAddressesRoute
+  MCustomerBookingsRoute: typeof MCustomerBookingsRoute
+  MCustomerCategoriesRoute: typeof MCustomerCategoriesRoute
+  MCustomerFavouritesRoute: typeof MCustomerFavouritesRoute
+  MCustomerMessagesRoute: typeof MCustomerMessagesRoute
+  MCustomerProfileRoute: typeof MCustomerProfileRoute
+  MCustomerReferralsRoute: typeof MCustomerReferralsRoute
+  MCustomerWalletRoute: typeof MCustomerWalletRoute
+  MCustomerIndexRoute: typeof MCustomerIndexRoute
+  MCustomerBookCategoryRoute: typeof MCustomerBookCategoryRoute
+  MCustomerProviderIdRoute: typeof MCustomerProviderIdRoute
+  MCustomerTrackIdRoute: typeof MCustomerTrackIdRoute
+}
+
+const MCustomerRouteChildren: MCustomerRouteChildren = {
+  MCustomerAddressesRoute: MCustomerAddressesRoute,
+  MCustomerBookingsRoute: MCustomerBookingsRoute,
+  MCustomerCategoriesRoute: MCustomerCategoriesRoute,
+  MCustomerFavouritesRoute: MCustomerFavouritesRoute,
+  MCustomerMessagesRoute: MCustomerMessagesRoute,
+  MCustomerProfileRoute: MCustomerProfileRoute,
+  MCustomerReferralsRoute: MCustomerReferralsRoute,
+  MCustomerWalletRoute: MCustomerWalletRoute,
+  MCustomerIndexRoute: MCustomerIndexRoute,
+  MCustomerBookCategoryRoute: MCustomerBookCategoryRoute,
+  MCustomerProviderIdRoute: MCustomerProviderIdRoute,
+  MCustomerTrackIdRoute: MCustomerTrackIdRoute,
+}
+
+const MCustomerRouteWithChildren = MCustomerRoute._addFileChildren(
+  MCustomerRouteChildren,
+)
+
+interface MDriverDeliveriesRouteChildren {
+  MDriverDeliveriesIdRoute: typeof MDriverDeliveriesIdRoute
+}
+
+const MDriverDeliveriesRouteChildren: MDriverDeliveriesRouteChildren = {
+  MDriverDeliveriesIdRoute: MDriverDeliveriesIdRoute,
+}
+
+const MDriverDeliveriesRouteWithChildren =
+  MDriverDeliveriesRoute._addFileChildren(MDriverDeliveriesRouteChildren)
+
+interface MDriverRouteChildren {
+  MDriverDeliveriesRoute: typeof MDriverDeliveriesRouteWithChildren
+  MDriverMapRoute: typeof MDriverMapRoute
+  MDriverMessagesRoute: typeof MDriverMessagesRoute
+  MDriverProfileRoute: typeof MDriverProfileRoute
+  MDriverIndexRoute: typeof MDriverIndexRoute
+}
+
+const MDriverRouteChildren: MDriverRouteChildren = {
+  MDriverDeliveriesRoute: MDriverDeliveriesRouteWithChildren,
+  MDriverMapRoute: MDriverMapRoute,
+  MDriverMessagesRoute: MDriverMessagesRoute,
+  MDriverProfileRoute: MDriverProfileRoute,
+  MDriverIndexRoute: MDriverIndexRoute,
+}
+
+const MDriverRouteWithChildren =
+  MDriverRoute._addFileChildren(MDriverRouteChildren)
+
+interface MProviderJobsRouteChildren {
+  MProviderJobsIdRoute: typeof MProviderJobsIdRoute
+}
+
+const MProviderJobsRouteChildren: MProviderJobsRouteChildren = {
+  MProviderJobsIdRoute: MProviderJobsIdRoute,
+}
+
+const MProviderJobsRouteWithChildren = MProviderJobsRoute._addFileChildren(
+  MProviderJobsRouteChildren,
+)
+
+interface MProviderRouteChildren {
+  MProviderCalendarRoute: typeof MProviderCalendarRoute
+  MProviderJobsRoute: typeof MProviderJobsRouteWithChildren
+  MProviderMessagesRoute: typeof MProviderMessagesRoute
+  MProviderProfileRoute: typeof MProviderProfileRoute
+  MProviderIndexRoute: typeof MProviderIndexRoute
+}
+
+const MProviderRouteChildren: MProviderRouteChildren = {
+  MProviderCalendarRoute: MProviderCalendarRoute,
+  MProviderJobsRoute: MProviderJobsRouteWithChildren,
+  MProviderMessagesRoute: MProviderMessagesRoute,
+  MProviderProfileRoute: MProviderProfileRoute,
+  MProviderIndexRoute: MProviderIndexRoute,
+}
+
+const MProviderRouteWithChildren = MProviderRoute._addFileChildren(
+  MProviderRouteChildren,
+)
+
+interface MRouteChildren {
+  MCustomerRoute: typeof MCustomerRouteWithChildren
+  MDriverRoute: typeof MDriverRouteWithChildren
+  MNotificationsRoute: typeof MNotificationsRoute
+  MProviderRoute: typeof MProviderRouteWithChildren
+  MSettingsRoute: typeof MSettingsRoute
+  MIndexRoute: typeof MIndexRoute
+  MChatBookingIdRoute: typeof MChatBookingIdRoute
+}
+
+const MRouteChildren: MRouteChildren = {
+  MCustomerRoute: MCustomerRouteWithChildren,
+  MDriverRoute: MDriverRouteWithChildren,
+  MNotificationsRoute: MNotificationsRoute,
+  MProviderRoute: MProviderRouteWithChildren,
+  MSettingsRoute: MSettingsRoute,
+  MIndexRoute: MIndexRoute,
+  MChatBookingIdRoute: MChatBookingIdRoute,
+}
+
+const MRouteWithChildren = MRoute._addFileChildren(MRouteChildren)
+
 interface ServicesRouteChildren {
   ServicesSlugRoute: typeof ServicesSlugRoute
   ServicesIndexRoute: typeof ServicesIndexRoute
@@ -1065,6 +1784,7 @@ const rootRouteChildren: RootRouteChildren = {
   FaqRoute: FaqRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
+  MRoute: MRouteWithChildren,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
   ProviderLoginRoute: ProviderLoginRoute,
@@ -1082,13 +1802,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

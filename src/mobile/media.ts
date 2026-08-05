@@ -27,7 +27,9 @@ export async function capturePhoto(source: CaptureSource = "camera"): Promise<Fi
     });
     if (!photo.webPath) return null;
     const blob = await (await fetch(photo.webPath)).blob();
-    return new File([blob], `capture.${photo.format || "jpg"}`, { type: blob.type || "image/jpeg" });
+    return new File([blob], `capture.${photo.format || "jpg"}`, {
+      type: blob.type || "image/jpeg",
+    });
   }
 
   if (typeof document === "undefined") return null;

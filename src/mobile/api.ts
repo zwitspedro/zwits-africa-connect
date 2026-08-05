@@ -43,7 +43,8 @@ export const api = {
         .limit(100),
     ),
 
-  booking: (id: string) => run(() => supabase.from("bookings").select("*").eq("id", id).maybeSingle()),
+  booking: (id: string) =>
+    run(() => supabase.from("bookings").select("*").eq("id", id).maybeSingle()),
 
   /** Customer: my deliveries. */
   deliveries: (userId: string) =>
