@@ -86,14 +86,12 @@ export function useBookingChat(bookingId: string | undefined, userId: string | u
       await requireOnline("Sending a message");
       const receiver = await counterpartOf(bookingId, userId);
       if (!receiver) throw new Error("No one to message on this booking yet.");
-      const { error: e } = await supabase
-        .from("messages")
-        .insert({
-          booking_id: bookingId,
-          sender_id: userId,
-          receiver_id: receiver,
-          content: content.trim(),
-        });
+      const { error: e } = await supabase.from("messages").insert({
+        booking_id: bookingId,
+        sender_id: userId,
+        receiver_id: receiver,
+        content: content.trim(),
+      });
       if (e) throw new Error(e.message);
     },
     [bookingId, userId],
