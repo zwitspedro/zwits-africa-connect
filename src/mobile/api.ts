@@ -10,7 +10,9 @@ import { supabase } from "@/integrations/supabase/client";
 
 export type ApiResult<T> = { data: T; error: null } | { data: null; error: Error };
 
-async function run<T>(fn: () => Promise<{ data: T | null; error: any }>): Promise<T> {
+type Queryable<T> = PromiseLike<{ data: T | null; error: { message?: string } | null }>;
+
+async function run<T>(fn: () => Queryable<T>): Promise<T> {
   const { data, error } = await fn();
   if (error) throw new Error(error.message ?? "Request failed");
   return data as T;
