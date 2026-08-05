@@ -103,7 +103,7 @@ export function useUnreadCount(userId: string | undefined) {
         .from("notifications")
         .select("id", { count: "exact", head: true })
         .eq("user_id", userId)
-        .eq("read", false);
+        .is("read_at", null);
       if (alive) setCount(c ?? 0);
     };
     void load();
