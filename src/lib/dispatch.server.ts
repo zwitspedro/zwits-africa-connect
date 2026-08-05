@@ -76,9 +76,12 @@ export async function pickWaveProviders(
     .order("jobs_completed", { ascending: false });
   if (error) throw new Error(error.message);
 
-  const all = (data ?? []).filter((p) => p.verification_status === "approved");
-  // Wave 1-2 stay with providers that are online; later waves widen to everyone.
-  const pool = wave <= 2 ? all.filter((p) => p.available) : all;
+  // Every wave applies the SAME eligibility rules: approved, onboarded, online,
+  // within working hours / not on leave, right category, and under capacity.
+  // Later waves widen reach only by offering to more of that eligible set.
+  const pool = (data ?? []).filter(
+    (p) => p.verification_status === "approved" && p.available,
+  );
 
   const { data: existing } = await db
     .from("job_offers")
@@ -106,16 +109,17 @@ export async function pickWaveProviders(
 
   const at = booking.scheduled_for ?? new Date().toISOString();
   const withCapacity = candidates.filter((p) => (load.get(p.id) ?? 0) < PROVIDER_CAPACITY);
+  if (withCapacity.length === 0) return [];
 
-  // Working hours / leave, authoritative on the server.
-  const eligible: typeof withCapacity = [];
-  for (const p of withCapacity) {
-    const { data: ok } = await db.rpc("is_provider_available_at", {
-      _user_id: p.user_id,
-      _at: at,
-    });
-    if (ok !== false) eligible.push(p);
-  }
+  // Working hours / leave, authoritative on the server. Set-based: one round
+  // trip evaluating the very same is_provider_available_at predicate per user.
+  const { data: availableRows, error: availErr } = await db.rpc("providers_available_at", {
+    _user_ids: withCapacity.map((p) => p.user_id),
+    _at: at,
+  });
+  if (availErr) throw new Error(availErr.message);
+  const availableUsers = new Set((availableRows ?? []).map((r: any) => r.user_id as string));
+  const eligible = withCapacity.filter((p) => availableUsers.has(p.user_id));
 
   // Client hints may only reorder the server-approved set.
   const rank = new Map(rankedProviderIds.map((id, i) => [id, i]));
