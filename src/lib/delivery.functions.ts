@@ -21,7 +21,7 @@ export const createDelivery = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => CreateDeliverySchema.parse(input))
   .handler(async ({ data, context }) => {
-    const { admin, createDeliveryOffers } = await import("./delivery.server");
+    const { admin, createDeliveryOffers, logDeliveryEvent } = await import("./delivery.server");
     const { quotePrice, haversineKm } = await import("./delivery-config");
     const db = await admin();
 
@@ -58,9 +58,28 @@ export const createDelivery = createServerFn({ method: "POST" })
       .single();
     if (error) throw new Error(error.message);
 
+    await logDeliveryEvent(
+      db,
+      delivery.id as string,
+      "delivery_created",
+      context.userId,
+      { service_tier: data.serviceTier, parcel_size: data.parcelSize },
+      "delivery_created",
+    );
+
     const offered = await createDeliveryOffers(db, delivery as any, 1);
     if (offered === 0) {
       await db.from("deliveries").update({ dispatch_state: "no_drivers" }).eq("id", delivery.id);
+      await db.from("notifications").insert({
+        user_id: context.userId,
+        title: "No driver available yet",
+        body: "We could not find an available driver. You can retry or reschedule.",
+        link: `/deliveries/${delivery.id}`,
+        kind: "no_drivers",
+      });
+      await logDeliveryEvent(db, delivery.id as string, "delivery_unfulfilled", null, { wave: 1 }, "delivery_unfulfilled");
+    } else {
+      await logDeliveryEvent(db, delivery.id as string, "delivery_dispatched", null, { wave: 1 }, "delivery_dispatched:1");
     }
     return { id: delivery.id as string, price, distanceKm: distance, offered };
   });
@@ -111,16 +130,34 @@ export const respondToDeliveryOffer = createServerFn({ method: "POST" })
     z.object({ offerId: z.string().uuid(), action: z.enum(["accept", "decline"]) }).parse(input),
   )
   .handler(async ({ data, context }) => {
-    const { admin, claimDelivery } = await import("./delivery.server");
+    const { admin, claimDelivery, advanceDelivery, logDeliveryEvent } = await import("./delivery.server");
     const db = await admin();
 
     if (data.action === "decline") {
-      await db
+      const { data: declined } = await db
         .from("delivery_offers")
         .update({ status: "declined", responded_at: new Date().toISOString() })
         .eq("id", data.offerId)
         .eq("driver_user_id", context.userId)
-        .eq("status", "offered");
+        .eq("status", "offered")
+        .select("id, delivery_id")
+        .maybeSingle();
+      if (declined) {
+        await logDeliveryEvent(
+          db,
+          declined.delivery_id as string,
+          "driver_declined",
+          context.userId,
+          { offer_id: data.offerId },
+          `driver_declined:${data.offerId}`,
+        );
+        // Move dispatch on immediately instead of waiting for the timeout.
+        try {
+          await advanceDelivery(db, declined.delivery_id as string);
+        } catch {
+          /* the scheduled sweep will retry */
+        }
+      }
       return { won: false, declined: true };
     }
     return claimDelivery(db, data.offerId, context.userId);
@@ -139,7 +176,7 @@ export const updateDeliveryStatus = createServerFn({ method: "POST" })
       .parse(input),
   )
   .handler(async ({ data, context }) => {
-    const { admin } = await import("./delivery.server");
+    const { admin, logDeliveryEvent } = await import("./delivery.server");
     const db = await admin();
 
     const { data: delivery, error } = await db
@@ -163,6 +200,18 @@ export const updateDeliveryStatus = createServerFn({ method: "POST" })
 
     const { error: upErr } = await db.from("deliveries").update(patch).eq("id", data.deliveryId);
     if (upErr) throw new Error(upErr.message);
+
+    const auditEvent =
+      data.status === "picked_up"
+        ? "delivery_started"
+        : data.status === "delivered"
+          ? "delivery_completed"
+          : "delivery_cancelled";
+    await logDeliveryEvent(db, data.deliveryId, auditEvent, context.userId, null, auditEvent);
+
+    // A repeated call for a status the delivery is already in must not
+    // re-notify or re-count the completion.
+    if (delivery.status === data.status) return { ok: true, unchanged: true };
 
     if (data.status === "delivered" && delivery.driver_id) {
       const { data: prof } = await db

@@ -54,6 +54,7 @@ import { Route as AuthenticatedAdminReconciliationIndexRouteImport } from './rou
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as ApiPublicHooksDispatchSweepRouteImport } from './routes/api/public/hooks/dispatch-sweep'
 import { Route as AuthenticatedAdminReconciliationProviderProviderIdRouteImport } from './routes/_authenticated/admin.reconciliation.provider.$providerId'
 import { Route as AuthenticatedAdminReconciliationBookingBookingIdRouteImport } from './routes/_authenticated/admin.reconciliation.booking.$bookingId'
 
@@ -296,6 +297,12 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   path: '/lovable/email/auth/preview',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksDispatchSweepRoute =
+  ApiPublicHooksDispatchSweepRouteImport.update({
+    id: '/api/public/hooks/dispatch-sweep',
+    path: '/api/public/hooks/dispatch-sweep',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedAdminReconciliationProviderProviderIdRoute =
   AuthenticatedAdminReconciliationProviderProviderIdRouteImport.update({
     id: '/admin/reconciliation/provider/$providerId',
@@ -350,6 +357,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/bookings/': typeof AuthenticatedBookingsIndexRoute
   '/provider/': typeof AuthenticatedProviderIndexRoute
+  '/api/public/hooks/dispatch-sweep': typeof ApiPublicHooksDispatchSweepRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -397,6 +405,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/bookings': typeof AuthenticatedBookingsIndexRoute
   '/provider': typeof AuthenticatedProviderIndexRoute
+  '/api/public/hooks/dispatch-sweep': typeof ApiPublicHooksDispatchSweepRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -447,6 +456,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/bookings/': typeof AuthenticatedBookingsIndexRoute
   '/_authenticated/provider/': typeof AuthenticatedProviderIndexRoute
+  '/api/public/hooks/dispatch-sweep': typeof ApiPublicHooksDispatchSweepRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -497,6 +507,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/bookings/'
     | '/provider/'
+    | '/api/public/hooks/dispatch-sweep'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -544,6 +555,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/bookings'
     | '/provider'
+    | '/api/public/hooks/dispatch-sweep'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -593,6 +605,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/'
     | '/_authenticated/bookings/'
     | '/_authenticated/provider/'
+    | '/api/public/hooks/dispatch-sweep'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -623,6 +636,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
+  ApiPublicHooksDispatchSweepRoute: typeof ApiPublicHooksDispatchSweepRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -945,6 +959,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/dispatch-sweep': {
+      id: '/api/public/hooks/dispatch-sweep'
+      path: '/api/public/hooks/dispatch-sweep'
+      fullPath: '/api/public/hooks/dispatch-sweep'
+      preLoaderRoute: typeof ApiPublicHooksDispatchSweepRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin/reconciliation/provider/$providerId': {
       id: '/_authenticated/admin/reconciliation/provider/$providerId'
       path: '/admin/reconciliation/provider/$providerId'
@@ -1053,6 +1074,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
+  ApiPublicHooksDispatchSweepRoute: ApiPublicHooksDispatchSweepRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
@@ -1060,13 +1082,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
