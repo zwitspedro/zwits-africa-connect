@@ -48,7 +48,10 @@ export function useMobileProfile(userId: string | undefined) {
     async (patch: Partial<Pick<MobileProfile, "display_name" | "phone" | "avatar_url">>) => {
       if (!userId) return;
       await requireOnline("Updating your profile");
-      const { error } = await supabase.from("profiles").update(patch as never).eq("user_id", userId);
+      const { error } = await supabase
+        .from("profiles")
+        .update(patch as never)
+        .eq("user_id", userId);
       if (error) throw new Error(error.message);
       await load();
     },

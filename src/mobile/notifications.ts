@@ -48,10 +48,9 @@ export async function registerPush(): Promise<PushRegistration> {
 export async function syncPushToken(userId: string): Promise<void> {
   const token = await mobileStorage.get(TOKEN_KEY);
   if (!token) return;
-  await supabase.from("device_tokens").upsert(
-    { user_id: userId, token, platform: getPlatform() } as never,
-    { onConflict: "token" },
-  );
+  await supabase
+    .from("device_tokens")
+    .upsert({ user_id: userId, token, platform: getPlatform() } as never, { onConflict: "token" });
 }
 
 export async function unregisterPush(): Promise<void> {
@@ -81,7 +80,10 @@ export function usePushHandlers(onOpen?: (link: string) => void) {
           if (typeof link === "string") onOpen?.(link);
         },
       );
-      removers.push(() => void received.remove(), () => void action.remove());
+      removers.push(
+        () => void received.remove(),
+        () => void action.remove(),
+      );
     });
 
     return () => removers.forEach((r) => r());

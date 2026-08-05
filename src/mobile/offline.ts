@@ -58,7 +58,11 @@ export class OfflineError extends Error {
 /** Guard for any write path — the mobile core never queues mutations. */
 export async function requireOnline(action?: string): Promise<void> {
   const mod = await nativeOnly(() => import("@capacitor/network"));
-  const connected = mod ? (await mod.Network.getStatus()).connected : (typeof navigator === "undefined" ? true : navigator.onLine);
+  const connected = mod
+    ? (await mod.Network.getStatus()).connected
+    : typeof navigator === "undefined"
+      ? true
+      : navigator.onLine;
   if (!connected) throw new OfflineError(action);
 }
 
