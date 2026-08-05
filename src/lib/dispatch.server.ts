@@ -364,3 +364,35 @@ export async function declineOffer(db: Admin, offerId: string, userId: string) {
   return { ok: true };
 }
 
+
+/**
+ * Server-authoritative expiry sweep.
+ *
+ * Runs from the scheduled `/api/public/hooks/dispatch-sweep` endpoint so a job
+ * keeps moving even when every browser involved is closed. Idempotent: it only
+ * touches bookings still looking for a provider, and `advance` itself is a
+ * no-op once a booking is assigned, cancelled or already settled.
+ */
+export async function sweepExpiredDispatch(db: Admin, limit = 100) {
+  const nowIso = new Date().toISOString();
+
+  const { data: stale, error } = await db
+    .from("job_offers")
+    .select("booking_id")
+    .eq("status", "offered")
+    .lt("expires_at", nowIso)
+    .limit(limit * 5);
+  if (error) throw new Error(error.message);
+
+  const bookingIds = Array.from(new Set((stale ?? []).map((o: any) => o.booking_id as string))).slice(0, limit);
+  let advanced = 0;
+  for (const id of bookingIds) {
+    try {
+      await advance(db, id, []);
+      advanced += 1;
+    } catch {
+      /* one bad booking must not stop the sweep */
+    }
+  }
+  return { checked: bookingIds.length, advanced };
+}
