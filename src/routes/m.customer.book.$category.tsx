@@ -52,7 +52,7 @@ function BookScreen() {
     );
   }
 
-  const useMyLocation = async () => {
+  const pinMyLocation = async () => {
     setLocating(true);
     const pos = await currentPosition();
     setLocating(false);
@@ -124,7 +124,7 @@ function BookScreen() {
               className="mt-1 min-h-12 w-full rounded-2xl border border-border bg-background px-4 text-sm outline-none focus:border-primary"
             />
             <button
-              onClick={() => void useMyLocation()}
+              onClick={() => void pinMyLocation()}
               className="mt-2 inline-flex min-h-10 items-center gap-1.5 rounded-full bg-muted px-3 text-xs font-medium"
             >
               {locating ? (
