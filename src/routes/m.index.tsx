@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { useActiveRole } from "@/hooks/use-role";
+import { appHome, getAppTarget } from "@/mobile/app-target";
 
 export const Route = createFileRoute("/m/")({ component: MobileEntry });
 
@@ -11,6 +12,12 @@ function MobileEntry() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Dedicated Android builds always boot into their own portal.
+    const target = getAppTarget();
+    if (target) {
+      navigate({ to: appHome(target), replace: true });
+      return;
+    }
     if (isLoading) return;
     if (roles.includes("provider")) navigate({ to: "/m/provider", replace: true });
     else if (roles.includes("driver")) navigate({ to: "/m/driver", replace: true });

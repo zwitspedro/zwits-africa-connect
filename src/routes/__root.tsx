@@ -8,7 +8,10 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 
+import { useEffect } from "react";
+
 import { Toaster } from "@/components/ui/sonner";
+import { registerZwitsPwa } from "@/lib/pwa";
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
@@ -73,7 +76,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { name: "theme-color", content: "#0a0f0c" },
+      { name: "theme-color", content: "#16A34A" },
       { title: "Zwits — Book trusted services across Africa" },
       { name: "description", content: "Zwits connects you with trusted providers for deliveries, transport, repairs, cleaning, farming, beauty, freelance and emergency help." },
       { property: "og:type", content: "website" },
@@ -126,6 +129,10 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    registerZwitsPwa();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

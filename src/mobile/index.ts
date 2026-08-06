@@ -6,6 +6,7 @@
  * code runs in the browser build and inside the Capacitor shell.
  */
 export * from "./platform";
+export * from "./app-target";
 export * from "./storage";
 export * from "./auth";
 export * from "./api";

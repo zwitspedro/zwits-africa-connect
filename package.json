@@ -11,7 +11,20 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "cap:sync": "vite build && cap sync android",
-    "cap:android": "cap open android"
+    "cap:android": "cap open android",
+    "build:app": "vite build",
+    "customer:sync": "VITE_ZWITS_APP=customer vite build && cap sync android --config capacitor.customer.config.ts",
+    "provider:sync": "VITE_ZWITS_APP=provider vite build && cap sync android --config capacitor.provider.config.ts",
+    "driver:sync": "VITE_ZWITS_APP=driver vite build && cap sync android --config capacitor.driver.config.ts",
+    "customer:apk": "bun run customer:sync && cd android/customer && ./gradlew assembleRelease",
+    "provider:apk": "bun run provider:sync && cd android/provider && ./gradlew assembleRelease",
+    "driver:apk": "bun run driver:sync && cd android/driver && ./gradlew assembleRelease",
+    "customer:aab": "bun run customer:sync && cd android/customer && ./gradlew bundleRelease",
+    "provider:aab": "bun run provider:sync && cd android/provider && ./gradlew bundleRelease",
+    "driver:aab": "bun run driver:sync && cd android/driver && ./gradlew bundleRelease",
+    "customer:open": "cap open android --config capacitor.customer.config.ts",
+    "provider:open": "cap open android --config capacitor.provider.config.ts",
+    "driver:open": "cap open android --config capacitor.driver.config.ts"
   },
   "dependencies": {
     "@capacitor/app": "^8.1.1",
@@ -112,7 +125,8 @@
     "prettier": "^3.7.3",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.56.1",
-    "vite": "^7.3.1"
+    "vite": "^7.3.1",
+    "vite-plugin-pwa": "^1.3.0"
   },
   "pnpm": {
     "overrides": {
