@@ -52,49 +52,102 @@
 :root {
   --radius: 1rem; /* 16px */
 
-  /* Zwits Zimbabwe-first: white canvas, deep blue, emerald green */
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.22 0.03 260);
+  /* ---------------- ZWITS MASTER BRAND COLOR SYSTEM ----------------
+     Green + Black = core identity. Blue = technology / secondary.
+     White + neutrals = breathing room. Change here, changes everywhere. */
+  --brand-green: #16a34a;
+  --brand-green-strong: #12833c;
+  --brand-blue: #2563eb;
+  --brand-blue-strong: #1d4ed8;
+  --brand-black: #0b0f0d;
+  --brand-white: #ffffff;
+  --brand-gray: #f5f7f6;        /* light gray surfaces */
+  --brand-gray-medium: #6b7280; /* secondary text */
+  --brand-gray-border: #e5e7eb; /* borders + dividers */
 
-  --card: oklch(0.985 0.004 250);
-  --card-foreground: oklch(0.22 0.03 260);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.03 260);
+  --background: var(--brand-white);
+  --foreground: var(--brand-black);
 
-  --primary: oklch(0.38 0.16 264);          /* deep blue #0A3D91 */
-  --primary-foreground: oklch(1 0 0);
+  --card: var(--brand-white);
+  --card-foreground: var(--brand-black);
+  --popover: var(--brand-white);
+  --popover-foreground: var(--brand-black);
 
-  --gold: oklch(0.6 0.16 149);              /* emerald #16A34A */
-  --gold-foreground: oklch(1 0 0);
+  --primary: var(--brand-green);
+  --primary-foreground: var(--brand-white);
 
-  --secondary: oklch(0.965 0.006 250);
-  --secondary-foreground: oklch(0.28 0.03 260);
-  --muted: oklch(0.965 0.006 250);
-  --muted-foreground: oklch(0.52 0.02 258);
-  --accent: oklch(0.6 0.16 149);
-  --accent-foreground: oklch(1 0 0);
+  /* `gold` is the legacy accent token — now Zwits Blue (technology accent) */
+  --gold: var(--brand-blue);
+  --gold-foreground: var(--brand-white);
 
-  --destructive: oklch(0.58 0.22 25);
-  --destructive-foreground: oklch(1 0 0);
+  --secondary: var(--brand-gray);
+  --secondary-foreground: var(--brand-black);
+  --muted: var(--brand-gray);
+  --muted-foreground: var(--brand-gray-medium);
+  --accent: var(--brand-blue);
+  --accent-foreground: var(--brand-white);
 
-  --border: oklch(0.22 0.03 260 / 0.1);
-  --input: oklch(0.22 0.03 260 / 0.14);
-  --ring: oklch(0.38 0.16 264);
+  --destructive: #dc2626;
+  --destructive-foreground: var(--brand-white);
 
-  --chart-1: oklch(0.38 0.16 264);
-  --chart-2: oklch(0.6 0.16 149);
-  --chart-3: oklch(0.55 0.13 250);
-  --chart-4: oklch(0.72 0.12 150);
-  --chart-5: oklch(0.7 0.09 258);
+  --border: var(--brand-gray-border);
+  --input: var(--brand-gray-border);
+  --ring: var(--brand-green);
 
-  --sidebar: oklch(0.985 0.004 250);
-  --sidebar-foreground: oklch(0.22 0.03 260);
-  --sidebar-primary: oklch(0.38 0.16 264);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.95 0.01 250);
-  --sidebar-accent-foreground: oklch(0.22 0.03 260);
-  --sidebar-border: oklch(0.22 0.03 260 / 0.1);
-  --sidebar-ring: oklch(0.38 0.16 264);
+  --chart-1: var(--brand-green);
+  --chart-2: var(--brand-blue);
+  --chart-3: var(--brand-black);
+  --chart-4: #4ade80;
+  --chart-5: #93c5fd;
+
+  --sidebar: var(--brand-gray);
+  --sidebar-foreground: var(--brand-black);
+  --sidebar-primary: var(--brand-green);
+  --sidebar-primary-foreground: var(--brand-white);
+  --sidebar-accent: #eaf7ef;
+  --sidebar-accent-foreground: var(--brand-black);
+  --sidebar-border: var(--brand-gray-border);
+  --sidebar-ring: var(--brand-green);
+}
+
+/* Dark surfaces stay on Zwits Black with the same green/blue identity. */
+.dark {
+  --background: var(--brand-black);
+  --foreground: #f5f7f6;
+
+  --card: #121815;
+  --card-foreground: #f5f7f6;
+  --popover: #121815;
+  --popover-foreground: #f5f7f6;
+
+  --primary: #22c55e;
+  --primary-foreground: #05130a;
+
+  --gold: #3b82f6;
+  --gold-foreground: #05101f;
+
+  --secondary: #171e1b;
+  --secondary-foreground: #f5f7f6;
+  --muted: #171e1b;
+  --muted-foreground: #9ca3af;
+  --accent: #3b82f6;
+  --accent-foreground: #05101f;
+
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+
+  --border: #232b27;
+  --input: #232b27;
+  --ring: #22c55e;
+
+  --sidebar: #121815;
+  --sidebar-foreground: #f5f7f6;
+  --sidebar-primary: #22c55e;
+  --sidebar-primary-foreground: #05130a;
+  --sidebar-accent: #171e1b;
+  --sidebar-accent-foreground: #f5f7f6;
+  --sidebar-border: #232b27;
+  --sidebar-ring: #22c55e;
 }
 
 
