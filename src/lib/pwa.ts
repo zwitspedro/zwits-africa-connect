@@ -11,6 +11,11 @@ function isRefusedContext(): boolean {
   if (typeof window === "undefined") return true;
   if (!import.meta.env.PROD) return true;
   if (window.self !== window.top) return true;
+  // Capacitor Android/iOS shells must never cache the app shell — the native
+  // WebView loads the live site and a worker would serve stale HTML there.
+  if ((window as unknown as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor
+    ?.isNativePlatform?.()) return true;
+
 
   const host = window.location.hostname;
   if (host.startsWith("id-preview--") || host.startsWith("preview--")) return true;

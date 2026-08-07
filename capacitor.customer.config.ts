@@ -1,5 +1,5 @@
 import type { CapacitorConfig } from "@capacitor/cli";
-import base from "./capacitor.config";
+import base, { ZWITS_ORIGIN, remoteServer } from "./capacitor.config";
 
 /** Zwits Customer — Android app #1. Boots into /m/customer. */
 const config: CapacitorConfig = {
@@ -7,6 +7,7 @@ const config: CapacitorConfig = {
   appId: "zw.co.zwits.customer",
   appName: "Zwits",
   android: { ...base.android, path: "android/customer" },
+  server: remoteServer(`${ZWITS_ORIGIN}/m/customer`),
   plugins: {
     ...base.plugins,
     SplashScreen: { ...(base.plugins?.SplashScreen ?? {}), backgroundColor: "#16A34A" },
