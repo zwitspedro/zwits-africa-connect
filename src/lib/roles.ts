@@ -39,7 +39,7 @@ export const ROLES: Record<AppRole, RoleMeta> = {
     portal: "Provider portal",
     description: "Win jobs, manage your calendar and grow your business.",
     icon: Hammer,
-    home: "/provider",
+    home: "/provider/dashboard",
     join: "/provider/setup",
     selfServe: false,
   },

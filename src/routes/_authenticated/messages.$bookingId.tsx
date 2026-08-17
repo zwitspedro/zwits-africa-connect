@@ -214,7 +214,7 @@ function MessagesPage() {
               <ArrowLeft className="size-4" />
             </Link>
           ) : (
-            <Link to="/provider" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground" aria-label="Back to dashboard">
+            <Link to="/provider/dashboard" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground" aria-label="Back to dashboard">
               <ArrowLeft className="size-4" />
             </Link>
           )}

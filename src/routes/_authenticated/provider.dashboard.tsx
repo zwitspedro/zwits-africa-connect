@@ -34,7 +34,7 @@ import { OnboardingPanel } from "@/components/provider/onboarding-panel";
 
 import { RoleGate } from "@/components/portal/role-gate";
 
-export const Route = createFileRoute("/_authenticated/provider/")({
+export const Route = createFileRoute("/_authenticated/provider/dashboard")({
   head: () => ({
     meta: [
       { title: "Provider dashboard — Zwits" },

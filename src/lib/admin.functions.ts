@@ -81,7 +81,7 @@ export const setProviderVerification = createServerFn({ method: "POST" })
           : data.status === "revoked"
             ? patch.revoke_reason as string
             : "An admin is reviewing your documents.",
-      link: "/provider",
+      link: "/provider/dashboard",
       kind: `verification_${data.status}`,
     });
 

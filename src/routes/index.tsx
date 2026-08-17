@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SiteShell } from "@/components/site-shell";
 import { Hero } from "@/components/marketing/hero";
 import { LiveStats } from "@/components/marketing/live-stats";
+import { JourneySplit } from "@/components/marketing/journey-split";
 import { ServiceCategories } from "@/components/marketing/service-categories";
 import { FeaturedProviders } from "@/components/marketing/featured-providers";
 import { WhyZwits } from "@/components/marketing/why-zwits";
@@ -38,6 +39,7 @@ function Home() {
   return (
     <SiteShell>
       <Hero />
+      <JourneySplit />
       <LiveStats />
       <ServiceCategories />
       <FeaturedProviders />

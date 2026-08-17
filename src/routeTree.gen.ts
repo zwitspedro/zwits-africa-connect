@@ -14,6 +14,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as ResendConfirmationRouteImport } from './routes/resend-confirmation'
 import { Route as ProviderSignupRouteImport } from './routes/provider-signup'
 import { Route as ProviderLoginRouteImport } from './routes/provider-login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -32,6 +33,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
+import { Route as ProviderIndexRouteImport } from './routes/provider.index'
 import { Route as MIndexRouteImport } from './routes/m.index'
 import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
 import { Route as MSettingsRouteImport } from './routes/m.settings'
@@ -48,7 +50,6 @@ import { Route as AuthenticatedBusinessPortalRouteImport } from './routes/_authe
 import { Route as MProviderIndexRouteImport } from './routes/m.provider.index'
 import { Route as MDriverIndexRouteImport } from './routes/m.driver.index'
 import { Route as MCustomerIndexRouteImport } from './routes/m.customer.index'
-import { Route as AuthenticatedProviderIndexRouteImport } from './routes/_authenticated/provider.index'
 import { Route as AuthenticatedBookingsIndexRouteImport } from './routes/_authenticated/bookings.index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as MProviderProfileRouteImport } from './routes/m.provider.profile'
@@ -70,6 +71,7 @@ import { Route as MCustomerAddressesRouteImport } from './routes/m.customer.addr
 import { Route as MChatBookingIdRouteImport } from './routes/m.chat.$bookingId'
 import { Route as AuthenticatedProviderVerifyRouteImport } from './routes/_authenticated/provider.verify'
 import { Route as AuthenticatedProviderSetupRouteImport } from './routes/_authenticated/provider.setup'
+import { Route as AuthenticatedProviderDashboardRouteImport } from './routes/_authenticated/provider.dashboard'
 import { Route as AuthenticatedProviderApplyRouteImport } from './routes/_authenticated/provider.apply'
 import { Route as AuthenticatedMessagesBookingIdRouteImport } from './routes/_authenticated/messages.$bookingId'
 import { Route as AuthenticatedDeliveriesIdRouteImport } from './routes/_authenticated/deliveries.$id'
@@ -113,6 +115,11 @@ const ServicesRoute = ServicesRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResendConfirmationRoute = ResendConfirmationRouteImport.update({
+  id: '/resend-confirmation',
+  path: '/resend-confirmation',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProviderSignupRoute = ProviderSignupRouteImport.update({
@@ -204,6 +211,11 @@ const ServicesIndexRoute = ServicesIndexRouteImport.update({
   path: '/',
   getParentRoute: () => ServicesRoute,
 } as any)
+const ProviderIndexRoute = ProviderIndexRouteImport.update({
+  id: '/provider/',
+  path: '/provider/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MIndexRoute = MIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -287,12 +299,6 @@ const MCustomerIndexRoute = MCustomerIndexRouteImport.update({
   path: '/',
   getParentRoute: () => MCustomerRoute,
 } as any)
-const AuthenticatedProviderIndexRoute =
-  AuthenticatedProviderIndexRouteImport.update({
-    id: '/provider/',
-    path: '/provider/',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
 const AuthenticatedBookingsIndexRoute =
   AuthenticatedBookingsIndexRouteImport.update({
     id: '/bookings/',
@@ -399,6 +405,12 @@ const AuthenticatedProviderSetupRoute =
   AuthenticatedProviderSetupRouteImport.update({
     id: '/provider/setup',
     path: '/provider/setup',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedProviderDashboardRoute =
+  AuthenticatedProviderDashboardRouteImport.update({
+    id: '/provider/dashboard',
+    path: '/provider/dashboard',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedProviderApplyRoute =
@@ -525,6 +537,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/provider-login': typeof ProviderLoginRoute
   '/provider-signup': typeof ProviderSignupRoute
+  '/resend-confirmation': typeof ResendConfirmationRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRouteWithChildren
   '/signup': typeof SignupRoute
@@ -543,6 +556,7 @@ export interface FileRoutesByFullPath {
   '/m/settings': typeof MSettingsRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/m/': typeof MIndexRoute
+  '/provider/': typeof ProviderIndexRoute
   '/services/': typeof ServicesIndexRoute
   '/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
@@ -551,6 +565,7 @@ export interface FileRoutesByFullPath {
   '/deliveries/$id': typeof AuthenticatedDeliveriesIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/provider/apply': typeof AuthenticatedProviderApplyRoute
+  '/provider/dashboard': typeof AuthenticatedProviderDashboardRoute
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/provider/verify': typeof AuthenticatedProviderVerifyRoute
   '/m/chat/$bookingId': typeof MChatBookingIdRoute
@@ -572,7 +587,6 @@ export interface FileRoutesByFullPath {
   '/m/provider/profile': typeof MProviderProfileRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/bookings/': typeof AuthenticatedBookingsIndexRoute
-  '/provider/': typeof AuthenticatedProviderIndexRoute
   '/m/customer/': typeof MCustomerIndexRoute
   '/m/driver/': typeof MDriverIndexRoute
   '/m/provider/': typeof MProviderIndexRoute
@@ -605,6 +619,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/provider-login': typeof ProviderLoginRoute
   '/provider-signup': typeof ProviderSignupRoute
+  '/resend-confirmation': typeof ResendConfirmationRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -619,6 +634,7 @@ export interface FileRoutesByTo {
   '/m/settings': typeof MSettingsRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/m': typeof MIndexRoute
+  '/provider': typeof ProviderIndexRoute
   '/services': typeof ServicesIndexRoute
   '/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
@@ -627,6 +643,7 @@ export interface FileRoutesByTo {
   '/deliveries/$id': typeof AuthenticatedDeliveriesIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/provider/apply': typeof AuthenticatedProviderApplyRoute
+  '/provider/dashboard': typeof AuthenticatedProviderDashboardRoute
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/provider/verify': typeof AuthenticatedProviderVerifyRoute
   '/m/chat/$bookingId': typeof MChatBookingIdRoute
@@ -648,7 +665,6 @@ export interface FileRoutesByTo {
   '/m/provider/profile': typeof MProviderProfileRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/bookings': typeof AuthenticatedBookingsIndexRoute
-  '/provider': typeof AuthenticatedProviderIndexRoute
   '/m/customer': typeof MCustomerIndexRoute
   '/m/driver': typeof MDriverIndexRoute
   '/m/provider': typeof MProviderIndexRoute
@@ -684,6 +700,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/provider-login': typeof ProviderLoginRoute
   '/provider-signup': typeof ProviderSignupRoute
+  '/resend-confirmation': typeof ResendConfirmationRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRouteWithChildren
   '/signup': typeof SignupRoute
@@ -702,6 +719,7 @@ export interface FileRoutesById {
   '/m/settings': typeof MSettingsRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/m/': typeof MIndexRoute
+  '/provider/': typeof ProviderIndexRoute
   '/services/': typeof ServicesIndexRoute
   '/_authenticated/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/_authenticated/admin/providers': typeof AuthenticatedAdminProvidersRoute
@@ -710,6 +728,7 @@ export interface FileRoutesById {
   '/_authenticated/deliveries/$id': typeof AuthenticatedDeliveriesIdRoute
   '/_authenticated/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/_authenticated/provider/apply': typeof AuthenticatedProviderApplyRoute
+  '/_authenticated/provider/dashboard': typeof AuthenticatedProviderDashboardRoute
   '/_authenticated/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/_authenticated/provider/verify': typeof AuthenticatedProviderVerifyRoute
   '/m/chat/$bookingId': typeof MChatBookingIdRoute
@@ -731,7 +750,6 @@ export interface FileRoutesById {
   '/m/provider/profile': typeof MProviderProfileRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/bookings/': typeof AuthenticatedBookingsIndexRoute
-  '/_authenticated/provider/': typeof AuthenticatedProviderIndexRoute
   '/m/customer/': typeof MCustomerIndexRoute
   '/m/driver/': typeof MDriverIndexRoute
   '/m/provider/': typeof MProviderIndexRoute
@@ -767,6 +785,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/provider-login'
     | '/provider-signup'
+    | '/resend-confirmation'
     | '/reset-password'
     | '/services'
     | '/signup'
@@ -785,6 +804,7 @@ export interface FileRouteTypes {
     | '/m/settings'
     | '/services/$slug'
     | '/m/'
+    | '/provider/'
     | '/services/'
     | '/admin/commissions'
     | '/admin/providers'
@@ -793,6 +813,7 @@ export interface FileRouteTypes {
     | '/deliveries/$id'
     | '/messages/$bookingId'
     | '/provider/apply'
+    | '/provider/dashboard'
     | '/provider/setup'
     | '/provider/verify'
     | '/m/chat/$bookingId'
@@ -814,7 +835,6 @@ export interface FileRouteTypes {
     | '/m/provider/profile'
     | '/admin/'
     | '/bookings/'
-    | '/provider/'
     | '/m/customer/'
     | '/m/driver/'
     | '/m/provider/'
@@ -847,6 +867,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/provider-login'
     | '/provider-signup'
+    | '/resend-confirmation'
     | '/reset-password'
     | '/signup'
     | '/sitemap.xml'
@@ -861,6 +882,7 @@ export interface FileRouteTypes {
     | '/m/settings'
     | '/services/$slug'
     | '/m'
+    | '/provider'
     | '/services'
     | '/admin/commissions'
     | '/admin/providers'
@@ -869,6 +891,7 @@ export interface FileRouteTypes {
     | '/deliveries/$id'
     | '/messages/$bookingId'
     | '/provider/apply'
+    | '/provider/dashboard'
     | '/provider/setup'
     | '/provider/verify'
     | '/m/chat/$bookingId'
@@ -890,7 +913,6 @@ export interface FileRouteTypes {
     | '/m/provider/profile'
     | '/admin'
     | '/bookings'
-    | '/provider'
     | '/m/customer'
     | '/m/driver'
     | '/m/provider'
@@ -925,6 +947,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/provider-login'
     | '/provider-signup'
+    | '/resend-confirmation'
     | '/reset-password'
     | '/services'
     | '/signup'
@@ -943,6 +966,7 @@ export interface FileRouteTypes {
     | '/m/settings'
     | '/services/$slug'
     | '/m/'
+    | '/provider/'
     | '/services/'
     | '/_authenticated/admin/commissions'
     | '/_authenticated/admin/providers'
@@ -951,6 +975,7 @@ export interface FileRouteTypes {
     | '/_authenticated/deliveries/$id'
     | '/_authenticated/messages/$bookingId'
     | '/_authenticated/provider/apply'
+    | '/_authenticated/provider/dashboard'
     | '/_authenticated/provider/setup'
     | '/_authenticated/provider/verify'
     | '/m/chat/$bookingId'
@@ -972,7 +997,6 @@ export interface FileRouteTypes {
     | '/m/provider/profile'
     | '/_authenticated/admin/'
     | '/_authenticated/bookings/'
-    | '/_authenticated/provider/'
     | '/m/customer/'
     | '/m/driver/'
     | '/m/provider/'
@@ -1008,11 +1032,13 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   ProviderLoginRoute: typeof ProviderLoginRoute
   ProviderSignupRoute: typeof ProviderSignupRoute
+  ResendConfirmationRoute: typeof ResendConfirmationRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ServicesRoute: typeof ServicesRouteWithChildren
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
+  ProviderIndexRoute: typeof ProviderIndexRoute
   ApiPublicHooksDispatchSweepRoute: typeof ApiPublicHooksDispatchSweepRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -1054,6 +1080,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/resend-confirmation': {
+      id: '/resend-confirmation'
+      path: '/resend-confirmation'
+      fullPath: '/resend-confirmation'
+      preLoaderRoute: typeof ResendConfirmationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/provider-signup': {
@@ -1182,6 +1215,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesIndexRouteImport
       parentRoute: typeof ServicesRoute
     }
+    '/provider/': {
+      id: '/provider/'
+      path: '/provider'
+      fullPath: '/provider/'
+      preLoaderRoute: typeof ProviderIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/m/': {
       id: '/m/'
       path: '/'
@@ -1293,13 +1333,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/m/customer/'
       preLoaderRoute: typeof MCustomerIndexRouteImport
       parentRoute: typeof MCustomerRoute
-    }
-    '/_authenticated/provider/': {
-      id: '/_authenticated/provider/'
-      path: '/provider'
-      fullPath: '/provider/'
-      preLoaderRoute: typeof AuthenticatedProviderIndexRouteImport
-      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/bookings/': {
       id: '/_authenticated/bookings/'
@@ -1446,6 +1479,13 @@ declare module '@tanstack/react-router' {
       path: '/provider/setup'
       fullPath: '/provider/setup'
       preLoaderRoute: typeof AuthenticatedProviderSetupRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/provider/dashboard': {
+      id: '/_authenticated/provider/dashboard'
+      path: '/provider/dashboard'
+      fullPath: '/provider/dashboard'
+      preLoaderRoute: typeof AuthenticatedProviderDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/provider/apply': {
@@ -1598,11 +1638,11 @@ interface AuthenticatedRouteChildren {
   AuthenticatedDeliveriesIdRoute: typeof AuthenticatedDeliveriesIdRoute
   AuthenticatedMessagesBookingIdRoute: typeof AuthenticatedMessagesBookingIdRoute
   AuthenticatedProviderApplyRoute: typeof AuthenticatedProviderApplyRoute
+  AuthenticatedProviderDashboardRoute: typeof AuthenticatedProviderDashboardRoute
   AuthenticatedProviderSetupRoute: typeof AuthenticatedProviderSetupRoute
   AuthenticatedProviderVerifyRoute: typeof AuthenticatedProviderVerifyRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedBookingsIndexRoute: typeof AuthenticatedBookingsIndexRoute
-  AuthenticatedProviderIndexRoute: typeof AuthenticatedProviderIndexRoute
   AuthenticatedAdminReconciliationIndexRoute: typeof AuthenticatedAdminReconciliationIndexRoute
   AuthenticatedAdminReconciliationBookingBookingIdRoute: typeof AuthenticatedAdminReconciliationBookingBookingIdRoute
   AuthenticatedAdminReconciliationProviderProviderIdRoute: typeof AuthenticatedAdminReconciliationProviderProviderIdRoute
@@ -1622,11 +1662,11 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDeliveriesIdRoute: AuthenticatedDeliveriesIdRoute,
   AuthenticatedMessagesBookingIdRoute: AuthenticatedMessagesBookingIdRoute,
   AuthenticatedProviderApplyRoute: AuthenticatedProviderApplyRoute,
+  AuthenticatedProviderDashboardRoute: AuthenticatedProviderDashboardRoute,
   AuthenticatedProviderSetupRoute: AuthenticatedProviderSetupRoute,
   AuthenticatedProviderVerifyRoute: AuthenticatedProviderVerifyRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedBookingsIndexRoute: AuthenticatedBookingsIndexRoute,
-  AuthenticatedProviderIndexRoute: AuthenticatedProviderIndexRoute,
   AuthenticatedAdminReconciliationIndexRoute:
     AuthenticatedAdminReconciliationIndexRoute,
   AuthenticatedAdminReconciliationBookingBookingIdRoute:
@@ -1789,11 +1829,13 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   ProviderLoginRoute: ProviderLoginRoute,
   ProviderSignupRoute: ProviderSignupRoute,
+  ResendConfirmationRoute: ResendConfirmationRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ServicesRoute: ServicesRouteWithChildren,
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
+  ProviderIndexRoute: ProviderIndexRoute,
   ApiPublicHooksDispatchSweepRoute: ApiPublicHooksDispatchSweepRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
