@@ -48,7 +48,6 @@ import { Route as AuthenticatedBusinessPortalRouteImport } from './routes/_authe
 import { Route as MProviderIndexRouteImport } from './routes/m.provider.index'
 import { Route as MDriverIndexRouteImport } from './routes/m.driver.index'
 import { Route as MCustomerIndexRouteImport } from './routes/m.customer.index'
-import { Route as AuthenticatedProviderIndexRouteImport } from './routes/_authenticated/provider.index'
 import { Route as AuthenticatedBookingsIndexRouteImport } from './routes/_authenticated/bookings.index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as MProviderProfileRouteImport } from './routes/m.provider.profile'
@@ -70,6 +69,7 @@ import { Route as MCustomerAddressesRouteImport } from './routes/m.customer.addr
 import { Route as MChatBookingIdRouteImport } from './routes/m.chat.$bookingId'
 import { Route as AuthenticatedProviderVerifyRouteImport } from './routes/_authenticated/provider.verify'
 import { Route as AuthenticatedProviderSetupRouteImport } from './routes/_authenticated/provider.setup'
+import { Route as AuthenticatedProviderDashboardRouteImport } from './routes/_authenticated/provider.dashboard'
 import { Route as AuthenticatedProviderApplyRouteImport } from './routes/_authenticated/provider.apply'
 import { Route as AuthenticatedMessagesBookingIdRouteImport } from './routes/_authenticated/messages.$bookingId'
 import { Route as AuthenticatedDeliveriesIdRouteImport } from './routes/_authenticated/deliveries.$id'
@@ -287,12 +287,6 @@ const MCustomerIndexRoute = MCustomerIndexRouteImport.update({
   path: '/',
   getParentRoute: () => MCustomerRoute,
 } as any)
-const AuthenticatedProviderIndexRoute =
-  AuthenticatedProviderIndexRouteImport.update({
-    id: '/provider/',
-    path: '/provider/',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
 const AuthenticatedBookingsIndexRoute =
   AuthenticatedBookingsIndexRouteImport.update({
     id: '/bookings/',
@@ -399,6 +393,12 @@ const AuthenticatedProviderSetupRoute =
   AuthenticatedProviderSetupRouteImport.update({
     id: '/provider/setup',
     path: '/provider/setup',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedProviderDashboardRoute =
+  AuthenticatedProviderDashboardRouteImport.update({
+    id: '/provider/dashboard',
+    path: '/provider/dashboard',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedProviderApplyRoute =
@@ -551,6 +551,7 @@ export interface FileRoutesByFullPath {
   '/deliveries/$id': typeof AuthenticatedDeliveriesIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/provider/apply': typeof AuthenticatedProviderApplyRoute
+  '/provider/dashboard': typeof AuthenticatedProviderDashboardRoute
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/provider/verify': typeof AuthenticatedProviderVerifyRoute
   '/m/chat/$bookingId': typeof MChatBookingIdRoute
@@ -572,7 +573,6 @@ export interface FileRoutesByFullPath {
   '/m/provider/profile': typeof MProviderProfileRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/bookings/': typeof AuthenticatedBookingsIndexRoute
-  '/provider/': typeof AuthenticatedProviderIndexRoute
   '/m/customer/': typeof MCustomerIndexRoute
   '/m/driver/': typeof MDriverIndexRoute
   '/m/provider/': typeof MProviderIndexRoute
@@ -627,6 +627,7 @@ export interface FileRoutesByTo {
   '/deliveries/$id': typeof AuthenticatedDeliveriesIdRoute
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/provider/apply': typeof AuthenticatedProviderApplyRoute
+  '/provider/dashboard': typeof AuthenticatedProviderDashboardRoute
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/provider/verify': typeof AuthenticatedProviderVerifyRoute
   '/m/chat/$bookingId': typeof MChatBookingIdRoute
@@ -648,7 +649,6 @@ export interface FileRoutesByTo {
   '/m/provider/profile': typeof MProviderProfileRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/bookings': typeof AuthenticatedBookingsIndexRoute
-  '/provider': typeof AuthenticatedProviderIndexRoute
   '/m/customer': typeof MCustomerIndexRoute
   '/m/driver': typeof MDriverIndexRoute
   '/m/provider': typeof MProviderIndexRoute
@@ -710,6 +710,7 @@ export interface FileRoutesById {
   '/_authenticated/deliveries/$id': typeof AuthenticatedDeliveriesIdRoute
   '/_authenticated/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/_authenticated/provider/apply': typeof AuthenticatedProviderApplyRoute
+  '/_authenticated/provider/dashboard': typeof AuthenticatedProviderDashboardRoute
   '/_authenticated/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/_authenticated/provider/verify': typeof AuthenticatedProviderVerifyRoute
   '/m/chat/$bookingId': typeof MChatBookingIdRoute
@@ -731,7 +732,6 @@ export interface FileRoutesById {
   '/m/provider/profile': typeof MProviderProfileRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/bookings/': typeof AuthenticatedBookingsIndexRoute
-  '/_authenticated/provider/': typeof AuthenticatedProviderIndexRoute
   '/m/customer/': typeof MCustomerIndexRoute
   '/m/driver/': typeof MDriverIndexRoute
   '/m/provider/': typeof MProviderIndexRoute
@@ -793,6 +793,7 @@ export interface FileRouteTypes {
     | '/deliveries/$id'
     | '/messages/$bookingId'
     | '/provider/apply'
+    | '/provider/dashboard'
     | '/provider/setup'
     | '/provider/verify'
     | '/m/chat/$bookingId'
@@ -814,7 +815,6 @@ export interface FileRouteTypes {
     | '/m/provider/profile'
     | '/admin/'
     | '/bookings/'
-    | '/provider/'
     | '/m/customer/'
     | '/m/driver/'
     | '/m/provider/'
@@ -869,6 +869,7 @@ export interface FileRouteTypes {
     | '/deliveries/$id'
     | '/messages/$bookingId'
     | '/provider/apply'
+    | '/provider/dashboard'
     | '/provider/setup'
     | '/provider/verify'
     | '/m/chat/$bookingId'
@@ -890,7 +891,6 @@ export interface FileRouteTypes {
     | '/m/provider/profile'
     | '/admin'
     | '/bookings'
-    | '/provider'
     | '/m/customer'
     | '/m/driver'
     | '/m/provider'
@@ -951,6 +951,7 @@ export interface FileRouteTypes {
     | '/_authenticated/deliveries/$id'
     | '/_authenticated/messages/$bookingId'
     | '/_authenticated/provider/apply'
+    | '/_authenticated/provider/dashboard'
     | '/_authenticated/provider/setup'
     | '/_authenticated/provider/verify'
     | '/m/chat/$bookingId'
@@ -972,7 +973,6 @@ export interface FileRouteTypes {
     | '/m/provider/profile'
     | '/_authenticated/admin/'
     | '/_authenticated/bookings/'
-    | '/_authenticated/provider/'
     | '/m/customer/'
     | '/m/driver/'
     | '/m/provider/'
@@ -1294,13 +1294,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MCustomerIndexRouteImport
       parentRoute: typeof MCustomerRoute
     }
-    '/_authenticated/provider/': {
-      id: '/_authenticated/provider/'
-      path: '/provider'
-      fullPath: '/provider/'
-      preLoaderRoute: typeof AuthenticatedProviderIndexRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
     '/_authenticated/bookings/': {
       id: '/_authenticated/bookings/'
       path: '/bookings'
@@ -1446,6 +1439,13 @@ declare module '@tanstack/react-router' {
       path: '/provider/setup'
       fullPath: '/provider/setup'
       preLoaderRoute: typeof AuthenticatedProviderSetupRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/provider/dashboard': {
+      id: '/_authenticated/provider/dashboard'
+      path: '/provider/dashboard'
+      fullPath: '/provider/dashboard'
+      preLoaderRoute: typeof AuthenticatedProviderDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/provider/apply': {
@@ -1598,11 +1598,11 @@ interface AuthenticatedRouteChildren {
   AuthenticatedDeliveriesIdRoute: typeof AuthenticatedDeliveriesIdRoute
   AuthenticatedMessagesBookingIdRoute: typeof AuthenticatedMessagesBookingIdRoute
   AuthenticatedProviderApplyRoute: typeof AuthenticatedProviderApplyRoute
+  AuthenticatedProviderDashboardRoute: typeof AuthenticatedProviderDashboardRoute
   AuthenticatedProviderSetupRoute: typeof AuthenticatedProviderSetupRoute
   AuthenticatedProviderVerifyRoute: typeof AuthenticatedProviderVerifyRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedBookingsIndexRoute: typeof AuthenticatedBookingsIndexRoute
-  AuthenticatedProviderIndexRoute: typeof AuthenticatedProviderIndexRoute
   AuthenticatedAdminReconciliationIndexRoute: typeof AuthenticatedAdminReconciliationIndexRoute
   AuthenticatedAdminReconciliationBookingBookingIdRoute: typeof AuthenticatedAdminReconciliationBookingBookingIdRoute
   AuthenticatedAdminReconciliationProviderProviderIdRoute: typeof AuthenticatedAdminReconciliationProviderProviderIdRoute
@@ -1622,11 +1622,11 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDeliveriesIdRoute: AuthenticatedDeliveriesIdRoute,
   AuthenticatedMessagesBookingIdRoute: AuthenticatedMessagesBookingIdRoute,
   AuthenticatedProviderApplyRoute: AuthenticatedProviderApplyRoute,
+  AuthenticatedProviderDashboardRoute: AuthenticatedProviderDashboardRoute,
   AuthenticatedProviderSetupRoute: AuthenticatedProviderSetupRoute,
   AuthenticatedProviderVerifyRoute: AuthenticatedProviderVerifyRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedBookingsIndexRoute: AuthenticatedBookingsIndexRoute,
-  AuthenticatedProviderIndexRoute: AuthenticatedProviderIndexRoute,
   AuthenticatedAdminReconciliationIndexRoute:
     AuthenticatedAdminReconciliationIndexRoute,
   AuthenticatedAdminReconciliationBookingBookingIdRoute:
