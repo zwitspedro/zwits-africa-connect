@@ -45,7 +45,7 @@ function Dashboard() {
         <div className="mt-8 flex flex-wrap gap-3">
           <Link to="/bookings" className="rounded-full border border-border px-4 py-2 text-sm hover:bg-muted">My bookings</Link>
           {isProvider ? (
-            <Link to="/provider" className="rounded-full bg-gold px-4 py-2 text-sm font-medium text-background hover:opacity-90">Provider dashboard</Link>
+            <Link to="/provider/dashboard" className="rounded-full bg-gold px-4 py-2 text-sm font-medium text-background hover:opacity-90">Provider dashboard</Link>
           ) : (
             <Link to="/provider/setup" className="rounded-full border border-gold/40 px-4 py-2 text-sm text-gold hover:bg-gold/10">Become a provider</Link>
           )}

@@ -163,7 +163,7 @@ export async function createOffers(db: Admin, booking: BookingRow, wave: number,
       ]
         .filter(Boolean)
         .join(" · "),
-      link: "/provider",
+      link: "/provider/dashboard",
       kind: mode === "quotes" ? "job_quote_request" : "job_offer",
     })),
   );

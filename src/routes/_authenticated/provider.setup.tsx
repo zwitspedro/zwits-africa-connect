@@ -211,7 +211,7 @@ function ProviderSetup() {
     },
     onSuccess: () => {
       toast.success("Submitted for review — an admin will verify your documents shortly.");
-      navigate({ to: "/provider" });
+      navigate({ to: "/provider/dashboard" });
     },
     onError: (e: any) => toast.error(e.message ?? "Could not submit"),
   });

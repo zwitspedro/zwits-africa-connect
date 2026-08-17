@@ -101,8 +101,8 @@ function ProviderProfile() {
 
             <Section title="Business">
               <Card className="divide-y divide-border/60 p-0">
-                <Row to="/provider" icon={FileText} label="Documents & verification" />
-                <Row to="/provider" icon={Wallet} label="Payouts & wallet" />
+                <Row to="/provider/dashboard" icon={FileText} label="Documents & verification" />
+                <Row to="/provider/dashboard" icon={Wallet} label="Payouts & wallet" />
                 <Row to="/m/settings" icon={Settings} label="App settings" />
               </Card>
             </Section>
