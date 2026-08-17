@@ -14,6 +14,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as ResendConfirmationRouteImport } from './routes/resend-confirmation'
 import { Route as ProviderSignupRouteImport } from './routes/provider-signup'
 import { Route as ProviderLoginRouteImport } from './routes/provider-login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -32,6 +33,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
+import { Route as ProviderIndexRouteImport } from './routes/provider.index'
 import { Route as MIndexRouteImport } from './routes/m.index'
 import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
 import { Route as MSettingsRouteImport } from './routes/m.settings'
@@ -113,6 +115,11 @@ const ServicesRoute = ServicesRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResendConfirmationRoute = ResendConfirmationRouteImport.update({
+  id: '/resend-confirmation',
+  path: '/resend-confirmation',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProviderSignupRoute = ProviderSignupRouteImport.update({
@@ -203,6 +210,11 @@ const ServicesIndexRoute = ServicesIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => ServicesRoute,
+} as any)
+const ProviderIndexRoute = ProviderIndexRouteImport.update({
+  id: '/provider/',
+  path: '/provider/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const MIndexRoute = MIndexRouteImport.update({
   id: '/',
@@ -525,6 +537,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/provider-login': typeof ProviderLoginRoute
   '/provider-signup': typeof ProviderSignupRoute
+  '/resend-confirmation': typeof ResendConfirmationRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRouteWithChildren
   '/signup': typeof SignupRoute
@@ -543,6 +556,7 @@ export interface FileRoutesByFullPath {
   '/m/settings': typeof MSettingsRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/m/': typeof MIndexRoute
+  '/provider/': typeof ProviderIndexRoute
   '/services/': typeof ServicesIndexRoute
   '/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
@@ -605,6 +619,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/provider-login': typeof ProviderLoginRoute
   '/provider-signup': typeof ProviderSignupRoute
+  '/resend-confirmation': typeof ResendConfirmationRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -619,6 +634,7 @@ export interface FileRoutesByTo {
   '/m/settings': typeof MSettingsRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/m': typeof MIndexRoute
+  '/provider': typeof ProviderIndexRoute
   '/services': typeof ServicesIndexRoute
   '/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
@@ -684,6 +700,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/provider-login': typeof ProviderLoginRoute
   '/provider-signup': typeof ProviderSignupRoute
+  '/resend-confirmation': typeof ResendConfirmationRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRouteWithChildren
   '/signup': typeof SignupRoute
@@ -702,6 +719,7 @@ export interface FileRoutesById {
   '/m/settings': typeof MSettingsRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/m/': typeof MIndexRoute
+  '/provider/': typeof ProviderIndexRoute
   '/services/': typeof ServicesIndexRoute
   '/_authenticated/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/_authenticated/admin/providers': typeof AuthenticatedAdminProvidersRoute
@@ -767,6 +785,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/provider-login'
     | '/provider-signup'
+    | '/resend-confirmation'
     | '/reset-password'
     | '/services'
     | '/signup'
@@ -785,6 +804,7 @@ export interface FileRouteTypes {
     | '/m/settings'
     | '/services/$slug'
     | '/m/'
+    | '/provider/'
     | '/services/'
     | '/admin/commissions'
     | '/admin/providers'
@@ -847,6 +867,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/provider-login'
     | '/provider-signup'
+    | '/resend-confirmation'
     | '/reset-password'
     | '/signup'
     | '/sitemap.xml'
@@ -861,6 +882,7 @@ export interface FileRouteTypes {
     | '/m/settings'
     | '/services/$slug'
     | '/m'
+    | '/provider'
     | '/services'
     | '/admin/commissions'
     | '/admin/providers'
@@ -925,6 +947,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/provider-login'
     | '/provider-signup'
+    | '/resend-confirmation'
     | '/reset-password'
     | '/services'
     | '/signup'
@@ -943,6 +966,7 @@ export interface FileRouteTypes {
     | '/m/settings'
     | '/services/$slug'
     | '/m/'
+    | '/provider/'
     | '/services/'
     | '/_authenticated/admin/commissions'
     | '/_authenticated/admin/providers'
@@ -1008,11 +1032,13 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   ProviderLoginRoute: typeof ProviderLoginRoute
   ProviderSignupRoute: typeof ProviderSignupRoute
+  ResendConfirmationRoute: typeof ResendConfirmationRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ServicesRoute: typeof ServicesRouteWithChildren
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
+  ProviderIndexRoute: typeof ProviderIndexRoute
   ApiPublicHooksDispatchSweepRoute: typeof ApiPublicHooksDispatchSweepRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -1054,6 +1080,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/resend-confirmation': {
+      id: '/resend-confirmation'
+      path: '/resend-confirmation'
+      fullPath: '/resend-confirmation'
+      preLoaderRoute: typeof ResendConfirmationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/provider-signup': {
@@ -1181,6 +1214,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/services/'
       preLoaderRoute: typeof ServicesIndexRouteImport
       parentRoute: typeof ServicesRoute
+    }
+    '/provider/': {
+      id: '/provider/'
+      path: '/provider'
+      fullPath: '/provider/'
+      preLoaderRoute: typeof ProviderIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/m/': {
       id: '/m/'
@@ -1789,11 +1829,13 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   ProviderLoginRoute: ProviderLoginRoute,
   ProviderSignupRoute: ProviderSignupRoute,
+  ResendConfirmationRoute: ResendConfirmationRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ServicesRoute: ServicesRouteWithChildren,
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
+  ProviderIndexRoute: ProviderIndexRoute,
   ApiPublicHooksDispatchSweepRoute: ApiPublicHooksDispatchSweepRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
