@@ -106,9 +106,9 @@ BEGIN
   IF (res->>'won')::boolean THEN RAISE EXCEPTION 'FAIL T5 offline provider accepted'; END IF;
 
   PERFORM set_config('zwits.trusted', 'on', true);
-  UPDATE public.providers SET available = true, verification_status = 'revoked' WHERE id = pb;
+  UPDATE public.providers SET available = true, verification_status = 'pending' WHERE id = pb;
   res := public.accept_job_offer(ob, ub);
-  IF (res->>'won')::boolean THEN RAISE EXCEPTION 'FAIL T5 unverified provider accepted'; END IF;
+  IF (res->>'won')::boolean THEN RAISE EXCEPTION 'FAIL T5 unapproved provider accepted'; END IF;
 
   PERFORM set_config('zwits.trusted', 'on', true);
   UPDATE public.providers SET verification_status = 'approved' WHERE id = pb;
