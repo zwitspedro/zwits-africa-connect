@@ -78,6 +78,7 @@ import { Route as AuthenticatedDeliveriesIdRouteImport } from './routes/_authent
 import { Route as AuthenticatedBookingsIdRouteImport } from './routes/_authenticated/bookings.$id'
 import { Route as AuthenticatedBookCategoryRouteImport } from './routes/_authenticated/book.$category'
 import { Route as AuthenticatedAdminProvidersRouteImport } from './routes/_authenticated/admin.providers'
+import { Route as AuthenticatedAdminEmailRouteImport } from './routes/_authenticated/admin.email'
 import { Route as AuthenticatedAdminCommissionsRouteImport } from './routes/_authenticated/admin.commissions'
 import { Route as AuthenticatedAdminReconciliationIndexRouteImport } from './routes/_authenticated/admin.reconciliation.index'
 import { Route as MProviderJobsIdRouteImport } from './routes/m.provider.jobs.$id'
@@ -448,6 +449,11 @@ const AuthenticatedAdminProvidersRoute =
     path: '/admin/providers',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedAdminEmailRoute = AuthenticatedAdminEmailRouteImport.update({
+  id: '/admin/email',
+  path: '/admin/email',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedAdminCommissionsRoute =
   AuthenticatedAdminCommissionsRouteImport.update({
     id: '/admin/commissions',
@@ -559,6 +565,7 @@ export interface FileRoutesByFullPath {
   '/provider/': typeof ProviderIndexRoute
   '/services/': typeof ServicesIndexRoute
   '/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
+  '/admin/email': typeof AuthenticatedAdminEmailRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/book/$category': typeof AuthenticatedBookCategoryRoute
   '/bookings/$id': typeof AuthenticatedBookingsIdRoute
@@ -637,6 +644,7 @@ export interface FileRoutesByTo {
   '/provider': typeof ProviderIndexRoute
   '/services': typeof ServicesIndexRoute
   '/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
+  '/admin/email': typeof AuthenticatedAdminEmailRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/book/$category': typeof AuthenticatedBookCategoryRoute
   '/bookings/$id': typeof AuthenticatedBookingsIdRoute
@@ -722,6 +730,7 @@ export interface FileRoutesById {
   '/provider/': typeof ProviderIndexRoute
   '/services/': typeof ServicesIndexRoute
   '/_authenticated/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
+  '/_authenticated/admin/email': typeof AuthenticatedAdminEmailRoute
   '/_authenticated/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/_authenticated/book/$category': typeof AuthenticatedBookCategoryRoute
   '/_authenticated/bookings/$id': typeof AuthenticatedBookingsIdRoute
@@ -807,6 +816,7 @@ export interface FileRouteTypes {
     | '/provider/'
     | '/services/'
     | '/admin/commissions'
+    | '/admin/email'
     | '/admin/providers'
     | '/book/$category'
     | '/bookings/$id'
@@ -885,6 +895,7 @@ export interface FileRouteTypes {
     | '/provider'
     | '/services'
     | '/admin/commissions'
+    | '/admin/email'
     | '/admin/providers'
     | '/book/$category'
     | '/bookings/$id'
@@ -969,6 +980,7 @@ export interface FileRouteTypes {
     | '/provider/'
     | '/services/'
     | '/_authenticated/admin/commissions'
+    | '/_authenticated/admin/email'
     | '/_authenticated/admin/providers'
     | '/_authenticated/book/$category'
     | '/_authenticated/bookings/$id'
@@ -1530,6 +1542,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminProvidersRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin/email': {
+      id: '/_authenticated/admin/email'
+      path: '/admin/email'
+      fullPath: '/admin/email'
+      preLoaderRoute: typeof AuthenticatedAdminEmailRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/admin/commissions': {
       id: '/_authenticated/admin/commissions'
       path: '/admin/commissions'
@@ -1632,6 +1651,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedSendDeliveryRoute: typeof AuthenticatedSendDeliveryRoute
   AuthenticatedWorkspaceRoute: typeof AuthenticatedWorkspaceRoute
   AuthenticatedAdminCommissionsRoute: typeof AuthenticatedAdminCommissionsRoute
+  AuthenticatedAdminEmailRoute: typeof AuthenticatedAdminEmailRoute
   AuthenticatedAdminProvidersRoute: typeof AuthenticatedAdminProvidersRoute
   AuthenticatedBookCategoryRoute: typeof AuthenticatedBookCategoryRoute
   AuthenticatedBookingsIdRoute: typeof AuthenticatedBookingsIdRoute
@@ -1656,6 +1676,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedSendDeliveryRoute: AuthenticatedSendDeliveryRoute,
   AuthenticatedWorkspaceRoute: AuthenticatedWorkspaceRoute,
   AuthenticatedAdminCommissionsRoute: AuthenticatedAdminCommissionsRoute,
+  AuthenticatedAdminEmailRoute: AuthenticatedAdminEmailRoute,
   AuthenticatedAdminProvidersRoute: AuthenticatedAdminProvidersRoute,
   AuthenticatedBookCategoryRoute: AuthenticatedBookCategoryRoute,
   AuthenticatedBookingsIdRoute: AuthenticatedBookingsIdRoute,
