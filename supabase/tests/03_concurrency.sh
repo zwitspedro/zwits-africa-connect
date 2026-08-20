@@ -19,7 +19,8 @@ SQL
 trap cleanup EXIT
 cleanup
 
-read -r BOOKING OFFER_A OFFER_B USER_A USER_B < <("${PSQL[@]}" -F' ' -c "select set_config('zwits.trusted','on',false)" -q <<'SQL'
+FIXTURE=$("${PSQL[@]}" -F' ' <<'SQL' | tail -1
+SELECT set_config('zwits.trusted','on',false);
 WITH users AS (
   SELECT p.user_id, row_number() OVER (ORDER BY p.created_at) rn
   FROM public.profiles p
@@ -51,6 +52,7 @@ WITH users AS (
 SELECT bk.id, oa.id, ob.id, oa.provider_user_id, ob.provider_user_id FROM bk, oa, ob;
 SQL
 )
+read -r BOOKING OFFER_A OFFER_B USER_A USER_B <<<"$FIXTURE"
 START=$("${PSQL[@]}" -c "select (now() + interval '3 seconds')::text")
 
 race() { # $1 offer, $2 user, $3 out file
