@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { AlertTriangle, ArrowLeft, CheckCircle2, Clock, Mail } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
-import { supabase } from "@/integrations/supabase/client";
+import { getEmailDiagnostics } from "@/lib/email-admin.functions";
 import { RoleGate } from "@/components/portal/role-gate";
 
 export const Route = createFileRoute("/_authenticated/admin/email")({
@@ -32,34 +33,17 @@ const STATUS_STYLE: Record<string, string> = {
 };
 
 function EmailDiagnostics() {
-  const { data: log, isLoading, error } = useQuery({
-    queryKey: ["admin-email-log"],
+  const fetchDiagnostics = useServerFn(getEmailDiagnostics);
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["admin-email-diagnostics"],
     refetchInterval: 30_000,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("email_send_log")
-        .select("id,created_at,recipient_email,template_name,status,error_message,message_id")
-        .order("created_at", { ascending: false })
-        .limit(200);
-      if (error) throw error;
-      return data ?? [];
-    },
+    queryFn: () => fetchDiagnostics(),
   });
 
-  const { data: suppressed } = useQuery({
-    queryKey: ["admin-email-suppressed"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("suppressed_emails")
-        .select("email,reason,created_at")
-        .order("created_at", { ascending: false })
-        .limit(50);
-      if (error) return [];
-      return data ?? [];
-    },
-  });
+  const suppressed = data?.suppressed ?? [];
 
-  const rows = log ?? [];
+
+  const rows = data?.log ?? [];
   const sent = rows.filter((r) => r.status === "sent").length;
   const failed = rows.filter((r) => r.status === "failed" || r.status === "dlq").length;
   const queued = rows.length - sent - failed;
