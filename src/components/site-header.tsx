@@ -148,8 +148,17 @@ export function SiteHeader() {
             </>
           ) : (
             <>
-              <Link to="/login" className="rounded-full px-4 py-2 text-sm text-muted-foreground hover:text-foreground">
-                Sign in
+              <Link to="/provider" className="rounded-full px-3 py-2 text-sm text-muted-foreground hover:text-foreground">
+                For providers
+              </Link>
+              <Link
+                to="/provider-login"
+                className="rounded-full border border-border px-4 py-2 text-sm font-medium hover:bg-muted"
+              >
+                Provider login
+              </Link>
+              <Link to="/login" className="rounded-full px-3 py-2 text-sm text-muted-foreground hover:text-foreground">
+                Customer login
               </Link>
               <Link
                 to="/signup"
