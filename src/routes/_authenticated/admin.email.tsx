@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { AlertTriangle, ArrowLeft, CheckCircle2, Clock, Mail } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
-import { supabase } from "@/integrations/supabase/client";
+import { getEmailDiagnostics } from "@/lib/email-admin.functions";
 import { RoleGate } from "@/components/portal/role-gate";
 
 export const Route = createFileRoute("/_authenticated/admin/email")({
