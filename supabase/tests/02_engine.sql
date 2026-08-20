@@ -25,8 +25,6 @@ BEGIN
   PERFORM set_config('zwits.trusted', 'on', true);
 
   -- Fixtures: three existing accounts, everything rolled back at the end ---
-  SELECT array_agg(user_id) FILTER (WHERE true) INTO STRICT cust
-  FROM (SELECT user_id FROM public.profiles ORDER BY created_at LIMIT 0) z;
   SELECT p.user_id INTO cust FROM public.profiles p
     WHERE NOT EXISTS (SELECT 1 FROM public.driver_profiles d WHERE d.user_id = p.user_id)
     ORDER BY p.created_at LIMIT 1;
