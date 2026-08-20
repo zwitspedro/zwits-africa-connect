@@ -194,7 +194,8 @@ export const updateDeliveryStatus = createServerFn({ method: "POST" })
     if (data.status === "picked_up") patch.picked_up_at = new Date().toISOString();
     if (data.status === "delivered") {
       patch.delivered_at = new Date().toISOString();
-      patch.payment_status = "paid";
+      // Payment is NEVER marked paid by a status update — it is verified and
+      // settled through confirmDeliveryPayment / the gateway.
       if (data.proofPhotoUrl) patch.proof_photo_url = data.proofPhotoUrl;
     }
 
@@ -212,6 +213,28 @@ export const updateDeliveryStatus = createServerFn({ method: "POST" })
     // A repeated call for a status the delivery is already in must not
     // re-notify or re-count the completion.
     if (delivery.status === data.status) return { ok: true, unchanged: true };
+
+    // Completed + already-paid deliveries settle straight away; the ledger
+    // references make this safe to reach more than once.
+    if (data.status === "delivered") {
+      const { data: paid } = await db
+        .from("payments")
+        .select("id")
+        .eq("delivery_id", data.deliveryId)
+        .eq("status", "paid")
+        .maybeSingle();
+      if (paid) {
+        try {
+          const { settleDelivery } = await import("./payments.server");
+          await db.from("deliveries").update({ payment_status: "paid" }).eq("id", data.deliveryId);
+          await settleDelivery(db, data.deliveryId);
+        } catch {
+          /* settlement is retried by confirmDeliveryPayment; never lose the completion */
+        }
+      }
+    }
+
+
 
     if (data.status === "delivered" && delivery.driver_id) {
       const { data: prof } = await db
