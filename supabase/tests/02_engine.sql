@@ -53,12 +53,6 @@ BEGIN
   VALUES (ub, 'B Plumbing', 'plumbing', 'Harare', 22, 'approved', true, 'b/id.jpg', 'b/selfie.jpg', 'b/biz.jpg')
   RETURNING id INTO pb;
 
-  -- Make both providers fully "ready" so eligibility is what is under test.
-  UPDATE public.profiles SET phone = COALESCE(phone, '+263771000000') WHERE user_id IN (ua, ub);
-  INSERT INTO public.provider_onboarding (user_id, payout_method, max_travel_km)
-  VALUES (ua, 'mobile_money', 20), (ub, 'mobile_money', 20)
-  ON CONFLICT (user_id) DO UPDATE SET payout_method = 'mobile_money', max_travel_km = 20;
-
 
   PERFORM set_config('zwits.trusted', 'on', true);
   INSERT INTO public.bookings (customer_id, category, address, status, price, payment_method, payment_status)
