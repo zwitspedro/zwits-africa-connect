@@ -43,7 +43,7 @@ function EmailDiagnostics() {
   const suppressed = data?.suppressed ?? [];
 
 
-  const rows = log ?? [];
+  const rows = data?.log ?? [];
   const sent = rows.filter((r) => r.status === "sent").length;
   const failed = rows.filter((r) => r.status === "failed" || r.status === "dlq").length;
   const queued = rows.length - sent - failed;
