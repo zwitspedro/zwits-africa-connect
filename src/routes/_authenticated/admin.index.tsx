@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { getAdminMetrics } from "@/lib/admin-metrics.functions";
 import { ShieldCheck, Users, CalendarCheck, Wallet, Star, FileSearch, AlertTriangle, ArrowRight, Activity, Percent } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { AuditExportButtons } from "@/components/audit-export-buttons";
@@ -17,6 +19,18 @@ function AdminDashboard() {
   const { user } = useAuth();
   const { data: roles, isLoading: rolesLoading } = useRoles();
   const isAdmin = (roles ?? []).includes("admin");
+
+  const fetchMetrics = useServerFn(getAdminMetrics);
+  const {
+    data: metrics,
+    isLoading: metricsLoading,
+    error: metricsError,
+  } = useQuery({
+    queryKey: ["admin-metrics"],
+    enabled: !!user && isAdmin,
+    refetchInterval: 60_000,
+    queryFn: () => fetchMetrics({ data: undefined }),
+  });
 
   const { data: providers } = useQuery({
     queryKey: ["admin-dash-providers"],
@@ -138,15 +152,25 @@ function AdminDashboard() {
           </div>
         </div>
 
+        {metricsError && (
+          <p className="mt-4 rounded-xl border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+            Could not load live metrics: {(metricsError as Error).message}
+          </p>
+        )}
+
         <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          <KpiCard icon={Users} label="Approved providers" value={approvedProviders} sub={`${pendingProviders} pending · ${revokedProviders} revoked`} tone="emerald" />
-          <KpiCard icon={CalendarCheck} label="Active bookings" value={activeBookings} sub={`${completedBookings.length} completed`} tone="primary" />
-          <KpiCard icon={Wallet} label="Gross revenue" value={`$${grossRevenue.toFixed(0)}`} sub="From completed bookings" tone="primary" />
+          <KpiCard icon={Users} label="Approved providers" value={metricsLoading ? "…" : approvedProviders} sub={`${metrics?.pendingVerification ?? pendingProviders} pending · ${revokedProviders} revoked`} tone="emerald" />
+          <KpiCard icon={CalendarCheck} label="Active bookings" value={metricsLoading ? "…" : (metrics?.activeJobs ?? activeBookings)} sub={`${metrics?.completedJobs ?? completedBookings.length} completed`} tone="primary" />
+          <KpiCard icon={Wallet} label="Gross revenue" value={metricsLoading ? "…" : `$${(metrics?.revenue ?? 0).toFixed(0)}`} sub={`Commission $${(metrics?.commission ?? 0).toFixed(0)}`} tone="primary" />
           <KpiCard icon={Star} label="Avg rating" value={avgRating} sub={`${ratings?.length ?? 0} reviews`} tone="amber" />
+          <KpiCard icon={Activity} label="Providers online" value={metricsLoading ? "…" : (metrics?.onlineProviders ?? 0)} sub={`${metrics?.providers ?? 0} total providers`} tone="primary" />
+          <KpiCard icon={AlertTriangle} label="Open disputes" value={metricsLoading ? "…" : (metrics?.openDisputes ?? 0)} sub="Awaiting resolution" tone={(metrics?.openDisputes ?? 0) > 0 ? "destructive" : "muted"} />
+          <KpiCard icon={Wallet} label="Pending withdrawals" value={metricsLoading ? "…" : (metrics?.pendingWithdrawals ?? 0)} sub="Requested or processing" tone={(metrics?.pendingWithdrawals ?? 0) > 0 ? "amber" : "muted"} />
+          <KpiCard icon={AlertTriangle} label="Failed payments" value={metricsLoading ? "…" : (metrics?.failedPayments ?? 0)} sub="Needs follow-up" tone={(metrics?.failedPayments ?? 0) > 0 ? "destructive" : "muted"} />
           <KpiCard icon={FileSearch} label="Audit events" value={audits?.length ?? 0} sub="Latest 200" tone="primary" />
           <KpiCard icon={AlertTriangle} label="Failed uploads" value={failedAudits} sub="Rejected or errored" tone={failedAudits > 0 ? "destructive" : "muted"} />
-          <KpiCard icon={ShieldCheck} label="Pending review" value={pendingProviders} sub="Awaiting verification" tone={pendingProviders > 0 ? "amber" : "muted"} />
-          <KpiCard icon={Activity} label="Bookings (recent)" value={bookings?.length ?? 0} sub="Latest 500" tone="primary" />
+          <KpiCard icon={ShieldCheck} label="Pending review" value={metrics?.pendingVerification ?? pendingProviders} sub="Awaiting verification" tone={(metrics?.pendingVerification ?? pendingProviders) > 0 ? "amber" : "muted"} />
+          <KpiCard icon={Users} label="Customers" value={metricsLoading ? "…" : (metrics?.customers ?? 0)} sub="Registered accounts" tone="primary" />
         </div>
 
         <div className="mt-8 grid gap-4 lg:grid-cols-3">

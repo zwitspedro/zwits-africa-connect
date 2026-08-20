@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { setProviderOnline } from "@/lib/provider-status.functions";
 import { toast } from "sonner";
 import { BadgeCheck, Power, ShieldAlert, ShieldX, Star, ChevronRight } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
-import { supabase } from "@/integrations/supabase/client";
 import { useProviderTracking } from "@/hooks/use-provider-tracking";
 import { useProviderData, type ProviderData } from "@/components/provider/use-provider-data";
 import { Panel, EmptyState, MetricBar } from "@/components/provider/dashboard-kit";
@@ -71,16 +72,21 @@ function ProviderDashboard() {
   const trackingJob = active.find((j: any) => j.status === "in_progress") ?? null;
   const unread = notifications.filter((n: any) => !n.read_at).length;
 
+  const goOnline = useServerFn(setProviderOnline);
   const toggleAvailable = useMutation({
-    mutationFn: async (available: boolean) => {
-      const { error } = await supabase.from("providers").update({ available }).eq("id", provider!.id);
-      if (error) throw error;
+    mutationFn: (online: boolean) => goOnline({ data: { online } }),
+    onSuccess: (res) => {
+      if (res.blocked) {
+        toast.error("You can't go online yet", {
+          description: res.missing.join(" · "),
+        });
+      } else {
+        toast.success(res.online ? "You're online — offers incoming" : "You're offline");
+      }
+      void qc.invalidateQueries({ queryKey: ["my-provider"] });
+      void qc.invalidateQueries({ queryKey: ["provider-readiness"] });
     },
-    onSuccess: (_d, v) => {
-      toast.success(v ? "You're online — offers incoming" : "You're offline");
-      qc.invalidateQueries({ queryKey: ["my-provider"] });
-    },
-    onError: (e: any) => toast.error(e.message ?? "Could not update"),
+    onError: (e: any) => toast.error(e?.message ?? "Could not update"),
   });
 
   const sectionBadges: Partial<Record<SectionKey, number>> = {
@@ -175,7 +181,8 @@ function ProviderDashboard() {
 
             {section === "home" && (
               <>
-                {!data.onboarding.ready && (
+                {/* Readiness is decided by the backend; the local checklist only guides. */}
+                {!(data.readiness?.provider_ready ?? data.onboarding.ready) && (
                   <OnboardingPanel
                     steps={data.onboarding.steps}
                     completed={data.onboarding.completed}
