@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Loader2, CheckCircle2, XCircle, ShieldCheck, AlertTriangle, RotateCcw, Phone, Wallet } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, ShieldCheck, AlertTriangle, RotateCcw, Phone } from "lucide-react";
 import { PAYMENT_METHODS, type PaymentMethod } from "./payment-method-picker";
 
 type Status = "prompting" | "processing" | "succeeded" | "failed";
@@ -19,20 +19,11 @@ function normalizePhone(raw: string) {
   return digits;
 }
 
-// Deterministic mock "wallet balance" derived from the phone number so the same
-// number consistently passes or fails the preflight (lets the user fix it).
-function mockBalanceFor(raw: string): number {
-  const digits = normalizePhone(raw);
-  if (digits.length < 6) return 0;
-  const seed = Number(digits.slice(-6)) || 0;
-  return Math.round((seed % 50000) / 100); // 0 – 500 USD
-}
-
 type Preflight =
   | { state: "idle" }
   | { state: "checking" }
-  | { state: "ok"; balance: number; phone: string }
-  | { state: "blocked"; code: "format" | "prefix" | "balance"; message: string; detail: string; balance?: number };
+  | { state: "ok"; phone: string }
+  | { state: "blocked"; code: "format" | "prefix"; message: string; detail: string };
 
 export function PaymentProcessingDialog({
   method,
@@ -61,8 +52,8 @@ export function PaymentProcessingDialog({
 
   const isWallet = method === "ecocash" || method === "onemoney" || method === "innbucks";
 
-  // Run pre-flight checks for wallet methods whenever the reference changes.
-  // Format + prefix are synchronous; balance is simulated with a short delay.
+  // Pre-flight checks for wallet methods: format and network are validated
+  // locally. Balance and funds are decided by the payment provider, never here.
   useEffect(() => {
     if (!isWallet) {
       setPreflight({ state: "idle" });
@@ -99,24 +90,8 @@ export function PaymentProcessingDialog({
       });
       return;
     }
-    // Mock async balance lookup
-    setPreflight({ state: "checking" });
-    const t = setTimeout(() => {
-      const balance = mockBalanceFor(phone);
-      if (balance < amount) {
-        setPreflight({
-          state: "blocked",
-          code: "balance",
-          message: "Insufficient wallet balance",
-          detail: `Your ${meta.name} wallet has about $${balance.toFixed(2)}. You need $${amount.toFixed(2)} to complete this booking.`,
-          balance,
-        });
-      } else {
-        setPreflight({ state: "ok", balance, phone });
-      }
-    }, 500);
-    return () => clearTimeout(t);
-  }, [isWallet, method, reference, amount, meta.name]);
+    setPreflight({ state: "ok", phone });
+  }, [isWallet, method, reference, meta.name]);
 
   const canStart = useMemo(() => {
     if (!isWallet) return true; // card / other handled by existing flow
@@ -160,21 +135,9 @@ export function PaymentProcessingDialog({
           return;
         }
       }
-      // Simulate a random gateway failure ~15% of the time for realism
-      if (Math.random() < 0.15) {
-        const failures = [
-          { error: "Gateway timeout", detail: "The payment provider did not respond in time. Please retry." },
-          { error: "Insufficient balance", detail: "Your account does not have enough funds for this transaction. Top up and try again." },
-          { error: "Transaction limit exceeded", detail: "This payment exceeds your daily limit. Use a different method or contact your provider." },
-        ];
-        const f = failures[Math.floor(Math.random() * failures.length)];
-        setError(f.error);
-        setErrorDetail(f.detail);
-        setStatus("failed");
-        onFailure?.(f.error);
-        return;
-      }
-      const txn = `TXN-${Date.now().toString(36).toUpperCase()}`;
+      // The reference the customer actually paid with is what gets stored on
+      // the booking — the backend verifies it before any money is settled.
+      const txn = reference.trim() || `CASH-${Date.now().toString(36).toUpperCase()}`;
       setStatus("succeeded");
       // brief success flash before resolving
       setTimeout(() => onSuccess(txn), 700);
@@ -221,11 +184,7 @@ export function PaymentProcessingDialog({
                     </div>
                     {preflight.state === "blocked" && (
                       <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-destructive">
-                        {preflight.code === "format"
-                          ? "Format error"
-                          : preflight.code === "prefix"
-                          ? "Wrong network"
-                          : "Insufficient funds"}
+                        {preflight.code === "format" ? "Format error" : "Wrong network"}
                       </span>
                     )}
                     {preflight.state === "ok" && (
@@ -238,31 +197,15 @@ export function PaymentProcessingDialog({
                   <PreflightRow
                     icon={Phone}
                     label="Wallet number"
-                    ok={preflight.state === "ok" || (preflight.state === "blocked" && preflight.code === "balance")}
+                    ok={preflight.state === "ok"}
                     checking={false}
-                    blocked={preflight.state === "blocked" && (preflight.code === "format" || preflight.code === "prefix")}
+                    blocked={preflight.state === "blocked"}
                     detail={
-                      preflight.state === "blocked" && (preflight.code === "format" || preflight.code === "prefix")
+                      preflight.state === "blocked"
                         ? preflight.detail
                         : preflight.state === "ok"
-                        ? `Confirmed on ${meta.name} · ${preflight.phone}`
-                        : "Checking format & network…"
-                    }
-                  />
-                  <PreflightRow
-                    icon={Wallet}
-                    label="Wallet balance"
-                    ok={preflight.state === "ok"}
-                    checking={preflight.state === "checking"}
-                    blocked={preflight.state === "blocked" && preflight.code === "balance"}
-                    detail={
-                      preflight.state === "ok"
-                        ? `Approx. $${preflight.balance.toFixed(2)} available · $${amount.toFixed(2)} needed`
-                        : preflight.state === "blocked" && preflight.code === "balance"
-                        ? preflight.detail
-                        : preflight.state === "checking"
-                        ? "Querying wallet…"
-                        : "Waiting on number"
+                          ? `Confirmed on ${meta.name} · ${preflight.phone}`
+                          : "Checking format & network…"
                     }
                   />
 
@@ -276,9 +219,7 @@ export function PaymentProcessingDialog({
                           <div className="mt-1.5 text-[11px] font-medium text-destructive">
                             {preflight.code === "format"
                               ? "Fix: re-enter the number as +263 7X XXX XXXX or 07X XXX XXXX."
-                              : preflight.code === "prefix"
-                              ? `Fix: use a ${MNO_PREFIXES[method as keyof typeof MNO_PREFIXES].label} number, or switch payment method.`
-                              : `Fix: top up your ${meta.name} wallet, or switch to another method.`}
+                              : `Fix: use a ${MNO_PREFIXES[method as keyof typeof MNO_PREFIXES].label} number, or switch payment method.`}
                           </div>
                         </div>
                       </div>

@@ -1,9 +1,12 @@
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { PROVIDER_SAFE_COLUMNS, fetchProviderDocuments } from "@/lib/provider-columns";
 import { useAuth } from "@/hooks/use-auth";
 import { isOpen } from "@/lib/job-lifecycle";
+import { getMyWallet, listMyLedger } from "@/lib/wallet.functions";
+import { getProviderReadiness } from "@/lib/provider-status.functions";
 import { buildProviderOnboarding } from "./use-provider-onboarding";
 
 export type Booking = any;
@@ -172,6 +175,30 @@ export function useProviderData() {
     },
   });
 
+  // ---- Authoritative money & readiness come from the server, never the client.
+  const fetchWallet = useServerFn(getMyWallet);
+  const fetchLedger = useServerFn(listMyLedger);
+  const fetchReadiness = useServerFn(getProviderReadiness);
+
+  const walletQuery = useQuery({
+    queryKey: ["provider-wallet", user?.id],
+    enabled: !!user,
+    refetchInterval: 30_000,
+    queryFn: () => fetchWallet({ data: undefined }),
+  });
+
+  const ledgerQuery = useQuery({
+    queryKey: ["provider-ledger", user?.id],
+    enabled: !!user,
+    queryFn: () => fetchLedger({ data: { page: 0, pageSize: 50 } }),
+  });
+
+  const readinessQuery = useQuery({
+    queryKey: ["provider-readiness", user?.id],
+    enabled: !!user,
+    queryFn: () => fetchReadiness({ data: undefined }),
+  });
+
   const jobs: Booking[] = jobsQuery.data ?? [];
   const rates = ratesQuery.data ?? [];
 
@@ -273,6 +300,17 @@ export function useProviderData() {
     vehicles: vehiclesQuery.data ?? [],
   });
 
+  const wallet = walletQuery.data ?? null;
+
+  // Balances are ledger-backed: available/pending/lifetime always mirror the
+  // wallet table, while the trend/period figures stay derived for analytics.
+  const earnings = {
+    ...derived.earnings,
+    released: Number(wallet?.available_balance ?? 0),
+    pending: Number(wallet?.pending_balance ?? 0),
+    lifetime: Number(wallet?.lifetime_earnings ?? 0),
+  };
+
   return {
     user,
     provider,
@@ -287,6 +325,14 @@ export function useProviderData() {
     onboarding,
     isLoading: providerQuery.isLoading,
     ...derived,
+    wallet,
+    walletLoading: walletQuery.isLoading,
+    walletError: walletQuery.error as Error | null,
+    ledger: ledgerQuery.data?.rows ?? [],
+    ledgerLoading: ledgerQuery.isLoading,
+    readiness: readinessQuery.data ?? null,
+    readinessLoading: readinessQuery.isLoading,
+    earnings,
   };
 }
 

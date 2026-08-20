@@ -194,3 +194,39 @@ export const settleWithdrawal = createServerFn({ method: "POST" })
 
     return { ok: true as const };
   });
+
+/** Admin queue of withdrawal requests, newest first. */
+export const listWithdrawals = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z
+      .object({
+        status: z
+          .enum(["all", "requested", "processing", "paid", "failed", "cancelled"])
+          .default("requested"),
+      })
+      .parse(input ?? {}),
+  )
+  .handler(async ({ data, context }) => {
+    const { data: isAdmin } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    if (!isAdmin) throw new Error("Forbidden");
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const db = supabaseAdmin as any;
+
+    let q = db
+      .from("provider_withdrawals")
+      .select(
+        "id, provider_user_id, amount, method, destination, status, failure_reason, created_at, processed_at",
+      )
+      .order("created_at", { ascending: false })
+      .limit(100);
+    if (data.status !== "all") q = q.eq("status", data.status);
+
+    const { data: rows, error } = await q;
+    if (error) throw new Error(error.message);
+    return (rows ?? []) as any[];
+  });
