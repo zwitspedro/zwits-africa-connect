@@ -1969,6 +1969,11 @@ export type Database = {
         | "in_progress"
         | "completed"
         | "cancelled"
+        | "matching"
+        | "offered"
+        | "provider_arriving"
+        | "disputed"
+        | "refunded"
       provider_verification_status:
         | "unverified"
         | "pending"
@@ -2110,6 +2115,11 @@ export const Constants = {
         "in_progress",
         "completed",
         "cancelled",
+        "matching",
+        "offered",
+        "provider_arriving",
+        "disputed",
+        "refunded",
       ],
       provider_verification_status: [
         "unverified",
