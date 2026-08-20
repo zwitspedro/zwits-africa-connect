@@ -19,10 +19,12 @@ SQL
 trap cleanup EXIT
 cleanup
 
-read -r BOOKING OFFER_A OFFER_B USER_A USER_B < <("${PSQL[@]}" -F' ' <<'SQL'
-SELECT set_config('zwits.trusted','on',false);
+read -r BOOKING OFFER_A OFFER_B USER_A USER_B < <("${PSQL[@]}" -F' ' -c "select set_config('zwits.trusted','on',false)" -q <<'SQL'
 WITH users AS (
-  SELECT p.user_id, row_number() OVER (ORDER BY p.created_at) rn FROM public.profiles p LIMIT 3
+  SELECT p.user_id, row_number() OVER (ORDER BY p.created_at) rn
+  FROM public.profiles p
+  WHERE NOT EXISTS (SELECT 1 FROM public.providers pr WHERE pr.user_id = p.user_id)
+  LIMIT 3
 ), ins_a AS (
   INSERT INTO public.providers (user_id, business_name, category, city, hourly_rate, verification_status,
                                 available, id_document_url, selfie_url, business_doc_url)
@@ -49,9 +51,6 @@ WITH users AS (
 SELECT bk.id, oa.id, ob.id, oa.provider_user_id, ob.provider_user_id FROM bk, oa, ob;
 SQL
 )
-# The first output line is set_config's return value.
-read -r BOOKING OFFER_A OFFER_B USER_A USER_B <<<"$(printf '%s %s %s %s %s' "$BOOKING" "$OFFER_A" "$OFFER_B" "$USER_A" "$USER_B")"
-
 START=$("${PSQL[@]}" -c "select (now() + interval '3 seconds')::text")
 
 race() { # $1 offer, $2 user, $3 out file
