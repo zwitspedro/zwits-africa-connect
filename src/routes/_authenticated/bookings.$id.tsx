@@ -124,6 +124,8 @@ function BookingDetailPage() {
               <ConfirmCompletion bookingId={booking.id} />
             )}
 
+            <DisputePanel bookingId={booking.id} status={booking.status as string} />
+
 
 
             {(booking.status === "accepted" || booking.status === "in_progress") && (
