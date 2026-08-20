@@ -122,7 +122,7 @@ function ProviderSignup() {
       email: account.email.trim(),
       password: account.password,
       options: {
-        emailRedirectTo: window.location.origin,
+        emailRedirectTo: `${window.location.origin}/provider/dashboard`,
         data: { display_name: account.fullName.trim(), phone: account.phone.trim() },
       },
     });
@@ -134,8 +134,8 @@ function ProviderSignup() {
 
     if (!data.session || !data.user) {
       setLoading(false);
-      toast.success("Account created — confirm your email, then finish your provider profile.");
-      navigate({ to: "/provider-login" });
+      toast.success("Account created — check your inbox and spam folder for the confirmation email.");
+      navigate({ to: "/resend-confirmation" });
       return;
     }
 
