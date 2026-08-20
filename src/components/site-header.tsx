@@ -248,13 +248,30 @@ export function SiteHeader() {
                 </button>
               </div>
             ) : (
-              <Link
-                to="/signup"
-                onClick={() => setOpen(false)}
-                className="mt-3 rounded-full bg-primary px-4 py-3.5 text-center text-sm font-semibold text-primary-foreground"
-              >
-                Book Now
-              </Link>
+              <div className="mt-3 grid gap-2">
+                <Link
+                  to="/signup"
+                  onClick={() => setOpen(false)}
+                  className="rounded-full bg-primary px-4 py-3.5 text-center text-sm font-semibold text-primary-foreground"
+                >
+                  Book a service
+                </Link>
+                <Link
+                  to="/provider"
+                  onClick={() => setOpen(false)}
+                  className="rounded-full border border-border px-4 py-3.5 text-center text-sm font-semibold"
+                >
+                  Join as a provider
+                </Link>
+                <div className="flex justify-center gap-4 pt-1 text-sm">
+                  <Link to="/login" onClick={() => setOpen(false)} className="text-muted-foreground">
+                    Customer login
+                  </Link>
+                  <Link to="/provider-login" onClick={() => setOpen(false)} className="font-medium text-primary">
+                    Provider login
+                  </Link>
+                </div>
+              </div>
             )}
           </nav>
         </div>

@@ -40,9 +40,16 @@ function EmailDiagnostics() {
         .from("email_send_log")
         .select("id,created_at,recipient_email,template_name,status,error_message,message_id")
         .order("created_at", { ascending: false })
-        .limit(200);
+        .limit(400);
       if (error) throw error;
-      return data ?? [];
+      // One email produces several rows sharing a message_id — keep the latest.
+      const seen = new Set<string>();
+      return (data ?? []).filter((r) => {
+        const key = r.message_id ?? r.id;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
     },
   });
 
