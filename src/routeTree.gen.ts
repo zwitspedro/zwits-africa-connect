@@ -79,6 +79,7 @@ import { Route as AuthenticatedBookingsIdRouteImport } from './routes/_authentic
 import { Route as AuthenticatedBookCategoryRouteImport } from './routes/_authenticated/book.$category'
 import { Route as AuthenticatedAdminProvidersRouteImport } from './routes/_authenticated/admin.providers'
 import { Route as AuthenticatedAdminOperationsRouteImport } from './routes/_authenticated/admin.operations'
+import { Route as AuthenticatedAdminHealthRouteImport } from './routes/_authenticated/admin.health'
 import { Route as AuthenticatedAdminEmailRouteImport } from './routes/_authenticated/admin.email'
 import { Route as AuthenticatedAdminCommissionsRouteImport } from './routes/_authenticated/admin.commissions'
 import { Route as AuthenticatedAdminReconciliationIndexRouteImport } from './routes/_authenticated/admin.reconciliation.index'
@@ -456,6 +457,12 @@ const AuthenticatedAdminOperationsRoute =
     path: '/admin/operations',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedAdminHealthRoute =
+  AuthenticatedAdminHealthRouteImport.update({
+    id: '/admin/health',
+    path: '/admin/health',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedAdminEmailRoute = AuthenticatedAdminEmailRouteImport.update({
   id: '/admin/email',
   path: '/admin/email',
@@ -573,6 +580,7 @@ export interface FileRoutesByFullPath {
   '/services/': typeof ServicesIndexRoute
   '/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/admin/email': typeof AuthenticatedAdminEmailRoute
+  '/admin/health': typeof AuthenticatedAdminHealthRoute
   '/admin/operations': typeof AuthenticatedAdminOperationsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/book/$category': typeof AuthenticatedBookCategoryRoute
@@ -653,6 +661,7 @@ export interface FileRoutesByTo {
   '/services': typeof ServicesIndexRoute
   '/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/admin/email': typeof AuthenticatedAdminEmailRoute
+  '/admin/health': typeof AuthenticatedAdminHealthRoute
   '/admin/operations': typeof AuthenticatedAdminOperationsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/book/$category': typeof AuthenticatedBookCategoryRoute
@@ -740,6 +749,7 @@ export interface FileRoutesById {
   '/services/': typeof ServicesIndexRoute
   '/_authenticated/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/_authenticated/admin/email': typeof AuthenticatedAdminEmailRoute
+  '/_authenticated/admin/health': typeof AuthenticatedAdminHealthRoute
   '/_authenticated/admin/operations': typeof AuthenticatedAdminOperationsRoute
   '/_authenticated/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/_authenticated/book/$category': typeof AuthenticatedBookCategoryRoute
@@ -827,6 +837,7 @@ export interface FileRouteTypes {
     | '/services/'
     | '/admin/commissions'
     | '/admin/email'
+    | '/admin/health'
     | '/admin/operations'
     | '/admin/providers'
     | '/book/$category'
@@ -907,6 +918,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/admin/commissions'
     | '/admin/email'
+    | '/admin/health'
     | '/admin/operations'
     | '/admin/providers'
     | '/book/$category'
@@ -993,6 +1005,7 @@ export interface FileRouteTypes {
     | '/services/'
     | '/_authenticated/admin/commissions'
     | '/_authenticated/admin/email'
+    | '/_authenticated/admin/health'
     | '/_authenticated/admin/operations'
     | '/_authenticated/admin/providers'
     | '/_authenticated/book/$category'
@@ -1562,6 +1575,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminOperationsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin/health': {
+      id: '/_authenticated/admin/health'
+      path: '/admin/health'
+      fullPath: '/admin/health'
+      preLoaderRoute: typeof AuthenticatedAdminHealthRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/admin/email': {
       id: '/_authenticated/admin/email'
       path: '/admin/email'
@@ -1672,6 +1692,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedWorkspaceRoute: typeof AuthenticatedWorkspaceRoute
   AuthenticatedAdminCommissionsRoute: typeof AuthenticatedAdminCommissionsRoute
   AuthenticatedAdminEmailRoute: typeof AuthenticatedAdminEmailRoute
+  AuthenticatedAdminHealthRoute: typeof AuthenticatedAdminHealthRoute
   AuthenticatedAdminOperationsRoute: typeof AuthenticatedAdminOperationsRoute
   AuthenticatedAdminProvidersRoute: typeof AuthenticatedAdminProvidersRoute
   AuthenticatedBookCategoryRoute: typeof AuthenticatedBookCategoryRoute
@@ -1698,6 +1719,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedWorkspaceRoute: AuthenticatedWorkspaceRoute,
   AuthenticatedAdminCommissionsRoute: AuthenticatedAdminCommissionsRoute,
   AuthenticatedAdminEmailRoute: AuthenticatedAdminEmailRoute,
+  AuthenticatedAdminHealthRoute: AuthenticatedAdminHealthRoute,
   AuthenticatedAdminOperationsRoute: AuthenticatedAdminOperationsRoute,
   AuthenticatedAdminProvidersRoute: AuthenticatedAdminProvidersRoute,
   AuthenticatedBookCategoryRoute: AuthenticatedBookCategoryRoute,

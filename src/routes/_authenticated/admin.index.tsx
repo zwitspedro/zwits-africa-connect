@@ -145,6 +145,9 @@ function AdminDashboard() {
             <Link to="/admin/email" className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-xs hover:bg-muted">
               <Activity className="size-3.5" /> Email delivery
             </Link>
+            <Link to="/admin/health" className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-xs hover:bg-muted">
+              <ShieldCheck className="size-3.5" /> Backend health
+            </Link>
             <AuditExportButtons
               rows={audits as any}
               filenameBase="recent-audits"
