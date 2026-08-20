@@ -266,81 +266,39 @@ export async function advance(db: Admin, bookingId: string, rankedProviderIds: s
   return { state: b.dispatch_state, wave: nextWave };
 }
 
-/** Race-safe assignment: only the first provider to accept wins. */
+/**
+ * Race-safe assignment.
+ *
+ * All validation, locking, assignment, offer resolution, status history and
+ * the customer notification happen inside one Postgres function
+ * (`accept_job_offer`), so two providers pressing Accept at the same moment
+ * can never both win, and a retried accept is idempotent.
+ */
 export async function claimJob(db: Admin, offerId: string, userId: string) {
-  const { data: offer, error } = await db
-    .from("job_offers")
-    .select("*, bookings(id, status, provider_id, category)")
-    .eq("id", offerId)
-    .eq("provider_user_id", userId)
-    .single();
-  if (error || !offer) throw new Error("Offer not found");
-  if (offer.status !== "offered") return { won: false, reason: "This job is no longer available." };
-  if (new Date(offer.expires_at).getTime() < Date.now()) {
-    await db.from("job_offers").update({ status: "expired" }).eq("id", offerId);
-    return { won: false, reason: "The offer window closed." };
-  }
-
-  // Re-verify eligibility at the moment of assignment: an approval can be
-  // revoked between the offer and the accept.
-  const { data: prov } = await db
-    .from("providers")
-    .select("id, verification_status")
-    .eq("id", offer.provider_id)
-    .eq("user_id", userId)
-    .maybeSingle();
-  if (!prov || prov.verification_status !== "approved") {
-    await db.from("job_offers").update({ status: "lost" }).eq("id", offerId);
-    return { won: false, reason: "Your account is not approved for this job." };
-  }
-
-  const { data: claimed } = await db
-    .from("bookings")
-    .update({
-      provider_id: offer.provider_id,
-      status: "accepted",
-      dispatch_state: "assigned",
-      dispatch_updated_at: new Date().toISOString(),
-    })
-    .eq("id", offer.booking_id)
-    .is("provider_id", null)
-    .eq("status", "pending")
-    .select("id, customer_id, category")
-    .maybeSingle();
-
-  if (!claimed) {
-    await db
-      .from("job_offers")
-      .update({ status: "lost", responded_at: new Date().toISOString() })
-      .eq("id", offerId);
-    return { won: false, reason: "Another provider accepted first." };
-  }
-
-  await db
-    .from("job_offers")
-    .update({ status: "accepted", responded_at: new Date().toISOString() })
-    .eq("id", offerId);
-  await db
-    .from("job_offers")
-    .update({ status: "lost" })
-    .eq("booking_id", offer.booking_id)
-    .neq("id", offerId)
-    .in("status", ["offered", "expired"]);
-
-  await db.from("notifications").insert({
-    user_id: claimed.customer_id,
-    title: "Provider assigned",
-    body: `A verified ${claimed.category} provider accepted your job.`,
-    link: `/bookings/${claimed.id}`,
-    kind: "booking_accepted",
+  const { data, error } = await db.rpc("accept_job_offer", {
+    _offer_id: offerId,
+    _user_id: userId,
   });
-  await logEvent(db, claimed.id as string, "provider_accepted", userId, {
-    provider_id: offer.provider_id,
-    offer_id: offerId,
-  });
+  if (error) throw new Error(error.message);
+  const result = (data ?? {}) as { won: boolean; reason?: string; bookingId?: string; idempotent?: boolean };
 
-  return { won: true, bookingId: offer.booking_id };
+  if (result.won && result.bookingId && !result.idempotent) {
+    await logEvent(db, result.bookingId, "provider_accepted", userId, { offer_id: offerId });
+  }
+  return result;
 }
+
+/** Validated, audited cancellation for customers, providers and admins. */
+export async function cancelBooking(db: Admin, bookingId: string, actorId: string, reason: string) {
+  const { data, error } = await db.rpc("cancel_booking_as", {
+    _booking_id: bookingId,
+    _actor: actorId,
+    _reason: reason,
+  });
+  if (error) throw new Error(error.message);
+  return (data ?? { ok: true }) as { ok: boolean; previous?: string; role?: string; idempotent?: boolean };
+}
+
 
 export async function declineOffer(db: Admin, offerId: string, userId: string) {
   const { data: declined, error } = await db

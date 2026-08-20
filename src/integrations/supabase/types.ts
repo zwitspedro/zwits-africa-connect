@@ -50,7 +50,9 @@ export type Database = {
           changed_by: string | null
           created_at: string
           id: string
+          metadata: Json | null
           note: string | null
+          old_status: string | null
           status: string
         }
         Insert: {
@@ -58,7 +60,9 @@ export type Database = {
           changed_by?: string | null
           created_at?: string
           id?: string
+          metadata?: Json | null
           note?: string | null
+          old_status?: string | null
           status: string
         }
         Update: {
@@ -66,7 +70,9 @@ export type Database = {
           changed_by?: string | null
           created_at?: string
           id?: string
+          metadata?: Json | null
           note?: string | null
+          old_status?: string | null
           status?: string
         }
         Relationships: [
@@ -1839,12 +1845,29 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_job_offer: {
+        Args: { _offer_id: string; _user_id: string }
+        Returns: Json
+      }
+      booking_status_canonical: { Args: { _status: string }; Returns: string }
+      booking_transition_allowed: {
+        Args: { _new: string; _old: string }
+        Returns: boolean
+      }
       calc_commission: {
         Args: { _amount: number; _category: string }
         Returns: number
       }
+      cancel_booking_as: {
+        Args: { _actor: string; _booking_id: string; _reason: string }
+        Returns: Json
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
+        Returns: boolean
+      }
+      delivery_transition_allowed: {
+        Args: { _new: string; _old: string }
         Returns: boolean
       }
       email_queue_dispatch: { Args: never; Returns: undefined }
@@ -1958,6 +1981,14 @@ export type Database = {
           provider_earnings: number
         }[]
       }
+      settle_delivery: {
+        Args: { _delivery_id: string }
+        Returns: {
+          commission: number
+          gross: number
+          provider_earnings: number
+        }[]
+      }
     }
     Enums: {
       app_role: "customer" | "provider" | "admin" | "driver" | "business"
@@ -1969,6 +2000,11 @@ export type Database = {
         | "in_progress"
         | "completed"
         | "cancelled"
+        | "matching"
+        | "offered"
+        | "provider_arriving"
+        | "disputed"
+        | "refunded"
       provider_verification_status:
         | "unverified"
         | "pending"
@@ -2110,6 +2146,11 @@ export const Constants = {
         "in_progress",
         "completed",
         "cancelled",
+        "matching",
+        "offered",
+        "provider_arriving",
+        "disputed",
+        "refunded",
       ],
       provider_verification_status: [
         "unverified",

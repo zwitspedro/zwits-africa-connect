@@ -398,3 +398,19 @@ export const signJobPhotos = createServerFn({ method: "POST" })
     return (signed ?? []).map((s: any) => s.signedUrl as string).filter(Boolean);
   });
 
+
+/**
+ * Validated, audited cancellation. The database decides whether the caller is
+ * the customer, the assigned provider or an admin, whether the booking may
+ * still be cancelled, and writes the immutable history entry.
+ */
+export const cancelBookingRequest = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) =>
+    z.object({ bookingId: z.string().uuid(), reason: z.string().min(3).max(500) }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { admin, cancelBooking } = await import("./dispatch.server");
+    const db = await admin();
+    return cancelBooking(db, data.bookingId, context.userId, data.reason);
+  });
