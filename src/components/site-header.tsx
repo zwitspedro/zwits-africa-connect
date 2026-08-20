@@ -179,6 +179,31 @@ export function SiteHeader() {
         </button>
       </div>
 
+      {/* Always-visible mobile journeys — never hidden behind the hamburger. */}
+      {!user && (
+        <div className="border-t border-border/60 bg-background/80 px-4 py-2.5 backdrop-blur-xl md:hidden">
+          <div className="grid grid-cols-2 gap-2">
+            <Link
+              to="/services"
+              className="inline-flex min-h-11 items-center justify-center rounded-xl bg-primary px-3 text-[13px] font-bold text-primary-foreground"
+            >
+              Book a service
+            </Link>
+            <Link
+              to="/provider"
+              className="inline-flex min-h-11 items-center justify-center rounded-xl border border-border px-3 text-[13px] font-bold"
+            >
+              Join as a provider
+            </Link>
+          </div>
+          <div className="mt-1.5 flex justify-center gap-4 text-[12px] text-muted-foreground">
+            <Link to="/login" className="hover:text-foreground">Customer login</Link>
+            <Link to="/provider-login" className="font-medium text-primary">Provider login</Link>
+          </div>
+        </div>
+      )}
+
+
       {open && (
         <div className="border-t border-border/60 bg-background/95 backdrop-blur-xl md:hidden">
           <nav className="mx-auto flex max-w-7xl flex-col px-5 py-4 sm:px-8">
