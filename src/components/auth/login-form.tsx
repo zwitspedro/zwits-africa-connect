@@ -50,8 +50,15 @@ export function LoginForm({ preferred, registerTo, registerLabel }: {
     setLoading(false);
 
     if (error) {
+      const msg = error.message.toLowerCase();
+      if (msg.includes("not confirmed")) {
+        toast.error("Your email isn't confirmed yet — resend the confirmation link.", {
+          action: { label: "Resend", onClick: () => navigate({ to: "/resend-confirmation" }) },
+        });
+        return;
+      }
       toast.error(
-        error.message.toLowerCase().includes("invalid")
+        msg.includes("invalid")
           ? "Those details don't match an account. Check and try again."
           : error.message,
       );
