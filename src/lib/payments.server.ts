@@ -127,3 +127,65 @@ export async function settle(db: Admin, bookingId: string) {
     providerEarnings: Number(row?.provider_earnings ?? 0),
   };
 }
+
+/** Creates (or reuses) the single payment record attached to a delivery. */
+export async function openDeliveryPayment(
+  db: Admin,
+  deliveryId: string,
+  customerId: string,
+  method: string,
+  amount: number,
+  customerPhone?: string | null,
+) {
+  const gateway = gatewayFor(method);
+
+  const { data: existing } = await db
+    .from("payments")
+    .select("*")
+    .eq("delivery_id", deliveryId)
+    .maybeSingle();
+
+  if (existing && ["paid", "processing", "refunded"].includes(existing.status)) {
+    return existing;
+  }
+
+  const initiated = await gateway.initiate({
+    reference: `delivery:${deliveryId}`,
+    amount,
+    currency: "USD",
+    customerPhone,
+  });
+
+  const row = {
+    delivery_id: deliveryId,
+    customer_id: customerId,
+    amount,
+    currency: "USD",
+    payment_method: method,
+    provider: gateway.id,
+    external_reference: initiated.externalReference,
+    status: initiated.status,
+  };
+
+  const { data, error } = existing
+    ? await db.from("payments").update(row).eq("id", existing.id).select("*").single()
+    : await db.from("payments").insert(row).select("*").single();
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+/**
+ * Delivery settlement through the SAME immutable ledger as bookings.
+ * Idempotent: the ledger references (`delivery:<id>:earning` / `:commission`)
+ * make a repeated call a no-op instead of a second credit.
+ */
+export async function settleDelivery(db: Admin, deliveryId: string) {
+  const { data, error } = await db.rpc("settle_delivery", { _delivery_id: deliveryId });
+  if (error) throw new Error(error.message);
+  const row = Array.isArray(data) ? data[0] : data;
+  return {
+    gross: Number(row?.gross ?? 0),
+    commission: Number(row?.commission ?? 0),
+    providerEarnings: Number(row?.provider_earnings ?? 0),
+  };
+}
