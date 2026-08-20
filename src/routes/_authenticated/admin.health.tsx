@@ -104,7 +104,7 @@ function BackendHealthPage() {
             </Card>
 
             <Card title="Storage buckets">
-              {data.storageBuckets.map((b) => (
+              {data.storageBuckets.map((b: { id: string; public: boolean }) => (
                 <div key={b.id} className="flex items-center justify-between gap-3">
                   <span className="text-foreground">{b.id}</span>
                   <span>{b.public ? "public" : "private (signed URLs)"}</span>
