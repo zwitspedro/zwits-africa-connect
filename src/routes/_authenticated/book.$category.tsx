@@ -166,6 +166,20 @@ function BookCategory() {
       });
     },
     onSuccess: async (data) => {
+      // Open the payment record server-side so the amount, method and status
+      // live in the backend ledger rather than in this component.
+      const rail = ["cash", "ecocash", "innbucks", "zipit", "mukuru", "bank_transfer"] as const;
+      if ((rail as readonly string[]).includes(paymentMethod ?? "")) {
+        try {
+          await beginPayment({
+            data: { bookingId: data.id, method: paymentMethod as (typeof rail)[number] },
+          });
+        } catch (e: any) {
+          toast.error(e?.message ?? "Payment could not be opened", {
+            description: "Your request was sent — you can retry payment from the booking.",
+          });
+        }
+      }
       toast.success(
         data.mode === "quotes"
           ? "Request sent — providers are preparing quotes"
