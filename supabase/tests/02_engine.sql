@@ -5,9 +5,9 @@ BEGIN;
 
 DO $$
 DECLARE
-  cust uuid := gen_random_uuid();
-  ua   uuid := gen_random_uuid();
-  ub   uuid := gen_random_uuid();
+  cust uuid;
+  ua   uuid;
+  ub   uuid;
   pa   uuid;
   pb   uuid;
   bk   uuid;
@@ -24,16 +24,24 @@ DECLARE
 BEGIN
   PERFORM set_config('zwits.trusted', 'on', true);
 
-  -- Fixtures -------------------------------------------------------------
-  INSERT INTO auth.users (instance_id, id, aud, role, email, encrypted_password,
-                          email_confirmed_at, created_at, updated_at, raw_user_meta_data)
-  VALUES
-    ('00000000-0000-0000-0000-000000000000', cust, 'authenticated', 'authenticated',
-     'test-cust-' || cust || '@example.test', 'x', now(), now(), now(), '{}'::jsonb),
-    ('00000000-0000-0000-0000-000000000000', ua, 'authenticated', 'authenticated',
-     'test-pa-' || ua || '@example.test', 'x', now(), now(), now(), '{}'::jsonb),
-    ('00000000-0000-0000-0000-000000000000', ub, 'authenticated', 'authenticated',
-     'test-pb-' || ub || '@example.test', 'x', now(), now(), now(), '{}'::jsonb);
+  -- Fixtures: three existing accounts, everything rolled back at the end ---
+  SELECT array_agg(user_id) FILTER (WHERE true) INTO STRICT cust
+  FROM (SELECT user_id FROM public.profiles ORDER BY created_at LIMIT 0) z;
+  SELECT p.user_id INTO cust FROM public.profiles p
+    WHERE NOT EXISTS (SELECT 1 FROM public.driver_profiles d WHERE d.user_id = p.user_id)
+    ORDER BY p.created_at LIMIT 1;
+  SELECT p.user_id INTO ua FROM public.profiles p
+    WHERE p.user_id <> cust
+      AND NOT EXISTS (SELECT 1 FROM public.driver_profiles d WHERE d.user_id = p.user_id)
+    ORDER BY p.created_at LIMIT 1;
+  SELECT p.user_id INTO ub FROM public.profiles p
+    WHERE p.user_id NOT IN (cust, ua)
+      AND NOT EXISTS (SELECT 1 FROM public.driver_profiles d WHERE d.user_id = p.user_id)
+    ORDER BY p.created_at LIMIT 1;
+  IF cust IS NULL OR ua IS NULL OR ub IS NULL THEN
+    RAISE EXCEPTION 'FAIL fixtures: need three accounts without driver profiles';
+  END IF;
+
 
   PERFORM set_config('zwits.trusted', 'on', true);
   INSERT INTO public.providers (user_id, business_name, category, city, hourly_rate,
