@@ -33,39 +33,15 @@ const STATUS_STYLE: Record<string, string> = {
 };
 
 function EmailDiagnostics() {
-  const { data: log, isLoading, error } = useQuery({
-    queryKey: ["admin-email-log"],
+  const fetchDiagnostics = useServerFn(getEmailDiagnostics);
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["admin-email-diagnostics"],
     refetchInterval: 30_000,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("email_send_log")
-        .select("id,created_at,recipient_email,template_name,status,error_message,message_id")
-        .order("created_at", { ascending: false })
-        .limit(400);
-      if (error) throw error;
-      // One email produces several rows sharing a message_id — keep the latest.
-      const seen = new Set<string>();
-      return (data ?? []).filter((r) => {
-        const key = r.message_id ?? r.id;
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
-      });
-    },
+    queryFn: () => fetchDiagnostics(),
   });
 
-  const { data: suppressed } = useQuery({
-    queryKey: ["admin-email-suppressed"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("suppressed_emails")
-        .select("email,reason,created_at")
-        .order("created_at", { ascending: false })
-        .limit(50);
-      if (error) return [];
-      return data ?? [];
-    },
-  });
+  const suppressed = data?.suppressed ?? [];
+
 
   const rows = log ?? [];
   const sent = rows.filter((r) => r.status === "sent").length;
