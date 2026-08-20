@@ -18,6 +18,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { searchAddress } from "@/lib/geo.functions";
 import { services } from "@/data/services";
 import { createJob } from "@/lib/dispatch.functions";
+import { startBookingPayment } from "@/lib/payments.functions";
 import { fulfilmentModeFor } from "@/lib/dispatch-config";
 
 function haversineKm(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
@@ -62,6 +63,7 @@ function BookCategory() {
   const [photos, setPhotos] = useState<File[]>([]);
   const geocodeCity = useServerFn(searchAddress);
   const submitJob = useServerFn(createJob);
+  const beginPayment = useServerFn(startBookingPayment);
   const mode = providerId ? "direct" : fulfilmentModeFor(category);
 
   const { data: providers } = useQuery({
