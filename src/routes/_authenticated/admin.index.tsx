@@ -139,6 +139,9 @@ function AdminDashboard() {
             <Link to="/admin/reconciliation" className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-xs hover:bg-muted">
               <Wallet className="size-3.5" /> Reconciliation
             </Link>
+            <Link to="/admin/operations" className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-xs hover:bg-muted">
+              <Wallet className="size-3.5" /> Disputes &amp; payouts
+            </Link>
             <Link to="/admin/email" className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-xs hover:bg-muted">
               <Activity className="size-3.5" /> Email delivery
             </Link>
