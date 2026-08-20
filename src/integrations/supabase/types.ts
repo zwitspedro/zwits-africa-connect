@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          action: string
+          actor: string | null
+          created_at: string
+          id: string
+          metadata: Json | null
+          subject_id: string | null
+          subject_type: string
+        }
+        Insert: {
+          action: string
+          actor?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          subject_id?: string | null
+          subject_type: string
+        }
+        Update: {
+          action?: string
+          actor?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          subject_id?: string | null
+          subject_type?: string
+        }
+        Relationships: []
+      }
       booking_status_history: {
         Row: {
           booking_id: string
@@ -183,6 +213,7 @@ export type Database = {
           category: string
           created_at: string
           id: string
+          max_fee: number | null
           min_fee: number
           notes: string | null
           percent: number
@@ -194,6 +225,7 @@ export type Database = {
           category: string
           created_at?: string
           id?: string
+          max_fee?: number | null
           min_fee?: number
           notes?: string | null
           percent?: number
@@ -205,6 +237,7 @@ export type Database = {
           category?: string
           created_at?: string
           id?: string
+          max_fee?: number | null
           min_fee?: number
           notes?: string | null
           percent?: number
@@ -466,6 +499,66 @@ export type Database = {
         }
         Relationships: []
       }
+      disputes: {
+        Row: {
+          booking_id: string | null
+          created_at: string
+          delivery_id: string | null
+          description: string | null
+          id: string
+          opened_by: string
+          reason: string
+          resolution: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          booking_id?: string | null
+          created_at?: string
+          delivery_id?: string | null
+          description?: string | null
+          id?: string
+          opened_by: string
+          reason: string
+          resolution?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          booking_id?: string | null
+          created_at?: string
+          delivery_id?: string | null
+          description?: string | null
+          id?: string
+          opened_by?: string
+          reason?: string
+          resolution?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "disputes_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "disputes_delivery_id_fkey"
+            columns: ["delivery_id"]
+            isOneToOne: false
+            referencedRelation: "deliveries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       driver_profiles: {
         Row: {
           address: string | null
@@ -636,6 +729,35 @@ export type Database = {
           used_at?: string | null
         }
         Relationships: []
+      }
+      favorites: {
+        Row: {
+          created_at: string
+          customer_id: string
+          id: string
+          provider_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          id?: string
+          provider_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          id?: string
+          provider_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorites_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       job_offers: {
         Row: {
@@ -828,6 +950,75 @@ export type Database = {
         }
         Relationships: []
       }
+      payments: {
+        Row: {
+          amount: number
+          booking_id: string | null
+          created_at: string
+          currency: string
+          customer_id: string
+          delivery_id: string | null
+          external_reference: string | null
+          failure_reason: string | null
+          id: string
+          metadata: Json | null
+          paid_at: string | null
+          payment_method: string
+          provider: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          booking_id?: string | null
+          created_at?: string
+          currency?: string
+          customer_id: string
+          delivery_id?: string | null
+          external_reference?: string | null
+          failure_reason?: string | null
+          id?: string
+          metadata?: Json | null
+          paid_at?: string | null
+          payment_method?: string
+          provider?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          booking_id?: string | null
+          created_at?: string
+          currency?: string
+          customer_id?: string
+          delivery_id?: string | null
+          external_reference?: string | null
+          failure_reason?: string | null
+          id?: string
+          metadata?: Json | null
+          paid_at?: string | null
+          payment_method?: string
+          provider?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_delivery_id_fkey"
+            columns: ["delivery_id"]
+            isOneToOne: false
+            referencedRelation: "deliveries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           account_type: string
@@ -948,6 +1139,48 @@ export type Database = {
           status?: string
           storage_path?: string | null
           width?: number | null
+        }
+        Relationships: []
+      }
+      provider_documents: {
+        Row: {
+          document_type: string
+          expiry_date: string | null
+          file_url: string
+          id: string
+          provider_user_id: string
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          updated_at: string
+          uploaded_at: string
+          verification_status: string
+        }
+        Insert: {
+          document_type: string
+          expiry_date?: string | null
+          file_url: string
+          id?: string
+          provider_user_id: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          updated_at?: string
+          uploaded_at?: string
+          verification_status?: string
+        }
+        Update: {
+          document_type?: string
+          expiry_date?: string | null
+          file_url?: string
+          id?: string
+          provider_user_id?: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          updated_at?: string
+          uploaded_at?: string
+          verification_status?: string
         }
         Relationships: []
       }
@@ -1097,6 +1330,54 @@ export type Database = {
         }
         Relationships: []
       }
+      provider_services: {
+        Row: {
+          active: boolean
+          base_price: number | null
+          created_at: string
+          id: string
+          pricing_model: string
+          provider_id: string
+          service_id: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          base_price?: number | null
+          created_at?: string
+          id?: string
+          pricing_model?: string
+          provider_id: string
+          service_id: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          base_price?: number | null
+          created_at?: string
+          id?: string
+          pricing_model?: string
+          provider_id?: string
+          service_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_services_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_services_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       provider_time_off: {
         Row: {
           created_at: string
@@ -1124,11 +1405,42 @@ export type Database = {
         }
         Relationships: []
       }
+      provider_wallets: {
+        Row: {
+          available_balance: number
+          created_at: string
+          currency: string
+          lifetime_earnings: number
+          pending_balance: number
+          provider_user_id: string
+          updated_at: string
+        }
+        Insert: {
+          available_balance?: number
+          created_at?: string
+          currency?: string
+          lifetime_earnings?: number
+          pending_balance?: number
+          provider_user_id: string
+          updated_at?: string
+        }
+        Update: {
+          available_balance?: number
+          created_at?: string
+          currency?: string
+          lifetime_earnings?: number
+          pending_balance?: number
+          provider_user_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       provider_withdrawals: {
         Row: {
           amount: number
           created_at: string
           destination: string
+          failure_reason: string | null
           id: string
           method: string
           note: string | null
@@ -1141,6 +1453,7 @@ export type Database = {
           amount: number
           created_at?: string
           destination: string
+          failure_reason?: string | null
           id?: string
           method: string
           note?: string | null
@@ -1153,6 +1466,7 @@ export type Database = {
           amount?: number
           created_at?: string
           destination?: string
+          failure_reason?: string | null
           id?: string
           method?: string
           note?: string | null
@@ -1286,6 +1600,80 @@ export type Database = {
           },
         ]
       }
+      service_areas: {
+        Row: {
+          active: boolean
+          area: string
+          created_at: string
+          id: string
+          latitude: number | null
+          longitude: number | null
+          provider_id: string
+          radius_km: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          area: string
+          created_at?: string
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          provider_id: string
+          radius_km?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          area?: string
+          created_at?: string
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          provider_id?: string
+          radius_km?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_areas_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      services: {
+        Row: {
+          active: boolean
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
       suppressed_emails: {
         Row: {
           created_at: string
@@ -1376,11 +1764,85 @@ export type Database = {
         }
         Relationships: []
       }
+      wallet_transactions: {
+        Row: {
+          amount: number
+          balance_after: number
+          balance_before: number
+          booking_id: string | null
+          created_at: string
+          delivery_id: string | null
+          id: string
+          note: string | null
+          provider_user_id: string
+          reference: string
+          status: string
+          type: string
+          withdrawal_id: string | null
+        }
+        Insert: {
+          amount: number
+          balance_after: number
+          balance_before: number
+          booking_id?: string | null
+          created_at?: string
+          delivery_id?: string | null
+          id?: string
+          note?: string | null
+          provider_user_id: string
+          reference: string
+          status?: string
+          type: string
+          withdrawal_id?: string | null
+        }
+        Update: {
+          amount?: number
+          balance_after?: number
+          balance_before?: number
+          booking_id?: string | null
+          created_at?: string
+          delivery_id?: string | null
+          id?: string
+          note?: string | null
+          provider_user_id?: string
+          reference?: string
+          status?: string
+          type?: string
+          withdrawal_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallet_transactions_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wallet_transactions_delivery_id_fkey"
+            columns: ["delivery_id"]
+            isOneToOne: false
+            referencedRelation: "deliveries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wallet_transactions_withdrawal_id_fkey"
+            columns: ["withdrawal_id"]
+            isOneToOne: false
+            referencedRelation: "provider_withdrawals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      calc_commission: {
+        Args: { _amount: number; _category: string }
+        Returns: number
+      }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -1422,6 +1884,15 @@ export type Database = {
         Returns: boolean
       }
       is_trusted_writer: { Args: never; Returns: boolean }
+      log_admin_action: {
+        Args: {
+          _action: string
+          _metadata?: Json
+          _subject_id?: string
+          _subject_type: string
+        }
+        Returns: undefined
+      }
       log_delivery_event: {
         Args: {
           _actor?: string
@@ -1450,6 +1921,21 @@ export type Database = {
         }
         Returns: number
       }
+      post_wallet_transaction: {
+        Args: {
+          _allow_negative?: boolean
+          _amount: number
+          _booking_id?: string
+          _delivery_id?: string
+          _note?: string
+          _provider_user_id: string
+          _reference: string
+          _type: string
+          _withdrawal_id?: string
+        }
+        Returns: string
+      }
+      provider_readiness: { Args: { _user_id: string }; Returns: Json }
       providers_available_at: {
         Args: { _at: string; _user_ids: string[] }
         Returns: {
@@ -1462,6 +1948,14 @@ export type Database = {
           message: Json
           msg_id: number
           read_ct: number
+        }[]
+      }
+      settle_booking: {
+        Args: { _booking_id: string }
+        Returns: {
+          commission: number
+          gross: number
+          provider_earnings: number
         }[]
       }
     }
