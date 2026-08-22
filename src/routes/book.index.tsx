@@ -83,6 +83,7 @@ function BookEntry() {
                   key={s.slug}
                   to="/book/$category"
                   params={{ category: s.slug }}
+                  search={{ provider: undefined }}
                   className="grid gap-1.5 rounded-2xl border border-border/70 bg-card p-2 text-center transition active:scale-95 hover:border-primary/50"
                 >
                   <span className="mx-auto grid size-9 place-items-center rounded-xl bg-primary/10 text-primary">
@@ -105,6 +106,7 @@ function BookEntry() {
                 key={s.slug}
                 to="/book/$category"
                 params={{ category: s.slug }}
+                search={{ provider: undefined }}
                 className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 transition active:scale-[0.99] hover:border-primary/50"
               >
                 <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
