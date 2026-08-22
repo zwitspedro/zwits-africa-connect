@@ -1,7 +1,9 @@
 import { createStart, createMiddleware } from "@tanstack/react-start";
 
 import { renderErrorPage } from "./lib/error-page";
-import { attachSupabaseAuth } from "@/integrations/supabase/auth-attacher";
+// Intentionally NOT the generated `@/integrations/supabase/auth-attacher`:
+// that one static-imports the Supabase SDK into the client entry chunk.
+import { attachSupabaseAuth } from "./lib/attach-supabase-auth";
 
 const errorMiddleware = createMiddleware().server(async ({ next, request }) => {
   const url = new URL(request.url);

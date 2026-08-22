@@ -34,7 +34,11 @@ export default defineConfig({
         devOptions: { enabled: false },
         manifest: false,
         workbox: {
-          globPatterns: ["**/*.{js,css,woff2,png,svg,ico}"],
+          // DATA-LIGHT: never precache JS. Precaching every route chunk pushed
+          // ~4 MB down the wire on a user's first visit — most of it for routes
+          // they will never open. The CacheFirst runtimeCaching rules below
+          // cache scripts as they are actually requested instead.
+          globPatterns: ["**/*.{css,woff2,ico}", "icon-*.png", "favicon.png"],
           navigateFallbackDenylist: [/^\/~oauth/, /^\/api\//],
           cleanupOutdatedCaches: true,
           clientsClaim: true,
@@ -67,6 +71,21 @@ export default defineConfig({
         },
       }),
     ],
+    build: {
+      rollupOptions: {
+        output: {
+          // DATA-LIGHT: many route files import the backend SDK, so Rollup
+          // hoists it into the shared entry chunk and every visitor — including
+          // someone who only opens the landing page — downloads ~380 KB of auth
+          // and realtime code. Pinning it to its own chunk keeps the first paint
+          // cheap; the SDK is fetched only once an authenticated screen needs it.
+          manualChunks(id: string) {
+            if (id.includes("node_modules/@supabase/")) return "supabase";
+            return undefined;
+          },
+        },
+      },
+    },
     resolve: {
       alias: {
         "entities/lib/decode.js": path.resolve(

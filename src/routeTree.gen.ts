@@ -21,6 +21,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as MRouteImport } from './routes/m'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as HomeRouteImport } from './routes/home'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as DeliveryRouteImport } from './routes/delivery'
@@ -35,6 +36,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ProviderIndexRouteImport } from './routes/provider.index'
 import { Route as MIndexRouteImport } from './routes/m.index'
+import { Route as BookIndexRouteImport } from './routes/book.index'
 import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
 import { Route as MSettingsRouteImport } from './routes/m.settings'
 import { Route as MProviderRouteImport } from './routes/m.provider'
@@ -155,6 +157,11 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HomeRoute = HomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
   id: '/forgot-password',
   path: '/forgot-password',
@@ -223,6 +230,11 @@ const MIndexRoute = MIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => MRoute,
+} as any)
+const BookIndexRoute = BookIndexRouteImport.update({
+  id: '/book/',
+  path: '/book/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesSlugRoute = ServicesSlugRouteImport.update({
   id: '/$slug',
@@ -551,6 +563,7 @@ export interface FileRoutesByFullPath {
   '/delivery': typeof DeliveryRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/m': typeof MRouteWithChildren
   '/pricing': typeof PricingRoute
@@ -575,6 +588,7 @@ export interface FileRoutesByFullPath {
   '/m/provider': typeof MProviderRouteWithChildren
   '/m/settings': typeof MSettingsRoute
   '/services/$slug': typeof ServicesSlugRoute
+  '/book/': typeof BookIndexRoute
   '/m/': typeof MIndexRoute
   '/provider/': typeof ProviderIndexRoute
   '/services/': typeof ServicesIndexRoute
@@ -637,6 +651,7 @@ export interface FileRoutesByTo {
   '/delivery': typeof DeliveryRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -656,6 +671,7 @@ export interface FileRoutesByTo {
   '/m/notifications': typeof MNotificationsRoute
   '/m/settings': typeof MSettingsRoute
   '/services/$slug': typeof ServicesSlugRoute
+  '/book': typeof BookIndexRoute
   '/m': typeof MIndexRoute
   '/provider': typeof ProviderIndexRoute
   '/services': typeof ServicesIndexRoute
@@ -720,6 +736,7 @@ export interface FileRoutesById {
   '/delivery': typeof DeliveryRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/m': typeof MRouteWithChildren
   '/pricing': typeof PricingRoute
@@ -744,6 +761,7 @@ export interface FileRoutesById {
   '/m/provider': typeof MProviderRouteWithChildren
   '/m/settings': typeof MSettingsRoute
   '/services/$slug': typeof ServicesSlugRoute
+  '/book/': typeof BookIndexRoute
   '/m/': typeof MIndexRoute
   '/provider/': typeof ProviderIndexRoute
   '/services/': typeof ServicesIndexRoute
@@ -808,6 +826,7 @@ export interface FileRouteTypes {
     | '/delivery'
     | '/faq'
     | '/forgot-password'
+    | '/home'
     | '/login'
     | '/m'
     | '/pricing'
@@ -832,6 +851,7 @@ export interface FileRouteTypes {
     | '/m/provider'
     | '/m/settings'
     | '/services/$slug'
+    | '/book/'
     | '/m/'
     | '/provider/'
     | '/services/'
@@ -894,6 +914,7 @@ export interface FileRouteTypes {
     | '/delivery'
     | '/faq'
     | '/forgot-password'
+    | '/home'
     | '/login'
     | '/pricing'
     | '/privacy'
@@ -913,6 +934,7 @@ export interface FileRouteTypes {
     | '/m/notifications'
     | '/m/settings'
     | '/services/$slug'
+    | '/book'
     | '/m'
     | '/provider'
     | '/services'
@@ -976,6 +998,7 @@ export interface FileRouteTypes {
     | '/delivery'
     | '/faq'
     | '/forgot-password'
+    | '/home'
     | '/login'
     | '/m'
     | '/pricing'
@@ -1000,6 +1023,7 @@ export interface FileRouteTypes {
     | '/m/provider'
     | '/m/settings'
     | '/services/$slug'
+    | '/book/'
     | '/m/'
     | '/provider/'
     | '/services/'
@@ -1064,6 +1088,7 @@ export interface RootRouteChildren {
   DeliveryRoute: typeof DeliveryRoute
   FaqRoute: typeof FaqRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
+  HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
   MRoute: typeof MRouteWithChildren
   PricingRoute: typeof PricingRoute
@@ -1076,6 +1101,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
+  BookIndexRoute: typeof BookIndexRoute
   ProviderIndexRoute: typeof ProviderIndexRoute
   ApiPublicHooksDispatchSweepRoute: typeof ApiPublicHooksDispatchSweepRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
@@ -1167,6 +1193,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forgot-password': {
@@ -1266,6 +1299,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/m/'
       preLoaderRoute: typeof MIndexRouteImport
       parentRoute: typeof MRoute
+    }
+    '/book/': {
+      id: '/book/'
+      path: '/book'
+      fullPath: '/book/'
+      preLoaderRoute: typeof BookIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/services/$slug': {
       id: '/services/$slug'
@@ -1888,6 +1928,7 @@ const rootRouteChildren: RootRouteChildren = {
   DeliveryRoute: DeliveryRoute,
   FaqRoute: FaqRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
+  HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
   MRoute: MRouteWithChildren,
   PricingRoute: PricingRoute,
@@ -1900,6 +1941,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
+  BookIndexRoute: BookIndexRoute,
   ProviderIndexRoute: ProviderIndexRoute,
   ApiPublicHooksDispatchSweepRoute: ApiPublicHooksDispatchSweepRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,

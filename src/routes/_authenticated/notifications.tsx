@@ -21,7 +21,9 @@ function NotificationsPage() {
       const { data, error } = await supabase
         .from("notifications")
         .select("*")
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        // Data-light: cap the payload; older items are not useful on mobile.
+        .limit(30);
       if (error) throw error;
       return data;
     },

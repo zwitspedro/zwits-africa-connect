@@ -57,7 +57,8 @@ export function SiteHeader() {
       }`}
     >
       <div className="mx-auto grid h-[70px] max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 sm:px-8 md:flex md:justify-between">
-        <Link to="/" className="flex min-w-0 items-center gap-2.5">
+        {/* Marketing chrome points at /home; "/" is the data-light entry screen. */}
+        <Link to="/home" className="flex min-w-0 items-center gap-2.5">
           <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary font-display text-lg font-bold text-primary-foreground">
             Z
           </span>

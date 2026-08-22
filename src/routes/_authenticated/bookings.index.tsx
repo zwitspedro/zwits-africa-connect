@@ -24,7 +24,9 @@ function BookingsPage() {
         .from("bookings")
         .select("*, providers(business_name, rating_avg), ratings(rating)")
         .eq("customer_id", user!.id)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        // Data-light: never fetch an unbounded history over mobile data.
+        .limit(25);
       if (error) throw error;
       return data;
     },
