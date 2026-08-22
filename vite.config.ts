@@ -71,6 +71,21 @@ export default defineConfig({
         },
       }),
     ],
+    build: {
+      rollupOptions: {
+        output: {
+          // DATA-LIGHT: many route files import the backend SDK, so Rollup
+          // hoists it into the shared entry chunk and every visitor — including
+          // someone who only opens the landing page — downloads ~380 KB of auth
+          // and realtime code. Pinning it to its own chunk keeps the first paint
+          // cheap; the SDK is fetched only once an authenticated screen needs it.
+          manualChunks(id: string) {
+            if (id.includes("node_modules/@supabase/")) return "supabase";
+            return undefined;
+          },
+        },
+      },
+    },
     resolve: {
       alias: {
         "entities/lib/decode.js": path.resolve(
