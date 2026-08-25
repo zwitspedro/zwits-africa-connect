@@ -32,9 +32,18 @@ function AdminProviders() {
   const isAdmin = (roles ?? []).includes("admin");
   const { status: statusFilter, online } = Route.useSearch();
 
-  const { data: providers, isLoading } = useQuery({
+  const {
+    data: providers,
+    isLoading,
+    isFetching,
+    dataUpdatedAt,
+  } = useQuery({
     queryKey: ["admin-providers"],
     enabled: !!user && isAdmin,
+    // Auto-refresh only while the "Online now" filter is active — a background
+    // query refetch keeps rows in place (no full page refetch or flicker).
+    refetchInterval: online ? 30_000 : false,
+    placeholderData: (prev) => prev,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("providers")
@@ -123,6 +132,15 @@ function AdminProviders() {
           >
             Online now
           </Link>
+          {online && (
+            <span
+              role="status"
+              className="ml-1 inline-flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground"
+            >
+              <span className={`size-1.5 rounded-full ${isFetching ? "animate-pulse bg-emerald-400" : "bg-emerald-500/60"}`} />
+              Live · updated {new Date(dataUpdatedAt).toLocaleTimeString()}
+            </span>
+          )}
           {STATUS_FILTERS.map((s) => (
             <Link
               key={s}

@@ -83,6 +83,25 @@ export const getAdminMetrics = createServerFn({ method: "GET" })
     };
   });
 
+/** Single head-count for the "Providers online" tile — cheap enough to poll. */
+export const getOnlineProvidersCount = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data: isAdmin } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    if (!isAdmin) throw new Error("Forbidden");
+
+    const { count: c, error } = await context.supabase
+      .from("providers")
+      .select("id", { count: "exact", head: true })
+      .eq("available", true)
+      .eq("verification_status", "approved");
+    if (error) throw new Error(error.message);
+    return { count: c ?? 0 };
+  });
+
 async function assertAdmin(supabase: any, userId: string) {
   const { data: isAdmin } = await supabase.rpc("has_role", {
     _user_id: userId,
