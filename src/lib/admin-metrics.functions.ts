@@ -44,6 +44,7 @@ export const getAdminMetrics = createServerFn({ method: "GET" })
       count("disputes", (q) => q.in("status", ["open", "investigating"])),
       count("payments", (q) => q.eq("status", "failed")),
       count("provider_withdrawals", (q) => q.in("status", ["requested", "processing"])),
+      count("admin_audit_log"),
     ]);
 
     const { data: revenueRows } = await db
