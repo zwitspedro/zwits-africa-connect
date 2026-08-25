@@ -121,6 +121,15 @@ export function LoginForm({ preferred, registerTo, registerLabel }: {
         <SubmitButton loading={loading}>Log in</SubmitButton>
       </form>
 
+      <button
+        type="button"
+        onClick={() => setMethod("otp")}
+        className="mt-3 w-full text-sm font-medium text-primary hover:underline"
+      >
+        Use my mobile number instead
+      </button>
+
+
       <Link
         to={registerTo}
         className="mt-3 inline-flex w-full items-center justify-center rounded-2xl border border-input bg-background/60 px-6 py-3.5 text-sm font-semibold transition hover:bg-muted"
