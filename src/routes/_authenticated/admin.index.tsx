@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getAdminMetrics } from "@/lib/admin-metrics.functions";
-import { ShieldCheck, Users, CalendarCheck, Wallet, Star, FileSearch, AlertTriangle, ArrowRight, Activity, Percent } from "lucide-react";
+import { ShieldCheck, Users, CalendarCheck, Wallet, Star, FileSearch, AlertTriangle, ArrowRight, ArrowUpRight, Activity, Percent } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { AuditExportButtons } from "@/components/audit-export-buttons";
 import { supabase } from "@/integrations/supabase/client";
@@ -245,12 +245,16 @@ function KpiCard({
   value,
   sub,
   tone = "primary",
+  to,
+  search,
 }: {
   icon: typeof Users;
   label: string;
   value: string | number;
   sub?: string;
   tone?: "primary" | "emerald" | "amber" | "destructive" | "muted";
+  to: string;
+  search?: Record<string, unknown>;
 }) {
   const toneClass = {
     primary: "text-primary bg-primary/10",
@@ -260,14 +264,22 @@ function KpiCard({
     muted: "text-muted-foreground bg-muted",
   }[tone];
   return (
-    <div className="rounded-2xl border border-border bg-card p-4">
-      <div className={`inline-flex size-8 items-center justify-center rounded-lg ${toneClass}`}>
-        <Icon className="size-4" />
+    <Link
+      to={to as any}
+      search={search as any}
+      aria-label={`${label}: ${value}. View records.`}
+      className="group block rounded-2xl border border-border bg-card p-4 transition hover:border-primary/40 hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.98]"
+    >
+      <div className="flex items-start justify-between">
+        <div className={`inline-flex size-8 items-center justify-center rounded-lg ${toneClass}`}>
+          <Icon className="size-4" />
+        </div>
+        <ArrowUpRight className="size-3.5 text-muted-foreground/40 transition group-hover:text-primary" />
       </div>
       <div className="mt-3 text-2xl font-semibold">{value}</div>
       <div className="text-xs text-muted-foreground">{label}</div>
       {sub && <div className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground/80">{sub}</div>}
-    </div>
+    </Link>
   );
 }
 
