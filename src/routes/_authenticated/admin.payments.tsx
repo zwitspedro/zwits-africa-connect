@@ -26,7 +26,6 @@ const money = (n: any, c?: string) => `${c === "USD" || !c ? "$" : `${c} `}${Num
 
 function AdminPayments() {
   const { status } = Route.useSearch();
-  const navigate = Route.useNavigate();
   const active = (status ?? "failed") as (typeof TABS)[number];
   const [page, setPage] = useState(0);
 
@@ -158,7 +157,6 @@ function AdminPayments() {
             </button>
           </div>
         )}
-        <span className="hidden">{navigate ? "" : ""}</span>
       </section>
     </SiteShell>
   );
