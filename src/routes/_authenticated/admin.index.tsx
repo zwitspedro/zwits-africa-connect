@@ -194,7 +194,7 @@ function AdminDashboard() {
             </ul>
           </Panel>
 
-          <Panel title="Revoked providers" link={{ to: "/admin/providers", label: "Review" }}>
+          <Panel title="Revoked providers" link={{ to: "/admin/providers", label: "Review", search: { status: "revoked" } }}>
             {flaggedProviders.length === 0 && <Empty>No revoked providers.</Empty>}
             <ul className="grid gap-1.5">
               {flaggedProviders.map((p) => (
@@ -290,7 +290,7 @@ function Panel({
   children,
 }: {
   title: string;
-  link?: { to: string; label: string };
+  link?: { to: string; label: string; search?: Record<string, unknown> };
   className?: string;
   children: React.ReactNode;
 }) {
@@ -299,7 +299,7 @@ function Panel({
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-sm font-semibold">{title}</h2>
         {link && (
-          <Link to={link.to} className="inline-flex items-center gap-1 text-[11px] text-primary hover:underline">
+          <Link to={link.to as any} search={link.search as any} className="inline-flex items-center gap-1 text-[11px] text-primary hover:underline">
             {link.label} <ArrowRight className="size-3" />
           </Link>
         )}
