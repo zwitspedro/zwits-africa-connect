@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -12,16 +12,25 @@ import { useRoles } from "@/hooks/use-role";
 import { setProviderVerification } from "@/lib/admin.functions";
 import { RoleGate } from "@/components/portal/role-gate";
 
+type Search = { status?: string; online?: boolean };
+
 export const Route = createFileRoute("/_authenticated/admin/providers")({
+  validateSearch: (s: Record<string, unknown>): Search => ({
+    status: typeof s.status === "string" ? s.status : undefined,
+    online: s.online === true || s.online === "true" ? true : undefined,
+  }),
   head: () => ({ meta: [{ title: "Admin — Providers — Zwits" }] }),
   component: AdminAdminProvidersRoute,
 });
+
+const STATUS_FILTERS = ["pending", "approved", "revoked"] as const;
 
 function AdminProviders() {
   const { user } = useAuth();
   const { data: roles, isLoading: rolesLoading } = useRoles();
   const qc = useQueryClient();
   const isAdmin = (roles ?? []).includes("admin");
+  const { status: statusFilter, online } = Route.useSearch();
 
   const { data: providers, isLoading } = useQuery({
     queryKey: ["admin-providers"],
