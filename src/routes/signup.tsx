@@ -185,7 +185,7 @@ function CustomerSignup() {
       </form>
 
       <Divider />
-      <SocialButtons onSignedIn={afterSocial} />
+      <SocialButtons onSignedIn={afterSocial} intent="customer" />
     </AuthShell>
   );
 }

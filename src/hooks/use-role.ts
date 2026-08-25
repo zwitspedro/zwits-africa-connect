@@ -49,14 +49,16 @@ export function useActiveRole() {
   return { activeRole, setActiveRole, roles: available, isLoading };
 }
 
-/** Activate an additional non-admin role on the signed-in account. */
+/**
+ * Activate an additional non-admin role on the signed-in account.
+ * Role grants are server-authoritative — the browser can only request one.
+ */
 export function useAddRole() {
   const { user } = useAuth();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (role: Exclude<AppRole, "admin">) => {
-      const { error } = await supabase.from("user_roles").insert({ user_id: user!.id, role });
-      if (error && !error.message.includes("duplicate")) throw error;
+      await claimRole({ data: { role } });
       return role;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["roles", user?.id] }),

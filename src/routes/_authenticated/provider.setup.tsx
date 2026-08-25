@@ -203,10 +203,8 @@ function ProviderSetup() {
       } else {
         const { error } = await supabase.from("providers").insert(payload);
         if (error) throw error;
-        await supabase.from("user_roles").upsert(
-          { user_id: user.id, role: "provider" },
-          { onConflict: "user_id,role", ignoreDuplicates: true },
-        );
+        // Server grants the provider role; this never implies verification.
+        await claimRole({ data: { role: "provider" } });
       }
     },
     onSuccess: () => {
