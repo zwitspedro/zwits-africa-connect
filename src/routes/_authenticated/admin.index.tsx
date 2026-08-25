@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { getAdminMetrics } from "@/lib/admin-metrics.functions";
+import { getAdminMetrics, getOnlineProvidersCount } from "@/lib/admin-metrics.functions";
 import { ShieldCheck, Users, CalendarCheck, Wallet, Star, FileSearch, AlertTriangle, ArrowRight, ArrowUpRight, Activity, Percent } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { AuditExportButtons } from "@/components/audit-export-buttons";
@@ -21,6 +21,7 @@ function AdminDashboard() {
   const isAdmin = (roles ?? []).includes("admin");
 
   const fetchMetrics = useServerFn(getAdminMetrics);
+  const fetchOnlineCount = useServerFn(getOnlineProvidersCount);
   const {
     data: metrics,
     isLoading: metricsLoading,
@@ -31,6 +32,18 @@ function AdminDashboard() {
     refetchInterval: 60_000,
     queryFn: () => fetchMetrics({ data: undefined }),
   });
+
+  // Lightweight live count for the "Providers online" tile: one head-count
+  // query polled in the background — no page refetch, no loading flicker.
+  const { data: onlineCount } = useQuery({
+    queryKey: ["admin-online-providers"],
+    enabled: !!user && isAdmin,
+    refetchInterval: 30_000,
+    staleTime: 10_000,
+    placeholderData: (prev) => prev,
+    queryFn: () => fetchOnlineCount({ data: undefined }),
+  });
+  const onlineProviders = onlineCount?.count ?? metrics?.onlineProviders ?? 0;
 
   const { data: providers } = useQuery({
     queryKey: ["admin-dash-providers"],
@@ -169,7 +182,7 @@ function AdminDashboard() {
           <KpiCard icon={CalendarCheck} label="Active bookings" value={metricsLoading ? "…" : (metrics?.activeJobs ?? activeBookings)} sub={`${metrics?.completedJobs ?? completedBookings.length} completed`} tone="primary" to="/admin/reconciliation" />
           <KpiCard icon={Wallet} label="Gross revenue" value={metricsLoading ? "…" : `$${(metrics?.revenue ?? 0).toFixed(0)}`} sub={`Commission $${(metrics?.commission ?? 0).toFixed(0)}`} tone="primary" to="/admin/reconciliation" />
           <KpiCard icon={Star} label="Avg rating" value={avgRating} sub={`${ratings?.length ?? 0} reviews`} tone="amber" to="/admin/providers" search={{ status: "approved" }} />
-          <KpiCard icon={Activity} label="Providers online" value={metricsLoading ? "…" : (metrics?.onlineProviders ?? 0)} sub={`${metrics?.providers ?? 0} total providers`} tone="primary" to="/admin/providers" search={{ online: true }} />
+          <KpiCard icon={Activity} label="Providers online" value={metricsLoading && onlineCount == null ? "…" : onlineProviders} sub={`${metrics?.providers ?? 0} total providers · live`} tone="primary" to="/admin/providers" search={{ online: true }} />
           <KpiCard icon={AlertTriangle} label="Open disputes" value={metricsLoading ? "…" : (metrics?.openDisputes ?? 0)} sub="Awaiting resolution" tone={(metrics?.openDisputes ?? 0) > 0 ? "destructive" : "muted"} to="/admin/operations" search={{ tab: "disputes" }} />
           <KpiCard icon={Wallet} label="Pending withdrawals" value={metricsLoading ? "…" : (metrics?.pendingWithdrawals ?? 0)} sub="Requested or processing" tone={(metrics?.pendingWithdrawals ?? 0) > 0 ? "amber" : "muted"} to="/admin/operations" search={{ tab: "withdrawals" }} />
           <KpiCard icon={AlertTriangle} label="Failed payments" value={metricsLoading ? "…" : (metrics?.failedPayments ?? 0)} sub="Needs follow-up" tone={(metrics?.failedPayments ?? 0) > 0 ? "destructive" : "muted"} to="/admin/payments" search={{ status: "failed" }} />
