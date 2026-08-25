@@ -11,6 +11,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
 import { setProviderVerification } from "@/lib/admin.functions";
 import { RoleGate } from "@/components/portal/role-gate";
+import { useProvidersRealtime } from "@/hooks/use-providers-realtime";
 
 type Search = { status?: string; online?: boolean };
 

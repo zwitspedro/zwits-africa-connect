@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
 import { RoleGate } from "@/components/portal/role-gate";
+import { useProvidersRealtime } from "@/hooks/use-providers-realtime";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   head: () => ({ meta: [{ title: "Admin dashboard — Zwits" }] }),
