@@ -100,10 +100,37 @@ function AdminProviders() {
           />
         </div>
 
+        <div className="mt-5 flex flex-wrap items-center gap-1.5 text-xs">
+          <Link
+            to="/admin/providers"
+            search={{}}
+            className={`rounded-full px-3 py-1.5 ${!statusFilter && !online ? "bg-primary/15 font-semibold text-primary" : "border border-border text-muted-foreground hover:bg-muted"}`}
+          >
+            All
+          </Link>
+          <Link
+            to="/admin/providers"
+            search={{ online: true }}
+            className={`rounded-full px-3 py-1.5 ${online ? "bg-emerald-500/15 font-semibold text-emerald-400" : "border border-border text-muted-foreground hover:bg-muted"}`}
+          >
+            Online now
+          </Link>
+          {STATUS_FILTERS.map((s) => (
+            <Link
+              key={s}
+              to="/admin/providers"
+              search={{ status: s }}
+              className={`rounded-full px-3 py-1.5 capitalize ${statusFilter === s && !online ? "bg-primary/15 font-semibold text-primary" : "border border-border text-muted-foreground hover:bg-muted"}`}
+            >
+              {s === "pending" ? "Pending review" : s}
+            </Link>
+          ))}
+        </div>
+
         {isLoading && <p className="mt-6 text-sm text-muted-foreground">Loading providers…</p>}
 
         <ul className="mt-6 grid gap-3">
-          {(providers ?? []).map((p) => (
+          {filteredProviders.map((p) => (
             <AdminProviderRow
               key={p.id}
               provider={p}
