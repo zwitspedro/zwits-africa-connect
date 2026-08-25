@@ -43,6 +43,7 @@ import { Route as MProviderRouteImport } from './routes/m.provider'
 import { Route as MNotificationsRouteImport } from './routes/m.notifications'
 import { Route as MDriverRouteImport } from './routes/m.driver'
 import { Route as MCustomerRouteImport } from './routes/m.customer'
+import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as AuthenticatedWorkspaceRouteImport } from './routes/_authenticated/workspace'
 import { Route as AuthenticatedSendDeliveryRouteImport } from './routes/_authenticated/send-delivery'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
@@ -265,6 +266,11 @@ const MCustomerRoute = MCustomerRouteImport.update({
   id: '/customer',
   path: '/customer',
   getParentRoute: () => MRoute,
+} as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedWorkspaceRoute = AuthenticatedWorkspaceRouteImport.update({
   id: '/workspace',
@@ -582,6 +588,7 @@ export interface FileRoutesByFullPath {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/send-delivery': typeof AuthenticatedSendDeliveryRoute
   '/workspace': typeof AuthenticatedWorkspaceRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/m/customer': typeof MCustomerRouteWithChildren
   '/m/driver': typeof MDriverRouteWithChildren
   '/m/notifications': typeof MNotificationsRoute
@@ -668,6 +675,7 @@ export interface FileRoutesByTo {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/send-delivery': typeof AuthenticatedSendDeliveryRoute
   '/workspace': typeof AuthenticatedWorkspaceRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/m/notifications': typeof MNotificationsRoute
   '/m/settings': typeof MSettingsRoute
   '/services/$slug': typeof ServicesSlugRoute
@@ -755,6 +763,7 @@ export interface FileRoutesById {
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/send-delivery': typeof AuthenticatedSendDeliveryRoute
   '/_authenticated/workspace': typeof AuthenticatedWorkspaceRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/m/customer': typeof MCustomerRouteWithChildren
   '/m/driver': typeof MDriverRouteWithChildren
   '/m/notifications': typeof MNotificationsRoute
@@ -845,6 +854,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/send-delivery'
     | '/workspace'
+    | '/auth/callback'
     | '/m/customer'
     | '/m/driver'
     | '/m/notifications'
@@ -931,6 +941,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/send-delivery'
     | '/workspace'
+    | '/auth/callback'
     | '/m/notifications'
     | '/m/settings'
     | '/services/$slug'
@@ -1017,6 +1028,7 @@ export interface FileRouteTypes {
     | '/_authenticated/notifications'
     | '/_authenticated/send-delivery'
     | '/_authenticated/workspace'
+    | '/auth/callback'
     | '/m/customer'
     | '/m/driver'
     | '/m/notifications'
@@ -1101,6 +1113,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
+  AuthCallbackRoute: typeof AuthCallbackRoute
   BookIndexRoute: typeof BookIndexRoute
   ProviderIndexRoute: typeof ProviderIndexRoute
   ApiPublicHooksDispatchSweepRoute: typeof ApiPublicHooksDispatchSweepRoute
@@ -1348,6 +1361,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/m/customer'
       preLoaderRoute: typeof MCustomerRouteImport
       parentRoute: typeof MRoute
+    }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/workspace': {
       id: '/_authenticated/workspace'
@@ -1941,6 +1961,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
+  AuthCallbackRoute: AuthCallbackRoute,
   BookIndexRoute: BookIndexRoute,
   ProviderIndexRoute: ProviderIndexRoute,
   ApiPublicHooksDispatchSweepRoute: ApiPublicHooksDispatchSweepRoute,
