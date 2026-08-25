@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./use-auth";
 import { ACTIVE_ROLE_KEY, pickDefaultRole, type AppRole } from "@/lib/roles";
+import { claimRole } from "@/lib/auth-onboarding.functions";
 
 export function useRoles() {
   const { user } = useAuth();
@@ -49,14 +50,16 @@ export function useActiveRole() {
   return { activeRole, setActiveRole, roles: available, isLoading };
 }
 
-/** Activate an additional non-admin role on the signed-in account. */
+/**
+ * Activate an additional non-admin role on the signed-in account.
+ * Role grants are server-authoritative — the browser can only request one.
+ */
 export function useAddRole() {
   const { user } = useAuth();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (role: Exclude<AppRole, "admin">) => {
-      const { error } = await supabase.from("user_roles").insert({ user_id: user!.id, role });
-      if (error && !error.message.includes("duplicate")) throw error;
+      await claimRole({ data: { role } });
       return role;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["roles", user?.id] }),

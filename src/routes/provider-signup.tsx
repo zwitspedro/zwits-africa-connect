@@ -129,7 +129,21 @@ function ProviderSignup() {
 
     if (error) {
       setLoading(false);
-      return toast.error(error.message);
+      const msg = error.message.toLowerCase();
+      return toast.error(
+        msg.includes("already registered") || msg.includes("already exists")
+          ? "This email is already registered. Please sign in using your existing method."
+          : msg.includes("rate") || msg.includes("security purposes")
+            ? "Too many attempts. Please wait a minute and try again."
+            : error.message,
+      );
+    }
+
+    if (data.user && (data.user.identities?.length ?? 0) === 0) {
+      setLoading(false);
+      toast.error("This email is already registered. Please sign in using your existing method.");
+      navigate({ to: "/provider-login" });
+      return;
     }
 
     if (!data.session || !data.user) {

@@ -10,6 +10,7 @@ import {
   SocialButtons,
   SubmitButton,
 } from "@/components/auth/auth-ui";
+import { PhoneOtpForm } from "@/components/auth/phone-otp-form";
 import {
   REMEMBERED_EMAIL_KEY,
   isPhoneIdentifier,
@@ -29,6 +30,7 @@ export function LoginForm({ preferred, registerTo, registerLabel }: {
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [method, setMethod] = useState<"password" | "otp">("password");
 
   useEffect(() => {
     const saved = localStorage.getItem(REMEMBERED_EMAIL_KEY);
@@ -77,6 +79,23 @@ export function LoginForm({ preferred, registerTo, registerLabel }: {
     if (data.user) await go(data.user.id);
   };
 
+  if (method === "otp") {
+    return (
+      <>
+        <PhoneOtpForm role={preferred === "provider" ? "provider" : "customer"} />
+        <button
+          type="button"
+          onClick={() => setMethod("password")}
+          className="mt-4 w-full text-sm font-medium text-primary hover:underline"
+        >
+          Use email and password instead
+        </button>
+        <Divider />
+        <SocialButtons onSignedIn={afterSocial} intent={preferred === "provider" ? "provider" : "customer"} />
+      </>
+    );
+  }
+
   return (
     <>
       <form className="grid gap-4" onSubmit={submit}>
@@ -102,6 +121,15 @@ export function LoginForm({ preferred, registerTo, registerLabel }: {
         <SubmitButton loading={loading}>Log in</SubmitButton>
       </form>
 
+      <button
+        type="button"
+        onClick={() => setMethod("otp")}
+        className="mt-3 w-full text-sm font-medium text-primary hover:underline"
+      >
+        Use my mobile number instead
+      </button>
+
+
       <Link
         to={registerTo}
         className="mt-3 inline-flex w-full items-center justify-center rounded-2xl border border-input bg-background/60 px-6 py-3.5 text-sm font-semibold transition hover:bg-muted"
@@ -110,7 +138,7 @@ export function LoginForm({ preferred, registerTo, registerLabel }: {
       </Link>
 
       <Divider />
-      <SocialButtons onSignedIn={afterSocial} />
+      <SocialButtons onSignedIn={afterSocial} intent={preferred === "provider" ? "provider" : "customer"} />
     </>
   );
 }

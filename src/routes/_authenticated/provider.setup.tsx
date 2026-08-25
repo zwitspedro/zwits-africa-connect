@@ -8,6 +8,7 @@ import { AuditExportButtons } from "@/components/audit-export-buttons";
 import { supabase } from "@/integrations/supabase/client";
 import { PROVIDER_SAFE_COLUMNS, fetchProviderDocuments } from "@/lib/provider-columns";
 import { secureUpload } from "@/lib/secure-upload";
+import { claimRole } from "@/lib/auth-onboarding.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { services } from "@/data/services";
 
@@ -203,10 +204,8 @@ function ProviderSetup() {
       } else {
         const { error } = await supabase.from("providers").insert(payload);
         if (error) throw error;
-        await supabase.from("user_roles").upsert(
-          { user_id: user.id, role: "provider" },
-          { onConflict: "user_id,role", ignoreDuplicates: true },
-        );
+        // Server grants the provider role; this never implies verification.
+        await claimRole({ data: { role: "provider" } });
       }
     },
     onSuccess: () => {

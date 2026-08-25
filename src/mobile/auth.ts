@@ -99,7 +99,10 @@ export function useMobileAuth(): MobileAuthState & {
   }, []);
 
   const signInWithGoogle = useCallback(async () => {
-    await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
+    // Public callback route: the session is set there, then routed by role.
+    await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: `${window.location.origin}/auth/callback`,
+    });
   }, []);
 
   const signOut = useCallback(async () => {
