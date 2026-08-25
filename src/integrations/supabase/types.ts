@@ -1954,6 +1954,14 @@ export type Database = {
           selfie_url: string
         }[]
       }
+      get_provider_review: {
+        Args: { _provider_id: string }
+        Returns: {
+          reviewed_at: string
+          reviewed_by: string
+          revoke_reason: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

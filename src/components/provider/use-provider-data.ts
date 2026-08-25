@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
-import { PROVIDER_SAFE_COLUMNS, fetchProviderDocuments } from "@/lib/provider-columns";
+import { PROVIDER_SAFE_COLUMNS, fetchProviderDocuments, fetchProviderReview } from "@/lib/provider-columns";
 import { useAuth } from "@/hooks/use-auth";
 import { isOpen } from "@/lib/job-lifecycle";
 import { getMyWallet, listMyLedger } from "@/lib/wallet.functions";
@@ -25,9 +25,13 @@ export function useProviderData() {
         .maybeSingle();
       if (error) throw error;
       if (!data) return null;
-      // Verification-document paths are only readable by the owner/admin via RPC.
-      const docs = await fetchProviderDocuments(data.id);
-      return { ...data, ...docs };
+      // Verification-document paths and review metadata are only readable by
+      // the owner/admin via RPC.
+      const [docs, review] = await Promise.all([
+        fetchProviderDocuments(data.id),
+        fetchProviderReview(data.id),
+      ]);
+      return { ...data, ...docs, revoke_reason: review.revoke_reason };
     },
   });
 

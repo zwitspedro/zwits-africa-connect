@@ -6,7 +6,7 @@ import { ShieldCheck, ShieldX, FileText, History } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { AuditExportButtons } from "@/components/audit-export-buttons";
 import { supabase } from "@/integrations/supabase/client";
-import { PROVIDER_SAFE_COLUMNS, fetchProviderDocuments } from "@/lib/provider-columns";
+import { PROVIDER_SAFE_COLUMNS, fetchProviderDocuments, fetchProviderReview } from "@/lib/provider-columns";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
 import { setProviderVerification } from "@/lib/admin.functions";
@@ -121,10 +121,16 @@ function AdminProviderRow({ provider, onApprove, onRevoke }: { provider: any; on
     : status === "revoked" ? "text-destructive bg-destructive/15"
     : "text-muted-foreground bg-muted";
 
-  // Admins read document paths through the authorized RPC, not the table.
+  // Admins read document paths and review metadata through authorized RPCs,
+  // not the table — those columns are revoked for the authenticated role.
   const { data: docs } = useQuery({
     queryKey: ["admin-provider-docs", provider.id],
     queryFn: () => fetchProviderDocuments(provider.id),
+  });
+
+  const { data: review } = useQuery({
+    queryKey: ["admin-provider-review", provider.id],
+    queryFn: () => fetchProviderReview(provider.id),
   });
 
   const { data: audits } = useQuery({
@@ -151,7 +157,7 @@ function AdminProviderRow({ provider, onApprove, onRevoke }: { provider: any; on
             <span className={`rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider ${statusColor}`}>{status}</span>
           </div>
           <div className="mt-0.5 text-xs text-muted-foreground">{provider.category} · {provider.city} · ${Number(provider.hourly_rate).toFixed(0)}/hr</div>
-          {provider.revoke_reason && <div className="mt-1 text-xs text-destructive">Reason: {provider.revoke_reason}</div>}
+          {review?.revoke_reason && <div className="mt-1 text-xs text-destructive">Reason: {review.revoke_reason}</div>}
         </div>
         <div className="flex gap-2">
           {status !== "approved" && (
