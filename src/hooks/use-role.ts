@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./use-auth";
 import { ACTIVE_ROLE_KEY, pickDefaultRole, type AppRole } from "@/lib/roles";
+import { claimRole } from "@/lib/auth-onboarding.functions";
 
 export function useRoles() {
   const { user } = useAuth();
