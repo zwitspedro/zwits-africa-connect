@@ -173,15 +173,15 @@ function AdminDashboard() {
           <KpiCard icon={AlertTriangle} label="Open disputes" value={metricsLoading ? "…" : (metrics?.openDisputes ?? 0)} sub="Awaiting resolution" tone={(metrics?.openDisputes ?? 0) > 0 ? "destructive" : "muted"} to="/admin/operations" search={{ tab: "disputes" }} />
           <KpiCard icon={Wallet} label="Pending withdrawals" value={metricsLoading ? "…" : (metrics?.pendingWithdrawals ?? 0)} sub="Requested or processing" tone={(metrics?.pendingWithdrawals ?? 0) > 0 ? "amber" : "muted"} to="/admin/operations" search={{ tab: "withdrawals" }} />
           <KpiCard icon={AlertTriangle} label="Failed payments" value={metricsLoading ? "…" : (metrics?.failedPayments ?? 0)} sub="Needs follow-up" tone={(metrics?.failedPayments ?? 0) > 0 ? "destructive" : "muted"} to="/admin/payments" search={{ status: "failed" }} />
-          <KpiCard icon={FileSearch} label="Audit events" value={audits?.length ?? 0} sub="Latest 200" tone="primary" to="/admin/audit" />
+          <KpiCard icon={FileSearch} label="Audit events" value={metricsLoading ? "…" : (metrics?.auditEvents ?? 0)} sub="Privileged actions" tone="primary" to="/admin/audit" />
           <KpiCard icon={AlertTriangle} label="Failed uploads" value={failedAudits} sub="Rejected or errored" tone={failedAudits > 0 ? "destructive" : "muted"} to="/admin/uploads" />
           <KpiCard icon={ShieldCheck} label="Pending review" value={metrics?.pendingVerification ?? pendingProviders} sub="Awaiting verification" tone={(metrics?.pendingVerification ?? pendingProviders) > 0 ? "amber" : "muted"} to="/admin/providers" search={{ status: "pending" }} />
           <KpiCard icon={Users} label="Customers" value={metricsLoading ? "…" : (metrics?.customers ?? 0)} sub="Registered accounts" tone="primary" to="/admin/customers" />
         </div>
 
         <div className="mt-8 grid gap-4 lg:grid-cols-3">
-          <Panel title="Recent audit activity" link={{ to: "/admin/uploads", label: "Open" }} className="lg:col-span-2">
-            {recentAudits.length === 0 && <Empty>No audit activity yet.</Empty>}
+          <Panel title="Recent document uploads" link={{ to: "/admin/uploads", label: "Open" }} className="lg:col-span-2">
+            {recentAudits.length === 0 && <Empty>No upload activity yet.</Empty>}
             <ul className="grid gap-1.5">
               {recentAudits.map((a: any) => (
                 <li key={a.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-muted/30 px-3 py-2 text-[11px]">

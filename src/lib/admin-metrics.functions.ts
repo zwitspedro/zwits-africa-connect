@@ -31,6 +31,7 @@ export const getAdminMetrics = createServerFn({ method: "GET" })
       openDisputes,
       failedPayments,
       pendingWithdrawals,
+      auditEvents,
     ] = await Promise.all([
       count("user_roles", (q) => q.eq("role", "customer")),
       count("providers"),
@@ -75,6 +76,7 @@ export const getAdminMetrics = createServerFn({ method: "GET" })
       openDisputes,
       failedPayments,
       pendingWithdrawals,
+      auditEvents,
       revenue: Math.round(revenue * 100) / 100,
       providerEarnings: Math.round(providerEarnings * 100) / 100,
       commission: Math.round((revenue - providerEarnings) * 100) / 100,
