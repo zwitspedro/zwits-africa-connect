@@ -29,6 +29,7 @@ export function LoginForm({ preferred, registerTo, registerLabel }: {
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [method, setMethod] = useState<"password" | "otp">("password");
 
   useEffect(() => {
     const saved = localStorage.getItem(REMEMBERED_EMAIL_KEY);
