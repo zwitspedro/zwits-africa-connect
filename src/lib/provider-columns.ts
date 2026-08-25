@@ -1,15 +1,16 @@
 import { supabase } from "@/integrations/supabase/client";
 
 /**
- * Every provider column EXCEPT the verification-document storage paths.
+ * Every provider column EXCEPT the verification-document storage paths and the
+ * internal review metadata.
  *
- * `id_document_url` / `selfie_url` / `business_doc_url` are revoked at the
- * column-privilege level for `anon` and `authenticated`, so any `select("*")`
- * against `providers` from the browser now fails. Marketplace discovery and
- * profile display use this projection instead.
+ * `id_document_url` / `selfie_url` / `business_doc_url` / `revoke_reason` are
+ * revoked at the column-privilege level for `anon` and `authenticated`, so any
+ * `select("*")` against `providers` from the browser now fails. Marketplace
+ * discovery and profile display use this projection instead.
  */
 export const PROVIDER_SAFE_COLUMNS =
-  "id, user_id, business_name, category, bio, city, hourly_rate, verified, available, rating_avg, ratings_count, jobs_completed, verification_status, submitted_at, reviewed_at, reviewed_by, revoke_reason, onboarding_completed_at, created_at, updated_at";
+  "id, user_id, business_name, category, bio, city, hourly_rate, verified, available, rating_avg, ratings_count, jobs_completed, verification_status, submitted_at, reviewed_at, reviewed_by, onboarding_completed_at, created_at, updated_at";
 
 export type ProviderDocuments = {
   id_document_url: string | null;
