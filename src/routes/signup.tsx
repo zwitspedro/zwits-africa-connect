@@ -68,11 +68,30 @@ function CustomerSignup() {
 
     if (error) {
       setLoading(false);
-      toast.error(error.message);
+      const msg = error.message.toLowerCase();
+      toast.error(
+        msg.includes("already registered") || msg.includes("already exists")
+          ? "This email is already registered. Please sign in using your existing method."
+          : msg.includes("rate") || msg.includes("security purposes")
+            ? "Too many attempts. Please wait a minute and try again."
+            : error.message,
+      );
+      return;
+    }
+
+    // Supabase returns a user with no identities when the address already
+    // exists — never silently create or imply a second account.
+    if (data.user && (data.user.identities?.length ?? 0) === 0) {
+      setLoading(false);
+      toast.error("This email is already registered. Please sign in using your existing method.");
+      navigate({ to: "/login" });
       return;
     }
 
     if (data.session && data.user) {
+      await claimRole({
+        data: { role: "customer", displayName: form.fullName.trim(), phone: form.phone.trim() },
+      });
       await supabase
         .from("profiles")
         .update({
