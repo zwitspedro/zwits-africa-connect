@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -9,7 +9,12 @@ import { RoleGate } from "@/components/portal/role-gate";
 import { listDisputes, resolveDispute } from "@/lib/disputes.functions";
 import { listWithdrawals, settleWithdrawal } from "@/lib/wallet.functions";
 
+type Search = { tab?: "disputes" | "withdrawals" };
+
 export const Route = createFileRoute("/_authenticated/admin/operations")({
+  validateSearch: (s: Record<string, unknown>): Search => ({
+    tab: s.tab === "withdrawals" ? "withdrawals" : s.tab === "disputes" ? "disputes" : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Disputes & payouts — Zwits admin" },
@@ -36,6 +41,9 @@ export const Route = createFileRoute("/_authenticated/admin/operations")({
 const money = (n: any) => `$${Number(n ?? 0).toFixed(2)}`;
 
 function OperationsPage() {
+  const { tab } = Route.useSearch();
+  const active = tab ?? "disputes";
+
   return (
     <SiteShell>
       <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
@@ -47,9 +55,29 @@ function OperationsPage() {
           Everything here writes to the ledger — adjustments and refunds are auditable.
         </p>
 
-        <div className="mt-8 grid gap-6">
-          <DisputesPanel />
-          <WithdrawalsPanel />
+        <div className="mt-5 inline-flex gap-1 rounded-full bg-muted p-1 text-xs">
+          <Link
+            to="/admin/operations"
+            search={{ tab: "disputes" }}
+            className={`rounded-full px-4 py-1.5 ${
+              active === "disputes" ? "bg-background font-semibold shadow-sm" : "text-muted-foreground"
+            }`}
+          >
+            Open disputes
+          </Link>
+          <Link
+            to="/admin/operations"
+            search={{ tab: "withdrawals" }}
+            className={`rounded-full px-4 py-1.5 ${
+              active === "withdrawals" ? "bg-background font-semibold shadow-sm" : "text-muted-foreground"
+            }`}
+          >
+            Withdrawal queue
+          </Link>
+        </div>
+
+        <div className="mt-6 grid gap-6">
+          {active === "disputes" ? <DisputesPanel /> : <WithdrawalsPanel />}
         </div>
       </section>
     </SiteShell>

@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getAdminMetrics } from "@/lib/admin-metrics.functions";
-import { ShieldCheck, Users, CalendarCheck, Wallet, Star, FileSearch, AlertTriangle, ArrowRight, Activity, Percent } from "lucide-react";
+import { ShieldCheck, Users, CalendarCheck, Wallet, Star, FileSearch, AlertTriangle, ArrowRight, ArrowUpRight, Activity, Percent } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { AuditExportButtons } from "@/components/audit-export-buttons";
 import { supabase } from "@/integrations/supabase/client";
@@ -165,23 +165,23 @@ function AdminDashboard() {
         )}
 
         <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          <KpiCard icon={Users} label="Approved providers" value={metricsLoading ? "…" : approvedProviders} sub={`${metrics?.pendingVerification ?? pendingProviders} pending · ${revokedProviders} revoked`} tone="emerald" />
-          <KpiCard icon={CalendarCheck} label="Active bookings" value={metricsLoading ? "…" : (metrics?.activeJobs ?? activeBookings)} sub={`${metrics?.completedJobs ?? completedBookings.length} completed`} tone="primary" />
-          <KpiCard icon={Wallet} label="Gross revenue" value={metricsLoading ? "…" : `$${(metrics?.revenue ?? 0).toFixed(0)}`} sub={`Commission $${(metrics?.commission ?? 0).toFixed(0)}`} tone="primary" />
-          <KpiCard icon={Star} label="Avg rating" value={avgRating} sub={`${ratings?.length ?? 0} reviews`} tone="amber" />
-          <KpiCard icon={Activity} label="Providers online" value={metricsLoading ? "…" : (metrics?.onlineProviders ?? 0)} sub={`${metrics?.providers ?? 0} total providers`} tone="primary" />
-          <KpiCard icon={AlertTriangle} label="Open disputes" value={metricsLoading ? "…" : (metrics?.openDisputes ?? 0)} sub="Awaiting resolution" tone={(metrics?.openDisputes ?? 0) > 0 ? "destructive" : "muted"} />
-          <KpiCard icon={Wallet} label="Pending withdrawals" value={metricsLoading ? "…" : (metrics?.pendingWithdrawals ?? 0)} sub="Requested or processing" tone={(metrics?.pendingWithdrawals ?? 0) > 0 ? "amber" : "muted"} />
-          <KpiCard icon={AlertTriangle} label="Failed payments" value={metricsLoading ? "…" : (metrics?.failedPayments ?? 0)} sub="Needs follow-up" tone={(metrics?.failedPayments ?? 0) > 0 ? "destructive" : "muted"} />
-          <KpiCard icon={FileSearch} label="Audit events" value={audits?.length ?? 0} sub="Latest 200" tone="primary" />
-          <KpiCard icon={AlertTriangle} label="Failed uploads" value={failedAudits} sub="Rejected or errored" tone={failedAudits > 0 ? "destructive" : "muted"} />
-          <KpiCard icon={ShieldCheck} label="Pending review" value={metrics?.pendingVerification ?? pendingProviders} sub="Awaiting verification" tone={(metrics?.pendingVerification ?? pendingProviders) > 0 ? "amber" : "muted"} />
-          <KpiCard icon={Users} label="Customers" value={metricsLoading ? "…" : (metrics?.customers ?? 0)} sub="Registered accounts" tone="primary" />
+          <KpiCard icon={Users} label="Approved providers" value={metricsLoading ? "…" : approvedProviders} sub={`${metrics?.pendingVerification ?? pendingProviders} pending · ${revokedProviders} revoked`} tone="emerald" to="/admin/providers" search={{ status: "approved" }} />
+          <KpiCard icon={CalendarCheck} label="Active bookings" value={metricsLoading ? "…" : (metrics?.activeJobs ?? activeBookings)} sub={`${metrics?.completedJobs ?? completedBookings.length} completed`} tone="primary" to="/admin/reconciliation" />
+          <KpiCard icon={Wallet} label="Gross revenue" value={metricsLoading ? "…" : `$${(metrics?.revenue ?? 0).toFixed(0)}`} sub={`Commission $${(metrics?.commission ?? 0).toFixed(0)}`} tone="primary" to="/admin/reconciliation" />
+          <KpiCard icon={Star} label="Avg rating" value={avgRating} sub={`${ratings?.length ?? 0} reviews`} tone="amber" to="/admin/providers" search={{ status: "approved" }} />
+          <KpiCard icon={Activity} label="Providers online" value={metricsLoading ? "…" : (metrics?.onlineProviders ?? 0)} sub={`${metrics?.providers ?? 0} total providers`} tone="primary" to="/admin/providers" search={{ online: true }} />
+          <KpiCard icon={AlertTriangle} label="Open disputes" value={metricsLoading ? "…" : (metrics?.openDisputes ?? 0)} sub="Awaiting resolution" tone={(metrics?.openDisputes ?? 0) > 0 ? "destructive" : "muted"} to="/admin/operations" search={{ tab: "disputes" }} />
+          <KpiCard icon={Wallet} label="Pending withdrawals" value={metricsLoading ? "…" : (metrics?.pendingWithdrawals ?? 0)} sub="Requested or processing" tone={(metrics?.pendingWithdrawals ?? 0) > 0 ? "amber" : "muted"} to="/admin/operations" search={{ tab: "withdrawals" }} />
+          <KpiCard icon={AlertTriangle} label="Failed payments" value={metricsLoading ? "…" : (metrics?.failedPayments ?? 0)} sub="Needs follow-up" tone={(metrics?.failedPayments ?? 0) > 0 ? "destructive" : "muted"} to="/admin/payments" search={{ status: "failed" }} />
+          <KpiCard icon={FileSearch} label="Audit events" value={metricsLoading ? "…" : (metrics?.auditEvents ?? 0)} sub="Privileged actions" tone="primary" to="/admin/audit" />
+          <KpiCard icon={AlertTriangle} label="Failed uploads" value={failedAudits} sub="Rejected or errored" tone={failedAudits > 0 ? "destructive" : "muted"} to="/admin/uploads" />
+          <KpiCard icon={ShieldCheck} label="Pending review" value={metrics?.pendingVerification ?? pendingProviders} sub="Awaiting verification" tone={(metrics?.pendingVerification ?? pendingProviders) > 0 ? "amber" : "muted"} to="/admin/providers" search={{ status: "pending" }} />
+          <KpiCard icon={Users} label="Customers" value={metricsLoading ? "…" : (metrics?.customers ?? 0)} sub="Registered accounts" tone="primary" to="/admin/customers" />
         </div>
 
         <div className="mt-8 grid gap-4 lg:grid-cols-3">
-          <Panel title="Recent audit activity" link={{ to: "/admin/providers", label: "Open" }} className="lg:col-span-2">
-            {recentAudits.length === 0 && <Empty>No audit activity yet.</Empty>}
+          <Panel title="Recent document uploads" link={{ to: "/admin/uploads", label: "Open" }} className="lg:col-span-2">
+            {recentAudits.length === 0 && <Empty>No upload activity yet.</Empty>}
             <ul className="grid gap-1.5">
               {recentAudits.map((a: any) => (
                 <li key={a.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-muted/30 px-3 py-2 text-[11px]">
@@ -194,7 +194,7 @@ function AdminDashboard() {
             </ul>
           </Panel>
 
-          <Panel title="Revoked providers" link={{ to: "/admin/providers", label: "Review" }}>
+          <Panel title="Revoked providers" link={{ to: "/admin/providers", label: "Review", search: { status: "revoked" } }}>
             {flaggedProviders.length === 0 && <Empty>No revoked providers.</Empty>}
             <ul className="grid gap-1.5">
               {flaggedProviders.map((p) => (
@@ -245,12 +245,16 @@ function KpiCard({
   value,
   sub,
   tone = "primary",
+  to,
+  search,
 }: {
   icon: typeof Users;
   label: string;
   value: string | number;
   sub?: string;
   tone?: "primary" | "emerald" | "amber" | "destructive" | "muted";
+  to: string;
+  search?: Record<string, unknown>;
 }) {
   const toneClass = {
     primary: "text-primary bg-primary/10",
@@ -260,14 +264,22 @@ function KpiCard({
     muted: "text-muted-foreground bg-muted",
   }[tone];
   return (
-    <div className="rounded-2xl border border-border bg-card p-4">
-      <div className={`inline-flex size-8 items-center justify-center rounded-lg ${toneClass}`}>
-        <Icon className="size-4" />
+    <Link
+      to={to as any}
+      search={search as any}
+      aria-label={`${label}: ${value}. View records.`}
+      className="group block rounded-2xl border border-border bg-card p-4 transition hover:border-primary/40 hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.98]"
+    >
+      <div className="flex items-start justify-between">
+        <div className={`inline-flex size-8 items-center justify-center rounded-lg ${toneClass}`}>
+          <Icon className="size-4" />
+        </div>
+        <ArrowUpRight className="size-3.5 text-muted-foreground/40 transition group-hover:text-primary" />
       </div>
       <div className="mt-3 text-2xl font-semibold">{value}</div>
       <div className="text-xs text-muted-foreground">{label}</div>
       {sub && <div className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground/80">{sub}</div>}
-    </div>
+    </Link>
   );
 }
 
@@ -278,7 +290,7 @@ function Panel({
   children,
 }: {
   title: string;
-  link?: { to: string; label: string };
+  link?: { to: string; label: string; search?: Record<string, unknown> };
   className?: string;
   children: React.ReactNode;
 }) {
@@ -287,7 +299,7 @@ function Panel({
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-sm font-semibold">{title}</h2>
         {link && (
-          <Link to={link.to} className="inline-flex items-center gap-1 text-[11px] text-primary hover:underline">
+          <Link to={link.to as any} search={link.search as any} className="inline-flex items-center gap-1 text-[11px] text-primary hover:underline">
             {link.label} <ArrowRight className="size-3" />
           </Link>
         )}

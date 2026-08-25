@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -12,16 +12,25 @@ import { useRoles } from "@/hooks/use-role";
 import { setProviderVerification } from "@/lib/admin.functions";
 import { RoleGate } from "@/components/portal/role-gate";
 
+type Search = { status?: string; online?: boolean };
+
 export const Route = createFileRoute("/_authenticated/admin/providers")({
+  validateSearch: (s: Record<string, unknown>): Search => ({
+    status: typeof s.status === "string" ? s.status : undefined,
+    online: s.online === true || s.online === "true" ? true : undefined,
+  }),
   head: () => ({ meta: [{ title: "Admin — Providers — Zwits" }] }),
   component: AdminAdminProvidersRoute,
 });
+
+const STATUS_FILTERS = ["pending", "approved", "revoked"] as const;
 
 function AdminProviders() {
   const { user } = useAuth();
   const { data: roles, isLoading: rolesLoading } = useRoles();
   const qc = useQueryClient();
   const isAdmin = (roles ?? []).includes("admin");
+  const { status: statusFilter, online } = Route.useSearch();
 
   const { data: providers, isLoading } = useQuery({
     queryKey: ["admin-providers"],
@@ -61,6 +70,14 @@ function AdminProviders() {
     },
   });
 
+  // Filter matches the authoritative dashboard definitions:
+  // online = available + approved; status = exact verification_status.
+  const filteredProviders = (providers ?? []).filter((p: any) => {
+    if (online) return p.available && p.verification_status === "approved";
+    if (statusFilter) return p.verification_status === statusFilter;
+    return true;
+  });
+
   if (rolesLoading) return <SiteShell><div className="p-10 text-sm text-muted-foreground">Loading…</div></SiteShell>;
   if (!isAdmin) {
     return (
@@ -91,10 +108,37 @@ function AdminProviders() {
           />
         </div>
 
+        <div className="mt-5 flex flex-wrap items-center gap-1.5 text-xs">
+          <Link
+            to="/admin/providers"
+            search={{}}
+            className={`rounded-full px-3 py-1.5 ${!statusFilter && !online ? "bg-primary/15 font-semibold text-primary" : "border border-border text-muted-foreground hover:bg-muted"}`}
+          >
+            All
+          </Link>
+          <Link
+            to="/admin/providers"
+            search={{ online: true }}
+            className={`rounded-full px-3 py-1.5 ${online ? "bg-emerald-500/15 font-semibold text-emerald-400" : "border border-border text-muted-foreground hover:bg-muted"}`}
+          >
+            Online now
+          </Link>
+          {STATUS_FILTERS.map((s) => (
+            <Link
+              key={s}
+              to="/admin/providers"
+              search={{ status: s }}
+              className={`rounded-full px-3 py-1.5 capitalize ${statusFilter === s && !online ? "bg-primary/15 font-semibold text-primary" : "border border-border text-muted-foreground hover:bg-muted"}`}
+            >
+              {s === "pending" ? "Pending review" : s}
+            </Link>
+          ))}
+        </div>
+
         {isLoading && <p className="mt-6 text-sm text-muted-foreground">Loading providers…</p>}
 
         <ul className="mt-6 grid gap-3">
-          {(providers ?? []).map((p) => (
+          {filteredProviders.map((p) => (
             <AdminProviderRow
               key={p.id}
               provider={p}
@@ -102,8 +146,16 @@ function AdminProviders() {
               onRevoke={(reason) => setStatus.mutate({ id: p.id, status: "revoked", reason })}
             />
           ))}
-          {(providers ?? []).length === 0 && !isLoading && (
-            <li className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">No providers yet.</li>
+          {filteredProviders.length === 0 && !isLoading && (
+            <li className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+              {online
+                ? "No providers online right now."
+                : statusFilter === "pending"
+                  ? "No providers awaiting verification."
+                  : statusFilter
+                    ? `No ${statusFilter} providers.`
+                    : "No providers yet."}
+            </li>
           )}
         </ul>
       </section>
