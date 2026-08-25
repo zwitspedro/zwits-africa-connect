@@ -70,6 +70,14 @@ function AdminProviders() {
     },
   });
 
+  // Filter matches the authoritative dashboard definitions:
+  // online = available + approved; status = exact verification_status.
+  const filteredProviders = (providers ?? []).filter((p: any) => {
+    if (online) return p.available && p.verification_status === "approved";
+    if (statusFilter) return p.verification_status === statusFilter;
+    return true;
+  });
+
   if (rolesLoading) return <SiteShell><div className="p-10 text-sm text-muted-foreground">Loading…</div></SiteShell>;
   if (!isAdmin) {
     return (
@@ -138,8 +146,16 @@ function AdminProviders() {
               onRevoke={(reason) => setStatus.mutate({ id: p.id, status: "revoked", reason })}
             />
           ))}
-          {(providers ?? []).length === 0 && !isLoading && (
-            <li className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">No providers yet.</li>
+          {filteredProviders.length === 0 && !isLoading && (
+            <li className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+              {online
+                ? "No providers online right now."
+                : statusFilter === "pending"
+                  ? "No providers awaiting verification."
+                  : statusFilter
+                    ? `No ${statusFilter} providers.`
+                    : "No providers yet."}
+            </li>
           )}
         </ul>
       </section>
