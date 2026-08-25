@@ -10,6 +10,7 @@ import {
   SocialButtons,
   SubmitButton,
 } from "@/components/auth/auth-ui";
+import { PhoneOtpForm } from "@/components/auth/phone-otp-form";
 import {
   REMEMBERED_EMAIL_KEY,
   isPhoneIdentifier,
