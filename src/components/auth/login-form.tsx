@@ -138,7 +138,7 @@ export function LoginForm({ preferred, registerTo, registerLabel }: {
       </Link>
 
       <Divider />
-      <SocialButtons onSignedIn={afterSocial} />
+      <SocialButtons onSignedIn={afterSocial} intent={preferred === "provider" ? "provider" : "customer"} />
     </>
   );
 }
