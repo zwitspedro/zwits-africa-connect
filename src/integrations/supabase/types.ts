@@ -44,6 +44,69 @@ export type Database = {
         }
         Relationships: []
       }
+      auth_otp_codes: {
+        Row: {
+          attempts: number
+          code_hash: string
+          consumed_at: string | null
+          created_at: string
+          delivered: boolean
+          delivery_channel: string | null
+          expires_at: string
+          id: string
+          max_attempts: number
+          phone: string
+          purpose: string
+        }
+        Insert: {
+          attempts?: number
+          code_hash: string
+          consumed_at?: string | null
+          created_at?: string
+          delivered?: boolean
+          delivery_channel?: string | null
+          expires_at: string
+          id?: string
+          max_attempts?: number
+          phone: string
+          purpose?: string
+        }
+        Update: {
+          attempts?: number
+          code_hash?: string
+          consumed_at?: string | null
+          created_at?: string
+          delivered?: boolean
+          delivery_channel?: string | null
+          expires_at?: string
+          id?: string
+          max_attempts?: number
+          phone?: string
+          purpose?: string
+        }
+        Relationships: []
+      }
+      auth_rate_limits: {
+        Row: {
+          count: number
+          key: string
+          updated_at: string
+          window_start: string
+        }
+        Insert: {
+          count?: number
+          key: string
+          updated_at?: string
+          window_start?: string
+        }
+        Update: {
+          count?: number
+          key?: string
+          updated_at?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       booking_status_history: {
         Row: {
           booking_id: string
