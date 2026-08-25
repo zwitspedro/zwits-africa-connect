@@ -25,9 +25,13 @@ export function useProviderData() {
         .maybeSingle();
       if (error) throw error;
       if (!data) return null;
-      // Verification-document paths are only readable by the owner/admin via RPC.
-      const docs = await fetchProviderDocuments(data.id);
-      return { ...data, ...docs };
+      // Verification-document paths and review metadata are only readable by
+      // the owner/admin via RPC.
+      const [docs, review] = await Promise.all([
+        fetchProviderDocuments(data.id),
+        fetchProviderReview(data.id),
+      ]);
+      return { ...data, ...docs, revoke_reason: review.revoke_reason };
     },
   });
 

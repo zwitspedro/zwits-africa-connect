@@ -6,7 +6,7 @@ import { ShieldCheck, ShieldX, FileText, History } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { AuditExportButtons } from "@/components/audit-export-buttons";
 import { supabase } from "@/integrations/supabase/client";
-import { PROVIDER_SAFE_COLUMNS, fetchProviderDocuments } from "@/lib/provider-columns";
+import { PROVIDER_SAFE_COLUMNS, fetchProviderDocuments, fetchProviderReview } from "@/lib/provider-columns";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
 import { setProviderVerification } from "@/lib/admin.functions";
