@@ -165,18 +165,18 @@ function AdminDashboard() {
         )}
 
         <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          <KpiCard icon={Users} label="Approved providers" value={metricsLoading ? "…" : approvedProviders} sub={`${metrics?.pendingVerification ?? pendingProviders} pending · ${revokedProviders} revoked`} tone="emerald" />
-          <KpiCard icon={CalendarCheck} label="Active bookings" value={metricsLoading ? "…" : (metrics?.activeJobs ?? activeBookings)} sub={`${metrics?.completedJobs ?? completedBookings.length} completed`} tone="primary" />
-          <KpiCard icon={Wallet} label="Gross revenue" value={metricsLoading ? "…" : `$${(metrics?.revenue ?? 0).toFixed(0)}`} sub={`Commission $${(metrics?.commission ?? 0).toFixed(0)}`} tone="primary" />
-          <KpiCard icon={Star} label="Avg rating" value={avgRating} sub={`${ratings?.length ?? 0} reviews`} tone="amber" />
-          <KpiCard icon={Activity} label="Providers online" value={metricsLoading ? "…" : (metrics?.onlineProviders ?? 0)} sub={`${metrics?.providers ?? 0} total providers`} tone="primary" />
-          <KpiCard icon={AlertTriangle} label="Open disputes" value={metricsLoading ? "…" : (metrics?.openDisputes ?? 0)} sub="Awaiting resolution" tone={(metrics?.openDisputes ?? 0) > 0 ? "destructive" : "muted"} />
-          <KpiCard icon={Wallet} label="Pending withdrawals" value={metricsLoading ? "…" : (metrics?.pendingWithdrawals ?? 0)} sub="Requested or processing" tone={(metrics?.pendingWithdrawals ?? 0) > 0 ? "amber" : "muted"} />
-          <KpiCard icon={AlertTriangle} label="Failed payments" value={metricsLoading ? "…" : (metrics?.failedPayments ?? 0)} sub="Needs follow-up" tone={(metrics?.failedPayments ?? 0) > 0 ? "destructive" : "muted"} />
-          <KpiCard icon={FileSearch} label="Audit events" value={audits?.length ?? 0} sub="Latest 200" tone="primary" />
-          <KpiCard icon={AlertTriangle} label="Failed uploads" value={failedAudits} sub="Rejected or errored" tone={failedAudits > 0 ? "destructive" : "muted"} />
-          <KpiCard icon={ShieldCheck} label="Pending review" value={metrics?.pendingVerification ?? pendingProviders} sub="Awaiting verification" tone={(metrics?.pendingVerification ?? pendingProviders) > 0 ? "amber" : "muted"} />
-          <KpiCard icon={Users} label="Customers" value={metricsLoading ? "…" : (metrics?.customers ?? 0)} sub="Registered accounts" tone="primary" />
+          <KpiCard icon={Users} label="Approved providers" value={metricsLoading ? "…" : approvedProviders} sub={`${metrics?.pendingVerification ?? pendingProviders} pending · ${revokedProviders} revoked`} tone="emerald" to="/admin/providers" search={{ status: "approved" }} />
+          <KpiCard icon={CalendarCheck} label="Active bookings" value={metricsLoading ? "…" : (metrics?.activeJobs ?? activeBookings)} sub={`${metrics?.completedJobs ?? completedBookings.length} completed`} tone="primary" to="/admin/reconciliation" />
+          <KpiCard icon={Wallet} label="Gross revenue" value={metricsLoading ? "…" : `$${(metrics?.revenue ?? 0).toFixed(0)}`} sub={`Commission $${(metrics?.commission ?? 0).toFixed(0)}`} tone="primary" to="/admin/reconciliation" />
+          <KpiCard icon={Star} label="Avg rating" value={avgRating} sub={`${ratings?.length ?? 0} reviews`} tone="amber" to="/admin/providers" search={{ status: "approved" }} />
+          <KpiCard icon={Activity} label="Providers online" value={metricsLoading ? "…" : (metrics?.onlineProviders ?? 0)} sub={`${metrics?.providers ?? 0} total providers`} tone="primary" to="/admin/providers" search={{ online: true }} />
+          <KpiCard icon={AlertTriangle} label="Open disputes" value={metricsLoading ? "…" : (metrics?.openDisputes ?? 0)} sub="Awaiting resolution" tone={(metrics?.openDisputes ?? 0) > 0 ? "destructive" : "muted"} to="/admin/operations" search={{ tab: "disputes" }} />
+          <KpiCard icon={Wallet} label="Pending withdrawals" value={metricsLoading ? "…" : (metrics?.pendingWithdrawals ?? 0)} sub="Requested or processing" tone={(metrics?.pendingWithdrawals ?? 0) > 0 ? "amber" : "muted"} to="/admin/operations" search={{ tab: "withdrawals" }} />
+          <KpiCard icon={AlertTriangle} label="Failed payments" value={metricsLoading ? "…" : (metrics?.failedPayments ?? 0)} sub="Needs follow-up" tone={(metrics?.failedPayments ?? 0) > 0 ? "destructive" : "muted"} to="/admin/payments" search={{ status: "failed" }} />
+          <KpiCard icon={FileSearch} label="Audit events" value={audits?.length ?? 0} sub="Latest 200" tone="primary" to="/admin/audit" />
+          <KpiCard icon={AlertTriangle} label="Failed uploads" value={failedAudits} sub="Rejected or errored" tone={failedAudits > 0 ? "destructive" : "muted"} to="/admin/uploads" />
+          <KpiCard icon={ShieldCheck} label="Pending review" value={metrics?.pendingVerification ?? pendingProviders} sub="Awaiting verification" tone={(metrics?.pendingVerification ?? pendingProviders) > 0 ? "amber" : "muted"} to="/admin/providers" search={{ status: "pending" }} />
+          <KpiCard icon={Users} label="Customers" value={metricsLoading ? "…" : (metrics?.customers ?? 0)} sub="Registered accounts" tone="primary" to="/admin/customers" />
         </div>
 
         <div className="mt-8 grid gap-4 lg:grid-cols-3">
