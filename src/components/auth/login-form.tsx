@@ -77,6 +77,23 @@ export function LoginForm({ preferred, registerTo, registerLabel }: {
     if (data.user) await go(data.user.id);
   };
 
+  if (method === "otp") {
+    return (
+      <>
+        <PhoneOtpForm role={preferred === "provider" ? "provider" : "customer"} />
+        <button
+          type="button"
+          onClick={() => setMethod("password")}
+          className="mt-4 w-full text-sm font-medium text-primary hover:underline"
+        >
+          Use email and password instead
+        </button>
+        <Divider />
+        <SocialButtons onSignedIn={afterSocial} intent={preferred === "provider" ? "provider" : "customer"} />
+      </>
+    );
+  }
+
   return (
     <>
       <form className="grid gap-4" onSubmit={submit}>
