@@ -140,8 +140,8 @@ function AdminProviders() {
               role="status"
               className="ml-1 inline-flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground"
             >
-              <span className={`size-1.5 rounded-full ${isFetching ? "animate-pulse bg-emerald-400" : "bg-emerald-500/60"}`} />
-              Live · updated {new Date(dataUpdatedAt).toLocaleTimeString()}
+              <span className={`size-1.5 rounded-full ${providersLive || isFetching ? "animate-pulse bg-emerald-400" : "bg-emerald-500/60"}`} />
+              {providersLive ? "Live · realtime" : "Auto-refresh 30s"} · updated {new Date(dataUpdatedAt).toLocaleTimeString()}
             </span>
           )}
           {STATUS_FILTERS.map((s) => (
