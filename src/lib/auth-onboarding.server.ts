@@ -38,9 +38,9 @@ export async function ensureProfile(
     return;
   }
 
-  const patch: Record<string, string> = {};
-  if (!data.display_name && fields.display_name) patch["display_name"] = fields.display_name;
-  if (!data.phone && fields.phone) patch["phone"] = fields.phone;
+  const patch: { display_name?: string; phone?: string } = {};
+  if (!data.display_name && fields.display_name) patch.display_name = fields.display_name;
+  if (!data.phone && fields.phone) patch.phone = fields.phone;
   if (Object.keys(patch).length) {
     await supabaseAdmin.from("profiles").update(patch).eq("user_id", userId);
   }
