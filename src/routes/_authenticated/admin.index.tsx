@@ -180,7 +180,7 @@ function AdminDashboard() {
         </div>
 
         <div className="mt-8 grid gap-4 lg:grid-cols-3">
-          <Panel title="Recent audit activity" link={{ to: "/admin/providers", label: "Open" }} className="lg:col-span-2">
+          <Panel title="Recent audit activity" link={{ to: "/admin/uploads", label: "Open" }} className="lg:col-span-2">
             {recentAudits.length === 0 && <Empty>No audit activity yet.</Empty>}
             <ul className="grid gap-1.5">
               {recentAudits.map((a: any) => (
