@@ -34,12 +34,14 @@ function AdminDashboard() {
     queryFn: () => fetchMetrics({ data: undefined }),
   });
 
-  // Lightweight live count for the "Providers online" tile: one head-count
-  // query polled in the background — no page refetch, no loading flicker.
+  // Realtime first: provider row changes invalidate the count instantly.
+  // While the channel is down or connecting, poll the single head-count query
+  // every 30s in the background — never a full page refetch.
+  const providersLive = useProvidersRealtime(!!user && isAdmin, "dash");
   const { data: onlineCount } = useQuery({
     queryKey: ["admin-online-providers"],
     enabled: !!user && isAdmin,
-    refetchInterval: 30_000,
+    refetchInterval: providersLive ? false : 30_000,
     staleTime: 10_000,
     placeholderData: (prev) => prev,
     queryFn: () => fetchOnlineCount({ data: undefined }),

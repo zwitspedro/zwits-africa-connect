@@ -33,6 +33,10 @@ function AdminProviders() {
   const isAdmin = (roles ?? []).includes("admin");
   const { status: statusFilter, online } = Route.useSearch();
 
+  // Realtime first: any providers-table change invalidates this list instantly.
+  // Polling (30s, background) only kicks in while "Online now" is active AND
+  // the realtime channel is unavailable — no full page refetch either way.
+  const providersLive = useProvidersRealtime(!!user && isAdmin, "list");
   const {
     data: providers,
     isLoading,
@@ -41,9 +45,7 @@ function AdminProviders() {
   } = useQuery({
     queryKey: ["admin-providers"],
     enabled: !!user && isAdmin,
-    // Auto-refresh only while the "Online now" filter is active — a background
-    // query refetch keeps rows in place (no full page refetch or flicker).
-    refetchInterval: online ? 30_000 : false,
+    refetchInterval: online && !providersLive ? 30_000 : false,
     placeholderData: (prev) => prev,
     queryFn: async () => {
       const { data, error } = await supabase
