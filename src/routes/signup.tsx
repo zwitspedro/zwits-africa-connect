@@ -12,6 +12,7 @@ import {
 } from "@/components/auth/auth-ui";
 import { supabase } from "@/integrations/supabase/client";
 import { resolveLanding } from "@/lib/auth-nav";
+import { claimRole } from "@/lib/auth-onboarding.functions";
 
 const title = "Create your Zwits account — book trusted services";
 const description =
