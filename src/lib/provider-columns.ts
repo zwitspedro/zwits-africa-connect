@@ -35,3 +35,27 @@ export async function fetchProviderDocuments(providerId: string): Promise<Provid
   const row = (data as ProviderDocuments[] | null)?.[0];
   return row ?? EMPTY_DOCS;
 }
+
+export type ProviderReview = {
+  revoke_reason: string | null;
+  reviewed_at: string | null;
+  reviewed_by: string | null;
+};
+
+const EMPTY_REVIEW: ProviderReview = {
+  revoke_reason: null,
+  reviewed_at: null,
+  reviewed_by: null,
+};
+
+/**
+ * Authorized read of a provider's review metadata (including the internal
+ * revoke reason). The database function only returns rows for the provider
+ * themselves or an admin, so anyone else gets nulls.
+ */
+export async function fetchProviderReview(providerId: string): Promise<ProviderReview> {
+  const { data, error } = await supabase.rpc("get_provider_review", { _provider_id: providerId });
+  if (error) throw error;
+  const row = (data as ProviderReview[] | null)?.[0];
+  return row ?? EMPTY_REVIEW;
+}

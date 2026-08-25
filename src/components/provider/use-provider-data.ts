@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
-import { PROVIDER_SAFE_COLUMNS, fetchProviderDocuments } from "@/lib/provider-columns";
+import { PROVIDER_SAFE_COLUMNS, fetchProviderDocuments, fetchProviderReview } from "@/lib/provider-columns";
 import { useAuth } from "@/hooks/use-auth";
 import { isOpen } from "@/lib/job-lifecycle";
 import { getMyWallet, listMyLedger } from "@/lib/wallet.functions";
