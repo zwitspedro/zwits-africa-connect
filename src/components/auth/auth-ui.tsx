@@ -189,15 +189,37 @@ export function Divider({ label = "or" }: { label?: string }) {
 }
 
 /** Managed social sign-in. Runs the Lovable OAuth broker, then returns control to the caller. */
-export function SocialButtons({ onSignedIn }: { onSignedIn: () => void }) {
+export const OAUTH_INTENT_KEY = "zwits.authIntent";
+
+/**
+ * `intent` is the role the entry point implies (customer login vs provider
+ * signup). It is remembered locally so the OAuth return can route correctly —
+ * the role itself is still granted server-side, never trusted from the client.
+ */
+export function SocialButtons({
+  onSignedIn,
+  intent = "customer",
+}: {
+  onSignedIn: () => void;
+  intent?: "customer" | "provider" | "driver" | "business";
+}) {
   const [busy, setBusy] = useState<string | null>(null);
 
   const run = async (provider: "google" | "apple") => {
     setBusy(provider);
-    const result = await lovable.auth.signInWithOAuth(provider, { redirect_uri: window.location.origin });
+    try {
+      sessionStorage.setItem(OAUTH_INTENT_KEY, intent);
+    } catch {
+      /* private mode — the callback falls back to role selection */
+    }
+    // Must be a PUBLIC same-origin URL: full-page OAuth returns before the
+    // session is set, so a protected route would bounce the user out.
+    const result = await lovable.auth.signInWithOAuth(provider, {
+      redirect_uri: `${window.location.origin}/auth/callback?intent=${intent}`,
+    });
     setBusy(null);
     if (result.error) {
-      toast.error(`${provider === "google" ? "Google" : "Apple"} sign-in failed`);
+      toast.error(`${provider === "google" ? "Google" : "Apple"} sign-in failed. Please try again.`);
       return;
     }
     if (result.redirected) return;
