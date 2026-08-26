@@ -11,9 +11,9 @@ import {
   type Faq,
 } from "@/lib/seo";
 
-const title = "Delivery Services in Zimbabwe | Courier & Parcel Delivery | Zwits";
+const title = "Delivery Services in Zimbabwe | Courier & Parcels | Zwits";
 const description =
-  "Send parcels, documents and shop orders with Zwits. Tracked personal and business delivery in Harare, booked online and matched to a verified rider or driver.";
+  "Send parcels, documents and shop orders with Zwits. Tracked personal and business delivery in Harare, matched to a verified rider or driver.";
 
 const crumbs: Crumb[] = [
   { name: "Home", path: "/" },

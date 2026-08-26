@@ -36,7 +36,7 @@ export const Route = createFileRoute("/services/")({
     seo({
       title: "Services & Service Providers in Zimbabwe | Zwits",
       description:
-        "Find and book trusted service providers in Zimbabwe — plumbers, electricians, cleaners, mechanics, gardeners, beauty pros and more. Verified, priced up front, booked online.",
+        "Find and book verified service providers in Zimbabwe — plumbers, electricians, cleaners, mechanics, gardeners and more. Priced up front, booked online.",
       path: "/services",
       jsonLd: [breadcrumbJsonLd(crumbs), faqJsonLd(faqs)],
     }),
