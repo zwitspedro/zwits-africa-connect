@@ -20,10 +20,37 @@ import { LIVE_CITIES } from "@/data/locations";
 
 
 export const Route = createFileRoute("/services/$slug/")({
-  loader: ({ params }) => {
+  loader: async ({ params }) => {
     const service = services.find((s) => s.slug === params.slug);
     if (!service) throw notFound();
-    return { name: service.name, tagline: service.tagline, description: service.description };
+
+    // SSR-visible, public-only provider summary. Uses the anon client, so RLS
+    // decides what is readable, and only non-private columns are selected —
+    // no phone numbers, emails, documents, bookings or payment data.
+    let summary = { count: 0, cities: [] as string[], names: [] as string[] };
+    try {
+      const { data, count } = await supabase
+        .from("providers")
+        .select("business_name, city", { count: "exact" })
+        .eq("category", params.slug)
+        .eq("verification_status", "approved")
+        .order("rating_avg", { ascending: false })
+        .limit(8);
+      summary = {
+        count: count ?? data?.length ?? 0,
+        cities: Array.from(new Set((data ?? []).map((r) => r.city).filter(Boolean) as string[])),
+        names: (data ?? []).map((r) => r.business_name).filter(Boolean).slice(0, 5) as string[],
+      };
+    } catch {
+      // Never let a listing lookup break the page render.
+    }
+
+    return {
+      name: service.name,
+      tagline: service.tagline,
+      description: service.description,
+      summary,
+    };
   },
   head: ({ loaderData, params }) => {
     if (!loaderData) {
@@ -65,6 +92,7 @@ function ServiceNotFound() {
 
 function ServiceDetail() {
   const { slug } = Route.useParams();
+  const { summary } = Route.useLoaderData();
   const service = services.find((s) => s.slug === slug)!;
   const Icon = service.icon;
   const mode = fulfilmentModeFor(slug);
@@ -140,6 +168,42 @@ function ServiceDetail() {
             ))}
           </div>
         </div>
+      </section>
+
+      {/* SSR-rendered public availability summary */}
+      <section className="mx-auto max-w-7xl px-4 pt-14 sm:px-6">
+        <h2 className="font-display text-2xl font-semibold">
+          {service.name} availability on Zwits
+        </h2>
+        <p className="mt-3 max-w-3xl text-sm leading-relaxed text-muted-foreground">
+          {summary.count > 0 ? (
+            <>
+              {summary.count} verified {service.name.toLowerCase()}{" "}
+              {summary.count === 1 ? "provider is" : "providers are"} listed on Zwits
+              {summary.cities.length > 0 && <> in {summary.cities.join(", ")}</>}. Every provider
+              completes identity verification and profile review before accepting work, and the
+              price for your job is confirmed before you commit.
+            </>
+          ) : (
+            <>
+              No {service.name.toLowerCase()} provider is publicly listed right now. You can still
+              post the job — Zwits matches it to a verified provider as soon as one comes online in
+              your area.
+            </>
+          )}
+        </p>
+        {summary.names.length > 0 && (
+          <ul className="mt-4 flex flex-wrap gap-2">
+            {summary.names.map((n) => (
+              <li
+                key={n}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border px-3.5 py-1.5 text-sm text-muted-foreground"
+              >
+                <BadgeCheck className="size-3.5 text-gold" aria-hidden /> {n}
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       {/* Pricing / quotation */}
