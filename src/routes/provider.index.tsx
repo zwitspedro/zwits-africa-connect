@@ -17,6 +17,9 @@ export const Route = createFileRoute("/provider/")({
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://www.zwits.co.zw/provider" },
       { name: "twitter:card", content: "summary_large_image" },
+      // Application funnel, not an SEO landing page. /providers and /drivers
+      // are the canonical recruitment landing pages.
+      { name: "robots", content: "noindex, follow" },
     ],
     links: [{ rel: "canonical", href: "https://www.zwits.co.zw/provider" }],
   }),
