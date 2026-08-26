@@ -14,10 +14,10 @@ export const Route = createFileRoute("/login")({
       { property: "og:title", content: title },
       { property: "og:description", content: description },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://zwits.co.zw/login" },
+      { property: "og:url", content: "https://www.zwits.co.zw/login" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "https://zwits.co.zw/login" }],
+    links: [{ rel: "canonical", href: "https://www.zwits.co.zw/login" }],
   }),
   component: CustomerLogin,
 });

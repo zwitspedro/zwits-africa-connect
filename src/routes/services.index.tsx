@@ -3,23 +3,46 @@ import { useMemo, useState } from "react";
 import { ArrowUpRight, Search } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { PageHero } from "@/components/page-hero";
+import { Breadcrumbs } from "@/components/seo/seo-landing";
 import { services } from "@/data/services";
+import { seo, breadcrumbJsonLd, faqJsonLd, type Crumb, type Faq } from "@/lib/seo";
+
+const crumbs: Crumb[] = [
+  { name: "Home", path: "/" },
+  { name: "Services", path: "/services" },
+];
+
+const faqs: Faq[] = [
+  {
+    q: "How do I book a service on Zwits?",
+    a: "Pick the service you need, tell Zwits where and when, and the request goes to verified providers in that category and area. You confirm the booking once you are happy with the price.",
+  },
+  {
+    q: "Are Zwits providers verified?",
+    a: "Yes. Providers must complete identity verification and profile review before they can accept work, and ratings are only collected from completed jobs.",
+  },
+  {
+    q: "Where does Zwits operate?",
+    a: "Zwits is live in Harare and expanding across Zimbabwe. Coverage depends on how many verified providers are active in your category and area.",
+  },
+  {
+    q: "How do I join as a service provider?",
+    a: "Register as a provider, submit your documents for verification, and start receiving job requests in your trade and area. Listing is free — Zwits earns a commission on completed jobs.",
+  },
+];
 
 export const Route = createFileRoute("/services/")({
-  head: () => ({
-    meta: [
-      { title: "All Services — Book Verified Pros | Zwits" },
-      { name: "description", content: "Browse every Zwits service — deliveries, transport, repairs, cleaning, farming, beauty, freelance and emergency. Tap a service to see pricing, verified providers and book instantly." },
-      { property: "og:type", content: "website" },
-      { property: "og:title", content: "All Services — Book Verified Pros | Zwits" },
-      { property: "og:description", content: "Tap any service to see pricing, verified providers and book in minutes." },
-      { name: "twitter:card", content: "summary_large_image" },
-      { property: "og:url", content: "https://zwits-africa-connect.lovable.app/services" },
-    ],
-    links: [{ rel: "canonical", href: "https://zwits-africa-connect.lovable.app/services" }],
-  }),
+  head: () =>
+    seo({
+      title: "Services & Service Providers in Zimbabwe | Zwits",
+      description:
+        "Find and book trusted service providers in Zimbabwe — plumbers, electricians, cleaners, mechanics, gardeners, beauty pros and more. Verified, priced up front, booked online.",
+      path: "/services",
+      jsonLd: [breadcrumbJsonLd(crumbs), faqJsonLd(faqs)],
+    }),
   component: ServicesPage,
 });
+
 
 function ServicesPage() {
   const [q, setQ] = useState("");
@@ -34,12 +57,16 @@ function ServicesPage() {
 
   return (
     <SiteShell>
-      <PageHero eyebrow="Services" title="Pick a service. We handle the rest.">
-        Tap a category to see pricing, verified providers and start a booking — your choice
-        follows you through every step.
+      <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6">
+        <Breadcrumbs crumbs={crumbs} />
+      </div>
+      <PageHero eyebrow="Services" title="Find trusted service providers in Zimbabwe">
+        Customers discover and book verified professionals in minutes. Service providers join Zwits
+        to receive job opportunities in their trade and area.
       </PageHero>
 
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
+
         <label className="relative mx-auto flex max-w-xl items-center">
           <Search className="pointer-events-none absolute left-4 size-4 text-muted-foreground" />
           <input
@@ -86,7 +113,26 @@ function ServicesPage() {
             No service matches “{q}”. <Link to="/contact" className="text-primary underline">Ask support</Link> and we'll find someone.
           </p>
         )}
+
+        <section className="mt-16 max-w-3xl">
+          <h2 className="font-display text-2xl font-bold sm:text-3xl">Frequently asked questions</h2>
+          <div className="mt-6 divide-y divide-border rounded-2xl border border-border bg-card">
+            {faqs.map((f) => (
+              <details key={f.q} className="p-5">
+                <summary className="cursor-pointer font-medium">{f.q}</summary>
+                <p className="mt-3 text-sm text-muted-foreground">{f.a}</p>
+              </details>
+            ))}
+          </div>
+          <p className="mt-6 text-sm text-muted-foreground">
+            Need something moved instead?{" "}
+            <Link to="/delivery" className="text-primary underline">See Zwits delivery services</Link>. Run a business?{" "}
+            <Link to="/business" className="text-primary underline">Explore business delivery solutions</Link>. Want work?{" "}
+            <Link to="/providers" className="text-primary underline">Join Zwits as a service provider</Link>.
+          </p>
+        </section>
       </section>
+
     </SiteShell>
   );
 }

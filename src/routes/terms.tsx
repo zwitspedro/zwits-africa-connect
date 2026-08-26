@@ -7,9 +7,9 @@ export const Route = createFileRoute("/terms")({
     meta: [
       { title: "Terms of Service — Zwits" },
       { name: "description", content: "The terms that govern your use of Zwits." },
-      { property: "og:url", content: "https://zwits-africa-connect.lovable.app/terms" },
+      { property: "og:url", content: "https://www.zwits.co.zw/terms" },
     ],
-    links: [{ rel: "canonical", href: "https://zwits-africa-connect.lovable.app/terms" }],
+    links: [{ rel: "canonical", href: "https://www.zwits.co.zw/terms" }],
   }),
   component: Terms,
 });

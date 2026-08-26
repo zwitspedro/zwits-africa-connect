@@ -1,6 +1,17 @@
 User-agent: *
 Allow: /
+
 Disallow: /_authenticated/
 Disallow: /admin/
+Disallow: /dashboard
+Disallow: /workspace
+Disallow: /bookings
+Disallow: /notifications
+Disallow: /messages/
+Disallow: /auth/callback
+Disallow: /reset-password
+Disallow: /forgot-password
+Disallow: /resend-confirmation
+Disallow: /m/
 
-Sitemap: https://zwits-africa-connect.lovable.app/sitemap.xml
+Sitemap: https://www.zwits.co.zw/sitemap.xml

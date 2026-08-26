@@ -26,10 +26,10 @@ export const Route = createFileRoute("/signup")({
       { property: "og:title", content: title },
       { property: "og:description", content: description },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://zwits.co.zw/signup" },
+      { property: "og:url", content: "https://www.zwits.co.zw/signup" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "https://zwits.co.zw/signup" }],
+    links: [{ rel: "canonical", href: "https://www.zwits.co.zw/signup" }],
   }),
   component: CustomerSignup,
 });

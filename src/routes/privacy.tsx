@@ -7,9 +7,9 @@ export const Route = createFileRoute("/privacy")({
     meta: [
       { title: "Privacy Policy — Zwits" },
       { name: "description", content: "How Zwits collects, uses and protects your data." },
-      { property: "og:url", content: "https://zwits-africa-connect.lovable.app/privacy" },
+      { property: "og:url", content: "https://www.zwits.co.zw/privacy" },
     ],
-    links: [{ rel: "canonical", href: "https://zwits-africa-connect.lovable.app/privacy" }],
+    links: [{ rel: "canonical", href: "https://www.zwits.co.zw/privacy" }],
   }),
   component: Privacy,
 });

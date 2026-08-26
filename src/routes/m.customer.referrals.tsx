@@ -9,7 +9,7 @@ export const Route = createFileRoute("/m/customer/referrals")({ component: Refer
 function Referrals() {
   const { user } = useAuth();
   const code = (user?.id ?? "zwits").replace(/-/g, "").slice(0, 6).toUpperCase();
-  const link = `https://zwits.co.zw/signup?ref=${code}`;
+  const link = `https://www.zwits.co.zw/signup?ref=${code}`;
 
   const share = async () => {
     const payload = {

@@ -13,24 +13,54 @@ import {
 import { SiteShell } from "@/components/site-shell";
 import { PageHero } from "@/components/page-hero";
 import { Reveal } from "@/components/marketing/reveal";
+import { Breadcrumbs } from "@/components/seo/seo-landing";
+import { seo, breadcrumbJsonLd, faqJsonLd, serviceJsonLd, type Crumb, type Faq } from "@/lib/seo";
 
-const title = "Zwits Business — Enterprise logistics & service accounts";
+const title = "Business Delivery Services in Zimbabwe | Zwits Business";
 const description =
-  "Corporate deliveries, bulk logistics, monthly accounts, invoicing, analytics and API integrations for businesses running on Zwits.";
+  "Reliable business delivery and logistics for Zimbabwean companies. Same-day dispatch, scheduled runs, monthly accounts, invoicing and delivery tracking with Zwits Business.";
+
+const crumbs: Crumb[] = [
+  { name: "Home", path: "/" },
+  { name: "Business delivery", path: "/business" },
+];
+
+const faqs: Faq[] = [
+  {
+    q: "What is business delivery on Zwits?",
+    a: "A managed delivery account for companies — you dispatch same-day or scheduled deliveries, track every job, and settle on one monthly invoice instead of paying trip by trip.",
+  },
+  {
+    q: "Which businesses use Zwits Business?",
+    a: "Retailers, pharmacies, restaurants, wholesalers and corporate offices in Harare that need dependable last-mile delivery and service call-outs.",
+  },
+  {
+    q: "How is business delivery priced?",
+    a: "Pricing depends on distance, volume and how often you dispatch. Contact Zwits with your typical delivery volumes and we will quote an account rate.",
+  },
+  {
+    q: "Can we get invoices and reporting?",
+    a: "Yes. Business accounts get consolidated monthly statements with per-job line items, plus a live operations view of deliveries in progress.",
+  },
+];
 
 export const Route = createFileRoute("/business")({
-  head: () => ({
-    meta: [
-      { title },
-      { name: "description", content: description },
-      { property: "og:title", content: title },
-      { property: "og:description", content: description },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://zwits.co.zw/business" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-    links: [{ rel: "canonical", href: "https://zwits.co.zw/business" }],
-  }),
+  head: () =>
+    seo({
+      title,
+      description,
+      path: "/business",
+      jsonLd: [
+        breadcrumbJsonLd(crumbs),
+        serviceJsonLd({
+          name: "Business delivery services",
+          description,
+          path: "/business",
+          areaServed: "Harare",
+        }),
+        faqJsonLd(faqs),
+      ],
+    }),
   component: BusinessPage,
 });
 
@@ -48,9 +78,12 @@ const capabilities = [
 function BusinessPage() {
   return (
     <SiteShell>
-      <PageHero eyebrow="Zwits Business" title="Enterprise operations, without the overhead.">
-        Retailers, pharmacies, restaurants and corporates run their last mile and facilities work
-        on Zwits — with the controls a finance team expects.
+      <div className="mx-auto max-w-7xl px-5 pt-6 sm:px-8">
+        <Breadcrumbs crumbs={crumbs} />
+      </div>
+      <PageHero eyebrow="Zwits Business" title="Business delivery solutions for Zimbabwean companies">
+        Retailers, pharmacies, restaurants and corporates run their last-mile delivery and
+        facilities work on Zwits — with the tracking, invoicing and controls a finance team expects.
       </PageHero>
 
       <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8">
@@ -98,6 +131,24 @@ function BusinessPage() {
           ))}
         </div>
       </section>
+
+      <section className="mx-auto max-w-3xl px-5 pb-4 sm:px-8">
+        <h2 className="font-display text-2xl font-bold sm:text-3xl">Business delivery FAQs</h2>
+        <div className="mt-6 divide-y divide-border rounded-2xl border border-border bg-card">
+          {faqs.map((f) => (
+            <details key={f.q} className="p-5">
+              <summary className="cursor-pointer font-medium">{f.q}</summary>
+              <p className="mt-3 text-sm text-muted-foreground">{f.a}</p>
+            </details>
+          ))}
+        </div>
+        <p className="mt-6 text-sm text-muted-foreground">
+          Also see <Link to="/delivery" className="text-primary underline">Zwits delivery in Zimbabwe</Link>,{" "}
+          <Link to="/delivery/harare" className="text-primary underline">delivery in Harare</Link> and{" "}
+          <Link to="/services" className="text-primary underline">services for your premises</Link>.
+        </p>
+      </section>
+
 
       <section className="mx-auto max-w-7xl px-5 py-24 text-center sm:px-8">
         <h2 className="mx-auto max-w-2xl text-balance-tight font-display text-3xl font-bold tracking-[-0.03em] md:text-5xl">

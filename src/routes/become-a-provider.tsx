@@ -12,9 +12,9 @@ export const Route = createFileRoute("/become-a-provider")({
     meta: [
       { title: "Become a Provider — Zwits" },
       { name: "description", content: "Earn flexible income on Zwits. Register as a verified service provider." },
-      { property: "og:url", content: "https://zwits-africa-connect.lovable.app/become-a-provider" },
+      { property: "og:url", content: "https://www.zwits.co.zw/become-a-provider" },
     ],
-    links: [{ rel: "canonical", href: "https://zwits-africa-connect.lovable.app/become-a-provider" }],
+    links: [{ rel: "canonical", href: "https://www.zwits.co.zw/become-a-provider" }],
   }),
   component: Provider,
 });
