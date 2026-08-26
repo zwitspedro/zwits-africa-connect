@@ -1,19 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
+import { services } from "@/data/services";
+import { HARARE_SUBURBS, LIVE_CITIES } from "@/data/locations";
+import { SITE_URL } from "@/lib/seo";
 
-const serviceSlugs = [
-  "deliveries",
-  "transport",
-  "repairs",
-  "cleaning",
-  "farming",
-  "beauty",
-  "freelance",
-  "emergency",
-  "customer-service",
-];
-
-const BASE_URL = "https://zwits-africa-connect.lovable.app";
+const BASE_URL = SITE_URL;
 
 interface SitemapEntry {
   path: string;
@@ -27,21 +18,47 @@ export const Route = createFileRoute("/sitemap.xml")({
       GET: async () => {
         const entries: SitemapEntry[] = [
           { path: "/", changefreq: "weekly", priority: "1.0" },
-          { path: "/home", changefreq: "weekly", priority: "0.9" },
-          { path: "/book", changefreq: "weekly", priority: "0.9" },
-          { path: "/about", changefreq: "monthly", priority: "0.7" },
-          { path: "/services", changefreq: "weekly", priority: "0.9" },
-          ...serviceSlugs.map((slug) => ({ path: `/services/${slug}`, changefreq: "weekly" as const, priority: "0.8" })),
+          { path: "/home", changefreq: "weekly", priority: "0.8" },
+
+          // Delivery cluster
           { path: "/delivery", changefreq: "weekly", priority: "0.9" },
-          { path: "/pricing", changefreq: "monthly", priority: "0.8" },
-          { path: "/business", changefreq: "monthly", priority: "0.8" },
-          { path: "/become-a-provider", changefreq: "monthly", priority: "0.8" },
-          { path: "/become-a-driver", changefreq: "monthly", priority: "0.8" },
-          { path: "/careers", changefreq: "weekly", priority: "0.6" },
+          { path: "/delivery/harare", changefreq: "weekly", priority: "0.9" },
+          ...HARARE_SUBURBS.map((s) => ({
+            path: `/delivery/harare/${s.slug}`,
+            changefreq: "weekly" as const,
+            priority: "0.7",
+          })),
+
+          // Services cluster
+          { path: "/services", changefreq: "weekly", priority: "0.9" },
+          ...services.map((s) => ({
+            path: `/services/${s.slug}`,
+            changefreq: "weekly" as const,
+            priority: "0.8",
+          })),
+          ...services.flatMap((s) =>
+            LIVE_CITIES.map((c) => ({
+              path: `/services/${s.slug}/${c.slug}`,
+              changefreq: "weekly" as const,
+              priority: "0.7",
+            })),
+          ),
+
+          // Business & partner clusters
+          { path: "/business", changefreq: "monthly", priority: "0.9" },
+          { path: "/providers", changefreq: "monthly", priority: "0.9" },
+          { path: "/drivers", changefreq: "monthly", priority: "0.9" },
+          { path: "/become-a-provider", changefreq: "monthly", priority: "0.6" },
+          { path: "/become-a-driver", changefreq: "monthly", priority: "0.6" },
+          { path: "/provider", changefreq: "monthly", priority: "0.6" },
+
+          // Company & support
+          { path: "/about", changefreq: "monthly", priority: "0.7" },
+          { path: "/book", changefreq: "weekly", priority: "0.7" },
+          { path: "/pricing", changefreq: "monthly", priority: "0.7" },
+          { path: "/careers", changefreq: "weekly", priority: "0.5" },
           { path: "/contact", changefreq: "monthly", priority: "0.6" },
           { path: "/faq", changefreq: "monthly", priority: "0.6" },
-          { path: "/login", changefreq: "yearly", priority: "0.3" },
-          { path: "/signup", changefreq: "yearly", priority: "0.3" },
           { path: "/privacy", changefreq: "yearly", priority: "0.3" },
           { path: "/terms", changefreq: "yearly", priority: "0.3" },
         ];

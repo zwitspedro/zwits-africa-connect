@@ -15,6 +15,7 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ResendConfirmationRouteImport } from './routes/resend-confirmation'
+import { Route as ProvidersRouteImport } from './routes/providers'
 import { Route as ProviderSignupRouteImport } from './routes/provider-signup'
 import { Route as ProviderLoginRouteImport } from './routes/provider-login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -24,6 +25,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FaqRouteImport } from './routes/faq'
+import { Route as DriversRouteImport } from './routes/drivers'
 import { Route as DeliveryRouteImport } from './routes/delivery'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CareersRouteImport } from './routes/careers'
@@ -36,6 +38,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ProviderIndexRouteImport } from './routes/provider.index'
 import { Route as MIndexRouteImport } from './routes/m.index'
+import { Route as DeliveryIndexRouteImport } from './routes/delivery.index'
 import { Route as BookIndexRouteImport } from './routes/book.index'
 import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
 import { Route as MSettingsRouteImport } from './routes/m.settings'
@@ -43,6 +46,7 @@ import { Route as MProviderRouteImport } from './routes/m.provider'
 import { Route as MNotificationsRouteImport } from './routes/m.notifications'
 import { Route as MDriverRouteImport } from './routes/m.driver'
 import { Route as MCustomerRouteImport } from './routes/m.customer'
+import { Route as DeliveryHarareRouteImport } from './routes/delivery.harare'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as AuthenticatedWorkspaceRouteImport } from './routes/_authenticated/workspace'
 import { Route as AuthenticatedSendDeliveryRouteImport } from './routes/_authenticated/send-delivery'
@@ -50,11 +54,14 @@ import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authen
 import { Route as AuthenticatedDriverRouteImport } from './routes/_authenticated/driver'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedBusinessPortalRouteImport } from './routes/_authenticated/business-portal'
+import { Route as ServicesSlugIndexRouteImport } from './routes/services.$slug.index'
 import { Route as MProviderIndexRouteImport } from './routes/m.provider.index'
 import { Route as MDriverIndexRouteImport } from './routes/m.driver.index'
 import { Route as MCustomerIndexRouteImport } from './routes/m.customer.index'
+import { Route as DeliveryHarareIndexRouteImport } from './routes/delivery.harare.index'
 import { Route as AuthenticatedBookingsIndexRouteImport } from './routes/_authenticated/bookings.index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as ServicesSlugCityRouteImport } from './routes/services.$slug.$city'
 import { Route as MProviderProfileRouteImport } from './routes/m.provider.profile'
 import { Route as MProviderMessagesRouteImport } from './routes/m.provider.messages'
 import { Route as MProviderJobsRouteImport } from './routes/m.provider.jobs'
@@ -72,6 +79,7 @@ import { Route as MCustomerCategoriesRouteImport } from './routes/m.customer.cat
 import { Route as MCustomerBookingsRouteImport } from './routes/m.customer.bookings'
 import { Route as MCustomerAddressesRouteImport } from './routes/m.customer.addresses'
 import { Route as MChatBookingIdRouteImport } from './routes/m.chat.$bookingId'
+import { Route as DeliveryHarareSuburbRouteImport } from './routes/delivery.harare.$suburb'
 import { Route as AuthenticatedProviderVerifyRouteImport } from './routes/_authenticated/provider.verify'
 import { Route as AuthenticatedProviderSetupRouteImport } from './routes/_authenticated/provider.setup'
 import { Route as AuthenticatedProviderDashboardRouteImport } from './routes/_authenticated/provider.dashboard'
@@ -132,6 +140,11 @@ const ResendConfirmationRoute = ResendConfirmationRouteImport.update({
   path: '/resend-confirmation',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProvidersRoute = ProvidersRouteImport.update({
+  id: '/providers',
+  path: '/providers',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProviderSignupRoute = ProviderSignupRouteImport.update({
   id: '/provider-signup',
   path: '/provider-signup',
@@ -175,6 +188,11 @@ const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DriversRoute = DriversRouteImport.update({
+  id: '/drivers',
+  path: '/drivers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DeliveryRoute = DeliveryRouteImport.update({
@@ -236,6 +254,11 @@ const MIndexRoute = MIndexRouteImport.update({
   path: '/',
   getParentRoute: () => MRoute,
 } as any)
+const DeliveryIndexRoute = DeliveryIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DeliveryRoute,
+} as any)
 const BookIndexRoute = BookIndexRouteImport.update({
   id: '/book/',
   path: '/book/',
@@ -270,6 +293,11 @@ const MCustomerRoute = MCustomerRouteImport.update({
   id: '/customer',
   path: '/customer',
   getParentRoute: () => MRoute,
+} as any)
+const DeliveryHarareRoute = DeliveryHarareRouteImport.update({
+  id: '/harare',
+  path: '/harare',
+  getParentRoute: () => DeliveryRoute,
 } as any)
 const AuthCallbackRoute = AuthCallbackRouteImport.update({
   id: '/auth/callback',
@@ -309,6 +337,11 @@ const AuthenticatedBusinessPortalRoute =
     path: '/business-portal',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const ServicesSlugIndexRoute = ServicesSlugIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ServicesSlugRoute,
+} as any)
 const MProviderIndexRoute = MProviderIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -324,6 +357,11 @@ const MCustomerIndexRoute = MCustomerIndexRouteImport.update({
   path: '/',
   getParentRoute: () => MCustomerRoute,
 } as any)
+const DeliveryHarareIndexRoute = DeliveryHarareIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DeliveryHarareRoute,
+} as any)
 const AuthenticatedBookingsIndexRoute =
   AuthenticatedBookingsIndexRouteImport.update({
     id: '/bookings/',
@@ -334,6 +372,11 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
   getParentRoute: () => AuthenticatedRoute,
+} as any)
+const ServicesSlugCityRoute = ServicesSlugCityRouteImport.update({
+  id: '/$city',
+  path: '/$city',
+  getParentRoute: () => ServicesSlugRoute,
 } as any)
 const MProviderProfileRoute = MProviderProfileRouteImport.update({
   id: '/profile',
@@ -419,6 +462,11 @@ const MChatBookingIdRoute = MChatBookingIdRouteImport.update({
   id: '/chat/$bookingId',
   path: '/chat/$bookingId',
   getParentRoute: () => MRoute,
+} as any)
+const DeliveryHarareSuburbRoute = DeliveryHarareSuburbRouteImport.update({
+  id: '/$suburb',
+  path: '/$suburb',
+  getParentRoute: () => DeliveryHarareRoute,
 } as any)
 const AuthenticatedProviderVerifyRoute =
   AuthenticatedProviderVerifyRouteImport.update({
@@ -593,7 +641,8 @@ export interface FileRoutesByFullPath {
   '/business': typeof BusinessRoute
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
-  '/delivery': typeof DeliveryRoute
+  '/delivery': typeof DeliveryRouteWithChildren
+  '/drivers': typeof DriversRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/home': typeof HomeRoute
@@ -603,6 +652,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof PrivacyRoute
   '/provider-login': typeof ProviderLoginRoute
   '/provider-signup': typeof ProviderSignupRoute
+  '/providers': typeof ProvidersRoute
   '/resend-confirmation': typeof ResendConfirmationRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRouteWithChildren
@@ -616,13 +666,15 @@ export interface FileRoutesByFullPath {
   '/send-delivery': typeof AuthenticatedSendDeliveryRoute
   '/workspace': typeof AuthenticatedWorkspaceRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/delivery/harare': typeof DeliveryHarareRouteWithChildren
   '/m/customer': typeof MCustomerRouteWithChildren
   '/m/driver': typeof MDriverRouteWithChildren
   '/m/notifications': typeof MNotificationsRoute
   '/m/provider': typeof MProviderRouteWithChildren
   '/m/settings': typeof MSettingsRoute
-  '/services/$slug': typeof ServicesSlugRoute
+  '/services/$slug': typeof ServicesSlugRouteWithChildren
   '/book/': typeof BookIndexRoute
+  '/delivery/': typeof DeliveryIndexRoute
   '/m/': typeof MIndexRoute
   '/provider/': typeof ProviderIndexRoute
   '/services/': typeof ServicesIndexRoute
@@ -643,6 +695,7 @@ export interface FileRoutesByFullPath {
   '/provider/dashboard': typeof AuthenticatedProviderDashboardRoute
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/provider/verify': typeof AuthenticatedProviderVerifyRoute
+  '/delivery/harare/$suburb': typeof DeliveryHarareSuburbRoute
   '/m/chat/$bookingId': typeof MChatBookingIdRoute
   '/m/customer/addresses': typeof MCustomerAddressesRoute
   '/m/customer/bookings': typeof MCustomerBookingsRoute
@@ -660,11 +713,14 @@ export interface FileRoutesByFullPath {
   '/m/provider/jobs': typeof MProviderJobsRouteWithChildren
   '/m/provider/messages': typeof MProviderMessagesRoute
   '/m/provider/profile': typeof MProviderProfileRoute
+  '/services/$slug/$city': typeof ServicesSlugCityRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/bookings/': typeof AuthenticatedBookingsIndexRoute
+  '/delivery/harare/': typeof DeliveryHarareIndexRoute
   '/m/customer/': typeof MCustomerIndexRoute
   '/m/driver/': typeof MDriverIndexRoute
   '/m/provider/': typeof MProviderIndexRoute
+  '/services/$slug/': typeof ServicesSlugIndexRoute
   '/api/public/hooks/dispatch-sweep': typeof ApiPublicHooksDispatchSweepRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -686,7 +742,7 @@ export interface FileRoutesByTo {
   '/business': typeof BusinessRoute
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
-  '/delivery': typeof DeliveryRoute
+  '/drivers': typeof DriversRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/home': typeof HomeRoute
@@ -695,6 +751,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof PrivacyRoute
   '/provider-login': typeof ProviderLoginRoute
   '/provider-signup': typeof ProviderSignupRoute
+  '/providers': typeof ProvidersRoute
   '/resend-confirmation': typeof ResendConfirmationRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
@@ -709,8 +766,8 @@ export interface FileRoutesByTo {
   '/auth/callback': typeof AuthCallbackRoute
   '/m/notifications': typeof MNotificationsRoute
   '/m/settings': typeof MSettingsRoute
-  '/services/$slug': typeof ServicesSlugRoute
   '/book': typeof BookIndexRoute
+  '/delivery': typeof DeliveryIndexRoute
   '/m': typeof MIndexRoute
   '/provider': typeof ProviderIndexRoute
   '/services': typeof ServicesIndexRoute
@@ -731,6 +788,7 @@ export interface FileRoutesByTo {
   '/provider/dashboard': typeof AuthenticatedProviderDashboardRoute
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/provider/verify': typeof AuthenticatedProviderVerifyRoute
+  '/delivery/harare/$suburb': typeof DeliveryHarareSuburbRoute
   '/m/chat/$bookingId': typeof MChatBookingIdRoute
   '/m/customer/addresses': typeof MCustomerAddressesRoute
   '/m/customer/bookings': typeof MCustomerBookingsRoute
@@ -748,11 +806,14 @@ export interface FileRoutesByTo {
   '/m/provider/jobs': typeof MProviderJobsRouteWithChildren
   '/m/provider/messages': typeof MProviderMessagesRoute
   '/m/provider/profile': typeof MProviderProfileRoute
+  '/services/$slug/$city': typeof ServicesSlugCityRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/bookings': typeof AuthenticatedBookingsIndexRoute
+  '/delivery/harare': typeof DeliveryHarareIndexRoute
   '/m/customer': typeof MCustomerIndexRoute
   '/m/driver': typeof MDriverIndexRoute
   '/m/provider': typeof MProviderIndexRoute
+  '/services/$slug': typeof ServicesSlugIndexRoute
   '/api/public/hooks/dispatch-sweep': typeof ApiPublicHooksDispatchSweepRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -776,7 +837,8 @@ export interface FileRoutesById {
   '/business': typeof BusinessRoute
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
-  '/delivery': typeof DeliveryRoute
+  '/delivery': typeof DeliveryRouteWithChildren
+  '/drivers': typeof DriversRoute
   '/faq': typeof FaqRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/home': typeof HomeRoute
@@ -786,6 +848,7 @@ export interface FileRoutesById {
   '/privacy': typeof PrivacyRoute
   '/provider-login': typeof ProviderLoginRoute
   '/provider-signup': typeof ProviderSignupRoute
+  '/providers': typeof ProvidersRoute
   '/resend-confirmation': typeof ResendConfirmationRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRouteWithChildren
@@ -799,13 +862,15 @@ export interface FileRoutesById {
   '/_authenticated/send-delivery': typeof AuthenticatedSendDeliveryRoute
   '/_authenticated/workspace': typeof AuthenticatedWorkspaceRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/delivery/harare': typeof DeliveryHarareRouteWithChildren
   '/m/customer': typeof MCustomerRouteWithChildren
   '/m/driver': typeof MDriverRouteWithChildren
   '/m/notifications': typeof MNotificationsRoute
   '/m/provider': typeof MProviderRouteWithChildren
   '/m/settings': typeof MSettingsRoute
-  '/services/$slug': typeof ServicesSlugRoute
+  '/services/$slug': typeof ServicesSlugRouteWithChildren
   '/book/': typeof BookIndexRoute
+  '/delivery/': typeof DeliveryIndexRoute
   '/m/': typeof MIndexRoute
   '/provider/': typeof ProviderIndexRoute
   '/services/': typeof ServicesIndexRoute
@@ -826,6 +891,7 @@ export interface FileRoutesById {
   '/_authenticated/provider/dashboard': typeof AuthenticatedProviderDashboardRoute
   '/_authenticated/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/_authenticated/provider/verify': typeof AuthenticatedProviderVerifyRoute
+  '/delivery/harare/$suburb': typeof DeliveryHarareSuburbRoute
   '/m/chat/$bookingId': typeof MChatBookingIdRoute
   '/m/customer/addresses': typeof MCustomerAddressesRoute
   '/m/customer/bookings': typeof MCustomerBookingsRoute
@@ -843,11 +909,14 @@ export interface FileRoutesById {
   '/m/provider/jobs': typeof MProviderJobsRouteWithChildren
   '/m/provider/messages': typeof MProviderMessagesRoute
   '/m/provider/profile': typeof MProviderProfileRoute
+  '/services/$slug/$city': typeof ServicesSlugCityRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/bookings/': typeof AuthenticatedBookingsIndexRoute
+  '/delivery/harare/': typeof DeliveryHarareIndexRoute
   '/m/customer/': typeof MCustomerIndexRoute
   '/m/driver/': typeof MDriverIndexRoute
   '/m/provider/': typeof MProviderIndexRoute
+  '/services/$slug/': typeof ServicesSlugIndexRoute
   '/api/public/hooks/dispatch-sweep': typeof ApiPublicHooksDispatchSweepRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -872,6 +941,7 @@ export interface FileRouteTypes {
     | '/careers'
     | '/contact'
     | '/delivery'
+    | '/drivers'
     | '/faq'
     | '/forgot-password'
     | '/home'
@@ -881,6 +951,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/provider-login'
     | '/provider-signup'
+    | '/providers'
     | '/resend-confirmation'
     | '/reset-password'
     | '/services'
@@ -894,6 +965,7 @@ export interface FileRouteTypes {
     | '/send-delivery'
     | '/workspace'
     | '/auth/callback'
+    | '/delivery/harare'
     | '/m/customer'
     | '/m/driver'
     | '/m/notifications'
@@ -901,6 +973,7 @@ export interface FileRouteTypes {
     | '/m/settings'
     | '/services/$slug'
     | '/book/'
+    | '/delivery/'
     | '/m/'
     | '/provider/'
     | '/services/'
@@ -921,6 +994,7 @@ export interface FileRouteTypes {
     | '/provider/dashboard'
     | '/provider/setup'
     | '/provider/verify'
+    | '/delivery/harare/$suburb'
     | '/m/chat/$bookingId'
     | '/m/customer/addresses'
     | '/m/customer/bookings'
@@ -938,11 +1012,14 @@ export interface FileRouteTypes {
     | '/m/provider/jobs'
     | '/m/provider/messages'
     | '/m/provider/profile'
+    | '/services/$slug/$city'
     | '/admin/'
     | '/bookings/'
+    | '/delivery/harare/'
     | '/m/customer/'
     | '/m/driver/'
     | '/m/provider/'
+    | '/services/$slug/'
     | '/api/public/hooks/dispatch-sweep'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -964,7 +1041,7 @@ export interface FileRouteTypes {
     | '/business'
     | '/careers'
     | '/contact'
-    | '/delivery'
+    | '/drivers'
     | '/faq'
     | '/forgot-password'
     | '/home'
@@ -973,6 +1050,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/provider-login'
     | '/provider-signup'
+    | '/providers'
     | '/resend-confirmation'
     | '/reset-password'
     | '/signup'
@@ -987,8 +1065,8 @@ export interface FileRouteTypes {
     | '/auth/callback'
     | '/m/notifications'
     | '/m/settings'
-    | '/services/$slug'
     | '/book'
+    | '/delivery'
     | '/m'
     | '/provider'
     | '/services'
@@ -1009,6 +1087,7 @@ export interface FileRouteTypes {
     | '/provider/dashboard'
     | '/provider/setup'
     | '/provider/verify'
+    | '/delivery/harare/$suburb'
     | '/m/chat/$bookingId'
     | '/m/customer/addresses'
     | '/m/customer/bookings'
@@ -1026,11 +1105,14 @@ export interface FileRouteTypes {
     | '/m/provider/jobs'
     | '/m/provider/messages'
     | '/m/provider/profile'
+    | '/services/$slug/$city'
     | '/admin'
     | '/bookings'
+    | '/delivery/harare'
     | '/m/customer'
     | '/m/driver'
     | '/m/provider'
+    | '/services/$slug'
     | '/api/public/hooks/dispatch-sweep'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -1054,6 +1136,7 @@ export interface FileRouteTypes {
     | '/careers'
     | '/contact'
     | '/delivery'
+    | '/drivers'
     | '/faq'
     | '/forgot-password'
     | '/home'
@@ -1063,6 +1146,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/provider-login'
     | '/provider-signup'
+    | '/providers'
     | '/resend-confirmation'
     | '/reset-password'
     | '/services'
@@ -1076,6 +1160,7 @@ export interface FileRouteTypes {
     | '/_authenticated/send-delivery'
     | '/_authenticated/workspace'
     | '/auth/callback'
+    | '/delivery/harare'
     | '/m/customer'
     | '/m/driver'
     | '/m/notifications'
@@ -1083,6 +1168,7 @@ export interface FileRouteTypes {
     | '/m/settings'
     | '/services/$slug'
     | '/book/'
+    | '/delivery/'
     | '/m/'
     | '/provider/'
     | '/services/'
@@ -1103,6 +1189,7 @@ export interface FileRouteTypes {
     | '/_authenticated/provider/dashboard'
     | '/_authenticated/provider/setup'
     | '/_authenticated/provider/verify'
+    | '/delivery/harare/$suburb'
     | '/m/chat/$bookingId'
     | '/m/customer/addresses'
     | '/m/customer/bookings'
@@ -1120,11 +1207,14 @@ export interface FileRouteTypes {
     | '/m/provider/jobs'
     | '/m/provider/messages'
     | '/m/provider/profile'
+    | '/services/$slug/$city'
     | '/_authenticated/admin/'
     | '/_authenticated/bookings/'
+    | '/delivery/harare/'
     | '/m/customer/'
     | '/m/driver/'
     | '/m/provider/'
+    | '/services/$slug/'
     | '/api/public/hooks/dispatch-sweep'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -1148,7 +1238,8 @@ export interface RootRouteChildren {
   BusinessRoute: typeof BusinessRoute
   CareersRoute: typeof CareersRoute
   ContactRoute: typeof ContactRoute
-  DeliveryRoute: typeof DeliveryRoute
+  DeliveryRoute: typeof DeliveryRouteWithChildren
+  DriversRoute: typeof DriversRoute
   FaqRoute: typeof FaqRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   HomeRoute: typeof HomeRoute
@@ -1158,6 +1249,7 @@ export interface RootRouteChildren {
   PrivacyRoute: typeof PrivacyRoute
   ProviderLoginRoute: typeof ProviderLoginRoute
   ProviderSignupRoute: typeof ProviderSignupRoute
+  ProvidersRoute: typeof ProvidersRoute
   ResendConfirmationRoute: typeof ResendConfirmationRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ServicesRoute: typeof ServicesRouteWithChildren
@@ -1215,6 +1307,13 @@ declare module '@tanstack/react-router' {
       path: '/resend-confirmation'
       fullPath: '/resend-confirmation'
       preLoaderRoute: typeof ResendConfirmationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/providers': {
+      id: '/providers'
+      path: '/providers'
+      fullPath: '/providers'
+      preLoaderRoute: typeof ProvidersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/provider-signup': {
@@ -1278,6 +1377,13 @@ declare module '@tanstack/react-router' {
       path: '/faq'
       fullPath: '/faq'
       preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/drivers': {
+      id: '/drivers'
+      path: '/drivers'
+      fullPath: '/drivers'
+      preLoaderRoute: typeof DriversRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/delivery': {
@@ -1364,6 +1470,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MIndexRouteImport
       parentRoute: typeof MRoute
     }
+    '/delivery/': {
+      id: '/delivery/'
+      path: '/'
+      fullPath: '/delivery/'
+      preLoaderRoute: typeof DeliveryIndexRouteImport
+      parentRoute: typeof DeliveryRoute
+    }
     '/book/': {
       id: '/book/'
       path: '/book'
@@ -1412,6 +1525,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/m/customer'
       preLoaderRoute: typeof MCustomerRouteImport
       parentRoute: typeof MRoute
+    }
+    '/delivery/harare': {
+      id: '/delivery/harare'
+      path: '/harare'
+      fullPath: '/delivery/harare'
+      preLoaderRoute: typeof DeliveryHarareRouteImport
+      parentRoute: typeof DeliveryRoute
     }
     '/auth/callback': {
       id: '/auth/callback'
@@ -1462,6 +1582,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBusinessPortalRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/services/$slug/': {
+      id: '/services/$slug/'
+      path: '/'
+      fullPath: '/services/$slug/'
+      preLoaderRoute: typeof ServicesSlugIndexRouteImport
+      parentRoute: typeof ServicesSlugRoute
+    }
     '/m/provider/': {
       id: '/m/provider/'
       path: '/'
@@ -1483,6 +1610,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MCustomerIndexRouteImport
       parentRoute: typeof MCustomerRoute
     }
+    '/delivery/harare/': {
+      id: '/delivery/harare/'
+      path: '/'
+      fullPath: '/delivery/harare/'
+      preLoaderRoute: typeof DeliveryHarareIndexRouteImport
+      parentRoute: typeof DeliveryHarareRoute
+    }
     '/_authenticated/bookings/': {
       id: '/_authenticated/bookings/'
       path: '/bookings'
@@ -1496,6 +1630,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/services/$slug/$city': {
+      id: '/services/$slug/$city'
+      path: '/$city'
+      fullPath: '/services/$slug/$city'
+      preLoaderRoute: typeof ServicesSlugCityRouteImport
+      parentRoute: typeof ServicesSlugRoute
     }
     '/m/provider/profile': {
       id: '/m/provider/profile'
@@ -1615,6 +1756,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/m/chat/$bookingId'
       preLoaderRoute: typeof MChatBookingIdRouteImport
       parentRoute: typeof MRoute
+    }
+    '/delivery/harare/$suburb': {
+      id: '/delivery/harare/$suburb'
+      path: '/$suburb'
+      fullPath: '/delivery/harare/$suburb'
+      preLoaderRoute: typeof DeliveryHarareSuburbRouteImport
+      parentRoute: typeof DeliveryHarareRoute
     }
     '/_authenticated/provider/verify': {
       id: '/_authenticated/provider/verify'
@@ -1891,6 +2039,34 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
+interface DeliveryHarareRouteChildren {
+  DeliveryHarareSuburbRoute: typeof DeliveryHarareSuburbRoute
+  DeliveryHarareIndexRoute: typeof DeliveryHarareIndexRoute
+}
+
+const DeliveryHarareRouteChildren: DeliveryHarareRouteChildren = {
+  DeliveryHarareSuburbRoute: DeliveryHarareSuburbRoute,
+  DeliveryHarareIndexRoute: DeliveryHarareIndexRoute,
+}
+
+const DeliveryHarareRouteWithChildren = DeliveryHarareRoute._addFileChildren(
+  DeliveryHarareRouteChildren,
+)
+
+interface DeliveryRouteChildren {
+  DeliveryHarareRoute: typeof DeliveryHarareRouteWithChildren
+  DeliveryIndexRoute: typeof DeliveryIndexRoute
+}
+
+const DeliveryRouteChildren: DeliveryRouteChildren = {
+  DeliveryHarareRoute: DeliveryHarareRouteWithChildren,
+  DeliveryIndexRoute: DeliveryIndexRoute,
+}
+
+const DeliveryRouteWithChildren = DeliveryRoute._addFileChildren(
+  DeliveryRouteChildren,
+)
+
 interface MCustomerRouteChildren {
   MCustomerAddressesRoute: typeof MCustomerAddressesRoute
   MCustomerBookingsRoute: typeof MCustomerBookingsRoute
@@ -2009,13 +2185,27 @@ const MRouteChildren: MRouteChildren = {
 
 const MRouteWithChildren = MRoute._addFileChildren(MRouteChildren)
 
+interface ServicesSlugRouteChildren {
+  ServicesSlugCityRoute: typeof ServicesSlugCityRoute
+  ServicesSlugIndexRoute: typeof ServicesSlugIndexRoute
+}
+
+const ServicesSlugRouteChildren: ServicesSlugRouteChildren = {
+  ServicesSlugCityRoute: ServicesSlugCityRoute,
+  ServicesSlugIndexRoute: ServicesSlugIndexRoute,
+}
+
+const ServicesSlugRouteWithChildren = ServicesSlugRoute._addFileChildren(
+  ServicesSlugRouteChildren,
+)
+
 interface ServicesRouteChildren {
-  ServicesSlugRoute: typeof ServicesSlugRoute
+  ServicesSlugRoute: typeof ServicesSlugRouteWithChildren
   ServicesIndexRoute: typeof ServicesIndexRoute
 }
 
 const ServicesRouteChildren: ServicesRouteChildren = {
-  ServicesSlugRoute: ServicesSlugRoute,
+  ServicesSlugRoute: ServicesSlugRouteWithChildren,
   ServicesIndexRoute: ServicesIndexRoute,
 }
 
@@ -2032,7 +2222,8 @@ const rootRouteChildren: RootRouteChildren = {
   BusinessRoute: BusinessRoute,
   CareersRoute: CareersRoute,
   ContactRoute: ContactRoute,
-  DeliveryRoute: DeliveryRoute,
+  DeliveryRoute: DeliveryRouteWithChildren,
+  DriversRoute: DriversRoute,
   FaqRoute: FaqRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   HomeRoute: HomeRoute,
@@ -2042,6 +2233,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivacyRoute: PrivacyRoute,
   ProviderLoginRoute: ProviderLoginRoute,
   ProviderSignupRoute: ProviderSignupRoute,
+  ProvidersRoute: ProvidersRoute,
   ResendConfirmationRoute: ResendConfirmationRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ServicesRoute: ServicesRouteWithChildren,

@@ -27,10 +27,10 @@ export const Route = createFileRoute("/home")({
       { property: "og:title", content: title },
       { property: "og:description", content: description },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://zwits.co.zw/home" },
+      { property: "og:url", content: "https://www.zwits.co.zw/home" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "https://zwits.co.zw/home" }],
+    links: [{ rel: "canonical", href: "https://www.zwits.co.zw/home" }],
   }),
   component: Home,
 });

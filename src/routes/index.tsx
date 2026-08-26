@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Bike, HardHat, Search } from "lucide-react";
+import { seo, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
+
 
 /**
  * Zwits entry screen — deliberately the lightest route in the app.
@@ -13,25 +15,21 @@ import { ArrowRight, Bike, HardHat, Search } from "lucide-react";
  * Everything else is one tap away and loads on demand.
  */
 
-const title = "Zwits — Book a service, join as a provider, deliver in Zimbabwe";
+const title = "Zwits | Delivery & Services Marketplace in Zimbabwe";
 const description =
-  "Zwits connects Zimbabwe. Book a trusted service provider, join Zwits as a professional, or earn as a delivery partner. Fast, even on slow mobile data.";
+  "Find trusted service providers, book services and access reliable delivery solutions with Zwits. Serving customers and businesses across Zimbabwe, starting with Harare.";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title },
-      { name: "description", content: description },
-      { property: "og:title", content: title },
-      { property: "og:description", content: description },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://zwits.co.zw/" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-    links: [{ rel: "canonical", href: "https://zwits.co.zw/" }],
-  }),
+  head: () =>
+    seo({
+      title,
+      description,
+      path: "/",
+      jsonLd: [organizationJsonLd(), websiteJsonLd()],
+    }),
   component: Entry,
 });
+
 
 type Choice = {
   to: string;
@@ -82,13 +80,13 @@ function Entry() {
 
       <main className="mx-auto w-full max-w-2xl flex-1 px-5 pb-10 pt-8">
         <h1 className="font-display text-[2rem] font-bold leading-[1.08] tracking-[-0.035em] sm:text-[2.6rem]">
-          One platform.
-          <br />
-          Every service.
+          Zimbabwe&apos;s Services &amp; Delivery Network
         </h1>
         <p className="mt-3 max-w-md text-[15px] leading-relaxed text-muted-foreground">
-          Zimbabwe&apos;s services network. Pick where you want to start.
+          Find services, book trusted providers, send packages and get reliable delivery — or grow
+          your business through Zwits. One platform. Every service.
         </p>
+
 
         <nav aria-label="Get started" className="mt-8 grid gap-3">
           {choices.map((c) => (
@@ -149,7 +147,19 @@ function Entry() {
       <footer className="mx-auto w-full max-w-2xl px-5 pb-8">
         <div className="flex flex-wrap gap-x-5 gap-y-2 text-[13px] text-muted-foreground">
           <Link to="/services" className="hover:text-foreground">
-            All services
+            Services in Zimbabwe
+          </Link>
+          <Link to="/delivery" className="hover:text-foreground">
+            Delivery services
+          </Link>
+          <Link to="/business" className="hover:text-foreground">
+            Business delivery
+          </Link>
+          <Link to="/providers" className="hover:text-foreground">
+            Join as a provider
+          </Link>
+          <Link to="/drivers" className="hover:text-foreground">
+            Deliver with Zwits
           </Link>
           <Link to="/pricing" className="hover:text-foreground">
             Pricing
@@ -160,11 +170,9 @@ function Entry() {
           <Link to="/contact" className="hover:text-foreground">
             Contact
           </Link>
-          <Link to="/business" className="hover:text-foreground">
-            For business
-          </Link>
         </div>
       </footer>
+
     </div>
   );
 }

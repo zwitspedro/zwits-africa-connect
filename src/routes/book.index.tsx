@@ -23,10 +23,10 @@ export const Route = createFileRoute("/book/")({
       { property: "og:title", content: title },
       { property: "og:description", content: description },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://zwits.co.zw/book" },
+      { property: "og:url", content: "https://www.zwits.co.zw/book" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "https://zwits.co.zw/book" }],
+    links: [{ rel: "canonical", href: "https://www.zwits.co.zw/book" }],
   }),
   component: BookEntry,
 });
