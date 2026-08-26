@@ -189,22 +189,8 @@ function BookCategory() {
             ? "Request sent — finding you a provider"
             : "Booking confirmed",
       );
-      const methodLabel = paymentMethod === "cash" ? "Cash on delivery" : paymentMethod!.toUpperCase();
-      const ref = data.id.slice(0, 8).toUpperCase();
-      const body = [
-        `Service: ${service!.name}`,
-        `Address: ${address}`,
-        scheduled && scheduled !== "ASAP" ? `Scheduled: ${new Date(scheduled).toLocaleString()}` : "Scheduled: ASAP",
-        `Payment: ${methodLabel}`,
-        `Reference: ${ref}`,
-      ].filter(Boolean).join("\n");
-      await supabase.from("notifications").insert({
-        user_id: user!.id,
-        title: `Request sent — ${service!.name}`,
-        body,
-        link: `/bookings/${data.id}`,
-        kind: "booking",
-      });
+      // The booking confirmation notification is written by the createJob server
+      // function; clients are no longer allowed to insert notifications.
       qc.invalidateQueries({ queryKey: ["notifications-unread"] });
       qc.invalidateQueries({ queryKey: ["notifications"] });
       qc.invalidateQueries({ queryKey: ["bookings"] });
