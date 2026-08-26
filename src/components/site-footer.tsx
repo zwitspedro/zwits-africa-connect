@@ -16,13 +16,14 @@ export function SiteFooter() {
         <FooterCol title="Platform" items={[
           ["Services", "/services"],
           ["Delivery", "/delivery"],
+          ["Delivery in Harare", "/delivery/harare"],
           ["Pricing", "/pricing"],
           ["Business", "/business"],
           ["About", "/about"],
         ]} />
         <FooterCol title="Join Zwits" items={[
-          ["Become a Provider", "/become-a-provider"],
-          ["Become a Driver", "/become-a-driver"],
+          ["Become a Provider", "/providers"],
+          ["Become a Driver", "/drivers"],
           ["Careers", "/careers"],
           ["Contact", "/contact"],
         ]} />

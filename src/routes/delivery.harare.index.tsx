@@ -14,7 +14,7 @@ import {
 
 const title = "Delivery Services in Harare | Same-Day Courier | Zwits";
 const description =
-  "Reliable same-day delivery in Harare. Send parcels, documents and shop orders between suburbs with tracked Zwits riders and drivers, or set up a business courier account.";
+  "Same-day delivery in Harare. Send parcels, documents and shop orders between suburbs with tracked Zwits riders and drivers, or open a business account.";
 
 const crumbs: Crumb[] = [
   { name: "Home", path: "/" },

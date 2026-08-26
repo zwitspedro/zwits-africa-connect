@@ -17,6 +17,8 @@ export const Route = createFileRoute("/become-a-driver")({
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://www.zwits.co.zw/become-a-driver" },
       { name: "twitter:card", content: "summary_large_image" },
+      // Application funnel. /drivers is the canonical recruitment landing page.
+      { name: "robots", content: "noindex, follow" },
     ],
     links: [{ rel: "canonical", href: "https://www.zwits.co.zw/become-a-driver" }],
   }),

@@ -17,7 +17,7 @@ import { seo, organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 
 const title = "Zwits | Delivery & Services Marketplace in Zimbabwe";
 const description =
-  "Find trusted service providers, book services and access reliable delivery solutions with Zwits. Serving customers and businesses across Zimbabwe, starting with Harare.";
+  "Book verified service providers and same-day delivery with Zwits. Serving customers and businesses across Zimbabwe, starting in Harare.";
 
 export const Route = createFileRoute("/")({
   head: () =>

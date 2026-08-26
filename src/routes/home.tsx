@@ -27,10 +27,12 @@ export const Route = createFileRoute("/home")({
       { property: "og:title", content: title },
       { property: "og:description", content: description },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://www.zwits.co.zw/home" },
+      { property: "og:url", content: "https://www.zwits.co.zw/" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "https://www.zwits.co.zw/home" }],
+    // "/" is the canonical Zwits homepage; /home is the long marketing view of
+    // the same intent and must not compete with it in search.
+    links: [{ rel: "canonical", href: "https://www.zwits.co.zw/" }],
   }),
   component: Home,
 });
