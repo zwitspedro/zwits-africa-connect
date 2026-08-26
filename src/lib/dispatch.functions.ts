@@ -72,6 +72,28 @@ export const createJob = createServerFn({ method: "POST" })
       .single();
     if (error) throw new Error(error.message);
 
+    // Customer-facing confirmation is created here, server-side, from facts the
+    // server just persisted. Clients must never write their own notifications.
+    {
+      const ref = (booking.id as string).slice(0, 8).toUpperCase();
+      const body = [
+        `Service: ${data.category}`,
+        `Address: ${data.address}`,
+        data.scheduledFor
+          ? `Scheduled: ${new Date(data.scheduledFor).toLocaleString()}`
+          : "Scheduled: ASAP",
+        `Payment: ${data.paymentMethod}`,
+        `Reference: ${ref}`,
+      ].join("\n");
+      await db.from("notifications").insert({
+        user_id: context.userId,
+        title: `Request sent — ${data.category}`,
+        body,
+        link: `/bookings/${booking.id}`,
+        kind: "booking",
+      });
+    }
+
     await logEvent(db, booking.id as string, "booking_created", context.userId, {
       category: data.category,
       mode,
