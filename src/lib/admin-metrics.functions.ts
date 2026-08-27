@@ -32,6 +32,7 @@ export const getAdminMetrics = createServerFn({ method: "GET" })
       failedPayments,
       pendingWithdrawals,
       auditEvents,
+      failedUploads,
     ] = await Promise.all([
       count("user_roles", (q) => q.eq("role", "customer")),
       count("providers"),
@@ -46,6 +47,7 @@ export const getAdminMetrics = createServerFn({ method: "GET" })
       count("payments", (q) => q.eq("status", "failed")),
       count("provider_withdrawals", (q) => q.in("status", ["requested", "processing"])),
       count("admin_audit_log"),
+      count("provider_document_audits", (q) => q.in("status", ["rejected", "upload_error"])),
     ]);
 
     const { data: revenueRows } = await db
@@ -65,6 +67,16 @@ export const getAdminMetrics = createServerFn({ method: "GET" })
       0,
     );
 
+    const { data: ratingRows } = await db.from("ratings").select("rating").limit(10000);
+    const ratingsCount = (ratingRows ?? []).length;
+    const avgRating = ratingsCount
+      ? Math.round(
+          ((ratingRows ?? []).reduce((s: number, r: any) => s + Number(r.rating ?? 0), 0) /
+            ratingsCount) *
+            100,
+        ) / 100
+      : null;
+
     return {
       customers,
       providers,
@@ -77,11 +89,46 @@ export const getAdminMetrics = createServerFn({ method: "GET" })
       failedPayments,
       pendingWithdrawals,
       auditEvents,
+      failedUploads,
+      approvedProviders: await count("providers", (q) =>
+        q.eq("verification_status", "approved"),
+      ),
+      revokedProviders: await count("providers", (q) => q.eq("verification_status", "revoked")),
+      avgRating,
+      ratingsCount,
       revenue: Math.round(revenue * 100) / 100,
       providerEarnings: Math.round(providerEarnings * 100) / 100,
       commission: Math.round((revenue - providerEarnings) * 100) / 100,
     };
   });
+
+/**
+ * The actual providers behind the "Providers online" tile — same filter as the
+ * count (available + approved), so the number and the list can never disagree.
+ */
+export const listOnlineProviders = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data: isAdmin } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    if (!isAdmin) throw new Error("Forbidden");
+
+    const { data: rows, error, count: total } = await context.supabase
+      .from("providers")
+      .select(
+        "id, business_name, category, city, verification_status, available, rating_avg, ratings_count, jobs_completed, updated_at",
+        { count: "exact" },
+      )
+      .eq("available", true)
+      .eq("verification_status", "approved")
+      .order("updated_at", { ascending: false })
+      .limit(100);
+    if (error) throw new Error(error.message);
+    return { rows: rows ?? [], total: total ?? 0 };
+  });
+
 
 /** Single head-count for the "Providers online" tile — cheap enough to poll. */
 export const getOnlineProvidersCount = createServerFn({ method: "GET" })
