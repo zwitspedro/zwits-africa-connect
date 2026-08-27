@@ -107,6 +107,7 @@ import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/e
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as ApiPublicHooksDispatchSweepRouteImport } from './routes/api/public/hooks/dispatch-sweep'
+import { Route as AuthenticatedAdminProvidersOnlineRouteImport } from './routes/_authenticated/admin.providers_.online'
 import { Route as AuthenticatedAdminReconciliationProviderProviderIdRouteImport } from './routes/_authenticated/admin.reconciliation.provider.$providerId'
 import { Route as AuthenticatedAdminReconciliationBookingBookingIdRouteImport } from './routes/_authenticated/admin.reconciliation.booking.$bookingId'
 
@@ -620,6 +621,12 @@ const ApiPublicHooksDispatchSweepRoute =
     path: '/api/public/hooks/dispatch-sweep',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AuthenticatedAdminProvidersOnlineRoute =
+  AuthenticatedAdminProvidersOnlineRouteImport.update({
+    id: '/admin/providers_/online',
+    path: '/admin/providers/online',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedAdminReconciliationProviderProviderIdRoute =
   AuthenticatedAdminReconciliationProviderProviderIdRouteImport.update({
     id: '/admin/reconciliation/provider/$providerId',
@@ -721,6 +728,7 @@ export interface FileRoutesByFullPath {
   '/m/driver/': typeof MDriverIndexRoute
   '/m/provider/': typeof MProviderIndexRoute
   '/services/$slug/': typeof ServicesSlugIndexRoute
+  '/admin/providers/online': typeof AuthenticatedAdminProvidersOnlineRoute
   '/api/public/hooks/dispatch-sweep': typeof ApiPublicHooksDispatchSweepRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -814,6 +822,7 @@ export interface FileRoutesByTo {
   '/m/driver': typeof MDriverIndexRoute
   '/m/provider': typeof MProviderIndexRoute
   '/services/$slug': typeof ServicesSlugIndexRoute
+  '/admin/providers/online': typeof AuthenticatedAdminProvidersOnlineRoute
   '/api/public/hooks/dispatch-sweep': typeof ApiPublicHooksDispatchSweepRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -917,6 +926,7 @@ export interface FileRoutesById {
   '/m/driver/': typeof MDriverIndexRoute
   '/m/provider/': typeof MProviderIndexRoute
   '/services/$slug/': typeof ServicesSlugIndexRoute
+  '/_authenticated/admin/providers_/online': typeof AuthenticatedAdminProvidersOnlineRoute
   '/api/public/hooks/dispatch-sweep': typeof ApiPublicHooksDispatchSweepRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -1020,6 +1030,7 @@ export interface FileRouteTypes {
     | '/m/driver/'
     | '/m/provider/'
     | '/services/$slug/'
+    | '/admin/providers/online'
     | '/api/public/hooks/dispatch-sweep'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -1113,6 +1124,7 @@ export interface FileRouteTypes {
     | '/m/driver'
     | '/m/provider'
     | '/services/$slug'
+    | '/admin/providers/online'
     | '/api/public/hooks/dispatch-sweep'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -1215,6 +1227,7 @@ export interface FileRouteTypes {
     | '/m/driver/'
     | '/m/provider/'
     | '/services/$slug/'
+    | '/_authenticated/admin/providers_/online'
     | '/api/public/hooks/dispatch-sweep'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -1953,6 +1966,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksDispatchSweepRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin/providers_/online': {
+      id: '/_authenticated/admin/providers_/online'
+      path: '/admin/providers/online'
+      fullPath: '/admin/providers/online'
+      preLoaderRoute: typeof AuthenticatedAdminProvidersOnlineRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/admin/reconciliation/provider/$providerId': {
       id: '/_authenticated/admin/reconciliation/provider/$providerId'
       path: '/admin/reconciliation/provider/$providerId'
@@ -1996,6 +2016,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedProviderVerifyRoute: typeof AuthenticatedProviderVerifyRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedBookingsIndexRoute: typeof AuthenticatedBookingsIndexRoute
+  AuthenticatedAdminProvidersOnlineRoute: typeof AuthenticatedAdminProvidersOnlineRoute
   AuthenticatedAdminReconciliationIndexRoute: typeof AuthenticatedAdminReconciliationIndexRoute
   AuthenticatedAdminReconciliationBookingBookingIdRoute: typeof AuthenticatedAdminReconciliationBookingBookingIdRoute
   AuthenticatedAdminReconciliationProviderProviderIdRoute: typeof AuthenticatedAdminReconciliationProviderProviderIdRoute
@@ -2027,6 +2048,8 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedProviderVerifyRoute: AuthenticatedProviderVerifyRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedBookingsIndexRoute: AuthenticatedBookingsIndexRoute,
+  AuthenticatedAdminProvidersOnlineRoute:
+    AuthenticatedAdminProvidersOnlineRoute,
   AuthenticatedAdminReconciliationIndexRoute:
     AuthenticatedAdminReconciliationIndexRoute,
   AuthenticatedAdminReconciliationBookingBookingIdRoute:
