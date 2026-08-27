@@ -88,12 +88,15 @@ import { Route as AuthenticatedMessagesBookingIdRouteImport } from './routes/_au
 import { Route as AuthenticatedDeliveriesIdRouteImport } from './routes/_authenticated/deliveries.$id'
 import { Route as AuthenticatedBookingsIdRouteImport } from './routes/_authenticated/bookings.$id'
 import { Route as AuthenticatedBookCategoryRouteImport } from './routes/_authenticated/book.$category'
+import { Route as AuthenticatedAdminWithdrawalsRouteImport } from './routes/_authenticated/admin.withdrawals'
 import { Route as AuthenticatedAdminUploadsRouteImport } from './routes/_authenticated/admin.uploads'
+import { Route as AuthenticatedAdminReviewRouteImport } from './routes/_authenticated/admin.review'
 import { Route as AuthenticatedAdminProvidersRouteImport } from './routes/_authenticated/admin.providers'
 import { Route as AuthenticatedAdminPaymentsRouteImport } from './routes/_authenticated/admin.payments'
 import { Route as AuthenticatedAdminOperationsRouteImport } from './routes/_authenticated/admin.operations'
 import { Route as AuthenticatedAdminHealthRouteImport } from './routes/_authenticated/admin.health'
 import { Route as AuthenticatedAdminEmailRouteImport } from './routes/_authenticated/admin.email'
+import { Route as AuthenticatedAdminDisputesRouteImport } from './routes/_authenticated/admin.disputes'
 import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authenticated/admin.customers'
 import { Route as AuthenticatedAdminCommissionsRouteImport } from './routes/_authenticated/admin.commissions'
 import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin.audit'
@@ -107,6 +110,7 @@ import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/e
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as ApiPublicHooksDispatchSweepRouteImport } from './routes/api/public/hooks/dispatch-sweep'
+import { Route as AuthenticatedAdminProvidersOnlineRouteImport } from './routes/_authenticated/admin.providers_.online'
 import { Route as AuthenticatedAdminReconciliationProviderProviderIdRouteImport } from './routes/_authenticated/admin.reconciliation.provider.$providerId'
 import { Route as AuthenticatedAdminReconciliationBookingBookingIdRouteImport } from './routes/_authenticated/admin.reconciliation.booking.$bookingId'
 
@@ -515,10 +519,22 @@ const AuthenticatedBookCategoryRoute =
     path: '/book/$category',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedAdminWithdrawalsRoute =
+  AuthenticatedAdminWithdrawalsRouteImport.update({
+    id: '/admin/withdrawals',
+    path: '/admin/withdrawals',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedAdminUploadsRoute =
   AuthenticatedAdminUploadsRouteImport.update({
     id: '/admin/uploads',
     path: '/admin/uploads',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAdminReviewRoute =
+  AuthenticatedAdminReviewRouteImport.update({
+    id: '/admin/review',
+    path: '/admin/review',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedAdminProvidersRoute =
@@ -550,6 +566,12 @@ const AuthenticatedAdminEmailRoute = AuthenticatedAdminEmailRouteImport.update({
   path: '/admin/email',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedAdminDisputesRoute =
+  AuthenticatedAdminDisputesRouteImport.update({
+    id: '/admin/disputes',
+    path: '/admin/disputes',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedAdminCustomersRoute =
   AuthenticatedAdminCustomersRouteImport.update({
     id: '/admin/customers',
@@ -620,6 +642,12 @@ const ApiPublicHooksDispatchSweepRoute =
     path: '/api/public/hooks/dispatch-sweep',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AuthenticatedAdminProvidersOnlineRoute =
+  AuthenticatedAdminProvidersOnlineRouteImport.update({
+    id: '/admin/providers_/online',
+    path: '/admin/providers/online',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedAdminReconciliationProviderProviderIdRoute =
   AuthenticatedAdminReconciliationProviderProviderIdRouteImport.update({
     id: '/admin/reconciliation/provider/$providerId',
@@ -681,12 +709,15 @@ export interface FileRoutesByFullPath {
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
+  '/admin/disputes': typeof AuthenticatedAdminDisputesRoute
   '/admin/email': typeof AuthenticatedAdminEmailRoute
   '/admin/health': typeof AuthenticatedAdminHealthRoute
   '/admin/operations': typeof AuthenticatedAdminOperationsRoute
   '/admin/payments': typeof AuthenticatedAdminPaymentsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
+  '/admin/review': typeof AuthenticatedAdminReviewRoute
   '/admin/uploads': typeof AuthenticatedAdminUploadsRoute
+  '/admin/withdrawals': typeof AuthenticatedAdminWithdrawalsRoute
   '/book/$category': typeof AuthenticatedBookCategoryRoute
   '/bookings/$id': typeof AuthenticatedBookingsIdRoute
   '/deliveries/$id': typeof AuthenticatedDeliveriesIdRoute
@@ -721,6 +752,7 @@ export interface FileRoutesByFullPath {
   '/m/driver/': typeof MDriverIndexRoute
   '/m/provider/': typeof MProviderIndexRoute
   '/services/$slug/': typeof ServicesSlugIndexRoute
+  '/admin/providers/online': typeof AuthenticatedAdminProvidersOnlineRoute
   '/api/public/hooks/dispatch-sweep': typeof ApiPublicHooksDispatchSweepRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -774,12 +806,15 @@ export interface FileRoutesByTo {
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
+  '/admin/disputes': typeof AuthenticatedAdminDisputesRoute
   '/admin/email': typeof AuthenticatedAdminEmailRoute
   '/admin/health': typeof AuthenticatedAdminHealthRoute
   '/admin/operations': typeof AuthenticatedAdminOperationsRoute
   '/admin/payments': typeof AuthenticatedAdminPaymentsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
+  '/admin/review': typeof AuthenticatedAdminReviewRoute
   '/admin/uploads': typeof AuthenticatedAdminUploadsRoute
+  '/admin/withdrawals': typeof AuthenticatedAdminWithdrawalsRoute
   '/book/$category': typeof AuthenticatedBookCategoryRoute
   '/bookings/$id': typeof AuthenticatedBookingsIdRoute
   '/deliveries/$id': typeof AuthenticatedDeliveriesIdRoute
@@ -814,6 +849,7 @@ export interface FileRoutesByTo {
   '/m/driver': typeof MDriverIndexRoute
   '/m/provider': typeof MProviderIndexRoute
   '/services/$slug': typeof ServicesSlugIndexRoute
+  '/admin/providers/online': typeof AuthenticatedAdminProvidersOnlineRoute
   '/api/public/hooks/dispatch-sweep': typeof ApiPublicHooksDispatchSweepRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -877,12 +913,15 @@ export interface FileRoutesById {
   '/_authenticated/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/_authenticated/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/_authenticated/admin/customers': typeof AuthenticatedAdminCustomersRoute
+  '/_authenticated/admin/disputes': typeof AuthenticatedAdminDisputesRoute
   '/_authenticated/admin/email': typeof AuthenticatedAdminEmailRoute
   '/_authenticated/admin/health': typeof AuthenticatedAdminHealthRoute
   '/_authenticated/admin/operations': typeof AuthenticatedAdminOperationsRoute
   '/_authenticated/admin/payments': typeof AuthenticatedAdminPaymentsRoute
   '/_authenticated/admin/providers': typeof AuthenticatedAdminProvidersRoute
+  '/_authenticated/admin/review': typeof AuthenticatedAdminReviewRoute
   '/_authenticated/admin/uploads': typeof AuthenticatedAdminUploadsRoute
+  '/_authenticated/admin/withdrawals': typeof AuthenticatedAdminWithdrawalsRoute
   '/_authenticated/book/$category': typeof AuthenticatedBookCategoryRoute
   '/_authenticated/bookings/$id': typeof AuthenticatedBookingsIdRoute
   '/_authenticated/deliveries/$id': typeof AuthenticatedDeliveriesIdRoute
@@ -917,6 +956,7 @@ export interface FileRoutesById {
   '/m/driver/': typeof MDriverIndexRoute
   '/m/provider/': typeof MProviderIndexRoute
   '/services/$slug/': typeof ServicesSlugIndexRoute
+  '/_authenticated/admin/providers_/online': typeof AuthenticatedAdminProvidersOnlineRoute
   '/api/public/hooks/dispatch-sweep': typeof ApiPublicHooksDispatchSweepRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -980,12 +1020,15 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/commissions'
     | '/admin/customers'
+    | '/admin/disputes'
     | '/admin/email'
     | '/admin/health'
     | '/admin/operations'
     | '/admin/payments'
     | '/admin/providers'
+    | '/admin/review'
     | '/admin/uploads'
+    | '/admin/withdrawals'
     | '/book/$category'
     | '/bookings/$id'
     | '/deliveries/$id'
@@ -1020,6 +1063,7 @@ export interface FileRouteTypes {
     | '/m/driver/'
     | '/m/provider/'
     | '/services/$slug/'
+    | '/admin/providers/online'
     | '/api/public/hooks/dispatch-sweep'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -1073,12 +1117,15 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/commissions'
     | '/admin/customers'
+    | '/admin/disputes'
     | '/admin/email'
     | '/admin/health'
     | '/admin/operations'
     | '/admin/payments'
     | '/admin/providers'
+    | '/admin/review'
     | '/admin/uploads'
+    | '/admin/withdrawals'
     | '/book/$category'
     | '/bookings/$id'
     | '/deliveries/$id'
@@ -1113,6 +1160,7 @@ export interface FileRouteTypes {
     | '/m/driver'
     | '/m/provider'
     | '/services/$slug'
+    | '/admin/providers/online'
     | '/api/public/hooks/dispatch-sweep'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -1175,12 +1223,15 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/audit'
     | '/_authenticated/admin/commissions'
     | '/_authenticated/admin/customers'
+    | '/_authenticated/admin/disputes'
     | '/_authenticated/admin/email'
     | '/_authenticated/admin/health'
     | '/_authenticated/admin/operations'
     | '/_authenticated/admin/payments'
     | '/_authenticated/admin/providers'
+    | '/_authenticated/admin/review'
     | '/_authenticated/admin/uploads'
+    | '/_authenticated/admin/withdrawals'
     | '/_authenticated/book/$category'
     | '/_authenticated/bookings/$id'
     | '/_authenticated/deliveries/$id'
@@ -1215,6 +1266,7 @@ export interface FileRouteTypes {
     | '/m/driver/'
     | '/m/provider/'
     | '/services/$slug/'
+    | '/_authenticated/admin/providers_/online'
     | '/api/public/hooks/dispatch-sweep'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -1820,11 +1872,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBookCategoryRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin/withdrawals': {
+      id: '/_authenticated/admin/withdrawals'
+      path: '/admin/withdrawals'
+      fullPath: '/admin/withdrawals'
+      preLoaderRoute: typeof AuthenticatedAdminWithdrawalsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/admin/uploads': {
       id: '/_authenticated/admin/uploads'
       path: '/admin/uploads'
       fullPath: '/admin/uploads'
       preLoaderRoute: typeof AuthenticatedAdminUploadsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin/review': {
+      id: '/_authenticated/admin/review'
+      path: '/admin/review'
+      fullPath: '/admin/review'
+      preLoaderRoute: typeof AuthenticatedAdminReviewRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/admin/providers': {
@@ -1860,6 +1926,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/email'
       fullPath: '/admin/email'
       preLoaderRoute: typeof AuthenticatedAdminEmailRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin/disputes': {
+      id: '/_authenticated/admin/disputes'
+      path: '/admin/disputes'
+      fullPath: '/admin/disputes'
+      preLoaderRoute: typeof AuthenticatedAdminDisputesRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/admin/customers': {
@@ -1953,6 +2026,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksDispatchSweepRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin/providers_/online': {
+      id: '/_authenticated/admin/providers_/online'
+      path: '/admin/providers/online'
+      fullPath: '/admin/providers/online'
+      preLoaderRoute: typeof AuthenticatedAdminProvidersOnlineRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/admin/reconciliation/provider/$providerId': {
       id: '/_authenticated/admin/reconciliation/provider/$providerId'
       path: '/admin/reconciliation/provider/$providerId'
@@ -1980,12 +2060,15 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAdminAuditRoute: typeof AuthenticatedAdminAuditRoute
   AuthenticatedAdminCommissionsRoute: typeof AuthenticatedAdminCommissionsRoute
   AuthenticatedAdminCustomersRoute: typeof AuthenticatedAdminCustomersRoute
+  AuthenticatedAdminDisputesRoute: typeof AuthenticatedAdminDisputesRoute
   AuthenticatedAdminEmailRoute: typeof AuthenticatedAdminEmailRoute
   AuthenticatedAdminHealthRoute: typeof AuthenticatedAdminHealthRoute
   AuthenticatedAdminOperationsRoute: typeof AuthenticatedAdminOperationsRoute
   AuthenticatedAdminPaymentsRoute: typeof AuthenticatedAdminPaymentsRoute
   AuthenticatedAdminProvidersRoute: typeof AuthenticatedAdminProvidersRoute
+  AuthenticatedAdminReviewRoute: typeof AuthenticatedAdminReviewRoute
   AuthenticatedAdminUploadsRoute: typeof AuthenticatedAdminUploadsRoute
+  AuthenticatedAdminWithdrawalsRoute: typeof AuthenticatedAdminWithdrawalsRoute
   AuthenticatedBookCategoryRoute: typeof AuthenticatedBookCategoryRoute
   AuthenticatedBookingsIdRoute: typeof AuthenticatedBookingsIdRoute
   AuthenticatedDeliveriesIdRoute: typeof AuthenticatedDeliveriesIdRoute
@@ -1996,6 +2079,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedProviderVerifyRoute: typeof AuthenticatedProviderVerifyRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedBookingsIndexRoute: typeof AuthenticatedBookingsIndexRoute
+  AuthenticatedAdminProvidersOnlineRoute: typeof AuthenticatedAdminProvidersOnlineRoute
   AuthenticatedAdminReconciliationIndexRoute: typeof AuthenticatedAdminReconciliationIndexRoute
   AuthenticatedAdminReconciliationBookingBookingIdRoute: typeof AuthenticatedAdminReconciliationBookingBookingIdRoute
   AuthenticatedAdminReconciliationProviderProviderIdRoute: typeof AuthenticatedAdminReconciliationProviderProviderIdRoute
@@ -2011,12 +2095,15 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminAuditRoute: AuthenticatedAdminAuditRoute,
   AuthenticatedAdminCommissionsRoute: AuthenticatedAdminCommissionsRoute,
   AuthenticatedAdminCustomersRoute: AuthenticatedAdminCustomersRoute,
+  AuthenticatedAdminDisputesRoute: AuthenticatedAdminDisputesRoute,
   AuthenticatedAdminEmailRoute: AuthenticatedAdminEmailRoute,
   AuthenticatedAdminHealthRoute: AuthenticatedAdminHealthRoute,
   AuthenticatedAdminOperationsRoute: AuthenticatedAdminOperationsRoute,
   AuthenticatedAdminPaymentsRoute: AuthenticatedAdminPaymentsRoute,
   AuthenticatedAdminProvidersRoute: AuthenticatedAdminProvidersRoute,
+  AuthenticatedAdminReviewRoute: AuthenticatedAdminReviewRoute,
   AuthenticatedAdminUploadsRoute: AuthenticatedAdminUploadsRoute,
+  AuthenticatedAdminWithdrawalsRoute: AuthenticatedAdminWithdrawalsRoute,
   AuthenticatedBookCategoryRoute: AuthenticatedBookCategoryRoute,
   AuthenticatedBookingsIdRoute: AuthenticatedBookingsIdRoute,
   AuthenticatedDeliveriesIdRoute: AuthenticatedDeliveriesIdRoute,
@@ -2027,6 +2114,8 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedProviderVerifyRoute: AuthenticatedProviderVerifyRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedBookingsIndexRoute: AuthenticatedBookingsIndexRoute,
+  AuthenticatedAdminProvidersOnlineRoute:
+    AuthenticatedAdminProvidersOnlineRoute,
   AuthenticatedAdminReconciliationIndexRoute:
     AuthenticatedAdminReconciliationIndexRoute,
   AuthenticatedAdminReconciliationBookingBookingIdRoute:
