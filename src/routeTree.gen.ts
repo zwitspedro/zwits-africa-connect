@@ -90,6 +90,7 @@ import { Route as AuthenticatedBookingsIdRouteImport } from './routes/_authentic
 import { Route as AuthenticatedBookCategoryRouteImport } from './routes/_authenticated/book.$category'
 import { Route as AuthenticatedAdminWithdrawalsRouteImport } from './routes/_authenticated/admin.withdrawals'
 import { Route as AuthenticatedAdminUploadsRouteImport } from './routes/_authenticated/admin.uploads'
+import { Route as AuthenticatedAdminReviewRouteImport } from './routes/_authenticated/admin.review'
 import { Route as AuthenticatedAdminProvidersRouteImport } from './routes/_authenticated/admin.providers'
 import { Route as AuthenticatedAdminPaymentsRouteImport } from './routes/_authenticated/admin.payments'
 import { Route as AuthenticatedAdminOperationsRouteImport } from './routes/_authenticated/admin.operations'
@@ -530,6 +531,12 @@ const AuthenticatedAdminUploadsRoute =
     path: '/admin/uploads',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedAdminReviewRoute =
+  AuthenticatedAdminReviewRouteImport.update({
+    id: '/admin/review',
+    path: '/admin/review',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedAdminProvidersRoute =
   AuthenticatedAdminProvidersRouteImport.update({
     id: '/admin/providers',
@@ -708,6 +715,7 @@ export interface FileRoutesByFullPath {
   '/admin/operations': typeof AuthenticatedAdminOperationsRoute
   '/admin/payments': typeof AuthenticatedAdminPaymentsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
+  '/admin/review': typeof AuthenticatedAdminReviewRoute
   '/admin/uploads': typeof AuthenticatedAdminUploadsRoute
   '/admin/withdrawals': typeof AuthenticatedAdminWithdrawalsRoute
   '/book/$category': typeof AuthenticatedBookCategoryRoute
@@ -804,6 +812,7 @@ export interface FileRoutesByTo {
   '/admin/operations': typeof AuthenticatedAdminOperationsRoute
   '/admin/payments': typeof AuthenticatedAdminPaymentsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
+  '/admin/review': typeof AuthenticatedAdminReviewRoute
   '/admin/uploads': typeof AuthenticatedAdminUploadsRoute
   '/admin/withdrawals': typeof AuthenticatedAdminWithdrawalsRoute
   '/book/$category': typeof AuthenticatedBookCategoryRoute
@@ -910,6 +919,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/operations': typeof AuthenticatedAdminOperationsRoute
   '/_authenticated/admin/payments': typeof AuthenticatedAdminPaymentsRoute
   '/_authenticated/admin/providers': typeof AuthenticatedAdminProvidersRoute
+  '/_authenticated/admin/review': typeof AuthenticatedAdminReviewRoute
   '/_authenticated/admin/uploads': typeof AuthenticatedAdminUploadsRoute
   '/_authenticated/admin/withdrawals': typeof AuthenticatedAdminWithdrawalsRoute
   '/_authenticated/book/$category': typeof AuthenticatedBookCategoryRoute
@@ -1016,6 +1026,7 @@ export interface FileRouteTypes {
     | '/admin/operations'
     | '/admin/payments'
     | '/admin/providers'
+    | '/admin/review'
     | '/admin/uploads'
     | '/admin/withdrawals'
     | '/book/$category'
@@ -1112,6 +1123,7 @@ export interface FileRouteTypes {
     | '/admin/operations'
     | '/admin/payments'
     | '/admin/providers'
+    | '/admin/review'
     | '/admin/uploads'
     | '/admin/withdrawals'
     | '/book/$category'
@@ -1217,6 +1229,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/operations'
     | '/_authenticated/admin/payments'
     | '/_authenticated/admin/providers'
+    | '/_authenticated/admin/review'
     | '/_authenticated/admin/uploads'
     | '/_authenticated/admin/withdrawals'
     | '/_authenticated/book/$category'
@@ -1873,6 +1886,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminUploadsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin/review': {
+      id: '/_authenticated/admin/review'
+      path: '/admin/review'
+      fullPath: '/admin/review'
+      preLoaderRoute: typeof AuthenticatedAdminReviewRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/admin/providers': {
       id: '/_authenticated/admin/providers'
       path: '/admin/providers'
@@ -2046,6 +2066,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAdminOperationsRoute: typeof AuthenticatedAdminOperationsRoute
   AuthenticatedAdminPaymentsRoute: typeof AuthenticatedAdminPaymentsRoute
   AuthenticatedAdminProvidersRoute: typeof AuthenticatedAdminProvidersRoute
+  AuthenticatedAdminReviewRoute: typeof AuthenticatedAdminReviewRoute
   AuthenticatedAdminUploadsRoute: typeof AuthenticatedAdminUploadsRoute
   AuthenticatedAdminWithdrawalsRoute: typeof AuthenticatedAdminWithdrawalsRoute
   AuthenticatedBookCategoryRoute: typeof AuthenticatedBookCategoryRoute
@@ -2080,6 +2101,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminOperationsRoute: AuthenticatedAdminOperationsRoute,
   AuthenticatedAdminPaymentsRoute: AuthenticatedAdminPaymentsRoute,
   AuthenticatedAdminProvidersRoute: AuthenticatedAdminProvidersRoute,
+  AuthenticatedAdminReviewRoute: AuthenticatedAdminReviewRoute,
   AuthenticatedAdminUploadsRoute: AuthenticatedAdminUploadsRoute,
   AuthenticatedAdminWithdrawalsRoute: AuthenticatedAdminWithdrawalsRoute,
   AuthenticatedBookCategoryRoute: AuthenticatedBookCategoryRoute,
