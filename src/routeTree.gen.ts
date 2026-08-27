@@ -94,6 +94,7 @@ import { Route as AuthenticatedAdminPaymentsRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminOperationsRouteImport } from './routes/_authenticated/admin.operations'
 import { Route as AuthenticatedAdminHealthRouteImport } from './routes/_authenticated/admin.health'
 import { Route as AuthenticatedAdminEmailRouteImport } from './routes/_authenticated/admin.email'
+import { Route as AuthenticatedAdminDisputesRouteImport } from './routes/_authenticated/admin.disputes'
 import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authenticated/admin.customers'
 import { Route as AuthenticatedAdminCommissionsRouteImport } from './routes/_authenticated/admin.commissions'
 import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin.audit'
@@ -551,6 +552,12 @@ const AuthenticatedAdminEmailRoute = AuthenticatedAdminEmailRouteImport.update({
   path: '/admin/email',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedAdminDisputesRoute =
+  AuthenticatedAdminDisputesRouteImport.update({
+    id: '/admin/disputes',
+    path: '/admin/disputes',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedAdminCustomersRoute =
   AuthenticatedAdminCustomersRouteImport.update({
     id: '/admin/customers',
@@ -688,6 +695,7 @@ export interface FileRoutesByFullPath {
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
+  '/admin/disputes': typeof AuthenticatedAdminDisputesRoute
   '/admin/email': typeof AuthenticatedAdminEmailRoute
   '/admin/health': typeof AuthenticatedAdminHealthRoute
   '/admin/operations': typeof AuthenticatedAdminOperationsRoute
@@ -782,6 +790,7 @@ export interface FileRoutesByTo {
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
+  '/admin/disputes': typeof AuthenticatedAdminDisputesRoute
   '/admin/email': typeof AuthenticatedAdminEmailRoute
   '/admin/health': typeof AuthenticatedAdminHealthRoute
   '/admin/operations': typeof AuthenticatedAdminOperationsRoute
@@ -886,6 +895,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/_authenticated/admin/commissions': typeof AuthenticatedAdminCommissionsRoute
   '/_authenticated/admin/customers': typeof AuthenticatedAdminCustomersRoute
+  '/_authenticated/admin/disputes': typeof AuthenticatedAdminDisputesRoute
   '/_authenticated/admin/email': typeof AuthenticatedAdminEmailRoute
   '/_authenticated/admin/health': typeof AuthenticatedAdminHealthRoute
   '/_authenticated/admin/operations': typeof AuthenticatedAdminOperationsRoute
@@ -990,6 +1000,7 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/commissions'
     | '/admin/customers'
+    | '/admin/disputes'
     | '/admin/email'
     | '/admin/health'
     | '/admin/operations'
@@ -1084,6 +1095,7 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/admin/commissions'
     | '/admin/customers'
+    | '/admin/disputes'
     | '/admin/email'
     | '/admin/health'
     | '/admin/operations'
@@ -1187,6 +1199,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/audit'
     | '/_authenticated/admin/commissions'
     | '/_authenticated/admin/customers'
+    | '/_authenticated/admin/disputes'
     | '/_authenticated/admin/email'
     | '/_authenticated/admin/health'
     | '/_authenticated/admin/operations'
@@ -1875,6 +1888,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminEmailRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin/disputes': {
+      id: '/_authenticated/admin/disputes'
+      path: '/admin/disputes'
+      fullPath: '/admin/disputes'
+      preLoaderRoute: typeof AuthenticatedAdminDisputesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/admin/customers': {
       id: '/_authenticated/admin/customers'
       path: '/admin/customers'
@@ -2000,6 +2020,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAdminAuditRoute: typeof AuthenticatedAdminAuditRoute
   AuthenticatedAdminCommissionsRoute: typeof AuthenticatedAdminCommissionsRoute
   AuthenticatedAdminCustomersRoute: typeof AuthenticatedAdminCustomersRoute
+  AuthenticatedAdminDisputesRoute: typeof AuthenticatedAdminDisputesRoute
   AuthenticatedAdminEmailRoute: typeof AuthenticatedAdminEmailRoute
   AuthenticatedAdminHealthRoute: typeof AuthenticatedAdminHealthRoute
   AuthenticatedAdminOperationsRoute: typeof AuthenticatedAdminOperationsRoute
@@ -2032,6 +2053,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminAuditRoute: AuthenticatedAdminAuditRoute,
   AuthenticatedAdminCommissionsRoute: AuthenticatedAdminCommissionsRoute,
   AuthenticatedAdminCustomersRoute: AuthenticatedAdminCustomersRoute,
+  AuthenticatedAdminDisputesRoute: AuthenticatedAdminDisputesRoute,
   AuthenticatedAdminEmailRoute: AuthenticatedAdminEmailRoute,
   AuthenticatedAdminHealthRoute: AuthenticatedAdminHealthRoute,
   AuthenticatedAdminOperationsRoute: AuthenticatedAdminOperationsRoute,
