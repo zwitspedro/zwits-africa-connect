@@ -88,6 +88,7 @@ import { Route as AuthenticatedMessagesBookingIdRouteImport } from './routes/_au
 import { Route as AuthenticatedDeliveriesIdRouteImport } from './routes/_authenticated/deliveries.$id'
 import { Route as AuthenticatedBookingsIdRouteImport } from './routes/_authenticated/bookings.$id'
 import { Route as AuthenticatedBookCategoryRouteImport } from './routes/_authenticated/book.$category'
+import { Route as AuthenticatedAdminWithdrawalsRouteImport } from './routes/_authenticated/admin.withdrawals'
 import { Route as AuthenticatedAdminUploadsRouteImport } from './routes/_authenticated/admin.uploads'
 import { Route as AuthenticatedAdminProvidersRouteImport } from './routes/_authenticated/admin.providers'
 import { Route as AuthenticatedAdminPaymentsRouteImport } from './routes/_authenticated/admin.payments'
@@ -517,6 +518,12 @@ const AuthenticatedBookCategoryRoute =
     path: '/book/$category',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedAdminWithdrawalsRoute =
+  AuthenticatedAdminWithdrawalsRouteImport.update({
+    id: '/admin/withdrawals',
+    path: '/admin/withdrawals',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedAdminUploadsRoute =
   AuthenticatedAdminUploadsRouteImport.update({
     id: '/admin/uploads',
@@ -702,6 +709,7 @@ export interface FileRoutesByFullPath {
   '/admin/payments': typeof AuthenticatedAdminPaymentsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/admin/uploads': typeof AuthenticatedAdminUploadsRoute
+  '/admin/withdrawals': typeof AuthenticatedAdminWithdrawalsRoute
   '/book/$category': typeof AuthenticatedBookCategoryRoute
   '/bookings/$id': typeof AuthenticatedBookingsIdRoute
   '/deliveries/$id': typeof AuthenticatedDeliveriesIdRoute
@@ -797,6 +805,7 @@ export interface FileRoutesByTo {
   '/admin/payments': typeof AuthenticatedAdminPaymentsRoute
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/admin/uploads': typeof AuthenticatedAdminUploadsRoute
+  '/admin/withdrawals': typeof AuthenticatedAdminWithdrawalsRoute
   '/book/$category': typeof AuthenticatedBookCategoryRoute
   '/bookings/$id': typeof AuthenticatedBookingsIdRoute
   '/deliveries/$id': typeof AuthenticatedDeliveriesIdRoute
@@ -902,6 +911,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/payments': typeof AuthenticatedAdminPaymentsRoute
   '/_authenticated/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/_authenticated/admin/uploads': typeof AuthenticatedAdminUploadsRoute
+  '/_authenticated/admin/withdrawals': typeof AuthenticatedAdminWithdrawalsRoute
   '/_authenticated/book/$category': typeof AuthenticatedBookCategoryRoute
   '/_authenticated/bookings/$id': typeof AuthenticatedBookingsIdRoute
   '/_authenticated/deliveries/$id': typeof AuthenticatedDeliveriesIdRoute
@@ -1007,6 +1017,7 @@ export interface FileRouteTypes {
     | '/admin/payments'
     | '/admin/providers'
     | '/admin/uploads'
+    | '/admin/withdrawals'
     | '/book/$category'
     | '/bookings/$id'
     | '/deliveries/$id'
@@ -1102,6 +1113,7 @@ export interface FileRouteTypes {
     | '/admin/payments'
     | '/admin/providers'
     | '/admin/uploads'
+    | '/admin/withdrawals'
     | '/book/$category'
     | '/bookings/$id'
     | '/deliveries/$id'
@@ -1206,6 +1218,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/payments'
     | '/_authenticated/admin/providers'
     | '/_authenticated/admin/uploads'
+    | '/_authenticated/admin/withdrawals'
     | '/_authenticated/book/$category'
     | '/_authenticated/bookings/$id'
     | '/_authenticated/deliveries/$id'
@@ -1846,6 +1859,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBookCategoryRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin/withdrawals': {
+      id: '/_authenticated/admin/withdrawals'
+      path: '/admin/withdrawals'
+      fullPath: '/admin/withdrawals'
+      preLoaderRoute: typeof AuthenticatedAdminWithdrawalsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/admin/uploads': {
       id: '/_authenticated/admin/uploads'
       path: '/admin/uploads'
@@ -2027,6 +2047,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAdminPaymentsRoute: typeof AuthenticatedAdminPaymentsRoute
   AuthenticatedAdminProvidersRoute: typeof AuthenticatedAdminProvidersRoute
   AuthenticatedAdminUploadsRoute: typeof AuthenticatedAdminUploadsRoute
+  AuthenticatedAdminWithdrawalsRoute: typeof AuthenticatedAdminWithdrawalsRoute
   AuthenticatedBookCategoryRoute: typeof AuthenticatedBookCategoryRoute
   AuthenticatedBookingsIdRoute: typeof AuthenticatedBookingsIdRoute
   AuthenticatedDeliveriesIdRoute: typeof AuthenticatedDeliveriesIdRoute
@@ -2060,6 +2081,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminPaymentsRoute: AuthenticatedAdminPaymentsRoute,
   AuthenticatedAdminProvidersRoute: AuthenticatedAdminProvidersRoute,
   AuthenticatedAdminUploadsRoute: AuthenticatedAdminUploadsRoute,
+  AuthenticatedAdminWithdrawalsRoute: AuthenticatedAdminWithdrawalsRoute,
   AuthenticatedBookCategoryRoute: AuthenticatedBookCategoryRoute,
   AuthenticatedBookingsIdRoute: AuthenticatedBookingsIdRoute,
   AuthenticatedDeliveriesIdRoute: AuthenticatedDeliveriesIdRoute,
