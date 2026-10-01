@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { SiteShell } from "@/components/site-shell";
 import { PageHero } from "@/components/page-hero";
-import { Mail, MapPin } from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
+import { BUSINESS } from "@/lib/seo";
 import { useServerFn } from "@tanstack/react-start";
 import { sendContactMessage } from "@/lib/contact.functions";
 
@@ -11,6 +12,10 @@ export const Route = createFileRoute("/contact")({
     meta: [
       { title: "Contact — Zwits" },
       { name: "description", content: "Get in touch with the Zwits team for support, partnerships or press." },
+      { property: "og:title", content: "Contact — Zwits" },
+      { property: "og:description", content: "Get in touch with the Zwits team for support, partnerships or press." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { property: "og:url", content: "https://www.zwits.co.zw/contact" },
     ],
     links: [{ rel: "canonical", href: "https://www.zwits.co.zw/contact" }],
@@ -31,6 +36,8 @@ function Contact() {
       <section className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 md:grid-cols-[1fr_1.3fr]">
         <div className="space-y-6">
           <Item icon={MapPin} title="HQ" value="Harare, Zimbabwe" />
+          <a className="block" href={`mailto:${BUSINESS.email}`}><Item icon={Mail} title="Email" value={BUSINESS.email} /></a>
+          <a className="block" href={`tel:${BUSINESS.phone}`}><Item icon={Phone} title="Phone" value={BUSINESS.phoneDisplay} /></a>
         </div>
         <form
           onSubmit={async (e) => {

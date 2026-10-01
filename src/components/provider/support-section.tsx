@@ -2,6 +2,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { LifeBuoy, Mail, MessageCircleQuestion, Phone } from "lucide-react";
 import { Panel } from "./dashboard-kit";
+import { BUSINESS } from "@/lib/seo";
 
 const FAQ = [
   { q: "How do I get more job offers?", a: "Stay online, keep your response time under 15 seconds, and maintain a 4.5+ rating. Dispatch sends first-wave offers to the nearest, highest-rated available providers." },
@@ -19,18 +20,18 @@ export function SupportSection() {
     <div className="grid gap-4">
       <Panel title="Contact support" description="We usually reply within a few hours." action={<LifeBuoy className="size-4 text-primary" />}>
         <div className="grid gap-3 sm:grid-cols-2">
-          <a href="mailto:support@zwits.co.zw" className="flex items-center gap-3 rounded-2xl border border-border/70 bg-background/40 p-4 transition-colors hover:border-primary/40">
+          <a href={`mailto:${BUSINESS.email}`} className="flex items-center gap-3 rounded-2xl border border-border/70 bg-background/40 p-4 transition-colors hover:border-primary/40">
             <Mail className="size-5 text-primary" />
             <div className="min-w-0">
               <div className="text-sm font-medium">Email support</div>
-              <div className="truncate text-[11px] text-muted-foreground">support@zwits.co.zw</div>
+              <div className="truncate text-[11px] text-muted-foreground">{BUSINESS.email}</div>
             </div>
           </a>
-          <a href="tel:+263000000000" className="flex items-center gap-3 rounded-2xl border border-border/70 bg-background/40 p-4 transition-colors hover:border-primary/40">
+          <a href={`tel:${BUSINESS.phone}`} className="flex items-center gap-3 rounded-2xl border border-border/70 bg-background/40 p-4 transition-colors hover:border-primary/40">
             <Phone className="size-5 text-primary" />
             <div className="min-w-0">
               <div className="text-sm font-medium">Call the provider line</div>
-              <div className="truncate text-[11px] text-muted-foreground">Mon–Sat, 8am–6pm</div>
+              <div className="truncate text-[11px] text-muted-foreground">{BUSINESS.phoneDisplay}</div>
             </div>
           </a>
         </div>
@@ -39,7 +40,7 @@ export function SupportSection() {
           onSubmit={(e) => {
             e.preventDefault();
             if (!message.trim()) return;
-            window.location.href = `mailto:support@zwits.co.zw?subject=Provider%20support&body=${encodeURIComponent(message)}`;
+            window.location.href = `mailto:${BUSINESS.email}?subject=Provider%20support&body=${encodeURIComponent(message)}`;
             setMessage("");
             toast.success("Opening your email app…");
           }}

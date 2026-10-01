@@ -10,11 +10,8 @@ import {
   SocialButtons,
   SubmitButton,
 } from "@/components/auth/auth-ui";
-import { PhoneOtpForm } from "@/components/auth/phone-otp-form";
 import {
   REMEMBERED_EMAIL_KEY,
-  isPhoneIdentifier,
-  normalisePhone,
   resolveLanding,
 } from "@/lib/auth-nav";
 import type { AppRole } from "@/lib/roles";
@@ -30,7 +27,6 @@ export function LoginForm({ preferred, registerTo, registerLabel }: {
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [method, setMethod] = useState<"password" | "otp">("password");
 
   useEffect(() => {
     const saved = localStorage.getItem(REMEMBERED_EMAIL_KEY);
@@ -45,10 +41,7 @@ export function LoginForm({ preferred, registerTo, registerLabel }: {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const credentials = isPhoneIdentifier(identifier)
-      ? { phone: normalisePhone(identifier), password }
-      : { email: identifier.trim(), password };
-    const { data, error } = await supabase.auth.signInWithPassword(credentials);
+    const { data, error } = await supabase.auth.signInWithPassword({ email: identifier.trim(), password });
     setLoading(false);
 
     if (error) {
@@ -79,32 +72,16 @@ export function LoginForm({ preferred, registerTo, registerLabel }: {
     if (data.user) await go(data.user.id);
   };
 
-  if (method === "otp") {
-    return (
-      <>
-        <PhoneOtpForm role={preferred === "provider" ? "provider" : "customer"} />
-        <button
-          type="button"
-          onClick={() => setMethod("password")}
-          className="mt-4 w-full text-sm font-medium text-primary hover:underline"
-        >
-          Use email and password instead
-        </button>
-        <Divider />
-        <SocialButtons onSignedIn={afterSocial} intent={preferred === "provider" ? "provider" : "customer"} />
-      </>
-    );
-  }
-
   return (
     <>
       <form className="grid gap-4" onSubmit={submit}>
         <Field
-          label="Email or phone number"
+          label="Email"
+          type="email"
           value={identifier}
           onChange={(e) => setIdentifier(e.target.value)}
-          autoComplete="username"
-          placeholder="you@example.com or +263 77 123 4567"
+          autoComplete="email"
+          placeholder="you@example.com"
           required
         />
         <PasswordField label="Password" value={password} onChange={setPassword} required />
@@ -121,14 +98,7 @@ export function LoginForm({ preferred, registerTo, registerLabel }: {
         <SubmitButton loading={loading}>Log in</SubmitButton>
       </form>
 
-      <button
-        type="button"
-        onClick={() => setMethod("otp")}
-        className="mt-3 w-full text-sm font-medium text-primary hover:underline"
-      >
-        Use my mobile number instead
-      </button>
-
+      <p className="mt-3 text-center text-xs text-muted-foreground">Phone sign-in coming soon</p>
 
       <Link
         to={registerTo}

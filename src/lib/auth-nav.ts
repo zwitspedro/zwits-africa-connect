@@ -33,12 +33,3 @@ export async function resolveLanding(userId: string, preferred?: AppRole): Promi
   return ROLES[only].home;
 }
 
-/** Accepts an email or a phone number in the same field. */
-export function isPhoneIdentifier(value: string) {
-  return /^\+?[0-9\s()-]{7,}$/.test(value.trim());
-}
-
-export function normalisePhone(value: string) {
-  const digits = value.replace(/[^\d+]/g, "");
-  return digits.startsWith("+") ? digits : `+${digits.replace(/^0+/, "263")}`;
-}
