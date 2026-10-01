@@ -13,6 +13,8 @@ import { toCanonicalPhone, syntheticPhoneEmail } from "@/lib/phone";
 export const requestPhoneOtp = createServerFn({ method: "POST" })
   .inputValidator((input: { phone: string }) => input)
   .handler(async ({ data }) => {
+    // Phone sign-in remains unavailable until SMS delivery is enabled.
+    return { ok: false as const, error: "sms_not_configured" };
     const phone = toCanonicalPhone(data.phone);
     if (!phone) return { ok: false as const, error: "invalid_phone" };
 
@@ -68,6 +70,8 @@ export const requestPhoneOtp = createServerFn({ method: "POST" })
 export const verifyPhoneOtp = createServerFn({ method: "POST" })
   .inputValidator((input: { phone: string; code: string; role?: string }) => input)
   .handler(async ({ data }) => {
+    // Do not allow previously issued codes to sign in while phone sign-in is unavailable.
+    return { ok: false as const, error: "sms_not_configured" };
     const phone = toCanonicalPhone(data.phone);
     if (!phone || !/^\d{6}$/.test(data.code ?? "")) {
       return { ok: false as const, error: "invalid_code" };
