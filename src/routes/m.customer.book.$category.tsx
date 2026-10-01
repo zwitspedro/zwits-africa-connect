@@ -195,7 +195,7 @@ function BookScreen() {
                       : "bg-muted text-muted-foreground"
                   }`}
                 >
-                  {m === "ecocash" ? "EcoCash" : "Cash on completion"}
+                  Cash on completion
                 </button>
               ))}
             </div>

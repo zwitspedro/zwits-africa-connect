@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { SiteShell } from "@/components/site-shell";
 import { PageHero } from "@/components/page-hero";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail, MapPin } from "lucide-react";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -25,8 +25,6 @@ function Contact() {
       </PageHero>
       <section className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 md:grid-cols-[1fr_1.3fr]">
         <div className="space-y-6">
-          <Item icon={Mail} title="Email" value="hello@zwits.app" />
-          <Item icon={Phone} title="Phone" value="+263 77 000 0000" />
           <Item icon={MapPin} title="HQ" value="Harare, Zimbabwe" />
         </div>
         <form
