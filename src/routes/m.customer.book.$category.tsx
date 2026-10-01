@@ -34,7 +34,7 @@ function BookScreen() {
   const [description, setDescription] = useState("");
   const [budget, setBudget] = useState("");
   const [scheduledFor, setScheduledFor] = useState("");
-  const [payment, setPayment] = useState<"cash" | "ecocash">("ecocash");
+  const [payment, setPayment] = useState<"cash" | "ecocash">("cash");
   const [photos, setPhotos] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const [locating, setLocating] = useState(false);
@@ -185,7 +185,7 @@ function BookScreen() {
 
             <label className="mt-5 block text-xs font-medium">Payment</label>
             <div className="mt-1 grid grid-cols-2 gap-2">
-              {(["ecocash", "cash"] as const).map((m) => (
+              {(["cash"] as const).map((m) => (
                 <button
                   key={m}
                   onClick={() => setPayment(m)}

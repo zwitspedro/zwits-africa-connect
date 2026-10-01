@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteShell } from "@/components/site-shell";
 import { Hero } from "@/components/marketing/hero";
-import { LiveStats } from "@/components/marketing/live-stats";
 import { JourneySplit } from "@/components/marketing/journey-split";
 import { ServiceCategories } from "@/components/marketing/service-categories";
 import { FeaturedProviders } from "@/components/marketing/featured-providers";
@@ -10,7 +9,6 @@ import { HowItWorks } from "@/components/marketing/how-it-works";
 import { BusinessSolutions } from "@/components/marketing/business-solutions";
 import { PartnerRecruitment } from "@/components/marketing/partner-recruitment";
 import { AppPreview } from "@/components/marketing/app-preview";
-import { Testimonials } from "@/components/marketing/testimonials";
 import { EcosystemRoadmap } from "@/components/marketing/ecosystem-roadmap";
 import { FaqSection } from "@/components/marketing/faq-section";
 import { FinalCta } from "@/components/marketing/final-cta";
@@ -42,7 +40,6 @@ function Home() {
     <SiteShell>
       <Hero />
       <JourneySplit />
-      <LiveStats />
       <ServiceCategories />
       <FeaturedProviders />
       <WhyZwits />
@@ -50,7 +47,6 @@ function Home() {
       <BusinessSolutions />
       <PartnerRecruitment />
       <AppPreview />
-      <Testimonials />
       <EcosystemRoadmap />
       <FaqSection />
       <FinalCta />

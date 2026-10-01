@@ -5,7 +5,7 @@ import { Wallet, Clock, Route as RouteIcon, ShieldCheck, ArrowRight } from "luci
 
 const title = "Become a Driver — Earn with Zwits Delivery";
 const description =
-  "Drive or ride with Zwits. Accept deliveries near you, follow live routes and get paid weekly to EcoCash, InnBucks or your bank.";
+  "Drive or ride with Zwits. Accept deliveries near you, follow live routes and withdraw earnings to mobile money or your bank.";
 
 export const Route = createFileRoute("/become-a-driver")({
   head: () => ({

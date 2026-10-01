@@ -3,10 +3,10 @@ import { Building2, Boxes, FileText, PlugZap, ArrowRight } from "lucide-react";
 import { Reveal } from "./reveal";
 
 const features = [
-  { icon: Boxes, title: "Bulk & scheduled logistics", text: "Move volume on recurring routes with dedicated capacity." },
-  { icon: FileText, title: "Monthly accounts & invoicing", text: "Consolidated statements, cost centres and downloadable reports." },
-  { icon: PlugZap, title: "API integrations", text: "Trigger deliveries and pull tracking events straight from your systems." },
-  { icon: Building2, title: "Dedicated account team", text: "SLAs, onboarding and a named manager for enterprise clients." },
+  { icon: Boxes, title: "Same-day delivery requests", text: "Send parcels across Harare with live driver tracking." },
+  { icon: FileText, title: "Monthly accounts & invoicing", text: "Coming soon — consolidated statements for business accounts." },
+  { icon: PlugZap, title: "API integrations", text: "Coming soon — create jobs straight from your systems." },
+  { icon: Building2, title: "Talk to our team", text: "Tell us your volumes and we will set up your account." },
 ];
 
 export function BusinessSolutions() {
@@ -20,7 +20,7 @@ export function BusinessSolutions() {
           </h2>
           <p className="mt-5 max-w-lg text-muted-foreground md:text-lg">
             Retailers, pharmacies, restaurants and corporates run their last mile and facilities
-            work on Zwits — with the controls a finance team expects.
+            work on Zwits.
           </p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <Link to="/business" className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-semibold text-primary-foreground transition hover:opacity-90">
