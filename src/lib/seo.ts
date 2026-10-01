@@ -20,6 +20,7 @@ export const BUSINESS = {
   tagline: "Trust. Delivered.",
   phone: "+263773848940",
   phoneDisplay: "+263 773 848 940",
+  email: "support@zwits.co.zw",
   address: {
     street: "16 Tarlington Road",
     suburb: "Marlborough",
@@ -116,6 +117,7 @@ export function organizationJsonLd() {
     logo: BUSINESS.logo,
     slogan: BUSINESS.tagline,
     telephone: BUSINESS.phone,
+    email: BUSINESS.email,
     foundingDate: BUSINESS.incorporated,
     taxID: BUSINESS.taxId,
     identifier: BUSINESS.registrationNumber,
@@ -151,6 +153,7 @@ export function localBusinessJsonLd() {
     legalName: BUSINESS.legalName,
     url: SITE_URL,
     telephone: BUSINESS.phone,
+    email: BUSINESS.email,
     image: BUSINESS.logo,
     address: {
       "@type": "PostalAddress",
