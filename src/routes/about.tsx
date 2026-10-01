@@ -24,14 +24,14 @@ function About() {
         <div className="grid gap-10 md:grid-cols-2">
           <div className="space-y-4 text-muted-foreground">
             <p>From a delivery to a deep clean, getting things done in our cities should be a tap away. We started Zwits because the everyday economy is huge, informal and full of incredible people — they just needed better tools.</p>
-            <p>Today Zwits matches thousands of customers with verified riders, drivers, technicians, cleaners, farmers, stylists and freelancers across Zimbabwe — and we're just getting started.</p>
+            <p>Zwits is live in Harare, connecting customers with verified service providers — and we're just getting started.</p>
           </div>
           <div className="grid grid-cols-2 gap-4">
             {[
               ["2024", "Founded"],
-              ["3", "Cities live"],
-              ["1,400+", "Providers earning"],
-              ["12k+", "Customers served"],
+              ["Harare", "Live city"],
+              ["Cash", "Payment today"],
+              ["Verified", "Every provider ID-checked"],
             ].map(([v, l]) => (
               <div key={l} className="rounded-2xl border border-border bg-card p-6">
                 <p className="font-display text-3xl font-bold">{v}</p>

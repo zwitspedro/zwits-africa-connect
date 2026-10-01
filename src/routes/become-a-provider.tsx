@@ -22,7 +22,7 @@ export const Route = createFileRoute("/become-a-provider")({
 });
 
 const perks = [
-  { icon: Wallet, title: "Get paid fast", text: "Direct payouts to EcoCash, InnBucks or your bank." },
+  { icon: Wallet, title: "Withdraw your earnings", text: "Request payouts from your wallet to mobile money or your bank." },
   { icon: Clock, title: "You set the hours", text: "Toggle availability whenever you're ready to work." },
   { icon: Star, title: "Build a reputation", text: "Great ratings unlock more jobs and bigger earnings." },
   { icon: ShieldCheck, title: "Protected & verified", text: "ID and background checks keep the platform safe." },

@@ -18,7 +18,7 @@ import { seo, breadcrumbJsonLd, faqJsonLd, serviceJsonLd, type Crumb, type Faq }
 
 const title = "Business Delivery Services in Zimbabwe | Zwits Business";
 const description =
-  "Reliable business delivery and logistics for Zimbabwean companies. Same-day dispatch, scheduled runs, monthly accounts, invoicing and delivery tracking with Zwits Business.";
+  "Reliable business delivery and logistics for Zimbabwean companies. Same-day dispatch and live delivery tracking in Harare with Zwits Business.";
 
 const crumbs: Crumb[] = [
   { name: "Home", path: "/" },
@@ -28,7 +28,7 @@ const crumbs: Crumb[] = [
 const faqs: Faq[] = [
   {
     q: "What is business delivery on Zwits?",
-    a: "A managed delivery account for companies — you dispatch same-day or scheduled deliveries, track every job, and settle on one monthly invoice instead of paying trip by trip.",
+    a: "A managed delivery account for companies — you dispatch same-day or scheduled deliveries, track every job, and pay per trip. Monthly invoicing is coming soon.",
   },
   {
     q: "Which businesses use Zwits Business?",
@@ -40,7 +40,7 @@ const faqs: Faq[] = [
   },
   {
     q: "Can we get invoices and reporting?",
-    a: "Yes. Business accounts get consolidated monthly statements with per-job line items, plus a live operations view of deliveries in progress.",
+    a: "Not yet. Consolidated monthly invoices and reporting are on our roadmap. Today every delivery has its own record with live tracking.",
   },
 ];
 
@@ -66,13 +66,13 @@ export const Route = createFileRoute("/business")({
 
 const capabilities = [
   { icon: Truck, title: "Track deliveries", text: "Every parcel, every driver, live on one operations board." },
-  { icon: Users, title: "Manage employees", text: "Seats, permissions and cost centres for each team member." },
-  { icon: Receipt, title: "Generate invoices", text: "Consolidated monthly statements with per-job line items." },
-  { icon: Boxes, title: "Book bulk deliveries", text: "Upload a run of drop-offs and dispatch them in one action." },
-  { icon: BarChart3, title: "Monitor analytics", text: "Volumes, spend, on-time rate and cost per delivery over time." },
-  { icon: FileText, title: "Download reports", text: "Export CSV or PDF for finance, audit and reconciliation." },
-  { icon: PlugZap, title: "API integrations", text: "Create jobs and receive webhooks straight from your systems." },
-  { icon: ShieldCheck, title: "Account controls", text: "Approval limits, SLAs and a named account manager." },
+  { icon: Users, title: "Manage employees", text: "Coming soon — seats and permissions for each team member." },
+  { icon: Receipt, title: "Generate invoices", text: "Coming soon — consolidated monthly statements." },
+  { icon: Boxes, title: "Book bulk deliveries", text: "Coming soon — dispatch a run of drop-offs in one action." },
+  { icon: BarChart3, title: "Monitor analytics", text: "Coming soon — volumes, spend and on-time rate." },
+  { icon: FileText, title: "Download reports", text: "Coming soon — CSV and PDF exports for finance." },
+  { icon: PlugZap, title: "API integrations", text: "Coming soon — create jobs from your systems." },
+  { icon: ShieldCheck, title: "Account controls", text: "Coming soon — approval limits and account management." },
 ];
 
 function BusinessPage() {
@@ -83,7 +83,7 @@ function BusinessPage() {
       </div>
       <PageHero eyebrow="Zwits Business" title="Business delivery solutions for Zimbabwean companies">
         Retailers, pharmacies, restaurants and corporates run their last-mile delivery and
-        facilities work on Zwits — with the tracking, invoicing and controls a finance team expects.
+        facilities work on Zwits — with live tracking today, and invoicing and team controls on the way.
       </PageHero>
 
       <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8">
@@ -103,9 +103,9 @@ function BusinessPage() {
       <section className="border-y border-border/60 surface-elevated">
         <div className="mx-auto grid max-w-7xl gap-10 px-5 py-20 sm:px-8 md:grid-cols-3">
           {[
-            ["Starter", "Pay as you go", "For small teams sending a few jobs a week.", ["Live tracking", "Card & cash payment", "Email support"]],
-            ["Growth", "Monthly account", "For businesses with recurring volume.", ["Consolidated invoicing", "Bulk dispatch", "Analytics dashboard", "Priority support"]],
-            ["Enterprise", "Custom", "For national operations and integrations.", ["API & webhooks", "Dedicated capacity", "SLAs & account manager", "Custom reporting"]],
+            ["Starter", "Pay as you go", "For small teams sending a few jobs a week.", ["Live tracking", "Cash payment", "Support via contact page"]],
+            ["Growth", "Monthly account", "For businesses with recurring volume.", ["Coming soon: consolidated invoicing", "Coming soon: bulk dispatch", "Coming soon: analytics"]],
+            ["Enterprise", "Custom", "For national operations and integrations.", ["Coming soon: API & webhooks", "Coming soon: custom reporting", "Volume pricing on request"]],
           ].map(([name, price, blurb, features], i) => (
             <Reveal key={name as string} delay={i * 80}>
               <div className="flex h-full flex-col rounded-3xl glass p-8 hover-lift hover:border-primary/40">

@@ -31,19 +31,19 @@ const plans = [
     features: [
       "No booking or subscription fee",
       "Upfront quotes before you accept",
-      "Pay by EcoCash, InnBucks, card or cash",
+      "Pay in cash on completion (card & mobile money coming soon)",
       "Free cancellation before a provider is on the way",
     ],
     cta: { label: "Book a service", to: "/signup" },
   },
   {
     name: "Provider",
-    price: "12%",
+    price: "10%",
     note: "Commission per completed job — nothing upfront.",
     features: [
       "Free verification and listing",
-      "Keep 88% of every job",
-      "Weekly payouts to mobile money or bank",
+      "Keep 90% of every job",
+      "Request wallet withdrawals to mobile money or bank",
       "Growth Center, analytics and marketing tools included",
     ],
     cta: { label: "Become a provider", to: "/become-a-provider" },
@@ -52,12 +52,11 @@ const plans = [
   {
     name: "Business",
     price: "Custom",
-    note: "Volume rates with monthly invoicing.",
+    note: "Talk to us about your delivery volumes.",
     features: [
-      "Bulk and recurring bookings",
-      "Employee accounts with spend limits",
-      "Consolidated monthly invoices",
-      "Dedicated account manager",
+      "Delivery requests from one account",
+      "Volume rates agreed with our team",
+      "Invoicing and team accounts — coming soon",
     ],
     cta: { label: "Talk to sales", to: "/contact" },
   },
@@ -65,7 +64,7 @@ const plans = [
 
 const faqs = [
   ["Are there hidden fees?", "No. The quote you accept is the price you pay — commission is deducted on the provider side."],
-  ["When do providers get paid?", "Earnings clear to your Zwits wallet on job completion and can be withdrawn weekly."],
+  ["When do providers get paid?", "Earnings clear to your Zwits wallet on job completion and can be withdrawn on request."],
   ["Do delivery prices differ?", "Yes — delivery is priced by distance and vehicle type, shown before you confirm."],
 ];
 

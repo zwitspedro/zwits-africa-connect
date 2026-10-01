@@ -20,7 +20,7 @@ const faqs = [
   },
   {
     q: "Where is Zwits available?",
-    a: "We operate in Harare, Bulawayo and Mutare today, with a rollout plan across Zimbabwe and then into the wider Southern African region.",
+    a: "We are live in Harare today. Other Zimbabwean cities will follow — we will announce each one when it opens.",
   },
   {
     q: "How much do providers earn?",

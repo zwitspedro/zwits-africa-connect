@@ -19,7 +19,7 @@ export function Hero() {
             <span className="absolute inline-flex size-full animate-ping rounded-full bg-gold opacity-70" />
             <span className="relative inline-flex size-2 rounded-full bg-gold" />
           </span>
-          Zimbabwe&apos;s super app for services — live in Harare, Bulawayo &amp; Mutare
+          Zimbabwe&apos;s super app for services — now live in Harare
         </div>
 
         <h1
@@ -35,7 +35,7 @@ export function Hero() {
           style={{ animationDelay: "140ms" }}
         >
           Book verified plumbers, electricians, cleaners, riders and more — vetted, rated and
-          near you. Pay with EcoCash, InnBucks, card or cash on completion.
+          near you. Pay in cash on completion — card and mobile money are coming soon.
         </p>
 
         <div className="animate-rise mt-8" style={{ animationDelay: "200ms" }}>

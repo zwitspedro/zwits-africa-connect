@@ -27,7 +27,7 @@ function Privacy() {
         <h2>Sharing</h2>
         <p>We share only what's needed to complete a job (e.g. your pickup location with your assigned provider). We never sell your data.</p>
         <h2>Your rights</h2>
-        <p>You can request access, correction or deletion of your data at any time by contacting hello@zwits.app.</p>
+        <p>You can request access, correction or deletion of your data at any time through our contact page.</p>
       </Prose>
     </SiteShell>
   );

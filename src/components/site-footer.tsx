@@ -36,9 +36,7 @@ export function SiteFooter() {
           <h4 className="font-display text-sm font-semibold text-foreground">Get the app</h4>
           <p className="mt-3 text-sm text-muted-foreground">Available soon on Google Play and the App Store.</p>
           <div className="mt-4 flex gap-2">
-            <span className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">EcoCash</span>
-            <span className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">InnBucks</span>
-            <span className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">Visa</span>
+            <span className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">Cash on completion</span>
           </div>
         </div>
       </div>

@@ -73,12 +73,12 @@ function WalletScreen() {
             <div className="flex min-h-12 items-center gap-3 rounded-2xl bg-muted/60 px-3">
               <Smartphone className="size-4 text-accent" />
               <span className="flex-1 text-sm font-medium">EcoCash</span>
-              <Pill tone="accent">Default</Pill>
+              <Pill>Coming soon</Pill>
             </div>
             <div className="flex min-h-12 items-center gap-3 rounded-2xl bg-muted/60 px-3">
               <Banknote className="size-4 text-muted-foreground" />
               <span className="flex-1 text-sm font-medium">Cash on completion</span>
-              <Pill>Available</Pill>
+              <Pill tone="accent">Default</Pill>
             </div>
           </Card>
         </Section>

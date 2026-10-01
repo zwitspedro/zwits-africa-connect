@@ -18,10 +18,10 @@ export const Route = createFileRoute("/faq")({
 
 const faqs = [
   ["How do I book a service?", "Open the Zwits app, pick a category, share your location and confirm. A nearby verified provider accepts your job in seconds."],
-  ["Which payment methods are supported?", "We support EcoCash, InnBucks and Visa/Mastercard. Cash is also accepted for some categories."],
+  ["Which payment methods are supported?", "Cash on completion is the only payment method live today. Card and mobile money (EcoCash, InnBucks) are coming soon."],
   ["How are providers vetted?", "Every provider submits ID, references and proof of skill. We run background checks and require minimum ratings to stay active."],
   ["What does Zwits charge?", "Zwits takes a small commission on each completed job. Customers see the full price upfront — no surprises."],
-  ["Do you operate outside Zimbabwe?", "Not yet. We're starting in Harare, Bulawayo and Mutare, with more cities coming soon."],
+  ["Do you operate outside Zimbabwe?", "Not yet. We're live in Harare, with more Zimbabwean cities to follow."],
   ["How do I become a provider?", "Apply via the Become a Provider page. We review applications within 48 hours."],
 ];
 

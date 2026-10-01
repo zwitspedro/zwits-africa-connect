@@ -154,8 +154,6 @@ function SendDeliveryPage() {
             Payment
             <select className={`${field} mt-1`} value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
               <option value="cash">Cash on delivery</option>
-              <option value="ecocash">EcoCash</option>
-              <option value="card">Card</option>
             </select>
           </label>
         </Panel>
