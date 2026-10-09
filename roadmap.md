@@ -14,3 +14,9 @@
 - [x] Apply customer/provider/driver/admin experience themes and lightweight entry screen.
 - [x] Audit public and authenticated views, accessibility and all requested viewport widths.
 - [x] Report verification and remaining blockers without changing business logic.
+
+# Design System v1 completion audit
+- [ ] Correct remaining shared-control and calendar touch-target gaps.
+- [ ] Unify remaining role and operational presentation without changing behavior.
+- [ ] Audit requested public/account pages, keyboard access, viewport widths and initial requests.
+- [ ] Deliver the refreshed PASS/PARTIAL/BLOCKED report with honest remaining limits.
