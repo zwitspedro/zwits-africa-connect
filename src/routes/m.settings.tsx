@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { LogOut, Moon, Sun, SmartphoneNfc } from "lucide-react";
 import { toast } from "sonner";
@@ -24,7 +25,9 @@ function Toggle({
   onChange: (v: boolean) => void;
 }) {
   return (
-    <button
+    <Button variant="ghost"
+      role="switch"
+      aria-checked={checked}
       onClick={() => onChange(!checked)}
       className="flex min-h-14 w-full items-center justify-between gap-4 py-2 text-left"
     >
@@ -39,7 +42,7 @@ function Toggle({
           className={`absolute top-1 size-5 rounded-full bg-background transition-all ${checked ? "left-6" : "left-1"}`}
         />
       </span>
-    </button>
+    </Button>
   );
 }
 
@@ -80,10 +83,10 @@ function SettingsScreen() {
           <Card>
             <div className="grid grid-cols-3 gap-2">
               {(["system", "light", "dark"] as const).map((t) => (
-                <button
+                <Button variant="ghost"
                   key={t}
                   onClick={() => void update({ theme: t })}
-                  className={`inline-flex min-h-11 items-center justify-center gap-1.5 rounded-2xl text-xs font-medium capitalize transition ${
+                  className={`inline-flex min-h-12 items-center justify-center gap-1.5 rounded-2xl text-xs font-medium capitalize transition ${
                     settings.theme === t
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted text-muted-foreground"
@@ -95,7 +98,7 @@ function SettingsScreen() {
                     <Moon className="size-4" />
                   ) : null}
                   {t}
-                </button>
+                </Button>
               ))}
             </div>
           </Card>
@@ -140,7 +143,7 @@ function SettingsScreen() {
               {roles
                 .filter((r) => r !== "admin" && r !== "business")
                 .map((r) => (
-                  <button
+                  <Button variant="ghost"
                     key={r}
                     onClick={() => {
                       setActiveRole(r);
@@ -158,7 +161,7 @@ function SettingsScreen() {
                     }`}
                   >
                     <SmartphoneNfc className="size-4" /> {ROLES[r].label} app
-                  </button>
+                  </Button>
                 ))}
             </Card>
           </Section>

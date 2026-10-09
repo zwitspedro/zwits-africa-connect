@@ -5,7 +5,7 @@ import { PageHero } from "@/components/page-hero";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About — Zwits" },
+      { title: "About — Zwits" }, {"property": "og:title", "content": "About — Zwits"}, {"property": "og:description", "content": "Zwits is a modern African marketplace connecting customers with trusted local service providers."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"},
       { name: "description", content: "Zwits is a modern African marketplace connecting customers with trusted local service providers." },
       { property: "og:url", content: "https://www.zwits.co.zw/about" },
     ],
