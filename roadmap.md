@@ -1,6 +1,7 @@
 # Current request
 
-- [ ] Add and verify subtle Z pulses for matching, active delivery and existing network activity, with dark/light surfaces and reduced-motion support.
+- [x] Add subtle Z pulses for matching, active delivery and existing network activity; verify idle/network and reduced-motion behavior.
+- [ ] Verify populated matching and active-delivery journeys (no eligible matching booking or active delivery available in the test account).
 
 - [x] Expand Terms of Service to cover marketplace roles, cash payments, commission, cancellations and disputes.
 - [x] Expand Privacy Policy to cover account and job data, live location, sharing, retention and data requests.

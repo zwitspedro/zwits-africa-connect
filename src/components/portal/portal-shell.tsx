@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 import { RoleSwitcher } from "./role-switcher";
 import { Button } from "@/components/ui/button";
-import { ZwitsLogo } from "@/components/zwits-logo";
+import { NetworkLogo } from "@/components/network-logo";
 import { ROLES, type AppRole } from "@/lib/roles";
 
 export type PortalNavItem<K extends string> = { key: K; label: string; icon: any };
@@ -35,7 +35,7 @@ export function PortalShell<K extends string>({
       <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-xl">
         <div className="mx-auto grid h-16 max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 sm:px-6">
           <Link to="/" className="flex min-w-0 items-center gap-2.5">
-            <ZwitsLogo wordmark={false} />
+            <NetworkLogo wordmark={false} />
             <span className="min-w-0">
               <span className="block truncate font-display text-sm font-bold leading-tight">Zwits</span>
               <span className="block truncate text-[11px] text-muted-foreground">{meta.portal}</span>
