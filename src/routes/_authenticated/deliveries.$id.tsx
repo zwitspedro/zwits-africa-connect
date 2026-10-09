@@ -69,7 +69,7 @@ function DeliveryTrackingPage() {
       <SiteShell>
         <div className="mx-auto max-w-3xl px-4 py-16">
           <p className="text-sm text-muted-foreground">Delivery not found.</p>
-          <Link to="/dashboard" className="mt-4 inline-block text-sm text-primary">Back to dashboard</Link>
+          <Link to="/dashboard" className="mt-4 inline-block text-sm text-primary-text">Back to dashboard</Link>
         </div>
       </SiteShell>
     );
@@ -98,7 +98,7 @@ function DeliveryTrackingPage() {
               <span className="text-muted-foreground">No drivers available right now — we'll keep trying.</span>
             ) : (
               <>
-                <Loader2 className="size-4 animate-spin text-primary" />
+                <Loader2 className="size-4 animate-spin text-primary-text" />
                 <span className="text-muted-foreground">Offering your parcel to nearby drivers…</span>
               </>
             )}
@@ -112,7 +112,7 @@ function DeliveryTrackingPage() {
         <Panel title="Route">
           <ol className="space-y-3">
             <li className="flex gap-3">
-              <MapPin className="mt-0.5 size-4 shrink-0 text-emerald-400" />
+              <MapPin className="mt-0.5 size-4 shrink-0 text-success" />
               <span className="text-sm">{delivery.pickup_address}</span>
             </li>
             <li className="flex gap-3">
@@ -134,7 +134,7 @@ function DeliveryTrackingPage() {
                 <span
                   className={
                     i <= stepIndex
-                      ? "grid size-7 place-items-center rounded-full bg-primary/15 text-primary"
+                      ? "grid size-7 place-items-center rounded-full bg-primary/15 text-primary-text"
                       : "grid size-7 place-items-center rounded-full bg-muted text-muted-foreground"
                   }
                 >

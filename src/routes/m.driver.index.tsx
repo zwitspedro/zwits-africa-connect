@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button";
+import { Status } from "@/components/ui/status";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Bell, Gauge, Package, Route as RouteIcon, Star, Wallet } from "lucide-react";
@@ -80,15 +82,17 @@ function DriverDashboard() {
                       : "Go online to receive offers"}
                   </p>
                 </div>
-                <button
-                  aria-label="Toggle online"
+                <Button variant="ghost"
+                  aria-label="Receive new delivery offers"
+                  role="switch"
+                  aria-checked={!!profile?.available}
                   onClick={() => toggleOnline.mutate(!profile?.available)}
-                  className={`relative h-8 w-14 shrink-0 rounded-full transition-colors ${profile?.available ? "bg-accent" : "bg-muted"}`}
+                  className={`relative min-h-12 h-12 w-16 p-0 shrink-0 rounded-full transition-colors ${profile?.available ? "bg-accent" : "bg-muted"}`}
                 >
                   <span
-                    className={`absolute top-1 size-6 rounded-full bg-background transition-all ${profile?.available ? "left-7" : "left-1"}`}
+                    className={`absolute top-2 size-8 rounded-full bg-background transition-all ${profile?.available ? "left-7" : "left-1"}`}
                   />
-                </button>
+                </Button>
               </div>
             </Card>
           </Section>
@@ -116,7 +120,7 @@ function DriverDashboard() {
           <Section
             title="Active runs"
             action={
-              <Link to="/m/driver/deliveries" className="text-xs text-primary">
+              <Link to="/m/driver/deliveries" className="text-xs text-primary-text">
                 All
               </Link>
             }
@@ -142,7 +146,7 @@ function DriverDashboard() {
                           </p>
                         </div>
                         <div className="shrink-0 text-right">
-                          <Pill tone="primary">{r.status.replace(/_/g, " ")}</Pill>
+                          <Status status={r.status} />
                           <p className="mt-1 text-xs font-semibold">{money(r.price)}</p>
                         </div>
                       </div>

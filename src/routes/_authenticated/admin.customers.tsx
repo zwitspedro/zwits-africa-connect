@@ -33,7 +33,7 @@ function AdminCustomers() {
   return (
     <SiteShell>
       <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-        <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary">
+        <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary-text">
           <ShieldCheck className="size-3" /> Admin
         </div>
         <h1 className="mt-2 font-display text-3xl font-bold">Customers</h1>
@@ -80,7 +80,7 @@ function AdminCustomers() {
                     className="flex w-full flex-wrap items-center justify-between gap-2 p-4 text-left"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="inline-flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                      <span className="inline-flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary-text">
                         <Users className="size-4" />
                       </span>
                       <div>

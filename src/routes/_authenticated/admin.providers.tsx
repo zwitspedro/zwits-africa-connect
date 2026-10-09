@@ -124,14 +124,14 @@ function AdminProviders() {
           <Link
             to="/admin/providers"
             search={{}}
-            className={`rounded-full px-3 py-1.5 ${!statusFilter && !online ? "bg-primary/15 font-semibold text-primary" : "border border-border text-muted-foreground hover:bg-muted"}`}
+            className={`rounded-full px-3 py-1.5 ${!statusFilter && !online ? "bg-primary/15 font-semibold text-primary-text" : "border border-border text-muted-foreground hover:bg-muted"}`}
           >
             All
           </Link>
           <Link
             to="/admin/providers"
             search={{ online: true }}
-            className={`rounded-full px-3 py-1.5 ${online ? "bg-emerald-500/15 font-semibold text-emerald-400" : "border border-border text-muted-foreground hover:bg-muted"}`}
+            className={`rounded-full px-3 py-1.5 ${online ? "bg-emerald-500/15 font-semibold text-success" : "border border-border text-muted-foreground hover:bg-muted"}`}
           >
             Online now
           </Link>
@@ -149,7 +149,7 @@ function AdminProviders() {
               key={s}
               to="/admin/providers"
               search={{ status: s }}
-              className={`rounded-full px-3 py-1.5 capitalize ${statusFilter === s && !online ? "bg-primary/15 font-semibold text-primary" : "border border-border text-muted-foreground hover:bg-muted"}`}
+              className={`rounded-full px-3 py-1.5 capitalize ${statusFilter === s && !online ? "bg-primary/15 font-semibold text-primary-text" : "border border-border text-muted-foreground hover:bg-muted"}`}
             >
               {s === "pending" ? "Pending review" : s}
             </Link>
@@ -190,7 +190,7 @@ function AdminProviderRow({ provider, onApprove, onRevoke }: { provider: any; on
   const [showAudit, setShowAudit] = useState(false);
 
   const status = provider.verification_status as string;
-  const statusColor = status === "approved" ? "text-emerald-400 bg-emerald-500/15"
+  const statusColor = status === "approved" ? "text-success bg-emerald-500/15"
     : status === "revoked" ? "text-destructive bg-destructive/15"
     : "text-muted-foreground bg-muted";
 
@@ -278,7 +278,7 @@ function AdminProviderRow({ provider, onApprove, onRevoke }: { provider: any; on
               <li key={a.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-background/50 px-2 py-1.5">
                 <span className="text-muted-foreground">{new Date(a.created_at).toLocaleString()}</span>
                 <span className="font-medium">{a.doc_key}</span>
-                <span className={a.status === "uploaded" ? "text-emerald-400" : a.status === "rejected" || a.status === "upload_error" ? "text-destructive" : "text-muted-foreground"}>{a.status}</span>
+                <span className={a.status === "uploaded" ? "text-success" : a.status === "rejected" || a.status === "upload_error" ? "text-destructive" : "text-muted-foreground"}>{a.status}</span>
                 <span className="truncate text-muted-foreground">{a.file_name ?? "—"}</span>
               </li>
             ))}
@@ -318,7 +318,7 @@ function DocLink({ path, label }: { path: string | null; label: string }) {
   if (!path) return <span className="rounded-full bg-muted px-2 py-1 text-[11px] text-muted-foreground">{label}: missing</span>;
   return (
     <a href={data ?? "#"} target="_blank" rel="noreferrer"
-       className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-2 py-1 text-[11px] text-primary hover:bg-primary/25">
+       className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-2 py-1 text-[11px] text-primary-text hover:bg-primary/25">
       <FileText className="size-3" /> {label}
     </a>
   );

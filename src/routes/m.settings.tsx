@@ -153,7 +153,7 @@ function SettingsScreen() {
                       });
                     }}
                     className={`flex min-h-12 items-center gap-3 rounded-2xl px-3 text-sm font-medium ${
-                      activeRole === r ? "bg-primary/12 text-primary" : "bg-muted/60"
+                      activeRole === r ? "bg-primary/12 text-primary-text" : "bg-muted/60"
                     }`}
                   >
                     <SmartphoneNfc className="size-4" /> {ROLES[r].label} app

@@ -40,7 +40,7 @@ export function ScoreRing({
         <div>
           <div className="font-display text-4xl font-black tabular-nums">{score}</div>
           <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
-          <div className="mt-0.5 text-[11px] font-medium text-primary">{tier}</div>
+          <div className="mt-0.5 text-[11px] font-medium text-primary-text">{tier}</div>
         </div>
       </div>
     </div>

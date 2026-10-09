@@ -66,7 +66,7 @@ export function ServiceSearch() {
                   onMouseDown={() => blurTimer.current && clearTimeout(blurTimer.current)}
                   className="flex items-center gap-3 px-4 py-3 transition hover:bg-muted"
                 >
-                  <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+                  <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary-text">
                     <Icon className="size-4" />
                   </span>
                   <span className="min-w-0">

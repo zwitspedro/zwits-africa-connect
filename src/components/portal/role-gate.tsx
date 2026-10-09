@@ -41,7 +41,7 @@ export function RoleGate({ role, children }: { role: AppRole; children: ReactNod
   return (
     <SiteShell>
       <section className="mx-auto max-w-xl px-4 py-20 text-center sm:px-6">
-        <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-primary/12 text-primary">
+        <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-primary/12 text-primary-text">
           <Lock className="size-6" />
         </span>
         <h1 className="mt-5 font-display text-2xl font-bold">{meta.portal}</h1>

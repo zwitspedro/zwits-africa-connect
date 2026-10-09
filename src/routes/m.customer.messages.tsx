@@ -69,7 +69,7 @@ function CustomerMessages() {
                     }
                   >
                     <div className="flex items-start gap-3">
-                      <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-primary/12 text-primary">
+                      <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-primary/12 text-primary-text">
                         <MessageSquare className="size-5" />
                       </span>
                       <div className="min-w-0 flex-1">

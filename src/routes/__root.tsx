@@ -10,13 +10,14 @@ import {
 
 import { useEffect } from "react";
 
+import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 import { registerZwitsPwa } from "@/lib/pwa";
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-dvh items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground">404</h1>
         <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
@@ -41,7 +42,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   const router = useRouter();
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-dvh items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
           This page didn't load
@@ -50,7 +51,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
           Something went wrong on our end. You can try refreshing or head back home.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
-          <button
+          <Button
             onClick={() => {
               router.invalidate();
               reset();
@@ -58,13 +59,13 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             Try again
-          </button>
-          <a
-            href="/"
+          </Button>
+          <Button asChild variant="outline"><Link
+            to="/"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
             Go home
-          </a>
+          </Link></Button>
         </div>
       </div>
     </div>
@@ -76,7 +77,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { name: "theme-color", content: "#16A34A" },
+      { name: "theme-color", content: "#090B0A" },
       { title: "Zwits — Book trusted services across Africa" },
       { name: "description", content: "Zwits connects you with trusted providers for deliveries, transport, repairs, cleaning, farming, beauty, freelance and emergency help." },
       { property: "og:type", content: "website" },
@@ -84,8 +85,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:title", content: "Zwits — Book trusted services across Africa" },
       { property: "og:description", content: "Zwits connects you with trusted providers for deliveries, transport, repairs, cleaning, farming, beauty, freelance and emergency help." },
       { name: "twitter:description", content: "Zwits connects you with trusted providers for deliveries, transport, repairs, cleaning, farming, beauty, freelance and emergency help." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/958b8404-e2aa-4381-a530-f72bc70fab8c/id-preview-ce98154b--5dd9a776-382f-4d0d-8ba3-6330a6208fcc.lovable.app-1784809443701.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/958b8404-e2aa-4381-a530-f72bc70fab8c/id-preview-ce98154b--5dd9a776-382f-4d0d-8ba3-6330a6208fcc.lovable.app-1784809443701.png" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
@@ -94,9 +93,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "application-name", content: "Zwits" },
     ],
     links: [
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" },
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "icon", type: "image/png", href: "/favicon.png" },
       { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },

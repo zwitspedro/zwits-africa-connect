@@ -25,7 +25,7 @@ function MobileEntry() {
   }, [roles, isLoading, navigate]);
 
   return (
-    <div className="grid min-h-[100dvh] place-items-center text-primary">
+    <div className="grid min-h-[100dvh] place-items-center text-primary-text">
       <Loader2 className="size-6 animate-spin" />
     </div>
   );

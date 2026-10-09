@@ -16,12 +16,12 @@ export function StatCard({
 }) {
   const accents: Record<string, string> = {
     default: "text-foreground",
-    primary: "text-primary",
+    primary: "text-primary-text",
     gold: "text-gold",
-    positive: "text-emerald-400",
+    positive: "text-success",
   };
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-border/70 bg-card/70 p-4 shadow-sm backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg">
+    <div className="relative min-w-0 rounded-xl border border-border bg-card p-4">
       <div className="flex items-start justify-between gap-2">
         <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">{label}</span>
         {Icon && <Icon className={cn("size-4 shrink-0 opacity-70", accents[accent])} />}
@@ -46,7 +46,7 @@ export function Panel({
   className?: string;
 }) {
   return (
-    <section className={cn("rounded-3xl border border-border/70 bg-card/60 p-5 shadow-sm backdrop-blur", className)}>
+    <section className={cn("border-t border-border py-6", className)}>
       {(title || action) && (
         <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 pb-4">
           <div className="min-w-0">
@@ -63,9 +63,9 @@ export function Panel({
 
 export function EmptyState({ title, hint }: { title: string; hint?: string }) {
   return (
-    <div className="rounded-2xl border border-dashed border-border p-8 text-center">
+    <div className="py-8 text-center">
       <p className="text-sm text-muted-foreground">{title}</p>
-      {hint && <p className="mt-1 text-xs text-muted-foreground/80">{hint}</p>}
+      {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
     </div>
   );
 }
@@ -80,7 +80,7 @@ export function MetricBar({ label, value, suffix = "%" }: { label: string; value
       </div>
       <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-muted">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-primary to-gold transition-all duration-700"
+          className="h-full rounded-full bg-primary transition-all duration-300"
           style={{ width: `${pct}%` }}
         />
       </div>

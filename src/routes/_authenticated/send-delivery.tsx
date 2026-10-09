@@ -85,7 +85,7 @@ function SendDeliveryPage() {
           <div className="space-y-4">
             <div>
               <label className="mb-1 flex items-center gap-1.5 text-xs text-muted-foreground">
-                <MapPin className="size-3.5 text-emerald-400" /> Pickup address
+                <MapPin className="size-3.5 text-success" /> Pickup address
               </label>
               <AddressAutocomplete value={pickup.address} onChange={setPickup} placeholder="Where should we collect?" />
             </div>
@@ -110,7 +110,7 @@ function SendDeliveryPage() {
                     : "rounded-2xl border border-border p-4 text-left transition hover:border-primary/40"
                 }
               >
-                <Package className="size-5 text-primary" />
+                <Package className="size-5 text-primary-text" />
                 <p className="mt-3 text-sm font-semibold">{TIERS[k].label}</p>
                 <p className="mt-1 text-xs text-muted-foreground">{TIERS[k].blurb}</p>
               </button>

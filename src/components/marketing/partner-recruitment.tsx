@@ -37,7 +37,7 @@ export function PartnerRecruitment() {
               { icon: TrendingUp, k: "Grow", v: "Ratings win more jobs" },
             ].map((b) => (
               <div key={b.k} className="rounded-2xl border border-border/70 bg-card/40 p-4">
-                <b.icon className="size-4 text-primary" />
+                <b.icon className="size-4 text-primary-text" />
                 <p className="mt-3 text-sm font-semibold">{b.k}</p>
                 <p className="text-xs text-muted-foreground">{b.v}</p>
               </div>
@@ -56,7 +56,7 @@ export function PartnerRecruitment() {
           <div className="rounded-3xl glass-strong p-6 md:p-8">
             <div className="flex items-center justify-between">
               <p className="font-display text-base font-semibold">Income calculator</p>
-              <span className="rounded-full bg-primary/12 px-3 py-1 text-[11px] text-primary">Estimate</span>
+              <span className="rounded-full bg-primary/12 px-3 py-1 text-[11px] text-primary-text">Estimate</span>
             </div>
 
             <div className="mt-6 space-y-6">

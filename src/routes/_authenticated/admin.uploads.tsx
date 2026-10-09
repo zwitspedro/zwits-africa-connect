@@ -31,7 +31,7 @@ function AdminUploads() {
   return (
     <SiteShell>
       <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-        <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary">
+        <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary-text">
           <ShieldCheck className="size-3" /> Admin
         </div>
         <h1 className="mt-2 font-display text-3xl font-bold">Failed uploads</h1>
@@ -67,7 +67,7 @@ function AdminUploads() {
                     className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider ${
                       u.status === "rejected"
                         ? "bg-destructive/15 text-destructive"
-                        : "bg-amber-500/15 text-amber-400"
+                        : "bg-amber-500/15 text-warning"
                     }`}
                   >
                     <AlertTriangle className="size-3" /> {u.status.replace("_", " ")}

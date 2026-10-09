@@ -58,7 +58,7 @@ export function SettingsSection({ data }: { data: ProviderData }) {
         />
       </Panel>
 
-      <Panel title="Notifications" action={<Bell className="size-4 text-primary" />}>
+      <Panel title="Notifications" action={<Bell className="size-4 text-primary-text" />}>
         <div className="grid gap-1">
           <Row label="New job alerts" checked={prefs.jobAlerts} onChange={(v) => update({ jobAlerts: v })} />
           <Row label="Payment & payout alerts" checked={prefs.payoutAlerts} onChange={(v) => update({ payoutAlerts: v })} />

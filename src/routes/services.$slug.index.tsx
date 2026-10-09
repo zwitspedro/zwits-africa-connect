@@ -84,7 +84,7 @@ function ServiceNotFound() {
     <SiteShell>
       <div className="mx-auto max-w-md px-4 py-24 text-center">
         <h1 className="font-display text-2xl font-semibold">We don't offer that service yet</h1>
-        <Link to="/services" className="mt-4 inline-block text-primary underline">Browse all services</Link>
+        <Link to="/services" className="mt-4 inline-block text-primary-text underline">Browse all services</Link>
       </div>
     </SiteShell>
   );
@@ -135,7 +135,7 @@ function ServiceDetail() {
           </Link>
 
           <div className="mt-6 flex flex-wrap items-center gap-4">
-            <div className="grid size-16 place-items-center rounded-2xl bg-primary/15 text-primary">
+            <div className="grid size-16 place-items-center rounded-2xl bg-primary/15 text-primary-text">
               <Icon className="size-8" />
             </div>
             <div>
@@ -216,7 +216,7 @@ function ServiceDetail() {
               key={c.slug}
               to="/services/$slug/$city"
               params={{ slug, city: c.slug }}
-              className="inline-flex rounded-full border border-border px-4 py-2 text-sm transition hover:border-primary/60 hover:text-primary"
+              className="inline-flex rounded-full border border-border px-4 py-2 text-sm transition hover:border-primary/60 hover:text-primary-text"
             >
               {service.name} in {c.name}
             </Link>
@@ -257,7 +257,7 @@ function ServiceDetail() {
           <div className="rounded-2xl border border-border bg-card p-6">
             <p className="text-xs uppercase tracking-wide text-muted-foreground">Availability</p>
             <p className="mt-2 flex items-center gap-2 font-display text-xl font-semibold">
-              <CalendarClock className="size-5 text-primary" />
+              <CalendarClock className="size-5 text-primary-text" />
               {service.scheduling.allowAsap ? "ASAP or scheduled" : "Scheduled only"}
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -270,7 +270,7 @@ function ServiceDetail() {
           to="/book/$category"
           params={{ category: slug }}
           search={{ provider: undefined }}
-          className="mt-5 inline-flex items-center gap-2 rounded-full border border-primary/50 px-5 py-2.5 text-sm font-medium text-primary hover:bg-primary/10"
+          className="mt-5 inline-flex items-center gap-2 rounded-full border border-primary/50 px-5 py-2.5 text-sm font-medium text-primary-text hover:bg-primary/10"
         >
           Request a quote for {service.name} <ArrowUpRight className="size-4" />
         </Link>
@@ -307,7 +307,7 @@ function ServiceDetail() {
               <div className="flex items-center gap-2">
                 <span className="font-medium">{p.business_name}</span>
                 {p.verified && <BadgeCheck className="size-4 text-gold" />}
-                <span className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-medium ${p.available ? "bg-emerald-500/15 text-emerald-600" : "bg-muted text-muted-foreground"}`}>
+                <span className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-medium ${p.available ? "bg-emerald-500/15 text-success" : "bg-muted text-muted-foreground"}`}>
                   {p.available ? "Available" : "Busy"}
                 </span>
               </div>
@@ -344,7 +344,7 @@ function ServiceDetail() {
                   params={{ slug: s.slug }}
                   className="group flex items-center gap-3 rounded-2xl border border-border bg-card p-4 transition hover:border-primary/50"
                 >
-                  <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/12 text-primary">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/12 text-primary-text">
                     <RIcon className="size-5" />
                   </span>
                   <span>

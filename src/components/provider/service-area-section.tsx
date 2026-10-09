@@ -62,7 +62,7 @@ export function ServiceAreaSection({ data }: { data: ProviderData }) {
           <span className="text-xs text-muted-foreground">Areas you cover</span>
           <div className="mt-2 flex flex-wrap gap-2">
             {areas.map((a) => (
-              <span key={a} className="inline-flex items-center gap-1 rounded-full bg-primary/12 px-3 py-1.5 text-xs font-medium text-primary">
+              <span key={a} className="inline-flex items-center gap-1 rounded-full bg-primary/12 px-3 py-1.5 text-xs font-medium text-primary-text">
                 {a}
                 <button type="button" onClick={() => setAreas(areas.filter((x) => x !== a))} aria-label={`Remove ${a}`}>
                   <X className="size-3.5" />

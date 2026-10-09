@@ -66,7 +66,7 @@ function ProviderProfile() {
             <>
               <Card>
                 <div className="flex items-start gap-4">
-                  <span className="grid size-16 shrink-0 place-items-center rounded-3xl bg-primary/12 font-display text-xl font-bold text-primary">
+                  <span className="grid size-16 shrink-0 place-items-center rounded-3xl bg-primary/12 font-display text-xl font-bold text-primary-text">
                     {String(p.business_name).slice(0, 1).toUpperCase()}
                   </span>
                   <div className="min-w-0 flex-1">
@@ -130,7 +130,7 @@ function ProviderProfile() {
                   <div className="grid gap-3">
                     {(reviews.data ?? []).map((r: any) => (
                       <Card key={r.id}>
-                        <div className="flex items-center gap-1 text-amber-500">
+                        <div className="flex items-center gap-1 text-warning">
                           {Array.from({ length: 5 }).map((_, i) => (
                             <Star
                               key={i}

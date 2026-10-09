@@ -113,7 +113,7 @@ function ProviderCalendar() {
                 <Card key={j.id}>
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="text-[11px] uppercase tracking-wider text-primary">
+                      <p className="text-[11px] uppercase tracking-wider text-primary-text">
                         {j.category}
                       </p>
                       <p className="truncate text-sm font-semibold">{j.address}</p>

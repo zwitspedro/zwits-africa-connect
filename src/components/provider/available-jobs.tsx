@@ -138,7 +138,7 @@ function OfferCard({ offer }: { offer: Offer }) {
     <li className="rounded-2xl border border-border bg-card p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <div className="text-xs uppercase tracking-wider text-primary">
+          <div className="text-xs uppercase tracking-wider text-primary-text">
             {offer.booking.category} · wave {offer.wave}
           </div>
           <div className="mt-1 flex items-center gap-1.5 font-medium">
@@ -166,7 +166,7 @@ function OfferCard({ offer }: { offer: Offer }) {
         {offer.status === "offered" && (
           <span
             className={`flex items-center gap-1 rounded-full px-3 py-1 text-xs tabular-nums ${
-              seconds <= 10 ? "bg-destructive/15 text-destructive" : "bg-primary/15 text-primary"
+              seconds <= 10 ? "bg-destructive/15 text-destructive" : "bg-primary/15 text-primary-text"
             }`}
           >
             <Timer className="size-3" /> {seconds}s

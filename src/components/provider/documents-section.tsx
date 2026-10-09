@@ -35,9 +35,9 @@ export function DocumentsSection({ data }: { data: ProviderData }) {
         <ul className="grid gap-2">
           {required.map((d) => (
             <li key={d.key} className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border border-border/70 bg-background/40 p-3">
-              {d.url ? <FileCheck2 className="size-5 shrink-0 text-emerald-400" /> : <FileWarning className="size-5 shrink-0 text-gold" />}
+              {d.url ? <FileCheck2 className="size-5 shrink-0 text-success" /> : <FileWarning className="size-5 shrink-0 text-gold" />}
               <span className="min-w-0 truncate text-sm">{DOC_LABELS[d.key]}</span>
-              <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] ${d.url ? "bg-emerald-500/15 text-emerald-400" : "bg-muted text-muted-foreground"}`}>
+              <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] ${d.url ? "bg-emerald-500/15 text-success" : "bg-muted text-muted-foreground"}`}>
                 {d.url ? "Uploaded" : "Missing"}
               </span>
             </li>
@@ -61,7 +61,7 @@ export function DocumentsSection({ data }: { data: ProviderData }) {
                 </div>
                 <span
                   className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] capitalize ${
-                    d.status === "accepted" ? "bg-emerald-500/15 text-emerald-400" : "bg-destructive/15 text-destructive"
+                    d.status === "accepted" ? "bg-emerald-500/15 text-success" : "bg-destructive/15 text-destructive"
                   }`}
                 >
                   {d.status}

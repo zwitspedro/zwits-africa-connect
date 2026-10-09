@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { SiteShell } from "@/components/site-shell";
 import { useAuth } from "@/hooks/use-auth";
@@ -7,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { services } from "@/data/services";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Dashboard — Zwits" }] }),
+  head: () => ({ meta: [{ title: "Your bookings and services — Zwits" }, { name: "description", content: "View your active and completed Zwits bookings and find services in Harare." }, { property: "og:title", content: "Your bookings and services — Zwits" }, { property: "og:description", content: "View your active and completed Zwits bookings and find services in Harare." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
   component: Dashboard,
 });
 
@@ -32,7 +33,7 @@ function Dashboard() {
   return (
     <SiteShell>
       <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-        <h1 className="font-display text-3xl font-bold">Hi {user?.email ?? user?.phone} 👋</h1>
+        <h1 className="font-sans text-3xl font-bold">Your Zwits</h1>
         <p className="mt-2 text-sm text-muted-foreground">What do you need today?</p>
 
         <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -43,11 +44,11 @@ function Dashboard() {
         </div>
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link to="/bookings" className="rounded-full border border-border px-4 py-2 text-sm hover:bg-muted">My bookings</Link>
+          <Button variant="outline" asChild><Link to="/bookings">My bookings</Link></Button>
           {isProvider ? (
-            <Link to="/provider/dashboard" className="rounded-full bg-gold px-4 py-2 text-sm font-medium text-background hover:opacity-90">Provider dashboard</Link>
+            <Link to="/provider/dashboard" className="rounded-md bg-gold px-4 py-2 text-sm font-medium text-background hover:opacity-90">Provider dashboard</Link>
           ) : (
-            <Link to="/provider/setup" className="rounded-full border border-gold/40 px-4 py-2 text-sm text-gold hover:bg-gold/10">Become a provider</Link>
+            <Link to="/provider/setup" className="rounded-md border border-gold/40 px-4 py-2 text-sm text-gold hover:bg-gold/10">Become a provider</Link>
           )}
         </div>
 
@@ -61,7 +62,7 @@ function Dashboard() {
               search={{ provider: undefined }}
               className="group rounded-2xl border border-border bg-card p-4 transition hover:border-primary"
             >
-              <s.icon className="size-6 text-primary" />
+              <s.icon className="size-6 text-primary-text" />
               <div className="mt-3 text-sm font-medium">{s.name}</div>
               <div className="text-xs text-muted-foreground">{s.tagline}</div>
             </Link>

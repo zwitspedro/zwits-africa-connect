@@ -26,8 +26,8 @@ export const Route = createFileRoute("/_authenticated/admin/email")({
 });
 
 const STATUS_STYLE: Record<string, string> = {
-  sent: "bg-emerald-500/12 text-emerald-600",
-  queued: "bg-amber-500/12 text-amber-600",
+  sent: "bg-emerald-500/12 text-success",
+  queued: "bg-amber-500/12 text-warning",
   failed: "bg-destructive/12 text-destructive",
   dlq: "bg-destructive/12 text-destructive",
 };
@@ -136,7 +136,7 @@ function EmailDiagnostics() {
 function Stat({ icon: Icon, label, value }: { icon: typeof Mail; label: string; value: number }) {
   return (
     <div className="rounded-3xl border border-border/70 bg-card/60 p-5">
-      <Icon className="size-5 text-primary" />
+      <Icon className="size-5 text-primary-text" />
       <p className="mt-3 text-2xl font-bold tabular-nums">{value}</p>
       <p className="text-sm text-muted-foreground">{label}</p>
     </div>

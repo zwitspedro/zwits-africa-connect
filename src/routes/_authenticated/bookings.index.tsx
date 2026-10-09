@@ -65,7 +65,7 @@ function BookingsPage() {
               <Link to="/bookings/$id" params={{ id: b.id }} className="block">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <div className="text-xs uppercase tracking-wider text-primary">{b.category}</div>
+                    <div className="text-xs uppercase tracking-wider text-primary-text">{b.category}</div>
                     <div className="mt-1 font-medium">{b.providers?.business_name ?? "Awaiting provider"}</div>
                     <div className="mt-1 text-sm text-muted-foreground">{b.address}</div>
                     {b.description && <div className="mt-1 text-xs text-muted-foreground">{b.description}</div>}
@@ -99,8 +99,8 @@ function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
     pending: "bg-muted text-foreground",
     accepted: "bg-gold/20 text-gold",
-    in_progress: "bg-primary/20 text-primary",
-    completed: "bg-emerald-500/20 text-emerald-400",
+    in_progress: "bg-primary/20 text-primary-text",
+    completed: "bg-emerald-500/20 text-success",
     cancelled: "bg-destructive/20 text-destructive",
   };
   return <span className={`rounded-full px-2.5 py-1 text-xs ${map[status] ?? ""}`}>{status.replace("_", " ")}</span>;

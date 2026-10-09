@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button";
+import { Status } from "@/components/ui/status";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -74,17 +76,17 @@ function BookingsScreen() {
       <AppBar title="Bookings" subtitle="Services and deliveries" />
       <Screen>
         <div className="sticky top-14 z-20 bg-background/95 px-4 py-3 backdrop-blur">
-          <div className="grid grid-cols-2 gap-1 rounded-2xl bg-muted p-1">
+          <div className="grid grid-cols-2 gap-1 rounded-md bg-muted p-1">
             {(["active", "history"] as Tab[]).map((t) => (
-              <button
+              <Button variant="ghost"
                 key={t}
                 onClick={() => setTab(t)}
-                className={`min-h-10 rounded-xl text-xs font-semibold capitalize transition ${
+                className={`min-h-12 rounded-md text-xs font-semibold capitalize transition ${
                   tab === t ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"
                 }`}
               >
                 {t}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -112,7 +114,7 @@ function BookingsScreen() {
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="text-[11px] uppercase tracking-wider text-primary">
+                        <p className="text-[11px] uppercase tracking-wider text-primary-text">
                           {b.category}
                         </p>
                         <p className="truncate text-sm font-semibold">{b.address}</p>
@@ -121,9 +123,7 @@ function BookingsScreen() {
                         </p>
                       </div>
                       <div className="shrink-0 text-right">
-                        <Pill tone={isOpen(b.status) ? "primary" : "muted"}>
-                          {statusLabel(b.status)}
-                        </Pill>
+                        <Status status={b.status} />
                         {b.price != null && (
                           <p className="mt-1 text-xs font-semibold">{money(b.price)}</p>
                         )}
@@ -145,7 +145,7 @@ function BookingsScreen() {
                         </p>
                       </div>
                       <div className="shrink-0 text-right">
-                        <Pill tone="accent">{String(d.status).replace(/_/g, " ")}</Pill>
+                        <Status status={String(d.status)} />
                         {d.price != null && (
                           <p className="mt-1 text-xs font-semibold">{money(d.price)}</p>
                         )}

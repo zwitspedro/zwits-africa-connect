@@ -181,7 +181,7 @@ export function DriverSettings({
               type="button"
               onClick={() => toggleService(key)}
               className={`min-h-12 rounded-2xl border px-4 text-left text-sm font-semibold transition ${
-                on ? "border-primary bg-primary/10 text-primary" : "border-border/70 bg-background/60"
+                on ? "border-primary bg-primary/10 text-primary-text" : "border-border/70 bg-background/60"
               }`}
             >
               {tier.label ?? key}

@@ -39,7 +39,7 @@ const screens = [
         {["Delivery · Avondale", "Cleaning · Borrowdale", "Top-up · EcoCash"].map((t, i) => (
           <div key={t} className="flex items-center justify-between rounded-xl bg-card px-3 py-2.5 text-[11px]">
             <span className="text-muted-foreground">{t}</span>
-            <span className={i === 2 ? "text-primary" : ""}>{i === 2 ? "+$50" : "-$12"}</span>
+            <span className={i === 2 ? "text-primary-text" : ""}>{i === 2 ? "+$50" : "-$12"}</span>
           </div>
         ))}
       </div>
@@ -59,7 +59,7 @@ const screens = [
           <div key={t} className="rounded-2xl bg-card p-3">
             <p className="text-[11px] font-semibold">{t}</p>
             <p className="mt-0.5 text-[10px] text-muted-foreground">{w}</p>
-            <span className="mt-2 inline-block rounded-full bg-primary/15 px-2 py-0.5 text-[9px] text-primary">{s}</span>
+            <span className="mt-2 inline-block rounded-full bg-primary/15 px-2 py-0.5 text-[9px] text-primary-text">{s}</span>
           </div>
         ))}
       </div>

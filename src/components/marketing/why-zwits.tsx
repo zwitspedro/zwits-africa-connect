@@ -25,7 +25,7 @@ export function WhyZwits() {
           {pillars.map((p, i) => (
             <Reveal key={p.title} delay={i * 40}>
               <div className="group h-full bg-background p-8 transition-colors hover:bg-card/60">
-                <p.icon className="size-6 text-primary transition-transform duration-300 group-hover:scale-110" />
+                <p.icon className="size-6 text-primary-text transition-transform duration-300 group-hover:scale-110" />
                 <h3 className="mt-6 font-display text-lg font-semibold tracking-tight">{p.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{p.text}</p>
               </div>

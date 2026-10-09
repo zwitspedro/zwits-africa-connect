@@ -104,7 +104,7 @@ function BookingDetailPage() {
           <div className="mt-6 rounded-2xl border border-border bg-card p-5">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <div className="text-xs uppercase tracking-wider text-primary">{booking.category}</div>
+                <div className="text-xs uppercase tracking-wider text-primary-text">{booking.category}</div>
                 <div className="mt-1 text-lg font-medium">
                   {booking.providers?.business_name ?? "Awaiting provider"}
                 </div>
@@ -243,9 +243,9 @@ function Timeline({
             <Icon
               className={`mt-0.5 size-5 shrink-0 ${
                 done
-                  ? "text-emerald-400"
+                  ? "text-success"
                   : active
-                    ? "animate-spin text-primary"
+                    ? "animate-spin text-primary-text"
                     : "text-muted-foreground/50"
               }`}
             />
@@ -379,8 +379,8 @@ function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
     pending: "bg-muted text-foreground",
     accepted: "bg-gold/20 text-gold",
-    in_progress: "bg-primary/20 text-primary",
-    completed: "bg-emerald-500/20 text-emerald-400",
+    in_progress: "bg-primary/20 text-primary-text",
+    completed: "bg-emerald-500/20 text-success",
     cancelled: "bg-destructive/20 text-destructive",
   };
   return (
@@ -451,7 +451,7 @@ function DispatchPanel({ booking }: { booking: any }) {
           </>
         ) : (
           <>
-            <Radar className="size-4 animate-pulse text-primary" />
+            <Radar className="size-4 animate-pulse text-primary-text" />
             {isQuotes ? "Collecting quotes" : "Finding you a provider"}
           </>
         )}
@@ -518,7 +518,7 @@ function ConfirmCompletion({ bookingId }: { bookingId: string }) {
   return (
     <div className="mt-5 rounded-2xl border border-emerald-500/40 bg-emerald-500/10 p-4">
       <div className="flex items-center gap-2 text-sm font-semibold">
-        <CheckCircle2 className="size-4 text-emerald-400" /> Provider marked this job complete
+        <CheckCircle2 className="size-4 text-success" /> Provider marked this job complete
       </div>
       <p className="mt-1 text-xs text-muted-foreground">Confirm the work is done to release payment and leave a rating.</p>
       <button

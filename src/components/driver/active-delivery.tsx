@@ -57,7 +57,7 @@ export function ActiveDelivery({ active }: { active: DeliveryRow[] }) {
           <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
             {current.distance_km != null && <span>{current.distance_km} km</span>}
             <span className="capitalize">{current.parcel_size} parcel</span>
-            <span className="font-semibold text-emerald-400">Payout ${driverPayout(current.price).toFixed(2)}</span>
+            <span className="font-semibold text-success">Payout ${driverPayout(current.price).toFixed(2)}</span>
           </div>
 
           {(current.recipient_name || current.recipient_phone) && (
@@ -66,7 +66,7 @@ export function ActiveDelivery({ active }: { active: DeliveryRow[] }) {
               {current.recipient_phone && (
                 <a
                   href={`tel:${current.recipient_phone}`}
-                  className="mt-1 inline-flex items-center gap-1.5 text-xs text-primary"
+                  className="mt-1 inline-flex items-center gap-1.5 text-xs text-primary-text"
                 >
                   <Phone className="size-3.5" /> {current.recipient_phone}
                 </a>
@@ -128,8 +128,8 @@ function Step({ icon: Icon, label, value, done }: { icon: any; label: string; va
       <span
         className={
           done
-            ? "grid size-8 shrink-0 place-items-center rounded-full bg-emerald-500/15 text-emerald-400"
-            : "grid size-8 shrink-0 place-items-center rounded-full bg-primary/12 text-primary"
+            ? "grid size-8 shrink-0 place-items-center rounded-full bg-emerald-500/15 text-success"
+            : "grid size-8 shrink-0 place-items-center rounded-full bg-primary/12 text-primary-text"
         }
       >
         <Icon className="size-4" />

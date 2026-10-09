@@ -136,7 +136,7 @@ export function GrowthOpportunities({ growth }: { growth: GrowthData }) {
             <ul className="grid gap-2">
               {o.suburbs.map(([name, count]) => (
                 <li key={name} className="flex items-center gap-3 rounded-2xl border border-border/70 bg-background/40 p-3 text-sm">
-                  <MapPin className="size-4 shrink-0 text-primary" />
+                  <MapPin className="size-4 shrink-0 text-primary-text" />
                   <span className="min-w-0 flex-1 truncate">{name}</span>
                   <span className="shrink-0 text-xs text-muted-foreground">{count}</span>
                 </li>

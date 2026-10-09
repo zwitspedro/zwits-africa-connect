@@ -112,7 +112,7 @@ function DriverPortal() {
             onClick={() => toggleOnline.mutate(!online)}
             className={
               online
-                ? "inline-flex min-h-11 items-center gap-2 rounded-full bg-emerald-500/15 px-5 text-sm font-semibold text-emerald-600 ring-1 ring-emerald-500/30"
+                ? "inline-flex min-h-11 items-center gap-2 rounded-full bg-emerald-500/15 px-5 text-sm font-semibold text-success ring-1 ring-emerald-500/30"
                 : "inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground disabled:opacity-50"
             }
           >

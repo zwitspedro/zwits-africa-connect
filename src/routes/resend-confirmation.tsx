@@ -84,7 +84,7 @@ function ResendConfirmation() {
       footer={
         <>
           Already confirmed?{" "}
-          <Link to="/provider-login" className="font-medium text-primary hover:underline">
+          <Link to="/provider-login" className="font-medium text-primary-text hover:underline">
             Provider login
           </Link>
         </>
@@ -106,7 +106,7 @@ function ResendConfirmation() {
       </form>
 
       {sent && (
-        <p className="mt-4 rounded-2xl bg-primary/10 p-4 text-sm text-primary">
+        <p className="mt-4 rounded-2xl bg-primary/10 p-4 text-sm text-primary-text">
           Confirmation email sent. Please check your inbox and spam folder.
         </p>
       )}

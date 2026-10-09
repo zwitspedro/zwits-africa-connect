@@ -102,10 +102,10 @@ function OfferCard({ offer, onRespond, busy }: { offer: Offer; onRespond: (a: "a
     <article className="overflow-hidden rounded-2xl border border-border/70 bg-card/70 shadow-sm backdrop-blur">
       <div className="flex items-center justify-between gap-3 border-b border-border/60 px-4 py-2.5">
         <span className="flex items-center gap-2 text-xs font-medium">
-          <Package className="size-3.5 text-primary" />
+          <Package className="size-3.5 text-primary-text" />
           {tier?.label ?? offer.delivery.serviceTier}
         </span>
-        <span className="flex items-center gap-1.5 rounded-full bg-primary/12 px-2 py-0.5 text-xs font-semibold tabular-nums text-primary">
+        <span className="flex items-center gap-1.5 rounded-full bg-primary/12 px-2 py-0.5 text-xs font-semibold tabular-nums text-primary-text">
           <Timer className="size-3.5" /> {left}s
         </span>
       </div>
@@ -113,7 +113,7 @@ function OfferCard({ offer, onRespond, busy }: { offer: Offer; onRespond: (a: "a
       <div className="space-y-3 p-4">
         <div className="space-y-2 text-sm">
           <div className="flex gap-2">
-            <MapPin className="mt-0.5 size-4 shrink-0 text-emerald-400" />
+            <MapPin className="mt-0.5 size-4 shrink-0 text-success" />
             <span className="min-w-0 break-words">{offer.delivery.pickupAddress}</span>
           </div>
           <div className="flex gap-2">
@@ -125,7 +125,7 @@ function OfferCard({ offer, onRespond, busy }: { offer: Offer; onRespond: (a: "a
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
           {offer.delivery.distanceKm != null && <span>{offer.delivery.distanceKm} km</span>}
           <span className="capitalize">{offer.delivery.parcelSize} parcel</span>
-          <span className="font-semibold text-emerald-400">You earn ${driverPayout(offer.delivery.price).toFixed(2)}</span>
+          <span className="font-semibold text-success">You earn ${driverPayout(offer.delivery.price).toFixed(2)}</span>
         </div>
 
         {offer.delivery.notes && <p className="text-xs text-muted-foreground">“{offer.delivery.notes}”</p>}

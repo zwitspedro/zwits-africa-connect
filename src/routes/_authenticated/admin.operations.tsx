@@ -47,7 +47,7 @@ function OperationsPage() {
   return (
     <SiteShell>
       <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-        <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary">
+        <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary-text">
           <ShieldCheck className="size-3" /> Admin
         </div>
         <h1 className="mt-2 font-display text-3xl font-bold">Disputes &amp; payouts</h1>
@@ -247,7 +247,7 @@ function WithdrawalsPanel() {
     <div className="rounded-3xl border border-border bg-card p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <Banknote className="size-4 text-primary" />
+          <Banknote className="size-4 text-primary-text" />
           <h2 className="font-display text-lg font-semibold">Withdrawal queue</h2>
         </div>
         <div className="flex gap-1 rounded-full bg-muted p-1 text-xs">

@@ -86,7 +86,7 @@ function Provider() {
             const Icon = p.icon;
             return (
               <div key={p.title} className="rounded-2xl border border-border bg-card p-6">
-                <Icon className="size-6 text-primary" />
+                <Icon className="size-6 text-primary-text" />
                 <h3 className="mt-4 font-display text-lg font-semibold">{p.title}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">{p.text}</p>
               </div>

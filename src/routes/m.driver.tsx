@@ -13,6 +13,7 @@ function DriverApp() {
 
   return (
     <RoleGate role="driver">
+      <div data-experience="driver" className="min-h-dvh bg-background text-foreground">
       <Outlet />
       <TabBar
         items={[
@@ -23,6 +24,7 @@ function DriverApp() {
           { to: "/m/driver/profile", label: "Profile", icon: User },
         ]}
       />
+      </div>
     </RoleGate>
   );
 }

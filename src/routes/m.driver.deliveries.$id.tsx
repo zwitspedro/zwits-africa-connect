@@ -120,7 +120,7 @@ function DeliveryDetail() {
           <Card>
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-[11px] uppercase tracking-wider text-primary">Pickup</p>
+                <p className="text-[11px] uppercase tracking-wider text-primary-text">Pickup</p>
                 <p className="truncate text-sm font-semibold">{d.pickup_address}</p>
                 <p className="mt-2 text-[11px] uppercase tracking-wider text-accent">Dropoff</p>
                 <p className="truncate text-sm font-semibold">{d.dropoff_address}</p>

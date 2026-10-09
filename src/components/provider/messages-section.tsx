@@ -40,7 +40,7 @@ export function MessagesSection() {
                 params={{ bookingId: m.booking_id }}
                 className="grid min-h-16 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border border-border/70 bg-background/40 p-3 transition-colors hover:border-primary/40"
               >
-                <span className="grid size-10 place-items-center rounded-full bg-primary/12 text-primary">
+                <span className="grid size-10 place-items-center rounded-full bg-primary/12 text-primary-text">
                   <MessageCircle className="size-5" />
                 </span>
                 <span className="min-w-0">

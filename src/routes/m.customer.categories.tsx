@@ -49,12 +49,12 @@ function CategoriesScreen() {
                     navigate({ to: "/m/customer/book/$category", params: { category: s.slug } })
                   }
                 >
-                  <span className="grid size-10 place-items-center rounded-xl bg-primary/12 text-primary">
+                  <span className="grid size-10 place-items-center rounded-xl bg-primary/12 text-primary-text">
                     <s.icon className="size-5" />
                   </span>
                   <p className="mt-2 text-sm font-semibold">{s.name}</p>
                   <p className="line-clamp-2 text-[11px] text-muted-foreground">{s.tagline}</p>
-                  <p className="mt-2 text-[11px] font-medium text-primary">
+                  <p className="mt-2 text-[11px] font-medium text-primary-text">
                     from {money(s.estimate.from)}/{s.estimate.unit}
                   </p>
                 </Card>

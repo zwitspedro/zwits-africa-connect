@@ -31,7 +31,7 @@ function ProviderLogin() {
       footer={
         <>
           Looking to book a service?{" "}
-          <Link to="/login" className="font-medium text-primary hover:underline">
+          <Link to="/login" className="font-medium text-primary-text hover:underline">
             Customer login
           </Link>
         </>

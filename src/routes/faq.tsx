@@ -44,7 +44,7 @@ function Faq() {
               >
                 <div className="flex items-center justify-between gap-4 px-6 py-5">
                   <span className="font-display font-semibold">{q}</span>
-                  <ChevronDown className={`size-4 shrink-0 transition ${isOpen ? "rotate-180 text-primary" : "text-muted-foreground"}`} />
+                  <ChevronDown className={`size-4 shrink-0 transition ${isOpen ? "rotate-180 text-primary-text" : "text-muted-foreground"}`} />
                 </div>
                 {isOpen && <p className="px-6 pb-5 text-sm text-muted-foreground">{a}</p>}
               </button>

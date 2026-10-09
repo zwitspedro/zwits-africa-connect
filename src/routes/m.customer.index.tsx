@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -88,7 +89,7 @@ function CustomerHome() {
     <>
       <AppBar
         large
-        title={`Hi${profile?.display_name ? `, ${profile.display_name.split(" ")[0]}` : ""} 👋`}
+        title={`Hi${profile?.display_name ? `, ${profile.display_name.split(" ")[0]}` : ""}`}
         subtitle="What do you need done today?"
         right={
           <Link
@@ -120,19 +121,19 @@ function CustomerHome() {
             {matches.length > 0 && (
               <div className="mt-2 grid gap-1 rounded-2xl border border-border bg-card p-2">
                 {matches.map((s) => (
-                  <button
+                  <Button variant="ghost"
                     key={s.slug}
                     onClick={() =>
                       navigate({ to: "/m/customer/book/$category", params: { category: s.slug } })
                     }
                     className="flex min-h-11 items-center gap-3 rounded-xl px-3 text-left text-sm active:bg-muted"
                   >
-                    <s.icon className="size-4 text-primary" />
+                    <s.icon className="size-4 text-primary-text" />
                     <span className="flex-1 truncate">{s.name}</span>
                     <span className="text-xs text-muted-foreground">
                       from {money(s.estimate.from)}
                     </span>
-                  </button>
+                  </Button>
                 ))}
               </div>
             )}
@@ -148,7 +149,7 @@ function CustomerHome() {
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="text-[11px] uppercase tracking-wider text-primary">
+                        <p className="text-[11px] uppercase tracking-wider text-primary-text">
                           {b.category}
                         </p>
                         <p className="truncate text-sm font-semibold">{b.address}</p>
@@ -167,25 +168,25 @@ function CustomerHome() {
           <Section
             title="Popular services"
             action={
-              <Link to="/m/customer/categories" className="text-xs text-primary">
+              <Link to="/m/customer/categories" className="text-xs text-primary-text">
                 See all
               </Link>
             }
           >
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {popularServices.slice(0, 8).map((s) => (
-                <button
+                <Button variant="ghost"
                   key={s.slug}
                   onClick={() =>
                     navigate({ to: "/m/customer/book/$category", params: { category: s.slug } })
                   }
-                  className="grid gap-1.5 rounded-2xl border border-border/70 bg-card p-2 text-center active:scale-95"
+                  className="grid min-h-24 h-auto min-w-0 gap-2 rounded-md border border-border/70 bg-card p-2 text-center active:scale-95"
                 >
-                  <span className="mx-auto grid size-10 place-items-center rounded-xl bg-primary/12 text-primary">
+                  <span className="mx-auto grid size-10 place-items-center rounded-xl bg-primary/12 text-primary-text">
                     <s.icon className="size-5" />
                   </span>
-                  <span className="truncate text-[10px] font-medium">{s.name}</span>
-                </button>
+                  <span className="break-words text-xs font-medium">{s.name}</span>
+                </Button>
               ))}
             </div>
           </Section>
@@ -214,7 +215,7 @@ function CustomerHome() {
             <Section
               title="Your favourites"
               action={
-                <Link to="/m/customer/favourites" className="text-xs text-primary">
+                <Link to="/m/customer/favourites" className="text-xs text-primary-text">
                   Manage
                 </Link>
               }
@@ -254,7 +255,7 @@ function CustomerHome() {
                     navigate({ to: "/m/customer/book/$category", params: { category: s.slug } })
                   }
                 >
-                  <s.icon className="size-5 text-primary" />
+                  <s.icon className="size-5 text-primary-text" />
                   <p className="mt-2 text-sm font-semibold">{s.name}</p>
                   <p className="truncate text-[11px] text-muted-foreground">{s.tagline}</p>
                 </Card>
@@ -278,7 +279,7 @@ export function ProviderRow({ p, favourite }: { p: any; favourite?: boolean }) {
   return (
     <Card onClick={() => navigate({ to: "/m/customer/provider/$id", params: { id: p.id } })}>
       <div className="flex items-center gap-3">
-        <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-primary/12 font-display text-base font-bold text-primary">
+        <span aria-hidden="true" className="grid size-12 shrink-0 place-items-center rounded-2xl bg-primary/12 font-display text-base font-bold text-primary-text">
           {String(p.business_name ?? "Z")
             .slice(0, 1)
             .toUpperCase()}
@@ -292,7 +293,7 @@ export function ProviderRow({ p, favourite }: { p: any; favourite?: boolean }) {
             {p.category} · {p.city}
           </p>
           <div className="mt-1 flex items-center gap-2 text-[11px] text-muted-foreground">
-            <span className="inline-flex items-center gap-1 text-amber-500">
+            <span className="inline-flex items-center gap-1 text-warning">
               <Star className="size-3 fill-current" />
               {Number(p.rating_avg ?? 0).toFixed(1)}
             </span>

@@ -84,7 +84,7 @@ function Addresses() {
               {addresses.map((a) => (
                 <Card key={a.id}>
                   <div className="flex items-center gap-3">
-                    <span className="grid size-10 place-items-center rounded-2xl bg-primary/12 text-primary">
+                    <span className="grid size-10 place-items-center rounded-2xl bg-primary/12 text-primary-text">
                       <MapPin className="size-4" />
                     </span>
                     <div className="min-w-0 flex-1">

@@ -230,7 +230,7 @@ function ReconciliationScreen() {
 
         <div className="mt-3 flex flex-wrap items-start justify-between gap-3">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary">
+            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary-text">
               <Scale className="size-3" /> Reconciliation
             </div>
             <h1 className="mt-2 font-display text-3xl font-bold">Payout reconciliation</h1>
@@ -263,7 +263,7 @@ function ReconciliationScreen() {
           <div className="ml-auto flex items-center gap-3">
             <button
               onClick={() => setShowDiscrepanciesOnly((v) => !v)}
-              className={`inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-[11px] transition-colors ${showDiscrepanciesOnly ? "border-amber-500/40 bg-amber-500/10 text-amber-400" : "border-border hover:bg-muted"}`}
+              className={`inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-[11px] transition-colors ${showDiscrepanciesOnly ? "border-amber-500/40 bg-amber-500/10 text-warning" : "border-border hover:bg-muted"}`}
             >
               <Filter className="size-3" />
               {showDiscrepanciesOnly ? "Discrepancies only" : "Show all"}
@@ -290,7 +290,7 @@ function ReconciliationScreen() {
               rows={byCategory.map(([cat, v]) => {
                 const r = rateByCategory.get(cat);
                 return [
-                  <span key="c" className="capitalize">{cat}{r ? <span className="ml-1 text-[10px] text-muted-foreground">({Number(r.percent).toFixed(1)}%+${Number(r.min_fee).toFixed(2)})</span> : <span className="ml-1 text-[10px] text-amber-500">no rate</span>}</span>,
+                  <span key="c" className="capitalize">{cat}{r ? <span className="ml-1 text-[10px] text-muted-foreground">({Number(r.percent).toFixed(1)}%+${Number(r.min_fee).toFixed(2)})</span> : <span className="ml-1 text-[10px] text-warning">no rate</span>}</span>,
                   v.count,
                   `$${v.gross.toFixed(2)}`,
                   `$${v.commission.toFixed(2)}`,
@@ -314,7 +314,7 @@ function ReconciliationScreen() {
                   to="/admin/reconciliation/provider/$providerId"
                   params={{ providerId: p.id }}
                   search={{ from, to }}
-                  className="text-[11px] text-primary hover:underline"
+                  className="text-[11px] text-primary-text hover:underline"
                 >
                   Details →
                 </Link>,
@@ -334,7 +334,7 @@ function ReconciliationScreen() {
                 new Date(b.updated_at).toLocaleDateString(),
                 <span key="c" className="capitalize">{b.category}</span>,
                 provider,
-                <span key="p" className={`rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider ${b.payment_status === "paid" ? "bg-emerald-500/15 text-emerald-400" : "bg-muted text-muted-foreground"}`}>{b.payment_status ?? "—"}</span>,
+                <span key="p" className={`rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider ${b.payment_status === "paid" ? "bg-emerald-500/15 text-success" : "bg-muted text-muted-foreground"}`}>{b.payment_status ?? "—"}</span>,
                 `$${price.toFixed(2)}`,
                 `$${f.toFixed(2)}`,
                 `$${(price - f).toFixed(2)}`,
@@ -342,7 +342,7 @@ function ReconciliationScreen() {
                   key="l"
                   to="/admin/reconciliation/booking/$bookingId"
                   params={{ bookingId: b.id }}
-                  className="text-[11px] text-primary hover:underline"
+                  className="text-[11px] text-primary-text hover:underline"
                 >
                   Details →
                 </Link>,

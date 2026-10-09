@@ -25,7 +25,7 @@ export function OnboardingChecklist({
             {allDone ? "You're ready to receive jobs." : "Complete these steps to start receiving jobs"}
           </p>
         </div>
-        <span className="shrink-0 rounded-full bg-primary/12 px-3 py-1 text-xs font-semibold tabular-nums text-primary">
+        <span className="shrink-0 rounded-full bg-primary/12 px-3 py-1 text-xs font-semibold tabular-nums text-primary-text">
           {completed}/{total} completed
         </span>
       </div>
@@ -38,7 +38,7 @@ export function OnboardingChecklist({
       </div>
 
       {allDone ? (
-        <p className="mt-4 flex items-center gap-2 rounded-2xl bg-emerald-500/10 p-4 text-sm font-medium text-emerald-600">
+        <p className="mt-4 flex items-center gap-2 rounded-2xl bg-emerald-500/10 p-4 text-sm font-medium text-success">
           <PartyPopper className="size-5 shrink-0" /> You&apos;re ready to receive jobs!
         </p>
       ) : (
@@ -59,7 +59,7 @@ export function OnboardingChecklist({
                       ? "bg-emerald-500 text-white"
                       : s.locked
                         ? "bg-muted text-muted-foreground"
-                        : "border-2 border-primary/40 text-primary"
+                        : "border-2 border-primary/40 text-primary-text"
                   }`}
                 >
                   {s.done ? <Check className="size-5" /> : s.locked ? <Lock className="size-4" /> : <span className="size-2.5 rounded-full bg-primary" />}

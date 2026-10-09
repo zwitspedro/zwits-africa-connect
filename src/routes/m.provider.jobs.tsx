@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button";
+import { Status } from "@/components/ui/status";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -79,12 +81,12 @@ function ProviderJobs() {
       <AppBar title="Jobs" subtitle="Offers, live work and history" />
       <Screen>
         <div className="sticky top-14 z-20 bg-background/95 px-4 py-3 backdrop-blur">
-          <div className="grid grid-cols-4 gap-1 rounded-2xl bg-muted p-1">
+          <div className="grid grid-cols-4 gap-1 rounded-md bg-muted p-1">
             {TABS.map((t) => (
-              <button
+              <Button variant="ghost"
                 key={t.key}
                 onClick={() => setTab(t.key)}
-                className={`min-h-10 rounded-xl text-[11px] font-semibold transition ${
+                className={`min-h-12 rounded-md text-[11px] font-semibold transition ${
                   tab === t.key
                     ? "bg-background text-foreground shadow-sm"
                     : "text-muted-foreground"
@@ -92,7 +94,7 @@ function ProviderJobs() {
               >
                 {t.label}
                 {t.key === "offers" && lists.offers.length > 0 ? ` (${lists.offers.length})` : ""}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -137,7 +139,7 @@ function ProviderJobs() {
                     <Card>
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <p className="text-[11px] uppercase tracking-wider text-primary">
+                          <p className="text-[11px] uppercase tracking-wider text-primary-text">
                             {j.category}
                           </p>
                           <p className="truncate text-sm font-semibold">{j.address}</p>
@@ -146,9 +148,7 @@ function ProviderJobs() {
                           </p>
                         </div>
                         <div className="shrink-0 text-right">
-                          <Pill tone={tab === "active" ? "primary" : "muted"}>
-                            {statusLabel(j.status)}
-                          </Pill>
+                          <Status status={j.status} />
                           {j.price != null && (
                             <p className="mt-1 text-xs font-semibold">{money(j.price)}</p>
                           )}
@@ -203,7 +203,7 @@ function OfferCard({ offer }: { offer: any }) {
     <Card>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-[11px] uppercase tracking-wider text-primary">
+          <p className="text-[11px] uppercase tracking-wider text-primary-text">
             {offer.booking.category}
           </p>
           <p className="truncate text-sm font-semibold">{offer.booking.address}</p>

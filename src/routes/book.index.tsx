@@ -86,7 +86,7 @@ function BookEntry() {
                   search={{ provider: undefined }}
                   className="grid gap-1.5 rounded-2xl border border-border/70 bg-card p-2 text-center transition active:scale-95 hover:border-primary/50"
                 >
-                  <span className="mx-auto grid size-9 place-items-center rounded-xl bg-primary/10 text-primary">
+                  <span className="mx-auto grid size-9 place-items-center rounded-xl bg-primary/10 text-primary-text">
                     <s.icon className="size-4" aria-hidden />
                   </span>
                   <span className="truncate text-[10px] font-medium">{s.name}</span>
@@ -109,7 +109,7 @@ function BookEntry() {
                 search={{ provider: undefined }}
                 className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 transition active:scale-[0.99] hover:border-primary/50"
               >
-                <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+                <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary-text">
                   <s.icon className="size-5" aria-hidden />
                 </span>
                 <span className="min-w-0 flex-1">
@@ -133,7 +133,7 @@ function BookEntry() {
 
         <p className="mt-8 text-[13px] text-muted-foreground">
           Already booked?{" "}
-          <Link to="/login" className="font-medium text-primary hover:underline">
+          <Link to="/login" className="font-medium text-primary-text hover:underline">
             Sign in to track it
           </Link>
         </p>

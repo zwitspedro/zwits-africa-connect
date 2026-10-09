@@ -11,7 +11,7 @@ function CustomerApp() {
   const unread = useUnreadCount(user?.id);
 
   return (
-    <>
+    <div data-experience="customer" className="min-h-dvh bg-background text-foreground">
       <Outlet />
       <TabBar
         items={[
@@ -22,6 +22,6 @@ function CustomerApp() {
           { to: "/m/customer/profile", label: "Profile", icon: User },
         ]}
       />
-    </>
+    </div>
   );
 }

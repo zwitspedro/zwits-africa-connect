@@ -52,7 +52,7 @@ function WorkspacePicker() {
                 style={{ animationDelay: `${i * 70}ms` }}
                 className="animate-rise group flex items-start gap-4 rounded-3xl border border-border/70 bg-card/80 p-5 text-left backdrop-blur-xl transition hover:border-primary/60 hover:shadow-[0_20px_50px_-30px_rgba(0,0,0,0.7)]"
               >
-                <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-primary/12 text-primary">
+                <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-primary/12 text-primary-text">
                   <meta.icon className="size-5" />
                 </span>
                 <span className="flex-1">

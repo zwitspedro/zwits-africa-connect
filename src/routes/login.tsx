@@ -31,7 +31,7 @@ function CustomerLogin() {
       footer={
         <>
           Are you a professional?{" "}
-          <Link to="/provider-login" className="font-medium text-primary hover:underline">
+          <Link to="/provider-login" className="font-medium text-primary-text hover:underline">
             Provider login
           </Link>
         </>

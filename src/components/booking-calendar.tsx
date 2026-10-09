@@ -145,7 +145,7 @@ export function BookingCalendar({ rules, value, onChange, providerId }: Props) {
             )}
           >
             <span className="flex items-center gap-2">
-              <Zap className="size-4 text-primary" /> ASAP — next available
+              <Zap className="size-4 text-primary-text" /> ASAP — next available
             </span>
             <span className="text-xs text-muted-foreground">Recommended</span>
           </button>

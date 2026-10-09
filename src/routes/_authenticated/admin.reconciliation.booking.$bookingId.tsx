@@ -101,7 +101,7 @@ function BookingBreakdown() {
       <SiteShell>
         <section className="mx-auto max-w-md px-4 py-16 text-center">
           <h1 className="font-display text-2xl font-bold">Booking not found</h1>
-          <Link to="/admin/reconciliation" className="mt-3 inline-block text-sm text-primary">
+          <Link to="/admin/reconciliation" className="mt-3 inline-block text-sm text-primary-text">
             Back to reconciliation
           </Link>
         </section>
@@ -134,7 +134,7 @@ function BookingBreakdown() {
 
         <div className="mt-3 flex flex-wrap items-start justify-between gap-3">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary">
+            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary-text">
               <Receipt className="size-3" /> Booking payout
             </div>
             <h1 className="mt-2 font-display text-3xl font-bold capitalize">
@@ -147,7 +147,7 @@ function BookingBreakdown() {
           <span
             className={`rounded-full px-2.5 py-1 text-[10px] uppercase tracking-wider ${
               booking.status === "completed"
-                ? "bg-emerald-500/15 text-emerald-400"
+                ? "bg-emerald-500/15 text-success"
                 : "bg-muted text-muted-foreground"
             }`}
           >
@@ -229,7 +229,7 @@ function BookingBreakdown() {
               </p>
             </div>
           ) : (
-            <p className="text-sm text-amber-500">
+            <p className="text-sm text-warning">
               No active commission rate configured for category “{booking.category}”. Net payout
               equals gross (${price.toFixed(2)}).
             </p>

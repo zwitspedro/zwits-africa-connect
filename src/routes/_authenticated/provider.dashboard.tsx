@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button";
+import { Status } from "@/components/ui/status";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -102,7 +104,10 @@ function ProviderDashboard() {
     setTab(t);
     setSection(s);
   };
-  const openTab = (t: TabKey) => goto(t, TABS.find((x) => x.key === t)!.sections[0].key);
+  const openTab = (t: TabKey) => {
+    const selected = TABS.find((x) => x.key === t);
+    if (selected) goto(t, selected.sections[0].key);
+  };
   const jumpTo = (s: SectionKey) => goto(tabForSection(s), s);
 
   if (isLoading) {
@@ -130,7 +135,8 @@ function ProviderDashboard() {
   }
 
   const revoked = provider.verification_status === "revoked";
-  const currentTab = TABS.find((t) => t.key === tab)!;
+  const currentTab = TABS.find((t) => t.key === tab) ?? TABS[0];
+  if (!currentTab) return null;
 
   return (
     <SiteShell>
@@ -149,7 +155,7 @@ function ProviderDashboard() {
             <h1 className="truncate font-display text-lg font-black sm:text-2xl">{provider.business_name}</h1>
             <div className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
               {provider.verification_status === "approved" ? (
-                <span className="inline-flex items-center gap-1 text-emerald-500">
+                <span className="inline-flex items-center gap-1 text-success">
                   <BadgeCheck className="size-3.5" /> Verified
                 </span>
               ) : (
@@ -176,7 +182,7 @@ function ProviderDashboard() {
         <div className="mt-5 flex gap-8">
           <SideTabs currentTab={tab} currentSection={section} onSelect={goto} badges={sectionBadges} />
 
-          <main className="min-w-0 flex-1 space-y-4">
+          <div className="min-w-0 flex-1 space-y-4">
             <SubTabs tab={currentTab} current={section} onChange={setSection} badges={sectionBadges} />
 
             {section === "home" && (
@@ -219,7 +225,7 @@ function ProviderDashboard() {
             {section === "area" && <ServiceAreaSection data={data} />}
             {section === "support" && <SupportSection />}
             {section === "settings" && <SettingsSection data={data} />}
-          </main>
+          </div>
         </div>
       </div>
 
@@ -263,18 +269,19 @@ function HomeSection({
   return (
     <div className="grid gap-4">
       {/* Big online switch */}
-      <button
+      <Button variant="ghost"
         onClick={onToggle}
         disabled={busy}
-        className={`relative grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 overflow-hidden rounded-3xl border p-5 text-left transition-all duration-300 disabled:opacity-60 ${
+        aria-pressed={online}
+        className={`relative grid w-full min-h-24 h-auto whitespace-normal grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 overflow-hidden rounded-xl border p-4 text-left transition-all duration-300 disabled:opacity-60 ${
           online
-            ? "border-emerald-500/40 bg-emerald-500/10"
+            ? "border-success/40 bg-success-surface"
             : "border-border/70 bg-card/60"
         }`}
       >
         <span
           className={`grid size-14 place-items-center rounded-full transition-all ${
-            online ? "bg-emerald-500 text-white" : "bg-primary text-primary-foreground"
+            online ? "bg-primary text-primary-foreground" : "bg-primary text-primary-foreground"
           }`}
         >
           <Power className="size-6" />
@@ -287,7 +294,7 @@ function HomeSection({
         </span>
         <span
           className={`relative h-8 w-14 shrink-0 rounded-full transition-colors ${
-            online ? "bg-emerald-500" : "bg-muted"
+            online ? "bg-primary" : "bg-muted"
           }`}
         >
           <span
@@ -296,7 +303,7 @@ function HomeSection({
             }`}
           />
         </span>
-      </button>
+      </Button>
 
       {/* Key numbers */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -321,9 +328,9 @@ function HomeSection({
         title="Nearby job requests"
         description={online ? "Respond before the timer runs out" : "Go online to receive offers"}
         action={
-          <button onClick={() => onNavigate("available")} className="inline-flex items-center gap-1 text-xs text-primary">
+          <Button variant="ghost" onClick={() => onNavigate("available")} className="inline-flex items-center gap-1 text-xs text-primary-text">
             See all <ChevronRight className="size-3.5" />
-          </button>
+          </Button>
         }
       >
         <AvailableJobs />
@@ -334,9 +341,9 @@ function HomeSection({
           title="Active jobs"
           description={`${active.length} in progress`}
           action={
-            <button onClick={() => onNavigate("active")} className="inline-flex items-center gap-1 text-xs text-primary">
+            <Button variant="ghost" onClick={() => onNavigate("active")} className="inline-flex items-center gap-1 text-xs text-primary-text">
               Open <ChevronRight className="size-3.5" />
-            </button>
+            </Button>
           }
         >
           <ul className="grid gap-2">
@@ -346,7 +353,7 @@ function HomeSection({
                   <span className="block truncate capitalize">{j.category}</span>
                   <span className="block truncate text-[11px] text-muted-foreground">{j.address}</span>
                 </span>
-                <span className="text-[11px] capitalize text-muted-foreground">{String(j.status).replace("_", " ")}</span>
+                <Status status={String(j.status)} />
               </li>
             ))}
           </ul>
@@ -363,7 +370,7 @@ function HomeSection({
                 <li key={j.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border border-border/70 bg-background/40 p-3 text-sm">
                   <div className="min-w-0">
                     <div className="truncate capitalize">{j.category} — {j.address}</div>
-                    <div className="text-[11px] capitalize text-muted-foreground">{String(j.status).replace("_", " ")}</div>
+                    <Status status={String(j.status)} />
                   </div>
                   <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
                     {new Date(j.scheduled_for).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
@@ -377,9 +384,9 @@ function HomeSection({
         <Panel
           title="Performance"
           action={
-            <button onClick={() => onNavigate("performance")} className="inline-flex items-center gap-1 text-xs text-primary">
+            <Button variant="ghost" onClick={() => onNavigate("performance")} className="inline-flex items-center gap-1 text-xs text-primary-text">
               Details <ChevronRight className="size-3.5" />
-            </button>
+            </Button>
           }
         >
           <div className="grid gap-4">
@@ -408,9 +415,9 @@ function BigStat({
 }) {
   const tones: Record<string, string> = {
     default: "text-foreground",
-    primary: "text-primary",
+    primary: "text-primary-text",
     gold: "text-gold",
-    positive: "text-emerald-500",
+    positive: "text-success",
   };
   return (
     <div className="rounded-2xl border border-border/70 bg-card/70 p-4 shadow-sm">

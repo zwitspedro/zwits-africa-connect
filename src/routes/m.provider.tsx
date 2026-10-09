@@ -13,6 +13,7 @@ function ProviderApp() {
 
   return (
     <RoleGate role="provider">
+      <div data-experience="provider" className="min-h-dvh bg-background text-foreground">
       <Outlet />
       <TabBar
         items={[
@@ -23,6 +24,7 @@ function ProviderApp() {
           { to: "/m/provider/profile", label: "Profile", icon: User },
         ]}
       />
+      </div>
     </RoleGate>
   );
 }

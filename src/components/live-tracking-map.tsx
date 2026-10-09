@@ -169,7 +169,7 @@ export function LiveTrackingMap({
       )}
       {pos && eta?.durationSeconds != null && (
         <div className="pointer-events-none absolute left-3 top-3 flex items-center gap-2 rounded-full bg-background/90 px-3 py-1.5 text-xs font-medium shadow-md backdrop-blur">
-          <Clock className="size-3.5 text-primary" />
+          <Clock className="size-3.5 text-primary-text" />
           <span>
             {eta.estimated ? "~" : ""}ETA {formatEta(eta.durationSeconds)}
           </span>

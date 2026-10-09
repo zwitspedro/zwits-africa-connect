@@ -46,7 +46,7 @@ function AdminAudit() {
       <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary">
+            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary-text">
               <ShieldCheck className="size-3" /> Admin
             </div>
             <h1 className="mt-2 font-display text-3xl font-bold">Audit log</h1>

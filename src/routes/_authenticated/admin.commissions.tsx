@@ -162,7 +162,7 @@ function CommissionsScreen() {
 
         <div className="mt-3 flex flex-wrap items-start justify-between gap-3">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary">
+            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary-text">
               <Percent className="size-3" /> Commissions
             </div>
             <h1 className="mt-2 font-display text-3xl font-bold">Commission management</h1>
@@ -295,12 +295,12 @@ function RateRow({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex items-start gap-3">
           <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted">
-            {Icon ? <Icon className="size-5 text-primary" /> : <Wallet className="size-5 text-primary" />}
+            {Icon ? <Icon className="size-5 text-primary-text" /> : <Wallet className="size-5 text-primary-text" />}
           </div>
           <div>
             <div className="flex items-center gap-2">
               <span className="font-medium capitalize">{service?.name ?? row.category}</span>
-              <span className={`rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider ${active ? "bg-emerald-500/15 text-emerald-400" : "bg-muted text-muted-foreground"}`}>
+              <span className={`rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider ${active ? "bg-emerald-500/15 text-success" : "bg-muted text-muted-foreground"}`}>
                 {active ? "Active" : "Paused"}
               </span>
             </div>

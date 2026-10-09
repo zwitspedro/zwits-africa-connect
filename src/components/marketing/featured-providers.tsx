@@ -51,7 +51,7 @@ export function FeaturedProviders() {
           </div>
           <Link
             to="/services"
-            className="shrink-0 rounded-full border border-border px-4 py-2 text-sm font-medium transition hover:border-primary/50 hover:text-primary"
+            className="shrink-0 rounded-full border border-border px-4 py-2 text-sm font-medium transition hover:border-primary/50 hover:text-primary-text"
           >
             Browse all
           </Link>
@@ -80,7 +80,7 @@ export function FeaturedProviders() {
           <Reveal key={p.id} delay={i * 50}>
             <article className="flex h-full flex-col rounded-2xl border border-border bg-card p-5 shadow-soft hover-lift">
               <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3">
-                <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-primary/10 font-display text-base font-bold text-primary">
+                <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-primary/10 font-display text-base font-bold text-primary-text">
                   {p.business_name.slice(0, 2).toUpperCase()}
                 </span>
                 <span className="min-w-0">
@@ -113,7 +113,7 @@ export function FeaturedProviders() {
                   <Star className="size-3 text-gold" /> {p.ratings_count} reviews
                 </span>
                 {p.jobs_completed >= 50 && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-primary">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-primary-text">
                     <Trophy className="size-3" /> Top Provider
                   </span>
                 )}

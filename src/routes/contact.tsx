@@ -79,7 +79,7 @@ function Contact() {
 function Item({ icon: Icon, title, value }: { icon: typeof Mail; title: string; value: string }) {
   return (
     <div className="flex items-start gap-4 rounded-2xl border border-border bg-card p-5">
-      <div className="grid size-10 place-items-center rounded-lg bg-primary/15 text-primary"><Icon className="size-5" /></div>
+      <div className="grid size-10 place-items-center rounded-lg bg-primary/15 text-primary-text"><Icon className="size-5" /></div>
       <div>
         <p className="text-sm text-muted-foreground">{title}</p>
         <p className="mt-0.5 font-medium">{value}</p>

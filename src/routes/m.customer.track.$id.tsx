@@ -93,7 +93,7 @@ function TrackScreen() {
               <Card>
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-[11px] uppercase tracking-wider text-primary">
+                    <p className="text-[11px] uppercase tracking-wider text-primary-text">
                       {b.category}
                     </p>
                     <p className="truncate text-sm font-semibold">{b.address}</p>
@@ -189,7 +189,7 @@ function TrackScreen() {
                         className="p-1"
                       >
                         <Star
-                          className={`size-7 ${i < rating ? "fill-amber-400 text-amber-400" : "text-muted-foreground"}`}
+                          className={`size-7 ${i < rating ? "fill-amber-400 text-warning" : "text-muted-foreground"}`}
                         />
                       </button>
                     ))}

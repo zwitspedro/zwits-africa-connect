@@ -227,7 +227,7 @@ function BookCategory() {
       <SiteShell>
         <div className="mx-auto max-w-md p-10 text-center">
           <p>Unknown service</p>
-          <Link to="/dashboard" className="text-primary underline">Go back</Link>
+          <Link to="/dashboard" className="text-primary-text underline">Go back</Link>
         </div>
       </SiteShell>
     );
@@ -243,7 +243,7 @@ function BookCategory() {
           <Link to="/contact" className="hover:text-foreground">Support</Link>
         </div>
         <div className="mt-4 flex items-center gap-3">
-          <service.icon className="size-8 text-primary" />
+          <service.icon className="size-8 text-primary-text" />
           <div>
             <h1 className="font-display text-3xl font-bold">Book {service.name}</h1>
             <p className="text-sm text-muted-foreground">{service.tagline}</p>
@@ -314,7 +314,7 @@ function BookCategory() {
               <div className="flex items-center gap-2 text-sm font-medium">
                 {p.business_name}
                 {p.verified && <BadgeCheck className="size-4 text-gold" />}
-                <span className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-medium ${p.available ? "bg-emerald-500/15 text-emerald-600" : "bg-muted text-muted-foreground"}`}>
+                <span className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-medium ${p.available ? "bg-emerald-500/15 text-success" : "bg-muted text-muted-foreground"}`}>
                   {p.available ? "Available" : "Busy"}
                 </span>
               </div>

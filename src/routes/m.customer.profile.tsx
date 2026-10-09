@@ -49,7 +49,7 @@ function CustomerProfile() {
         <Section>
           <Card>
             <div className="flex items-center gap-4">
-              <span className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-3xl bg-primary/12 font-display text-xl font-bold text-primary">
+              <span className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-3xl bg-primary/12 font-display text-xl font-bold text-primary-text">
                 {profile?.avatar_url ? (
                   <img src={profile.avatar_url} alt="" className="size-full object-cover" />
                 ) : (

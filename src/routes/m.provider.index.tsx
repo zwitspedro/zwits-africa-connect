@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button";
+import { Status } from "@/components/ui/status";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { BadgeCheck, Bell, Briefcase, ShieldAlert, Star, TrendingUp, Wallet } from "lucide-react";
@@ -124,15 +126,17 @@ function ProviderDashboard() {
                       : "No new offers while offline"}
                   </p>
                 </div>
-                <button
-                  aria-label="Toggle online"
+                <Button variant="ghost"
+                  aria-label="Receive new job offers"
+                  role="switch"
+                  aria-checked={!!provider.available}
                   onClick={() => toggleOnline.mutate(!provider.available)}
-                  className={`relative h-8 w-14 shrink-0 rounded-full transition-colors ${provider.available ? "bg-accent" : "bg-muted"}`}
+                  className={`relative min-h-12 h-12 w-16 p-0 shrink-0 rounded-full transition-colors ${provider.available ? "bg-accent" : "bg-muted"}`}
                 >
                   <span
-                    className={`absolute top-1 size-6 rounded-full bg-background transition-all ${provider.available ? "left-7" : "left-1"}`}
+                    className={`absolute top-2 size-8 rounded-full bg-background transition-all ${provider.available ? "left-7" : "left-1"}`}
                   />
-                </button>
+                </Button>
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
                 <Pill tone={provider.verification_status === "approved" ? "accent" : "warning"}>
@@ -169,7 +173,7 @@ function ProviderDashboard() {
           <Section
             title="Today"
             action={
-              <Link to="/m/provider/jobs" className="text-xs text-primary">
+              <Link to="/m/provider/jobs" className="text-xs text-primary-text">
                 All jobs
               </Link>
             }
@@ -187,7 +191,7 @@ function ProviderDashboard() {
                     <Card>
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <p className="text-[11px] uppercase tracking-wider text-primary">
+                          <p className="text-[11px] uppercase tracking-wider text-primary-text">
                             {j.category}
                           </p>
                           <p className="truncate text-sm font-semibold">{j.address}</p>
@@ -215,7 +219,7 @@ function ProviderDashboard() {
               <div className="grid gap-3">
                 {(data.reviews ?? []).slice(0, 4).map((r: any) => (
                   <Card key={r.id}>
-                    <div className="flex items-center gap-1 text-amber-500">
+                    <div className="flex items-center gap-1 text-warning">
                       {Array.from({ length: 5 }).map((_, i) => (
                         <Star
                           key={i}

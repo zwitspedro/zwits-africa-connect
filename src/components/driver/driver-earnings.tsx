@@ -63,7 +63,7 @@ export function DriverEarnings({ completed, metrics }: { completed: DeliveryRow[
                     {d.distance_km != null && ` · ${d.distance_km} km`}
                   </p>
                 </div>
-                <span className="shrink-0 text-sm font-semibold tabular-nums text-emerald-400">
+                <span className="shrink-0 text-sm font-semibold tabular-nums text-success">
                   +${driverPayout(d.price).toFixed(2)}
                 </span>
               </li>
