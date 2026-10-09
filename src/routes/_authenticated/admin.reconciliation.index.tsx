@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -230,7 +231,7 @@ function ReconciliationScreen() {
 
         <div className="mt-3 flex flex-wrap items-start justify-between gap-3">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary-text">
+            <div className="inline-flex items-center gap-2 rounded-md bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary-text">
               <Scale className="size-3" /> Reconciliation
             </div>
             <h1 className="mt-2 font-display text-3xl font-bold">Payout reconciliation</h1>
@@ -238,12 +239,12 @@ function ReconciliationScreen() {
               Compare gross booking totals vs commission deducted vs net provider payouts for a date range.
             </p>
           </div>
-          <button
+          <Button variant="outline"
             onClick={exportCsv}
-            className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs hover:bg-muted"
+            className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs hover:bg-muted"
           >
             <Download className="size-3.5" /> Export CSV
-          </button>
+          </Button>
         </div>
 
         <div className="mt-6 flex flex-wrap items-end gap-3 rounded-2xl border border-border bg-card p-4">
@@ -255,19 +256,19 @@ function ReconciliationScreen() {
           </Field>
           <div className="flex flex-wrap gap-1.5">
             {[7, 30, 90].map((d) => (
-              <button key={d} onClick={() => setPreset(d)} className="rounded-full border border-border px-3 py-1.5 text-[11px] hover:bg-muted">
+              <Button variant="outline" key={d} onClick={() => setPreset(d)} className="rounded-md border border-border px-3 py-1.5 text-[11px] hover:bg-muted">
                 Last {d}d
-              </button>
+              </Button>
             ))}
           </div>
           <div className="ml-auto flex items-center gap-3">
-            <button
+            <Button variant="outline"
               onClick={() => setShowDiscrepanciesOnly((v) => !v)}
-              className={`inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-[11px] transition-colors ${showDiscrepanciesOnly ? "border-amber-500/40 bg-amber-500/10 text-warning" : "border-border hover:bg-muted"}`}
+              className={`inline-flex items-center gap-1 rounded-md border px-3 py-1.5 text-[11px] transition-colors ${showDiscrepanciesOnly ? "border-warning bg-warning-surface text-warning" : "border-border hover:bg-muted"}`}
             >
               <Filter className="size-3" />
               {showDiscrepanciesOnly ? "Discrepancies only" : "Show all"}
-            </button>
+            </Button>
             <span className="text-xs text-muted-foreground">{displayRows.length} of {rows.length} bookings</span>
           </div>
         </div>
@@ -334,7 +335,7 @@ function ReconciliationScreen() {
                 new Date(b.updated_at).toLocaleDateString(),
                 <span key="c" className="capitalize">{b.category}</span>,
                 provider,
-                <span key="p" className={`rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider ${b.payment_status === "paid" ? "bg-emerald-500/15 text-success" : "bg-muted text-muted-foreground"}`}>{b.payment_status ?? "—"}</span>,
+                <span key="p" className={`rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider ${b.payment_status === "paid" ? "bg-success-surface text-success" : "bg-muted text-muted-foreground"}`}>{b.payment_status ?? "—"}</span>,
                 `$${price.toFixed(2)}`,
                 `$${f.toFixed(2)}`,
                 `$${(price - f).toFixed(2)}`,
@@ -373,7 +374,7 @@ function Kpi({ label, value, sub }: { label: string; value: string; sub?: string
     <div className="rounded-2xl border border-border bg-card p-4">
       <div className="flex items-center gap-1.5 text-xs text-muted-foreground"><Wallet className="size-3" /> {label}</div>
       <div className="mt-1 text-2xl font-semibold">{value}</div>
-      {sub && <div className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground/80">{sub}</div>}
+      {sub && <div className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground">{sub}</div>}
     </div>
   );
 }
@@ -389,11 +390,11 @@ function BalanceBar({ gross, commission, net }: { gross: number; commission: num
       </div>
       <div className="mt-2 flex h-2.5 w-full overflow-hidden rounded-full bg-muted">
         <div className="bg-primary" style={{ width: `${nPct}%` }} />
-        <div className="bg-amber-500" style={{ width: `${cPct}%` }} />
+        <div className="bg-warning" style={{ width: `${cPct}%` }} />
       </div>
       <div className="mt-2 flex gap-4 text-[10px] uppercase tracking-wider text-muted-foreground">
-        <span className="flex items-center gap-1"><span className="inline-block size-2 rounded-full bg-primary" /> Net payout</span>
-        <span className="flex items-center gap-1"><span className="inline-block size-2 rounded-full bg-amber-500" /> Commission</span>
+        <span className="flex items-center gap-1"><span className="inline-block size-2 rounded-md bg-primary" /> Net payout</span>
+        <span className="flex items-center gap-1"><span className="inline-block size-2 rounded-full bg-warning" /> Commission</span>
       </div>
     </div>
   );

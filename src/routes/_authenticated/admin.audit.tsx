@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -46,7 +47,7 @@ function AdminAudit() {
       <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary-text">
+            <div className="inline-flex items-center gap-2 rounded-md bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary-text">
               <ShieldCheck className="size-3" /> Admin
             </div>
             <h1 className="mt-2 font-display text-3xl font-bold">Audit log</h1>
@@ -64,7 +65,7 @@ function AdminAudit() {
         </div>
 
         <div className="mt-5 grid gap-2 sm:grid-cols-3">
-          <input
+          <input aria-label="Filter by action"
             value={action}
             onChange={(e) => {
               setAction(e.target.value);
@@ -73,7 +74,7 @@ function AdminAudit() {
             placeholder="Filter by action…"
             className="rounded-xl border border-input bg-background px-3 py-2 text-xs"
           />
-          <select
+          <select aria-label="Filter by entity type"
             value={subjectType}
             onChange={(e) => {
               setSubjectType(e.target.value);
@@ -88,7 +89,7 @@ function AdminAudit() {
               </option>
             ))}
           </select>
-          <input
+          <input aria-label="Filter by actor user ID"
             value={actor}
             onChange={(e) => {
               setActor(e.target.value);
@@ -102,11 +103,11 @@ function AdminAudit() {
         {list.isLoading ? (
           <div className="mt-6 h-40 animate-pulse rounded-2xl bg-muted/50" />
         ) : list.error ? (
-          <div className="mt-6 rounded-xl border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
+          <div className="mt-6 rounded-xl border border-destructive/40 bg-destructive/10 p-4 text-sm text-danger">
             {(list.error as Error).message}{" "}
-            <button onClick={() => list.refetch()} className="ml-2 underline">
+            <Button variant="outline" onClick={() => list.refetch()} className="ml-2 underline">
               Retry
-            </button>
+            </Button>
           </div>
         ) : (list.data?.rows ?? []).length === 0 ? (
           <p className="mt-6 rounded-xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
@@ -138,7 +139,7 @@ function AdminAudit() {
                   </span>
                 )}
                 {r.metadata && Object.keys(r.metadata).length > 0 && (
-                  <span className="w-full truncate text-muted-foreground/80">
+                  <span className="w-full truncate text-muted-foreground">
                     {JSON.stringify(r.metadata)}
                   </span>
                 )}
@@ -149,23 +150,23 @@ function AdminAudit() {
 
         {pages > 1 && (
           <div className="mt-6 flex items-center justify-between text-xs text-muted-foreground">
-            <button
+            <Button variant="outline"
               disabled={page === 0}
               onClick={() => setPage((p) => Math.max(0, p - 1))}
-              className="rounded-full border border-border px-3 py-1.5 hover:bg-muted disabled:opacity-40"
+              className="rounded-md border border-border px-3 py-1.5 hover:bg-muted disabled:opacity-40"
             >
               Previous
-            </button>
+            </Button>
             <span>
               Page {page + 1} of {pages} · {total} events
             </span>
-            <button
+            <Button variant="outline"
               disabled={page + 1 >= pages}
               onClick={() => setPage((p) => p + 1)}
-              className="rounded-full border border-border px-3 py-1.5 hover:bg-muted disabled:opacity-40"
+              className="rounded-md border border-border px-3 py-1.5 hover:bg-muted disabled:opacity-40"
             >
               Next
-            </button>
+            </Button>
           </div>
         )}
       </section>

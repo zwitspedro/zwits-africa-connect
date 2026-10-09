@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -90,6 +91,7 @@ function CommissionsScreen() {
 
   const upsert = useMutation({
     mutationFn: async (row: { id?: string; category: string; percent: number; min_fee: number; notes: string | null; active: boolean }) => {
+      if (!user) throw new Error("Sign in to manage commissions.");
       if (row.id) {
         const { error } = await supabase
           .from("commission_rates")
@@ -98,7 +100,7 @@ function CommissionsScreen() {
             min_fee: row.min_fee,
             notes: row.notes,
             active: row.active,
-            updated_by: user!.id,
+            updated_by: user.id,
           })
           .eq("id", row.id);
         if (error) throw error;
@@ -109,7 +111,7 @@ function CommissionsScreen() {
           min_fee: row.min_fee,
           notes: row.notes,
           active: row.active,
-          updated_by: user!.id,
+          updated_by: user.id,
         });
         if (error) throw error;
       }
@@ -162,19 +164,19 @@ function CommissionsScreen() {
 
         <div className="mt-3 flex flex-wrap items-start justify-between gap-3">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary-text">
+            <div className="inline-flex items-center gap-2 rounded-md bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary-text">
               <Percent className="size-3" /> Commissions
             </div>
             <h1 className="mt-2 font-display text-3xl font-bold">Commission management</h1>
             <p className="mt-1 text-sm text-muted-foreground">Set the platform fee per service type. Changes apply to new bookings only.</p>
           </div>
-          <button
+          <Button variant="outline"
             type="button"
             onClick={() => setShowHistory((v) => !v)}
-            className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs hover:bg-muted"
+            className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs hover:bg-muted"
           >
             <History className="size-3.5" /> {showHistory ? "Hide" : "View"} change log
-          </button>
+          </Button>
         </div>
 
         <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -253,7 +255,7 @@ function KpiCard({ label, value, sub }: { label: string; value: string | number;
     <div className="rounded-2xl border border-border bg-card p-4">
       <div className="text-xs text-muted-foreground">{label}</div>
       <div className="mt-1 text-2xl font-semibold">{value}</div>
-      {sub && <div className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground/80">{sub}</div>}
+      {sub && <div className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground">{sub}</div>}
     </div>
   );
 }
@@ -300,7 +302,7 @@ function RateRow({
           <div>
             <div className="flex items-center gap-2">
               <span className="font-medium capitalize">{service?.name ?? row.category}</span>
-              <span className={`rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider ${active ? "bg-emerald-500/15 text-success" : "bg-muted text-muted-foreground"}`}>
+              <span className={`rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider ${active ? "bg-success-surface text-success" : "bg-muted text-muted-foreground"}`}>
                 {active ? "Active" : "Paused"}
               </span>
             </div>
@@ -351,34 +353,34 @@ function RateRow({
       </div>
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-        <button
+        <Button variant="outline"
           type="button"
           onClick={() => setActive((v) => !v)}
-          className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1.5 text-xs hover:bg-muted"
+          className="inline-flex items-center gap-1 rounded-md border border-border px-3 py-1.5 text-xs hover:bg-muted"
         >
           {active ? <><PowerOff className="size-3" /> Pause</> : <><Power className="size-3" /> Activate</>}
-        </button>
+        </Button>
 
         <div className="flex flex-wrap gap-2">
           {confirmDelete ? (
             <>
-              <button onClick={() => { onDelete(); setConfirmDelete(false); }} className="inline-flex items-center gap-1 rounded-full bg-destructive px-3 py-1.5 text-xs text-background">
+              <Button variant="destructive" onClick={() => { onDelete(); setConfirmDelete(false); }} className="inline-flex items-center gap-1 rounded-full bg-destructive px-3 py-1.5 text-xs text-destructive-foreground">
                 Confirm delete
-              </button>
-              <button onClick={() => setConfirmDelete(false)} className="rounded-full border border-border px-3 py-1.5 text-xs">Cancel</button>
+              </Button>
+              <Button variant="outline" onClick={() => setConfirmDelete(false)} className="rounded-md border border-border px-3 py-1.5 text-xs">Cancel</Button>
             </>
           ) : (
-            <button onClick={() => setConfirmDelete(true)} className="inline-flex items-center gap-1 rounded-full border border-destructive/50 px-3 py-1.5 text-xs text-destructive">
+            <Button variant="outline" onClick={() => setConfirmDelete(true)} className="inline-flex items-center gap-1 rounded-md border border-destructive/50 px-3 py-1.5 text-xs text-danger">
               <Trash2 className="size-3" /> Remove
-            </button>
+            </Button>
           )}
-          <button
+          <Button variant="outline"
             onClick={() => validPercent && validMin && onSave({ percent: Number(percent), min_fee: Number(minFee), notes: notes || null, active })}
             disabled={!dirty || !validPercent || !validMin || saving}
-            className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-xs text-primary-foreground hover:opacity-90 disabled:opacity-40"
+            className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground hover:opacity-90 disabled:opacity-40"
           >
             <Save className="size-3" /> {saving ? "Saving…" : dirty ? "Save changes" : "Saved"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -443,13 +445,13 @@ function AddRateCard({
         </Field>
       </div>
       <div className="mt-3 flex justify-end">
-        <button
+        <Button variant="outline"
           onClick={() => canSave && onAdd({ category, percent: Number(percent), min_fee: Number(minFee), notes: notes || null, active: true })}
           disabled={!canSave || saving}
-          className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-xs text-primary-foreground disabled:opacity-40"
+          className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground disabled:opacity-40"
         >
           <Plus className="size-3" /> {saving ? "Adding…" : "Add rate"}
-        </button>
+        </Button>
       </div>
     </div>
   );
