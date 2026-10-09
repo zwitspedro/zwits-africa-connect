@@ -230,7 +230,7 @@ function AdminProviderRow({ provider, onApprove, onRevoke }: { provider: any; on
             <Status status={status} />
           </div>
           <div className="mt-0.5 text-xs text-muted-foreground">{provider.category} · {provider.city} · ${Number(provider.hourly_rate).toFixed(0)}/hr</div>
-          {review?.revoke_reason && <div className="mt-1 text-xs text-destructive">Reason: {review.revoke_reason}</div>}
+          {review?.revoke_reason && <div className="mt-1 text-xs text-danger">Reason: {review.revoke_reason}</div>}
         </div>
         <div className="flex gap-2">
           {status !== "approved" && (
@@ -239,7 +239,7 @@ function AdminProviderRow({ provider, onApprove, onRevoke }: { provider: any; on
             </Button>
           )}
           {status !== "revoked" && (
-            <Button variant="outline" onClick={() => setConfirmRevoke((v) => !v)} className="inline-flex items-center gap-1 rounded-md border border-destructive/50 px-3 py-1.5 text-xs text-destructive">
+            <Button variant="outline" onClick={() => setConfirmRevoke((v) => !v)} className="inline-flex items-center gap-1 rounded-md border border-destructive/50 px-3 py-1.5 text-xs text-danger">
               <ShieldX className="size-3" /> Revoke
             </Button>
           )}
@@ -278,7 +278,7 @@ function AdminProviderRow({ provider, onApprove, onRevoke }: { provider: any; on
               <li key={a.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-background/50 px-2 py-1.5">
                 <span className="text-muted-foreground">{new Date(a.created_at).toLocaleString()}</span>
                 <span className="font-medium">{a.doc_key}</span>
-                <span className={a.status === "uploaded" ? "text-success" : a.status === "rejected" || a.status === "upload_error" ? "text-destructive" : "text-muted-foreground"}>{a.status}</span>
+                <span className={a.status === "uploaded" ? "text-success" : a.status === "rejected" || a.status === "upload_error" ? "text-danger" : "text-muted-foreground"}>{a.status}</span>
                 <span className="truncate text-muted-foreground">{a.file_name ?? "—"}</span>
               </li>
             ))}
