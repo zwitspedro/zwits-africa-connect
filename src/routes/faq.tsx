@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { SiteShell } from "@/components/site-shell";
 import { PageHero } from "@/components/page-hero";
-import { ChevronDown } from "lucide-react";
 
 export const Route = createFileRoute("/faq")({
   head: () => ({
@@ -17,19 +16,19 @@ export const Route = createFileRoute("/faq")({
 });
 
 const faqs = [
-  ["How do I book a service?", "Open the Zwits app, pick a category, share your location and confirm. A nearby verified provider accepts your job in seconds."],
+  ["How do I book a service?", "Choose a service, add your address and preferred time, then confirm your request. Availability depends on providers in your area."],
   ["Which payment methods are supported?", "Cash on completion is the only payment method live today. Card and mobile money (EcoCash, InnBucks) are coming soon."],
-  ["How are providers vetted?", "Every provider submits ID, references and proof of skill. We run background checks and require minimum ratings to stay active."],
-  ["What does Zwits charge?", "Zwits takes a small commission on each completed job. Customers see the full price upfront — no surprises."],
+  ["How are providers vetted?", "Providers submit identity and verification documents for review before approval."],
+  ["What does Zwits charge?", "Zwits charges providers 10% commission on completed jobs. Review your booking details before confirming."],
   ["Do you operate outside Zimbabwe?", "Not yet. We're live in Harare, with more Zimbabwean cities to follow."],
-  ["How do I become a provider?", "Apply via the Become a Provider page. We review applications within 48 hours."],
+  ["How do I become a provider?", "Apply via the provider page, complete your profile and submit verification documents for review."],
 ];
 
 function Faq() {
   return (
     <SiteShell>
       <PageHero eyebrow="FAQ" title="Questions, answered.">
-        Can't find what you need? Reach out — we usually reply within a few hours.
+        Can't find what you need? Contact Zwits support.
       </PageHero>
       <section className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
         <Accordion type="single" collapsible defaultValue="faq-0">

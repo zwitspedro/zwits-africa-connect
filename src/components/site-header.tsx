@@ -180,26 +180,26 @@ export function SiteHeader() {
 
       {/* Always-visible mobile journeys — never hidden behind the hamburger. */}
       {!user && (
-        <div className="border-t border-border/60 bg-background/80 px-4 py-2.5 backdrop-blur-xl lg:hidden">
+        <nav aria-label="Mobile quick actions" className="border-t border-border/60 bg-background px-4 py-2 lg:hidden">
           <div className="grid grid-cols-2 gap-2">
             <Link
               to="/services"
-              className="inline-flex min-h-11 items-center justify-center rounded-xl bg-primary px-3 text-[13px] font-bold text-primary-foreground"
+              className="inline-flex min-h-12 items-center justify-center rounded-xl bg-primary px-3 text-[13px] font-bold text-primary-foreground"
             >
               Book a service
             </Link>
             <Link
               to="/provider"
-              className="inline-flex min-h-11 items-center justify-center rounded-xl border border-border px-3 text-[13px] font-bold"
+              className="inline-flex min-h-12 items-center justify-center rounded-xl border border-border px-3 text-[13px] font-bold"
             >
               Join as a provider
             </Link>
           </div>
           <div className="mt-1.5 flex justify-center gap-4 text-[12px] text-muted-foreground">
-            <Link to="/login" className="hover:text-foreground">Sign in</Link>
-            <Link to="/provider-login" className="font-medium text-primary-text">Provider login</Link>
+            <Link to="/login" className="inline-flex min-h-12 items-center hover:text-foreground">Sign in</Link>
+            <Link to="/provider-login" className="inline-flex min-h-12 items-center font-bold text-primary-text">Provider login</Link>
           </div>
-        </div>
+        </nav>
       )}
 
 

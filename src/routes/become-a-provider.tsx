@@ -25,10 +25,10 @@ export const Route = createFileRoute("/become-a-provider")({
 });
 
 const perks = [
-  { icon: Wallet, title: "Withdraw your earnings", text: "Request payouts from your wallet to mobile money or your bank." },
+  { icon: Wallet, title: "Withdraw your earnings", text: "Track earnings from completed work. Cash on completion is the live payment method." },
   { icon: Clock, title: "You set the hours", text: "Toggle availability whenever you're ready to work." },
-  { icon: Star, title: "Build a reputation", text: "Great ratings unlock more jobs and bigger earnings." },
-  { icon: ShieldCheck, title: "Protected & verified", text: "ID and background checks keep the platform safe." },
+  { icon: Star, title: "Build a reputation", text: "Customer ratings help people assess your work." },
+  { icon: ShieldCheck, title: "Protected & verified", text: "Identity and verification documents are reviewed before approval." },
 ];
 
 export const PROVIDER_PREFILL_KEY = "zwits:provider-prefill";
@@ -90,7 +90,7 @@ function Provider() {
             return (
               <div key={p.title} className="rounded-2xl border border-border bg-card p-6">
                 <Icon className="size-6 text-primary-text" />
-                <h3 className="mt-4 font-display text-lg font-semibold">{p.title}</h3>
+                <h2 className="mt-4 font-display text-lg font-semibold">{p.title}</h2>
                 <p className="mt-1 text-sm text-muted-foreground">{p.text}</p>
               </div>
             );
