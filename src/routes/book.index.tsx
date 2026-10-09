@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { ArrowLeft, Search } from "lucide-react";
 import { services, popularServices } from "@/data/services";
+import { rankServices } from "@/lib/service-search";
 
 /**
  * Step 1 of the progressive customer flow: "What do you need?"
@@ -37,12 +38,7 @@ function BookEntry() {
   const list = useMemo(() => {
     const term = q.trim().toLowerCase();
     if (!term) return services;
-    return services.filter(
-      (s) =>
-        s.name.toLowerCase().includes(term) ||
-        s.tagline.toLowerCase().includes(term) ||
-        s.examples.some((e) => e.toLowerCase().includes(term)),
-    );
+    return rankServices(services, term);
   }, [q]);
 
   return (

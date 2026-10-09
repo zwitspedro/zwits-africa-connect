@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { services } from "@/data/services";
+import { rankServices } from "@/lib/service-search";
 import { AppBar, Card, Empty, Screen, Section, money } from "@/mobile/ui";
 
 export const Route = createFileRoute("/m/customer/categories")({
@@ -14,12 +15,7 @@ function CategoriesScreen() {
   const list = useMemo(() => {
     const term = q.trim().toLowerCase();
     if (!term) return services;
-    return services.filter(
-      (s) =>
-        s.name.toLowerCase().includes(term) ||
-        s.tagline.toLowerCase().includes(term) ||
-        s.examples.some((e) => e.toLowerCase().includes(term)),
-    );
+    return rankServices(services, term);
   }, [q]);
 
   return (
