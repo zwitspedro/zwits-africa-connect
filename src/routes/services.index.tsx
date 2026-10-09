@@ -5,6 +5,7 @@ import { SiteShell } from "@/components/site-shell";
 import { PageHero } from "@/components/page-hero";
 import { Breadcrumbs } from "@/components/seo/seo-landing";
 import { services } from "@/data/services";
+import { rankServices } from "@/lib/service-search";
 import { seo, breadcrumbJsonLd, faqJsonLd, type Crumb, type Faq } from "@/lib/seo";
 
 const crumbs: Crumb[] = [
@@ -50,9 +51,7 @@ function ServicesPage() {
   const results = useMemo(() => {
     const term = q.trim().toLowerCase();
     if (!term) return services;
-    return services.filter((s) =>
-      [s.name, s.tagline, s.description, ...s.examples].join(" ").toLowerCase().includes(term),
-    );
+    return rankServices(services, term);
   }, [q]);
 
   return (

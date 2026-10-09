@@ -5,7 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Bell, Heart, MapPin, Search, Star, Truck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { services, popularServices } from "@/data/services";
+import { services
+import { rankServices } from "@/lib/service-search";, popularServices } from "@/data/services";
 import { useMobileProfile } from "@/mobile/profile";
 import { useUnreadCount } from "@/mobile/notifications";
 import { useFavouriteProviders } from "@/mobile/local";
@@ -70,15 +71,7 @@ function CustomerHome() {
   });
 
   const matches = useMemo(() => {
-    const term = q.trim().toLowerCase();
-    if (!term) return [];
-    return services
-      .filter(
-        (s) =>
-          s.name.toLowerCase().includes(term) ||
-          s.examples.some((e) => e.toLowerCase().includes(term)),
-      )
-      .slice(0, 6);
+    return rankServices(services, q, 6);
   }, [q]);
 
   const nearby = (providers.data ?? [])

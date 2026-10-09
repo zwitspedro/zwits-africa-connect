@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Search, ArrowRight } from "lucide-react";
 import { services } from "@/data/services";
+import { rankServices } from "@/lib/service-search";
 
 /** Big Zimbabwe-first "what do you need today?" search with live suggestions. */
 export function ServiceSearch() {
@@ -11,11 +12,7 @@ export function ServiceSearch() {
   const blurTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const matches = useMemo(() => {
-    const term = q.trim().toLowerCase();
-    if (!term) return [];
-    return services
-      .filter((s) => [s.name, s.tagline, s.description, ...s.examples].join(" ").toLowerCase().includes(term))
-      .slice(0, 6);
+    return rankServices(services, q, 6);
   }, [q]);
 
   const submit = (e: React.FormEvent) => {
