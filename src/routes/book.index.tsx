@@ -1,8 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { ArrowLeft, Search } from "lucide-react";
-import { services
-, popularServices } from "@/data/services";
+import { services, popularServices } from "@/data/services";
 import { rankServices } from "@/lib/service-search";
 
 /**

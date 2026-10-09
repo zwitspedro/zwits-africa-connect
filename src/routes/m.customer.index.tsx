@@ -5,8 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Bell, Heart, MapPin, Search, Star, Truck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { services
-, popularServices } from "@/data/services";
+import { services, popularServices } from "@/data/services";
 import { rankServices } from "@/lib/service-search";
 import { useMobileProfile } from "@/mobile/profile";
 import { useUnreadCount } from "@/mobile/notifications";
