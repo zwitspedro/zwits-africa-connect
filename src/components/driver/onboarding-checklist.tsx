@@ -47,6 +47,7 @@ export function OnboardingChecklist({
           {steps.map((s) => (
             <li key={s.key}>
               <Button
+                variant="outline"
                 type="button"
                 disabled={s.locked}
                 onClick={() => onGo(s.key)}
@@ -92,6 +93,7 @@ export function OnboardingChecklist({
 export function ReadyBanner({ online, onToggle, busy }: { online: boolean; onToggle: () => void; busy: boolean }) {
   return (
     <Button
+      variant="outline"
       type="button"
       onClick={onToggle}
       aria-pressed={online}

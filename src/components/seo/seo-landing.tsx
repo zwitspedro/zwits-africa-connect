@@ -194,7 +194,7 @@ export function SeoLanding(props: SeoLandingProps) {
               <p className="mt-3 text-xs text-muted-foreground">
                 {BUSINESS.legalName} · Registration {BUSINESS.registrationNumber} ·{" "}
                 {BUSINESS.address.street}, {BUSINESS.address.suburb}, {BUSINESS.address.city}, {BUSINESS.address.country} ·{" "}
-                <a href={`tel:${BUSINESS.phone}`} className="text-primary-text hover:underline">
+                <a href={`tel:${BUSINESS.phone}`} className="text-primary-text underline underline-offset-4">
                   {BUSINESS.phoneDisplay}
                 </a>
               </p>

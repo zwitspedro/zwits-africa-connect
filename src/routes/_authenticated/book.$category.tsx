@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -279,7 +280,7 @@ function BookCategory() {
             />
             Available now
           </label>
-          <label className="grid gap-1.5">
+          <label className="grid min-w-0 gap-1.5">
             <span className="flex items-center justify-between text-xs text-muted-foreground">
               <span className="flex items-center gap-1"><MapPin className="size-3" /> Radius</span>
               <span>{coords ? `${radiusKm} km` : "Set address to enable"}</span>
@@ -298,18 +299,20 @@ function BookCategory() {
         </div>
 
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          <button
+          <Button
+            variant="outline"
             onClick={() => setProviderId(null)}
-            className={`rounded-2xl border p-4 text-left transition ${providerId === null ? "border-primary bg-primary/10" : "border-border bg-card hover:border-primary/40"}`}
+            className={`block h-auto min-w-0 rounded-md border p-4 text-left transition ${providerId === null ? "border-primary bg-primary/10" : "border-border bg-card hover:border-primary/40"}`}
           >
             <div className="text-sm font-medium">Auto-match</div>
             <div className="text-xs text-muted-foreground">We'll assign the first available pro.</div>
-          </button>
+          </Button>
           {visibleProviders.map((p) => (
-            <button
+            <Button
+              variant="outline"
               key={p.id}
               onClick={() => setProviderId(p.id)}
-              className={`rounded-2xl border p-4 text-left transition ${providerId === p.id ? "border-primary bg-primary/10" : "border-border bg-card hover:border-primary/40"}`}
+              className={`block h-auto min-w-0 rounded-md border p-4 text-left transition ${providerId === p.id ? "border-primary bg-primary/10" : "border-border bg-card hover:border-primary/40"}`}
             >
               <div className="flex items-center gap-2 text-sm font-medium">
                 {p.business_name}
@@ -326,7 +329,7 @@ function BookCategory() {
                   <span className="flex items-center gap-0.5">· <MapPin className="size-3" /> {p.distance.toFixed(1)} km</span>
                 )}
               </div>
-            </button>
+            </Button>
           ))}
         </div>
         {visibleProviders.length === 0 && (
@@ -344,9 +347,9 @@ function BookCategory() {
             if (!scheduled) return toast.error("Pick a time or choose ASAP");
             setStep(2);
           }}
-          className="mt-8 grid gap-4 rounded-3xl border border-border bg-card p-6"
+          className="mt-8 grid min-w-0 gap-4 border-t border-border py-6"
         >
-          <label className="grid gap-1.5">
+          <label className="grid min-w-0 gap-1.5">
             <span className="text-xs text-muted-foreground">Address</span>
             <AddressAutocomplete
               required
@@ -358,7 +361,7 @@ function BookCategory() {
             />
           </label>
           {coords && <LocationMap lat={coords.lat} lng={coords.lng} />}
-          <div className="grid gap-1.5">
+          <div className="grid min-w-0 gap-1.5">
             <span className="text-xs text-muted-foreground">When</span>
             <BookingCalendar
               rules={service.scheduling}
@@ -367,13 +370,13 @@ function BookCategory() {
               providerId={providerId}
             />
           </div>
-          <label className="grid gap-1.5">
+          <label className="grid min-w-0 gap-1.5">
             <span className="text-xs text-muted-foreground">Details</span>
             <textarea rows={3} value={description} onChange={(e) => setDescription(e.target.value)}
               placeholder={`Describe your ${service.name.toLowerCase()} request…`}
               className="rounded-lg border border-input bg-background px-3 py-2.5 text-sm" />
           </label>
-          <label className="grid gap-1.5">
+          <label className="grid min-w-0 gap-1.5">
             <span className="text-xs text-muted-foreground">Your budget (optional, USD)</span>
             <input
               type="number"
@@ -391,14 +394,14 @@ function BookCategory() {
               {photos.map((f, i) => (
                 <div key={`${f.name}-${i}`} className="relative">
                   <img src={URL.createObjectURL(f)} alt={f.name} className="size-20 rounded-lg border border-border object-cover" />
-                  <button
+                  <Button
                     type="button"
                     onClick={() => setPhotos((p) => p.filter((_, idx) => idx !== i))}
                     className="absolute -right-1.5 -top-1.5 grid size-5 place-items-center rounded-full bg-destructive text-destructive-foreground"
                     aria-label="Remove photo"
                   >
                     <X className="size-3" />
-                  </button>
+                  </Button>
                 </div>
               ))}
               {photos.length < 6 && (
@@ -427,9 +430,9 @@ function BookCategory() {
                 ? "We'll invite up to 5 verified providers to quote. You compare and choose."
                 : "We'll offer the job to the closest verified providers — first to accept gets it."}
           </p>
-          <button className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground">
+          <Button className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground">
             Continue to confirm
-          </button>
+          </Button>
         </form>
         </>)}
 
@@ -444,7 +447,7 @@ function BookCategory() {
                 setPayDialogOpen(true);
               }
             }}
-            className="mt-8 grid gap-5 rounded-3xl border border-border bg-card p-6"
+            className="mt-8 grid min-w-0 gap-5 border-t border-border py-6"
           >
             <div>
               <h2 className="font-display text-xl font-semibold">Confirm your booking</h2>
@@ -480,7 +483,7 @@ function BookCategory() {
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid gap-3 sm:grid-cols-2">
               <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4">
                 <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Final price</div>
                 <div className="mt-1 font-display text-2xl font-bold tabular-nums">${estimate.price.toFixed(2)}</div>
@@ -497,7 +500,7 @@ function BookCategory() {
               </div>
             </div>
 
-            <div className="grid gap-1.5">
+            <div className="grid min-w-0 gap-1.5">
               <span className="text-xs text-muted-foreground">Payment method</span>
               <PaymentMethodPicker
                 value={paymentMethod}
@@ -508,16 +511,16 @@ function BookCategory() {
             </div>
 
             <div className="flex items-center justify-between gap-3">
-              <button type="button" onClick={() => setStep(1)} className="rounded-full border border-border px-5 py-2.5 text-sm font-medium hover:bg-muted">
+              <Button type="button" onClick={() => setStep(1)} className="rounded-full border border-border px-5 py-2.5 text-sm font-medium hover:bg-muted">
                 ← Back
-              </button>
-              <button disabled={create.isPending || !paymentMethod} className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground disabled:opacity-60">
+              </Button>
+              <Button disabled={create.isPending || !paymentMethod} className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground disabled:opacity-60">
                 {create.isPending
                   ? "Finalising…"
                   : paymentMethod === "cash"
                     ? `Confirm — $${estimate.price.toFixed(2)}`
                     : `Pay $${estimate.price.toFixed(2)} & confirm`}
-              </button>
+              </Button>
             </div>
           </form>
         )}
