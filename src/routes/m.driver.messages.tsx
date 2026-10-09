@@ -5,7 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { AppBar, Card, Empty, PullToRefresh, Screen, Section, SkeletonList } from "@/mobile/ui";
 
-export const Route = createFileRoute("/m/driver/messages")({ component: DriverMessages });
+export const Route = createFileRoute("/m/driver/messages")({
+  head: () => ({ meta: [{"title": "Mobile Driver Messages — Zwits"}, {"name": "description", "content": "Mobile Driver Messages in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Driver Messages — Zwits"}, {"property": "og:description", "content": "Mobile Driver Messages in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: DriverMessages });
 
 /** Drivers chat per delivery — threads come from the deliveries assigned to them. */
 function DriverMessages() {
@@ -53,7 +54,7 @@ function DriverMessages() {
                     }
                   >
                     <div className="flex items-start gap-3">
-                      <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-primary/12 text-primary">
+                      <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-primary/12 text-primary-text">
                         <MessageSquare className="size-5" />
                       </span>
                       <div className="min-w-0 flex-1">

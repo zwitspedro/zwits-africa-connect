@@ -16,7 +16,8 @@ import {
   money,
 } from "@/mobile/ui";
 
-export const Route = createFileRoute("/m/driver/profile")({ component: DriverProfile });
+export const Route = createFileRoute("/m/driver/profile")({
+  head: () => ({ meta: [{"title": "Mobile Driver Profile — Zwits"}, {"name": "description", "content": "Mobile Driver Profile in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Driver Profile — Zwits"}, {"property": "og:description", "content": "Mobile Driver Profile in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: DriverProfile });
 
 function DriverProfile() {
   const d = useDriverData();
@@ -46,7 +47,7 @@ function DriverProfile() {
             <Section>
               <Card>
                 <div className="flex items-center gap-4">
-                  <span className="grid size-16 place-items-center rounded-3xl bg-primary/12 font-display text-xl font-bold text-primary">
+                  <span className="grid size-16 place-items-center rounded-3xl bg-primary/12 font-display text-xl font-bold text-primary-text">
                     {(d.userProfile.data?.display_name ?? "D").slice(0, 2).toUpperCase()}
                   </span>
                   <div className="min-w-0">

@@ -6,7 +6,8 @@ import { useFavouriteProviders } from "@/mobile/local";
 import { AppBar, Empty, Screen, Section, SkeletonList } from "@/mobile/ui";
 import { ProviderRow } from "./m.customer.index";
 
-export const Route = createFileRoute("/m/customer/favourites")({ component: Favourites });
+export const Route = createFileRoute("/m/customer/favourites")({
+  head: () => ({ meta: [{"title": "Mobile Customer Favourites — Zwits"}, {"name": "description", "content": "Mobile Customer Favourites in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Customer Favourites — Zwits"}, {"property": "og:description", "content": "Mobile Customer Favourites in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: Favourites });
 
 function Favourites() {
   const { favourites, loading } = useFavouriteProviders();

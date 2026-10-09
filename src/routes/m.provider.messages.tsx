@@ -5,7 +5,8 @@ import { useConversations } from "./m.customer.messages";
 import { statusLabel } from "@/lib/job-lifecycle";
 import { AppBar, Card, Empty, PullToRefresh, Screen, Section, SkeletonList } from "@/mobile/ui";
 
-export const Route = createFileRoute("/m/provider/messages")({ component: ProviderMessages });
+export const Route = createFileRoute("/m/provider/messages")({
+  head: () => ({ meta: [{"title": "Mobile Provider Messages — Zwits"}, {"name": "description", "content": "Mobile Provider Messages in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Provider Messages — Zwits"}, {"property": "og:description", "content": "Mobile Provider Messages in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: ProviderMessages });
 
 function ProviderMessages() {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ function ProviderMessages() {
                     }
                   >
                     <div className="flex items-start gap-3">
-                      <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-primary/12 text-primary">
+                      <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-primary/12 text-primary-text">
                         <MessageSquare className="size-5" />
                       </span>
                       <div className="min-w-0 flex-1">

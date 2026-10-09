@@ -8,3 +8,9 @@
 - [x] Publish the supplied support phone number and email.
 - [x] Make email the active sign-in choice and mark phone sign-in coming soon.
 - [x] Verify the updated sign-in, contact and signed-in map views.
+# Zwits Design System v1
+- [ ] Centralize palette, typography, spacing, radii and restrained motion.
+- [ ] Upgrade existing controls, forms, status, notifications and navigation.
+- [ ] Apply customer/provider/driver/admin experience themes and lightweight entry screen.
+- [ ] Audit public and authenticated views, accessibility and all requested viewport widths.
+- [ ] Report verification and remaining blockers without changing business logic.

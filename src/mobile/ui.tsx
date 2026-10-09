@@ -3,6 +3,7 @@
  * screen is built from. Purely presentational: no data access, no business
  * logic, so the three apps stay consistent without duplicating anything.
  */
+import { Button } from "@/components/ui/button";
 import { type ReactNode, useCallback, useRef, useState } from "react";
 import { Link, useRouter } from "@tanstack/react-router";
 import { ArrowLeft, Loader2, type LucideIcon } from "lucide-react";
@@ -27,13 +28,13 @@ export function AppBar({
     <header className="sticky top-0 z-30 border-b border-border/60 bg-background/85 pt-[env(safe-area-inset-top)] backdrop-blur-xl">
       <div className="flex min-h-14 items-center gap-2 px-3">
         {back && (
-          <button
+          <Button variant="ghost"
             aria-label="Go back"
             onClick={() => router.history.back()}
             className="grid size-11 shrink-0 place-items-center rounded-full text-foreground active:bg-muted"
           >
             <ArrowLeft className="size-5" />
-          </button>
+          </Button>
         )}
         <div className="min-w-0 flex-1">
           <h1 className={`truncate font-display font-semibold ${large ? "text-xl" : "text-base"}`}>
@@ -72,8 +73,8 @@ export function Section({
   return (
     <section className={`px-4 pt-5 ${className}`}>
       {(title || action) && (
-        <div className="mb-3 flex items-center justify-between gap-3">
-          {title && <h2 className="font-display text-sm font-semibold tracking-tight">{title}</h2>}
+        <div className="mb-3 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+          {title && <h2 className="font-sans text-sm font-bold tracking-tight">{title}</h2>}
           {action}
         </div>
       )}
@@ -92,15 +93,15 @@ export function Card({
   onClick?: () => void;
 }) {
   const base =
-    "rounded-3xl border border-border/70 bg-card p-4 text-card-foreground shadow-[0_1px_2px_rgba(0,0,0,0.04)]";
+    "rounded-xl border border-border/70 bg-card p-4 text-card-foreground ";
   if (!onClick) return <div className={`${base} ${className}`}>{children}</div>;
   return (
-    <button
+    <Button variant="ghost"
       onClick={onClick}
-      className={`${base} w-full text-left transition active:scale-[0.985] ${className}`}
+      className={`${base} block min-w-0 w-full h-auto text-left transition active:scale-[0.985] ${className}`}
     >
       {children}
-    </button>
+    </Button>
   );
 }
 
@@ -110,14 +111,14 @@ export type TabItem = { to: string; label: string; icon: LucideIcon; badge?: num
 
 export function TabBar({ items }: { items: TabItem[] }) {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl">
+    <nav aria-label="Mobile navigation" className="fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl">
       <ul className="mx-auto flex max-w-lg items-stretch">
         {items.map((t) => (
           <li key={t.to} className="flex-1">
             <Link
               to={t.to as never}
               activeOptions={{ exact: t.to.split("/").length <= 3 }}
-              className="group flex min-h-14 flex-col items-center justify-center gap-0.5 py-2 text-[11px] text-muted-foreground data-[status=active]:text-primary"
+              className="group flex min-h-16 flex-col items-center justify-center gap-0.5 py-2 text-[11px] text-muted-foreground data-[status=active]:text-primary-text"
             >
               <span className="relative grid h-7 w-14 place-items-center rounded-full transition-colors group-data-[status=active]:bg-primary/12">
                 <t.icon className="size-5" />
@@ -148,7 +149,7 @@ export function Fab({
   onClick?: () => void;
 }) {
   const cls =
-    "fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-40 inline-flex min-h-14 items-center gap-2 rounded-2xl bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition active:scale-95";
+    "fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-40 inline-flex min-h-14 items-center gap-2 rounded-md bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-card transition active:scale-95";
   if (to)
     return (
       <Link to={to as never} className={cls}>
@@ -156,23 +157,23 @@ export function Fab({
       </Link>
     );
   return (
-    <button onClick={onClick} className={cls}>
+    <Button variant="ghost" onClick={onClick} className={cls}>
       <Icon className="size-5" /> {label}
-    </button>
+    </Button>
   );
 }
 
 /* ------------------------------------------------------------------ states */
 
 export function Skeleton({ className = "" }: { className?: string }) {
-  return <div className={`animate-pulse rounded-2xl bg-muted ${className}`} />;
+  return <div className={`animate-pulse rounded-md bg-muted ${className}`} />;
 }
 
 export function SkeletonList({ rows = 3 }: { rows?: number }) {
   return (
     <div className="grid gap-3">
       {Array.from({ length: rows }).map((_, i) => (
-        <Skeleton key={i} className="h-24 w-full rounded-3xl" />
+        <Skeleton key={i} className="h-24 w-full rounded-xl" />
       ))}
     </div>
   );
@@ -190,13 +191,13 @@ export function Empty({
   action?: ReactNode;
 }) {
   return (
-    <div className="grid place-items-center rounded-3xl border border-dashed border-border/70 px-6 py-12 text-center">
+    <div className="grid place-items-center rounded-xl border border-dashed border-border/70 px-6 py-12 text-center">
       {Icon && (
-        <span className="mb-3 grid size-12 place-items-center rounded-2xl bg-muted text-muted-foreground">
+        <span className="mb-3 grid size-12 place-items-center rounded-md bg-muted text-muted-foreground">
           <Icon className="size-6" />
         </span>
       )}
-      <p className="font-display text-sm font-semibold">{title}</p>
+      <p className="font-sans text-sm font-bold">{title}</p>
       {hint && <p className="mt-1 max-w-xs text-xs text-muted-foreground">{hint}</p>}
       {action && <div className="mt-4">{action}</div>}
     </div>
@@ -205,18 +206,18 @@ export function Empty({
 
 export function ErrorState({ message, onRetry }: { message?: string; onRetry?: () => void }) {
   return (
-    <div className="rounded-3xl border border-destructive/30 bg-destructive/5 p-5 text-center">
+    <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-5 text-center">
       <p className="text-sm font-medium text-destructive">Something went wrong</p>
       <p className="mt-1 text-xs text-muted-foreground">
         {message ?? "Please check your connection and try again."}
       </p>
       {onRetry && (
-        <button
+        <Button variant="ghost"
           onClick={onRetry}
           className="mt-4 min-h-11 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground active:scale-95"
         >
           Try again
-        </button>
+        </Button>
       )}
     </div>
   );
@@ -231,9 +232,9 @@ export function Pill({
 }) {
   const tones: Record<string, string> = {
     muted: "bg-muted text-muted-foreground",
-    primary: "bg-primary/12 text-primary",
-    accent: "bg-accent/15 text-accent",
-    warning: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
+    primary: "bg-primary/12 text-primary-text",
+    accent: "bg-info-surface text-info",
+    warning: "bg-warning-surface text-warning",
     danger: "bg-destructive/12 text-destructive",
   };
   return (
@@ -257,7 +258,7 @@ export function StatTile({
   icon?: LucideIcon;
 }) {
   return (
-    <div className="rounded-3xl border border-border/70 bg-card p-4">
+    <div className="rounded-xl border border-border/70 bg-card p-4">
       <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-muted-foreground">
         {Icon && <Icon className="size-3.5" />}
         {label}
@@ -284,15 +285,16 @@ export function PrimaryButton({
   className?: string;
 }) {
   return (
-    <button
+    <Button
       type={type}
       onClick={onClick}
+      aria-busy={loading}
       disabled={disabled || loading}
-      className={`inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition active:scale-[0.98] disabled:opacity-60 ${className}`}
+      className={`inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-md bg-primary px-5 text-sm font-semibold text-primary-foreground transition active:scale-[0.98] disabled:opacity-60 ${className}`}
     >
       {loading && <Loader2 className="size-4 animate-spin" />}
       {children}
-    </button>
+    </Button>
   );
 }
 
@@ -306,12 +308,12 @@ export function GhostButton({
   className?: string;
 }) {
   return (
-    <button
+    <Button variant="outline"
       onClick={onClick}
-      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-border px-4 text-sm font-medium transition active:scale-[0.98] ${className}`}
+      className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-border px-4 text-sm font-medium transition active:scale-[0.98] ${className}`}
     >
       {children}
-    </button>
+    </Button>
   );
 }
 
@@ -332,14 +334,18 @@ export function PullToRefresh({
   const onTouchStart = useCallback(
     (e: React.TouchEvent) => {
       if (window.scrollY > 0 || busy) return;
-      start.current = e.touches[0]!.clientY;
+      const touch = e.touches[0];
+      if (!touch) return;
+      start.current = touch.clientY;
     },
     [busy],
   );
 
   const onTouchMove = useCallback((e: React.TouchEvent) => {
     if (start.current == null) return;
-    const delta = e.touches[0]!.clientY - start.current;
+    const touch = e.touches[0];
+    if (!touch) return;
+    const delta = touch.clientY - start.current;
     setPull(delta > 0 ? Math.min(delta * 0.45, 80) : 0);
   }, []);
 
@@ -359,7 +365,7 @@ export function PullToRefresh({
   return (
     <div onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
       <div
-        className="grid place-items-center overflow-hidden text-primary transition-[height]"
+        className="grid place-items-center overflow-hidden text-primary-text transition-[height]"
         style={{ height: busy ? 44 : pull }}
       >
         <Loader2

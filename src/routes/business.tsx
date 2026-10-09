@@ -91,7 +91,7 @@ function BusinessPage() {
           {capabilities.map((c, i) => (
             <Reveal key={c.title} delay={i * 40}>
               <div className="h-full bg-background p-7 transition-colors hover:bg-card/60">
-                <c.icon className="size-5 text-primary" />
+                <c.icon className="size-5 text-primary-text" />
                 <h2 className="mt-6 font-display text-base font-semibold tracking-tight">{c.title}</h2>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{c.text}</p>
               </div>
@@ -143,9 +143,9 @@ function BusinessPage() {
           ))}
         </div>
         <p className="mt-6 text-sm text-muted-foreground">
-          Also see <Link to="/delivery" className="text-primary underline">Zwits delivery in Zimbabwe</Link>,{" "}
-          <Link to="/delivery/harare" className="text-primary underline">delivery in Harare</Link> and{" "}
-          <Link to="/services" className="text-primary underline">services for your premises</Link>.
+          Also see <Link to="/delivery" className="text-primary-text underline">Zwits delivery in Zimbabwe</Link>,{" "}
+          <Link to="/delivery/harare" className="text-primary-text underline">delivery in Harare</Link> and{" "}
+          <Link to="/services" className="text-primary-text underline">services for your premises</Link>.
         </p>
       </section>
 

@@ -28,7 +28,8 @@ import {
   when,
 } from "@/mobile/ui";
 
-export const Route = createFileRoute("/m/provider/jobs/$id")({ component: ProviderJobDetail });
+export const Route = createFileRoute("/m/provider/jobs/$id")({
+  head: () => ({ meta: [{"title": "Mobile Provider Jobs — Zwits"}, {"name": "description", "content": "Mobile Provider Jobs in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Provider Jobs — Zwits"}, {"property": "og:description", "content": "Mobile Provider Jobs in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: ProviderJobDetail });
 
 const STEPS = LIFECYCLE.filter((s) => s !== "pending");
 

@@ -88,7 +88,7 @@ function CityNotFound() {
         <p className="mt-3 text-sm text-muted-foreground">
           Zwits services are currently live in Harare. More cities are coming.
         </p>
-        <Link to="/services" className="mt-5 inline-block text-primary underline">
+        <Link to="/services" className="mt-5 inline-block text-primary-text underline">
           Browse all services
         </Link>
       </div>

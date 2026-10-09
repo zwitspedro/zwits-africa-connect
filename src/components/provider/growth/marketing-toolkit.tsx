@@ -88,7 +88,7 @@ export function MarketingToolkit({ data }: { data: ProviderData }) {
             <div className="flex items-center gap-2 rounded-xl border border-border bg-background/60 p-3">
               <span className="min-w-0 flex-1 truncate text-sm">{link || "—"}</span>
               <button onClick={() => copy(link)} className="grid size-9 shrink-0 place-items-center rounded-lg hover:bg-muted" aria-label="Copy link">
-                {copied ? <Check className="size-4 text-emerald-400" /> : <Copy className="size-4" />}
+                {copied ? <Check className="size-4 text-success" /> : <Copy className="size-4" />}
               </button>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -184,10 +184,10 @@ export function LearningAcademy() {
               >
                 <div className="flex items-start justify-between gap-3">
                   <span className="text-sm font-semibold">{l.t}</span>
-                  {isDone && <Check className="mt-0.5 size-4 shrink-0 text-emerald-400" />}
+                  {isDone && <Check className="mt-0.5 size-4 shrink-0 text-success" />}
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">{l.d}</p>
-                <span className="mt-2 inline-block text-[11px] text-primary">{l.m}</span>
+                <span className="mt-2 inline-block text-[11px] text-primary-text">{l.m}</span>
               </button>
             </li>
           );

@@ -46,14 +46,14 @@ function ForgotPassword() {
       title="Account recovery"
       subtitle="We'll email you a secure link to set a new password. The link expires shortly for your safety."
       footer={
-        <Link to="/login" className="font-medium text-primary hover:underline">
+        <Link to="/login" className="font-medium text-primary-text hover:underline">
           Back to login
         </Link>
       }
     >
       {sent ? (
         <div className="text-center">
-          <div className="mx-auto grid size-14 place-items-center rounded-2xl bg-primary/12 text-primary">
+          <div className="mx-auto grid size-14 place-items-center rounded-2xl bg-primary/12 text-primary-text">
             <MailCheck className="size-6" />
           </div>
           <h2 className="mt-4 font-display text-xl font-semibold">Check your inbox</h2>

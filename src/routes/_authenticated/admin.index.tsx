@@ -1,3 +1,5 @@
+import { Status } from "@/components/ui/status";
+import { Button } from "@/components/ui/button";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -25,7 +27,7 @@ import { RoleGate } from "@/components/portal/role-gate";
 import { useProvidersRealtime } from "@/hooks/use-providers-realtime";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
-  head: () => ({ meta: [{ title: "Admin dashboard — Zwits" }] }),
+  head: () => ({ meta: [{ title: "Operations dashboard — Zwits" }, { name: "description", content: "Manage Zwits providers, bookings, payments and operational reviews." }, { property: "og:title", content: "Operations dashboard — Zwits" }, { property: "og:description", content: "Manage Zwits providers, bookings, payments and operational reviews." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
   component: AdminAdminDashboardRoute,
 });
 
@@ -132,32 +134,32 @@ function AdminDashboard() {
       <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary">
+            <div className="inline-flex items-center gap-2 rounded-md bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary-text">
               <ShieldCheck className="size-3" /> Admin
             </div>
             <h1 className="mt-2 font-display text-3xl font-bold">Operations dashboard</h1>
-            <p className="mt-1 text-sm text-muted-foreground">Every number below opens the records behind it.</p>
+            <p className="mt-1 text-sm text-muted-foreground">Harare operations</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <button
+            <Button variant="ghost"
               onClick={refreshAll}
-              className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-border px-4 text-xs hover:bg-muted"
+              className="inline-flex min-h-12 items-center gap-1.5 rounded-md border border-border px-4 text-xs hover:bg-muted"
             >
               <RefreshCw className={`size-3.5 ${metricsQuery.isFetching ? "animate-spin" : ""}`} /> Refresh
-            </button>
-            <Link to="/admin/providers" className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-primary px-4 text-xs text-primary-foreground hover:opacity-90">
+            </Button>
+            <Link to="/admin/providers" className="inline-flex min-h-12 items-center gap-1.5 rounded-md bg-primary px-4 text-xs text-primary-foreground hover:opacity-90">
               <Users className="size-3.5" /> Manage providers
             </Link>
-            <Link to="/admin/commissions" className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-border px-4 text-xs hover:bg-muted">
+            <Link to="/admin/commissions" className="inline-flex min-h-12 items-center gap-1.5 rounded-md border border-border px-4 text-xs hover:bg-muted">
               <Percent className="size-3.5" /> Commissions
             </Link>
-            <Link to="/admin/reconciliation" className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-border px-4 text-xs hover:bg-muted">
+            <Link to="/admin/reconciliation" className="inline-flex min-h-12 items-center gap-1.5 rounded-md border border-border px-4 text-xs hover:bg-muted">
               <Wallet className="size-3.5" /> Reconciliation
             </Link>
-            <Link to="/admin/email" className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-border px-4 text-xs hover:bg-muted">
+            <Link to="/admin/email" className="inline-flex min-h-12 items-center gap-1.5 rounded-md border border-border px-4 text-xs hover:bg-muted">
               <Activity className="size-3.5" /> Email delivery
             </Link>
-            <Link to="/admin/health" className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-border px-4 text-xs hover:bg-muted">
+            <Link to="/admin/health" className="inline-flex min-h-12 items-center gap-1.5 rounded-md border border-border px-4 text-xs hover:bg-muted">
               <ShieldCheck className="size-3.5" /> Backend health
             </Link>
             <AuditExportButtons
@@ -173,7 +175,7 @@ function AdminDashboard() {
         {failed && (
           <p className="mt-4 flex flex-wrap items-center gap-2 rounded-xl border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive">
             Unable to load live metrics: {(metricsQuery.error as Error).message}
-            <button onClick={refreshAll} className="underline">Retry</button>
+            <Button variant="ghost" onClick={refreshAll} className="underline">Retry</Button>
           </p>
         )}
 
@@ -205,7 +207,7 @@ function AdminDashboard() {
                   <Link
                     to={a.status === "rejected" || a.status === "upload_error" ? "/admin/uploads" : "/admin/providers"}
                     search={a.status === "rejected" || a.status === "upload_error" ? undefined : ({ status: "pending" } as any)}
-                    className="inline-flex items-center gap-1 rounded-full border border-border px-2 py-1 text-[10px] hover:bg-muted"
+                    className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-1 text-[10px] hover:bg-muted"
                   >
                     Open <ArrowRight className="size-3" />
                   </Link>
@@ -252,7 +254,7 @@ function AdminDashboard() {
                         <Link
                           to="/admin/reconciliation/booking/$bookingId"
                           params={{ bookingId: b.id }}
-                          className="inline-flex items-center gap-1 text-primary hover:underline"
+                          className="inline-flex items-center gap-1 text-primary-text hover:underline"
                         >
                           Open <ArrowRight className="size-3" />
                         </Link>
@@ -291,9 +293,9 @@ function KpiCard({
   cta?: string;
 }) {
   const toneClass = {
-    primary: "text-primary bg-primary/10",
-    emerald: "text-emerald-400 bg-emerald-500/15",
-    amber: "text-amber-400 bg-amber-500/15",
+    primary: "text-primary-text bg-primary/10",
+    emerald: "text-success bg-emerald-500/15",
+    amber: "text-warning bg-amber-500/15",
     destructive: "text-destructive bg-destructive/15",
     muted: "text-muted-foreground bg-muted",
   }[tone];
@@ -308,7 +310,7 @@ function KpiCard({
         <div className={`inline-flex size-8 items-center justify-center rounded-lg ${toneClass}`}>
           <Icon className="size-4" />
         </div>
-        <ArrowUpRight className="size-3.5 text-muted-foreground/40 transition group-hover:text-primary" />
+        <ArrowUpRight className="size-3.5 text-muted-foreground/40 transition group-hover:text-primary-text" />
       </div>
       {state === "loading" ? (
         <div className="mt-3 h-7 w-16 animate-pulse rounded bg-muted" />
@@ -319,9 +321,9 @@ function KpiCard({
       )}
       <div className="text-xs text-muted-foreground">{label}</div>
       {state === "ok" && sub && (
-        <div className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground/80">{sub}</div>
+        <div className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground">{sub}</div>
       )}
-      <div className="mt-2 inline-flex items-center gap-1 text-[11px] text-primary">
+      <div className="mt-2 inline-flex items-center gap-1 text-[11px] text-primary-text">
         {cta ?? "View records"} <ArrowRight className="size-3" />
       </div>
     </Link>
@@ -340,11 +342,11 @@ function Panel({
   children: React.ReactNode;
 }) {
   return (
-    <div className={`rounded-2xl border border-border bg-card p-4 ${className}`}>
+    <div className={`min-w-0 border-t border-border py-5 ${className}`}>
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-sm font-semibold">{title}</h2>
         {link && (
-          <Link to={link.to as any} search={link.search as any} className="inline-flex items-center gap-1 text-[11px] text-primary hover:underline">
+          <Link to={link.to as any} search={link.search as any} className="inline-flex items-center gap-1 text-[11px] text-primary-text hover:underline">
             {link.label} <ArrowRight className="size-3" />
           </Link>
         )}
@@ -359,15 +361,7 @@ function Empty({ children }: { children: React.ReactNode }) {
 }
 
 function StatusChip({ status }: { status: string }) {
-  const tone =
-    status === "uploaded" || status === "completed" || status === "approved" || status === "accepted"
-      ? "bg-emerald-500/15 text-emerald-400"
-      : status === "rejected" || status === "upload_error" || status === "cancelled" || status === "revoked"
-      ? "bg-destructive/15 text-destructive"
-      : status === "in_progress" || status === "pending"
-      ? "bg-amber-500/15 text-amber-400"
-      : "bg-muted text-muted-foreground";
-  return <span className={`rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider ${tone}`}>{status}</span>;
+  return <Status status={status} />;
 }
 
 function AdminAdminDashboardRoute() {

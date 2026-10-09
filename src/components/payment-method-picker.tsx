@@ -36,7 +36,7 @@ export function PaymentMethodPicker({
 
   return (
     <div className="grid gap-3">
-      <div className="rounded-lg border border-dashed border-amber-500/40 bg-amber-500/10 px-3 py-2 text-[11px] text-amber-700 dark:text-amber-300">
+      <div className="rounded-lg border border-dashed border-amber-500/40 bg-amber-500/10 px-3 py-2 text-[11px] text-warning dark:text-amber-300">
         Cash on delivery only for now. Card and mobile money (EcoCash, OneMoney, InnBucks) are coming soon.
       </div>
       <div className="grid gap-2 sm:grid-cols-2">
@@ -55,7 +55,7 @@ export function PaymentMethodPicker({
                 active ? "border-primary bg-primary/10" : "border-border bg-card"
               } ${disabled ? "cursor-not-allowed opacity-50" : "hover:border-primary/40"}`}
             >
-              <Icon className={`size-5 ${active ? "text-primary" : "text-muted-foreground"}`} />
+              <Icon className={`size-5 ${active ? "text-primary-text" : "text-muted-foreground"}`} />
               <div className="min-w-0">
                 <div className="flex items-center gap-2 text-sm font-medium">
                   {m.name}

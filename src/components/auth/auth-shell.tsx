@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
+import { ZwitsLogo } from "@/components/zwits-logo";
 import { ArrowLeft, BadgeCheck, Lock, Sparkles, TrendingUp, Truck, Wallet } from "lucide-react";
 
 type Variant = "customer" | "provider";
@@ -11,21 +12,21 @@ const PANEL: Record<
   customer: {
     eyebrow: "Customer workspace",
     headline: "Everything you need, one trusted account.",
-    blurb: "Book verified professionals, follow every job live and keep your wallet in one place.",
+    blurb: "Find local providers, manage your bookings and follow your deliveries.",
     points: [
-      { icon: BadgeCheck, text: "Vetted, background-checked professionals" },
+      { icon: BadgeCheck, text: "Provider verification before approval" },
       { icon: Truck, text: "Live tracking on jobs and deliveries" },
-      { icon: Wallet, text: "One wallet for bookings, tips and refunds" },
+      { icon: Wallet, text: "Pay cash when your job is completed" },
     ],
   },
   provider: {
     eyebrow: "Professional workspace",
     headline: "Run your business from one place.",
-    blurb: "Receive dispatched jobs, quote instantly, get paid out weekly and grow your rating.",
+    blurb: "Receive job opportunities, track completed work and manage your business profile.",
     points: [
       { icon: Sparkles, text: "Smart dispatch sends jobs straight to you" },
-      { icon: TrendingUp, text: "Growth centre with coaching and analytics" },
-      { icon: Wallet, text: "Transparent earnings and fast payouts" },
+      { icon: TrendingUp, text: "Build your profile and reputation" },
+      { icon: Wallet, text: "Track earnings and request withdrawals" },
     ],
   },
 };
@@ -49,18 +50,16 @@ export function AuthShell({
   const panel = PANEL[variant];
 
   return (
-    <div className="relative isolate min-h-screen bg-background lg:grid lg:grid-cols-[1.05fr_1fr]">
-      <div className="pointer-events-none absolute inset-0 -z-20 aurora opacity-60" />
-      <div className="pointer-events-none absolute inset-0 -z-10 grid-lines" />
+    <div data-experience={variant} className="relative isolate min-h-dvh bg-background lg:grid lg:grid-cols-[1.05fr_1fr]">
 
       {/* Brand panel */}
-      <aside className="relative hidden overflow-hidden border-r border-border/60 lg:flex lg:flex-col lg:justify-between lg:p-12">
+      <aside data-experience="provider" className="relative hidden overflow-hidden bg-secondary text-secondary-foreground border-r border-border lg:flex lg:flex-col lg:justify-between lg:p-12">
         <Link to="/" className="inline-flex w-fit items-center gap-2 text-sm text-muted-foreground transition hover:text-foreground">
           <ArrowLeft className="size-4" />
           Back to zwits.co.zw
         </Link>
 
-        <div className="max-w-md">
+        <div className="max-w-md"><ZwitsLogo /><p className="mt-8 font-display text-3xl">TRUST. DELIVERED.</p>
           <span className="inline-flex items-center gap-2 rounded-full glass px-3.5 py-1.5 text-[12px] text-muted-foreground">
             <span className="relative flex size-2">
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-70" />
@@ -82,7 +81,7 @@ export function AuthShell({
                 className="animate-rise flex items-start gap-3 text-sm text-muted-foreground"
                 style={{ animationDelay: `${140 + i * 70}ms` }}
               >
-                <span className="grid size-9 shrink-0 place-items-center rounded-2xl bg-primary/12 text-primary">
+                <span className="grid size-9 shrink-0 place-items-center rounded-2xl bg-primary/12 text-primary-text">
                   <p.icon className="size-4" />
                 </span>
                 <span className="pt-2">{p.text}</span>
@@ -93,12 +92,12 @@ export function AuthShell({
 
         <p className="inline-flex items-center gap-2 text-xs text-muted-foreground">
           <Lock className="size-3.5 text-gold" />
-          Encrypted sessions · OTP verification · suspicious-login alerts
+          WE MOVE WITH EACH OTHER.
         </p>
       </aside>
 
       {/* Form panel */}
-      <main className="flex min-h-screen flex-col justify-center px-5 py-10 sm:px-8 lg:px-14">
+      <main className="flex min-h-dvh flex-col justify-center px-5 py-10 sm:px-8 lg:px-14">
         <Link to="/" className="mb-8 inline-flex w-fit items-center gap-2 text-sm text-muted-foreground lg:hidden">
           <ArrowLeft className="size-4" />
           Back home
@@ -108,7 +107,7 @@ export function AuthShell({
           <h1 className="font-display text-[2rem] font-bold leading-tight tracking-[-0.03em] sm:text-4xl">{title}</h1>
           <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">{subtitle}</p>
 
-          <div className="mt-8 rounded-3xl border border-border/70 bg-card/80 p-6 shadow-[0_24px_60px_-30px_rgba(0,0,0,0.6)] backdrop-blur-xl sm:p-8">
+          <div className="mt-8">
             {children}
           </div>
 

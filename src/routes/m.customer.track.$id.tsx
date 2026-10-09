@@ -29,7 +29,8 @@ import {
   when,
 } from "@/mobile/ui";
 
-export const Route = createFileRoute("/m/customer/track/$id")({ component: TrackScreen });
+export const Route = createFileRoute("/m/customer/track/$id")({
+  head: () => ({ meta: [{"title": "Mobile Customer Tracking — Zwits"}, {"name": "description", "content": "Mobile Customer Tracking in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Customer Tracking — Zwits"}, {"property": "og:description", "content": "Mobile Customer Tracking in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: TrackScreen });
 
 const STEPS = LIFECYCLE.filter((s) => s !== "pending");
 
@@ -93,7 +94,7 @@ function TrackScreen() {
               <Card>
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-[11px] uppercase tracking-wider text-primary">
+                    <p className="text-[11px] uppercase tracking-wider text-primary-text">
                       {b.category}
                     </p>
                     <p className="truncate text-sm font-semibold">{b.address}</p>
@@ -189,7 +190,7 @@ function TrackScreen() {
                         className="p-1"
                       >
                         <Star
-                          className={`size-7 ${i < rating ? "fill-amber-400 text-amber-400" : "text-muted-foreground"}`}
+                          className={`size-7 ${i < rating ? "fill-amber-400 text-warning" : "text-muted-foreground"}`}
                         />
                       </button>
                     ))}

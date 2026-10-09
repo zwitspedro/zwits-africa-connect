@@ -25,7 +25,8 @@ import {
   money,
 } from "@/mobile/ui";
 
-export const Route = createFileRoute("/m/provider/profile")({ component: ProviderProfile });
+export const Route = createFileRoute("/m/provider/profile")({
+  head: () => ({ meta: [{"title": "Mobile Provider Profile — Zwits"}, {"name": "description", "content": "Mobile Provider Profile in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Provider Profile — Zwits"}, {"property": "og:description", "content": "Mobile Provider Profile in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: ProviderProfile });
 
 function ProviderProfile() {
   const data = useProviderData();
@@ -54,7 +55,7 @@ function ProviderProfile() {
             <Section>
               <Card>
                 <div className="flex items-center gap-4">
-                  <span className="grid size-16 place-items-center rounded-3xl bg-primary/12 font-display text-xl font-bold text-primary">
+                  <span className="grid size-16 place-items-center rounded-3xl bg-primary/12 font-display text-xl font-bold text-primary-text">
                     {(provider?.business_name ?? "Z").slice(0, 2).toUpperCase()}
                   </span>
                   <div className="min-w-0">

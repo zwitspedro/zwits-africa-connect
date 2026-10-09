@@ -129,7 +129,7 @@ function CustomerSignup() {
       footer={
         <>
           Already have an account?{" "}
-          <Link to="/login" className="font-medium text-primary hover:underline">
+          <Link to="/login" className="font-medium text-primary-text hover:underline">
             Log in
           </Link>
         </>
@@ -171,11 +171,11 @@ function CustomerSignup() {
 
         <CheckField checked={terms} onChange={setTerms}>
           I agree to the{" "}
-          <Link to="/terms" className="text-primary hover:underline">
+          <Link to="/terms" className="text-primary-text hover:underline">
             terms of service
           </Link>{" "}
           and{" "}
-          <Link to="/privacy" className="text-primary hover:underline">
+          <Link to="/privacy" className="text-primary-text hover:underline">
             privacy policy
           </Link>
           .

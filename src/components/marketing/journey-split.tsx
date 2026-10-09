@@ -11,7 +11,7 @@ export function JourneySplit() {
     <section className="border-b border-border/60">
       <div className="mx-auto grid w-full max-w-7xl gap-4 px-5 py-12 sm:px-8 md:grid-cols-2 md:py-16">
         <div className="rounded-3xl border border-border/70 bg-card/70 p-6 sm:p-8">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-primary">Customers</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-primary-text">Customers</p>
           <h2 className="mt-3 font-display text-2xl font-bold tracking-tight sm:text-3xl">
             Need something done?
           </h2>
@@ -63,7 +63,7 @@ export function JourneySplit() {
             </Link>
             <Link
               to="/provider"
-              className="inline-flex items-center justify-center gap-1.5 text-sm font-medium text-primary hover:underline"
+              className="inline-flex items-center justify-center gap-1.5 text-sm font-medium text-primary-text hover:underline"
             >
               Visit the provider hub <ArrowRight className="size-4" />
             </Link>

@@ -230,7 +230,7 @@ function MessagesPage() {
           {booking && (
             <span
               className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-medium ${
-                jobActive ? "bg-emerald-500/12 text-emerald-600" : "bg-muted text-muted-foreground"
+                jobActive ? "bg-emerald-500/12 text-success" : "bg-muted text-muted-foreground"
               }`}
             >
               {statusLabel(booking.status)}

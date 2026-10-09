@@ -44,7 +44,7 @@ export function BookingAddressMap({
         onClick={() => window.open(navUrl, "_blank", "noopener,noreferrer")}
         className="absolute bottom-2 right-2 flex items-center gap-1.5 rounded-full bg-background/90 px-2.5 py-1.5 text-xs font-medium shadow-sm backdrop-blur transition-colors hover:bg-background"
       >
-        <Navigation className="size-3.5 text-primary" />
+        <Navigation className="size-3.5 text-primary-text" />
         Navigate
       </button>
     </div>

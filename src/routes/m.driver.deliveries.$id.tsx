@@ -21,7 +21,8 @@ import {
   money,
 } from "@/mobile/ui";
 
-export const Route = createFileRoute("/m/driver/deliveries/$id")({ component: DeliveryDetail });
+export const Route = createFileRoute("/m/driver/deliveries/$id")({
+  head: () => ({ meta: [{"title": "Mobile Driver Deliveries — Zwits"}, {"name": "description", "content": "Mobile Driver Deliveries in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Driver Deliveries — Zwits"}, {"property": "og:description", "content": "Mobile Driver Deliveries in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: DeliveryDetail });
 
 function DeliveryDetail() {
   const { id } = Route.useParams();
@@ -120,7 +121,7 @@ function DeliveryDetail() {
           <Card>
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-[11px] uppercase tracking-wider text-primary">Pickup</p>
+                <p className="text-[11px] uppercase tracking-wider text-primary-text">Pickup</p>
                 <p className="truncate text-sm font-semibold">{d.pickup_address}</p>
                 <p className="mt-2 text-[11px] uppercase tracking-wider text-accent">Dropoff</p>
                 <p className="truncate text-sm font-semibold">{d.dropoff_address}</p>

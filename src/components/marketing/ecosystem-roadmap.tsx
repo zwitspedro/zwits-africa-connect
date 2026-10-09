@@ -35,11 +35,11 @@ export function EcosystemRoadmap() {
             <Reveal key={v.name} delay={i * 40}>
               <div className="group h-full rounded-2xl glass p-5 hover-lift hover:border-gold/40">
                 <div className="flex items-start justify-between">
-                  <v.icon className="size-5 text-primary" />
+                  <v.icon className="size-5 text-primary-text" />
                   <span
                     className={`rounded-full px-2 py-0.5 text-[10px] ${
                       v.status === "Live"
-                        ? "bg-primary/15 text-primary"
+                        ? "bg-primary/15 text-primary-text"
                         : v.status === "In build"
                           ? "bg-gold/15 text-gold"
                           : "bg-muted text-muted-foreground"

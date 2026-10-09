@@ -31,7 +31,7 @@ export function ServiceCategories() {
                   className="pointer-events-none absolute -right-16 -top-16 size-48 rounded-full opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100"
                   style={{ background: "color-mix(in oklab, var(--primary) 28%, transparent)" }}
                 />
-                <div className="relative grid size-14 place-items-center rounded-2xl bg-primary/12 text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
+                <div className="relative grid size-14 place-items-center rounded-2xl bg-primary/12 text-primary-text transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
                   <Icon className="size-6" />
                 </div>
                 <h3 className="relative mt-7 font-display text-xl font-semibold tracking-tight">{s.name}</h3>
@@ -43,7 +43,7 @@ export function ServiceCategories() {
                     </span>
                   ))}
                 </div>
-                <span className="relative mt-7 inline-flex items-center gap-1.5 text-sm font-medium text-primary">
+                <span className="relative mt-7 inline-flex items-center gap-1.5 text-sm font-medium text-primary-text">
                   View service
                   <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </span>

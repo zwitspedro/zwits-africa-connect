@@ -139,7 +139,7 @@ function AuthCallback() {
   }
 
   return (
-    <div className="grid min-h-[70vh] place-items-center gap-3 text-primary">
+    <div className="grid min-h-[70vh] place-items-center gap-3 text-primary-text">
       <Loader2 className="size-6 animate-spin" />
       <p className="text-sm text-muted-foreground">Finishing sign-in…</p>
     </div>

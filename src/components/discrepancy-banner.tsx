@@ -41,7 +41,7 @@ export function DiscrepancyBanner({ computedNet, storedNet, issues, className = 
   if (isClean) {
     return (
       <div
-        className={`flex items-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-400 ${className}`}
+        className={`flex items-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-success ${className}`}
       >
         <CheckCircle2 className="size-4 shrink-0" />
         <span>Reconciled — drilldown net matches stored payout total.</span>
@@ -54,7 +54,7 @@ export function DiscrepancyBanner({ computedNet, storedNet, issues, className = 
       className={`rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 text-amber-100 ${className}`}
     >
       <div className="flex items-start gap-2">
-        <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-400" />
+        <AlertTriangle className="mt-0.5 size-4 shrink-0 text-warning" />
         <div className="flex-1">
           <div className="text-sm font-semibold text-amber-200">
             Payout discrepancy detected

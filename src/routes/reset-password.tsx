@@ -47,7 +47,7 @@ function ResetPassword() {
       title="Set a new password"
       subtitle="Choose a strong password you don't use anywhere else. You'll stay signed in on this device."
       footer={
-        <Link to="/login" className="font-medium text-primary hover:underline">
+        <Link to="/login" className="font-medium text-primary-text hover:underline">
           Back to login
         </Link>
       }

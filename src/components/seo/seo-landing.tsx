@@ -93,7 +93,7 @@ export function SeoLanding(props: SeoLandingProps) {
         <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 sm:py-16">
           <Breadcrumbs crumbs={crumbs} />
           {eyebrow && (
-            <p className="mt-6 text-[11px] font-semibold uppercase tracking-[0.28em] text-primary">{eyebrow}</p>
+            <p className="mt-6 text-[11px] font-semibold uppercase tracking-[0.28em] text-primary-text">{eyebrow}</p>
           )}
           <h1 className="mt-3 max-w-3xl font-display text-[2.1rem] font-bold leading-[1.08] tracking-tight sm:text-5xl">
             {h1}
@@ -156,7 +156,7 @@ export function SeoLanding(props: SeoLandingProps) {
             <ul className="mt-6 grid gap-3 sm:grid-cols-2">
               {benefits.map((b) => (
                 <li key={b} className="flex gap-2.5 text-sm text-muted-foreground">
-                  <Check className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
+                  <Check className="mt-0.5 size-4 shrink-0 text-primary-text" aria-hidden="true" />
                   <span>{b}</span>
                 </li>
               ))}
@@ -174,7 +174,7 @@ export function SeoLanding(props: SeoLandingProps) {
                   to={a.to}
                   className="group rounded-2xl border border-border bg-card p-5 transition hover:border-primary/50"
                 >
-                  <span className="font-display text-base font-semibold group-hover:text-primary">{a.label}</span>
+                  <span className="font-display text-base font-semibold group-hover:text-primary-text">{a.label}</span>
                   {a.text && <span className="mt-1.5 block text-sm text-muted-foreground">{a.text}</span>}
                 </Link>
               ))}
@@ -184,7 +184,7 @@ export function SeoLanding(props: SeoLandingProps) {
 
         <section className="mt-14 rounded-2xl border border-border bg-card p-6">
           <div className="flex items-start gap-3">
-            <ShieldCheck className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
+            <ShieldCheck className="mt-0.5 size-5 shrink-0 text-primary-text" aria-hidden="true" />
             <div>
               <h2 className="font-display text-lg font-semibold">Who you're dealing with</h2>
               <p className="mt-1.5 text-sm text-muted-foreground">
@@ -194,7 +194,7 @@ export function SeoLanding(props: SeoLandingProps) {
               <p className="mt-3 text-xs text-muted-foreground">
                 {BUSINESS.legalName} · Registration {BUSINESS.registrationNumber} ·{" "}
                 {BUSINESS.address.street}, {BUSINESS.address.suburb}, {BUSINESS.address.city}, {BUSINESS.address.country} ·{" "}
-                <a href={`tel:${BUSINESS.phone}`} className="text-primary hover:underline">
+                <a href={`tel:${BUSINESS.phone}`} className="text-primary-text underline underline-offset-4">
                   {BUSINESS.phoneDisplay}
                 </a>
               </p>
@@ -229,7 +229,7 @@ export function SeoLanding(props: SeoLandingProps) {
                 <li key={r.to + r.label}>
                   <Link
                     to={r.to}
-                    className="inline-flex rounded-full border border-border px-4 py-2 text-sm transition hover:border-primary/60 hover:text-primary"
+                    className="inline-flex rounded-full border border-border px-4 py-2 text-sm transition hover:border-primary/60 hover:text-primary-text"
                   >
                     {r.label}
                   </Link>

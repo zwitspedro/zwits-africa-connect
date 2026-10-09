@@ -215,7 +215,7 @@ function ProviderSignup() {
       footer={
         <>
           Already registered?{" "}
-          <Link to="/provider-login" className="font-medium text-primary hover:underline">
+          <Link to="/provider-login" className="font-medium text-primary-text hover:underline">
             Provider login
           </Link>
         </>
@@ -293,7 +293,7 @@ function ProviderSignup() {
                     onClick={() => toggleCategory(s.slug)}
                     className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-sm transition ${
                       active
-                        ? "border-primary bg-primary/12 text-primary"
+                        ? "border-primary bg-primary/12 text-primary-text"
                         : "border-input bg-background/60 text-muted-foreground hover:bg-muted"
                     }`}
                   >
@@ -400,7 +400,7 @@ function ProviderSignup() {
                     onClick={() => toggleDay(d)}
                     className={`rounded-full border px-3.5 py-2 text-sm transition ${
                       active
-                        ? "border-primary bg-primary/12 text-primary"
+                        ? "border-primary bg-primary/12 text-primary-text"
                         : "border-input bg-background/60 text-muted-foreground hover:bg-muted"
                     }`}
                   >
@@ -434,11 +434,11 @@ function ProviderSignup() {
 
           <CheckField checked={terms} onChange={setTerms}>
             I accept the{" "}
-            <Link to="/terms" className="text-primary hover:underline">
+            <Link to="/terms" className="text-primary-text hover:underline">
               provider terms
             </Link>{" "}
             and{" "}
-            <Link to="/privacy" className="text-primary hover:underline">
+            <Link to="/privacy" className="text-primary-text hover:underline">
               privacy policy
             </Link>
             .

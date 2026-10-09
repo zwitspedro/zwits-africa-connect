@@ -16,6 +16,7 @@ import { AppBar, Card, Empty, PrimaryButton, Screen, Section, money } from "@/mo
 const search = z.object({ provider: z.string().uuid().optional() });
 
 export const Route = createFileRoute("/m/customer/book/$category")({
+  head: () => ({ meta: [{"title": "Mobile Customer Book a service — Zwits"}, {"name": "description", "content": "Mobile Customer Book a service in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Customer Book a service — Zwits"}, {"property": "og:description", "content": "Mobile Customer Book a service in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   validateSearch: (s) => search.parse(s),
   component: BookScreen,
 });

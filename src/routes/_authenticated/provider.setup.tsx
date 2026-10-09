@@ -248,7 +248,7 @@ function ProviderSetup() {
             <div className="grid gap-4">
               <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4">
                 <div className="flex items-center gap-2 text-sm font-medium">
-                  <ShieldCheck className="size-4 text-primary" /> Before you upload
+                  <ShieldCheck className="size-4 text-primary-text" /> Before you upload
                 </div>
                 <ul className="mt-2 grid gap-1 text-xs text-muted-foreground">
                   <li>· Documents must be genuine, current, and unedited.</li>
@@ -284,7 +284,7 @@ function ProviderSetup() {
                 {(Object.keys(DOC_META) as DocKey[]).map((k) => (
                   <div key={k} className="flex items-center justify-between">
                     <span>{DOC_META[k].label}</span>
-                    <span className={docs[k] ? "flex items-center gap-1 text-emerald-400" : "text-destructive"}>
+                    <span className={docs[k] ? "flex items-center gap-1 text-success" : "text-destructive"}>
                       {docs[k] ? <><Check className="size-4" /> Uploaded</> : "Missing"}
                     </span>
                   </div>
@@ -465,12 +465,12 @@ function DocUpload({ docKey, userId, value, onChange }: { docKey: DocKey; userId
     <div className={`rounded-2xl border bg-background p-3 ${ringClass}`}>
       <div className="flex items-center gap-3">
         <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted">
-          <Icon className="size-5 text-primary" />
+          <Icon className="size-5 text-primary-text" />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium">{meta.label}</span>
-            {status === "uploaded" && <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] uppercase tracking-wider text-emerald-400">Ready</span>}
+            {status === "uploaded" && <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] uppercase tracking-wider text-success">Ready</span>}
             {status === "error" && <span className="rounded-full bg-destructive/15 px-2 py-0.5 text-[10px] uppercase tracking-wider text-destructive">Action needed</span>}
           </div>
           <button
@@ -493,7 +493,7 @@ function DocUpload({ docKey, userId, value, onChange }: { docKey: DocKey; userId
           onClick={() => inputRef.current?.click()}
           disabled={uploading}
           className={`inline-flex shrink-0 items-center gap-1 rounded-full px-3 py-1.5 text-xs ${
-            status === "uploaded" ? "bg-emerald-500/20 text-emerald-400" :
+            status === "uploaded" ? "bg-emerald-500/20 text-success" :
             status === "error" ? "bg-destructive text-destructive-foreground" :
             "bg-primary text-primary-foreground"
           }`}
@@ -506,7 +506,7 @@ function DocUpload({ docKey, userId, value, onChange }: { docKey: DocKey; userId
         <ul className="mt-3 grid gap-1 rounded-xl bg-muted/40 p-3 text-xs text-muted-foreground">
           {meta.requirements.map((r) => (
             <li key={r} className="flex items-start gap-2">
-              <CircleDot className="mt-0.5 size-3 shrink-0 text-primary" />
+              <CircleDot className="mt-0.5 size-3 shrink-0 text-primary-text" />
               <span>{r}</span>
             </li>
           ))}
@@ -556,7 +556,7 @@ function AuditRow({ audit }: { audit: any }) {
 
   const tone =
     audit.status === "uploaded"
-      ? "text-emerald-400"
+      ? "text-success"
       : audit.status === "rejected"
       ? "text-destructive"
       : audit.status === "upload_error"
@@ -650,7 +650,7 @@ function CheckLine({ label, value, pass }: { label: string; value: string; pass:
   return (
     <div className="flex items-center gap-2">
       {pass ? (
-        <Check className="size-3 shrink-0 text-emerald-400" />
+        <Check className="size-3 shrink-0 text-success" />
       ) : (
         <AlertCircle className="size-3 shrink-0 text-destructive" />
       )}

@@ -1,3 +1,6 @@
+import { Button } from "@/components/ui/button";
+import { Input as SystemInput } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -10,7 +13,7 @@ import { services } from "@/data/services";
 export const Route = createFileRoute("/become-a-provider")({
   head: () => ({
     meta: [
-      { title: "Become a Provider — Zwits" },
+      { title: "Become a Provider — Zwits" }, {"property": "og:title", "content": "Become a Provider — Zwits"}, {"property": "og:description", "content": "Earn flexible income on Zwits. Register as a verified service provider."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"},
       { name: "description", content: "Earn flexible income on Zwits. Register as a verified service provider." },
       { property: "og:url", content: "https://www.zwits.co.zw/become-a-provider" },
       // Application funnel. /providers is the canonical recruitment landing page.
@@ -77,7 +80,7 @@ function Provider() {
   return (
     <SiteShell>
       <PageHero eyebrow="Earn with Zwits" title="Your skill. Your hours. Real income.">
-        Join 1,400+ providers earning on Zwits across Zimbabwe.
+        Join the Zwits provider network in Harare.
       </PageHero>
 
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
@@ -86,7 +89,7 @@ function Provider() {
             const Icon = p.icon;
             return (
               <div key={p.title} className="rounded-2xl border border-border bg-card p-6">
-                <Icon className="size-6 text-primary" />
+                <Icon className="size-6 text-primary-text" />
                 <h3 className="mt-4 font-display text-lg font-semibold">{p.title}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">{p.text}</p>
               </div>
@@ -96,11 +99,11 @@ function Provider() {
 
         <form
           onSubmit={handleSubmit}
-          className="mt-14 rounded-3xl border border-gold/30 bg-card p-6 md:p-10"
+          className="mt-14 border-t border-border py-8"
         >
           <h2 className="font-display text-3xl font-bold">Register as a provider</h2>
           <p className="mt-2 text-muted-foreground">
-            Tell us the basics — next you'll create an account and upload your ID, selfie and business doc for instant verification.
+            Tell us the basics — next you'll create an account and upload your ID, selfie and business doc for review.
           </p>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -147,14 +150,14 @@ function Provider() {
             />
           </div>
 
-          <button
+          <Button
             type="submit"
             disabled={submitting}
-            className="mt-6 inline-flex items-center gap-2 rounded-full bg-gold px-6 py-3 text-sm font-medium text-background transition hover:opacity-90 disabled:opacity-60"
+            className="mt-6 inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-bold text-primary-foreground transition hover:opacity-90 disabled:opacity-60"
           >
             {submitting ? "Continuing…" : "Continue to verification"}
             <ArrowRight className="size-4" />
-          </button>
+          </Button>
           <p className="mt-3 text-xs text-muted-foreground">
             You'll create an account (or sign in) and then upload your verification documents.
           </p>
@@ -185,7 +188,7 @@ function Input({
     <label className={`grid gap-1.5 ${className}`}>
       <span className="text-xs text-muted-foreground">{label}</span>
       {textarea ? (
-        <textarea
+        <Textarea
           rows={4}
           placeholder={placeholder}
           value={value}
@@ -193,7 +196,7 @@ function Input({
           className="rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:border-primary"
         />
       ) : (
-        <input
+        <SystemInput
           type={type}
           placeholder={placeholder}
           value={value}

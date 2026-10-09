@@ -13,7 +13,7 @@ export const Route = createFileRoute("/m")({
       { title: "Zwits Mobile — Services, jobs and deliveries" },
       { name: "description", content: "The Zwits Android experience: book services, run jobs and deliver parcels." },
       { name: "robots", content: "noindex" },
-      { name: "theme-color", content: "#0B0B0C" },
+      { name: "theme-color", content: "#090B0A" },
     ],
   }),
   component: MobileRoot,
@@ -34,7 +34,7 @@ function MobileRoot() {
 
   if (loading || !user) {
     return (
-      <div className="zwits-mobile grid min-h-[100dvh] place-items-center bg-background text-primary">
+      <div className="zwits-mobile grid min-h-[100dvh] place-items-center bg-background text-primary-text">
         <Loader2 className="size-6 animate-spin" />
       </div>
     );
@@ -44,7 +44,7 @@ function MobileRoot() {
     <MobileStateProvider client={client}>
       <div className="zwits-mobile min-h-[100dvh] bg-background text-foreground antialiased">
         {!online && (
-          <div className="sticky top-0 z-50 bg-amber-500 px-4 py-1.5 text-center text-[11px] font-medium text-black">
+          <div className="sticky top-0 z-50 bg-warning-surface px-4 py-1.5 text-center text-[11px] font-medium text-warning">
             Offline — showing your last sync
           </div>
         )}

@@ -88,7 +88,7 @@ function PricingPage() {
               <ul className="mt-6 space-y-3 text-sm">
                 {p.features.map((f) => (
                   <li key={f} className="flex gap-2.5">
-                    <Check className="mt-0.5 size-4 shrink-0 text-primary" />
+                    <Check className="mt-0.5 size-4 shrink-0 text-primary-text" />
                     <span className="text-muted-foreground">{f}</span>
                   </li>
                 ))}

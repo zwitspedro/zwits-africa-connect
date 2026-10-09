@@ -45,13 +45,13 @@ function Terms() {
         <p>Do not submit false requests, impersonate others, harass people, misuse personal information, or arrange unlawful or unsafe work. Respect the privacy and property of others. Report safety incidents or suspected fraud promptly. We may suspend or remove accounts and bookings when reasonably necessary to protect users or the platform.</p>
 
         <h2>7. Location and communications</h2>
-        <p>Addresses and, while an active job is being tracked, provider or driver location may be shared with the parties involved to coordinate the job. Do not use that information for any other purpose. We may send booking, account and safety notices to the contact details associated with your account. See our <Link to="/privacy" className="text-primary underline">Privacy Policy</Link> for details.</p>
+        <p>Addresses and, while an active job is being tracked, provider or driver location may be shared with the parties involved to coordinate the job. Do not use that information for any other purpose. We may send booking, account and safety notices to the contact details associated with your account. See our <Link to="/privacy" className="text-primary-text underline">Privacy Policy</Link> for details.</p>
 
         <h2>8. Responsibility and changes</h2>
         <p>Each party is responsible for its own actions and legal obligations. Zwits cannot guarantee uninterrupted access, a match, an arrival time or the outcome of a service. Nothing in these terms removes rights or remedies that cannot lawfully be excluded. We may update these terms as the service changes; the date above identifies this version. Material changes will be communicated through the platform or your account contact details where appropriate.</p>
 
         <h2>9. Contact</h2>
-        <p>Questions about these terms or a booking? Email <a className="text-primary underline" href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a>, call <a className="text-primary underline" href={`tel:${BUSINESS.phone}`}>{BUSINESS.phoneDisplay}</a>, or use our <Link to="/contact" className="text-primary underline">contact page</Link>.</p>
+        <p>Questions about these terms or a booking? Email <a className="text-primary-text underline" href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a>, call <a className="text-primary-text underline" href={`tel:${BUSINESS.phone}`}>{BUSINESS.phoneDisplay}</a>, or use our <Link to="/contact" className="text-primary-text underline">contact page</Link>.</p>
       </Prose>
     </SiteShell>
   );

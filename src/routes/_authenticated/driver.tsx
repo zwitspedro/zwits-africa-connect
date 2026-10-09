@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -107,18 +108,19 @@ function DriverPortal() {
                   : "Finish setup to start receiving jobs."}
             </p>
           </div>
-          <button
+          <Button
             disabled={toggleOnline.isPending || !user || (!online && !setupDone)}
             onClick={() => toggleOnline.mutate(!online)}
+            aria-pressed={online}
             className={
               online
-                ? "inline-flex min-h-11 items-center gap-2 rounded-full bg-emerald-500/15 px-5 text-sm font-semibold text-emerald-600 ring-1 ring-emerald-500/30"
-                : "inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground disabled:opacity-50"
+                ? "inline-flex min-h-12 items-center gap-2 rounded-md bg-success-surface px-5 text-sm font-semibold text-success ring-1 ring-success/30"
+                : "inline-flex min-h-12 items-center gap-2 rounded-md bg-primary px-5 text-sm font-semibold text-primary-foreground disabled:opacity-50"
             }
           >
             <Power className="size-4" />
             {online ? "Online" : "Go online"}
-          </button>
+          </Button>
         </header>
 
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">

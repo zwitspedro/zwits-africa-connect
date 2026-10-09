@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button";
+import { Status } from "@/components/ui/status";
 import { Link } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -46,7 +48,7 @@ export function ActiveJobsSection({ jobs }: { jobs: Booking[] }) {
           <Panel key={j.id} className="p-5">
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
               <div className="min-w-0">
-                <div className="text-[11px] uppercase tracking-wider text-primary">{j.category}</div>
+                <div className="text-[11px] uppercase tracking-wider text-primary-text">{j.category}</div>
                 <h3 className="mt-1 truncate font-display text-lg font-semibold">{j.address}</h3>
                 {j.description && <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{j.description}</p>}
                 <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
@@ -57,7 +59,7 @@ export function ActiveJobsSection({ jobs }: { jobs: Booking[] }) {
                   {j.price != null && <span>${Number(j.price).toFixed(2)}</span>}
                 </div>
               </div>
-              <span className="shrink-0 rounded-full bg-muted px-3 py-1 text-[11px] capitalize">{String(j.status).replace("_", " ")}</span>
+              <Status status={String(j.status)} />
             </div>
 
             {/* Status timeline */}
@@ -84,20 +86,20 @@ export function ActiveJobsSection({ jobs }: { jobs: Booking[] }) {
                 href={maps}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-xs font-medium transition-colors hover:bg-muted"
+                className="inline-flex min-h-12 items-center gap-1.5 rounded-md border border-border px-4 py-2 text-xs font-medium transition-colors hover:bg-muted"
               >
                 <Navigation className="size-3.5" /> Navigate
               </a>
               <Link
                 to="/messages/$bookingId"
                 params={{ bookingId: j.id }}
-                className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-xs font-medium transition-colors hover:bg-muted"
+                className="inline-flex min-h-12 items-center gap-1.5 rounded-md border border-border px-4 py-2 text-xs font-medium transition-colors hover:bg-muted"
               >
                 <MessageSquare className="size-3.5" /> Chat
               </Link>
               <a
                 href="tel:"
-                className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-xs font-medium transition-colors hover:bg-muted"
+                className="inline-flex min-h-12 items-center gap-1.5 rounded-md border border-border px-4 py-2 text-xs font-medium transition-colors hover:bg-muted"
                 onClick={(e) => {
                   e.preventDefault();
                   toast("Open the chat to request the customer's number.");
@@ -112,7 +114,7 @@ export function ActiveJobsSection({ jobs }: { jobs: Booking[] }) {
                 <ActionButton onClick={() => updateStatus.mutate({ id: j.id, status: "accepted" })}>Accept job</ActionButton>
               )}
               {(j.status === "travelling" || j.status === "in_progress") && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-3 py-2 text-[11px] text-primary">
+                <span className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-3 py-2 text-[11px] text-primary-text">
                   <MapPin className="size-3" /> Sharing live location
                 </span>
               )}
@@ -142,18 +144,5 @@ function ActionButton({
   onClick: () => void;
   variant?: "primary" | "gold" | "positive" | "ghost";
 }) {
-  const styles: Record<string, string> = {
-    primary: "bg-primary text-primary-foreground hover:brightness-110",
-    gold: "bg-gold text-background hover:brightness-110",
-    positive: "bg-emerald-500 text-background hover:brightness-110",
-    ghost: "border border-border text-muted-foreground",
-  };
-  return (
-    <button
-      onClick={onClick}
-      className={`min-h-11 rounded-full px-5 text-xs font-semibold transition-all active:scale-[0.98] ${styles[variant]}`}
-    >
-      {children}
-    </button>
-  );
+  return <Button variant={variant === "ghost" ? "outline" : "default"} onClick={onClick}>{children}</Button>;
 }

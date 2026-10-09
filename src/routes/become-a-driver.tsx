@@ -53,7 +53,7 @@ function DriverPage() {
             const Icon = p.icon;
             return (
               <div key={p.title} className="rounded-2xl border border-border bg-card p-6">
-                <Icon className="size-6 text-primary" />
+                <Icon className="size-6 text-primary-text" />
                 <h3 className="mt-4 font-display text-lg font-semibold">{p.title}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">{p.text}</p>
               </div>
@@ -84,7 +84,7 @@ function DriverPage() {
                 ["Go online and accept trips", "Deliveries near you appear the moment you're available."],
               ].map(([t, d], i) => (
                 <li key={t} className="flex gap-4">
-                  <span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary/12 text-xs font-semibold text-primary">
+                  <span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary/12 text-xs font-semibold text-primary-text">
                     {i + 1}
                   </span>
                   <span>

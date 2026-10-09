@@ -6,7 +6,8 @@ import { useSavedAddresses } from "@/mobile/local";
 import { currentPosition } from "@/mobile/maps";
 import { AppBar, Card, Empty, GhostButton, PrimaryButton, Screen, Section } from "@/mobile/ui";
 
-export const Route = createFileRoute("/m/customer/addresses")({ component: Addresses });
+export const Route = createFileRoute("/m/customer/addresses")({
+  head: () => ({ meta: [{"title": "Mobile Customer Addresses — Zwits"}, {"name": "description", "content": "Mobile Customer Addresses in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Customer Addresses — Zwits"}, {"property": "og:description", "content": "Mobile Customer Addresses in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: Addresses });
 
 function Addresses() {
   const { addresses, add, remove, loading } = useSavedAddresses();
@@ -84,7 +85,7 @@ function Addresses() {
               {addresses.map((a) => (
                 <Card key={a.id}>
                   <div className="flex items-center gap-3">
-                    <span className="grid size-10 place-items-center rounded-2xl bg-primary/12 text-primary">
+                    <span className="grid size-10 place-items-center rounded-2xl bg-primary/12 text-primary-text">
                       <MapPin className="size-4" />
                     </span>
                     <div className="min-w-0 flex-1">

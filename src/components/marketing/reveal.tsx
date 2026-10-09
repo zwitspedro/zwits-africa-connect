@@ -16,6 +16,7 @@ export function Reveal({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setShown(true); return; }
     const io = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -35,8 +36,8 @@ export function Reveal({
       className={className}
       style={{
         opacity: shown ? 1 : 0,
-        transform: shown ? "translateY(0)" : "translateY(20px)",
-        transition: `opacity 0.7s cubic-bezier(0.16,1,0.3,1) ${delay}ms, transform 0.7s cubic-bezier(0.16,1,0.3,1) ${delay}ms`,
+        transform: shown ? "translateY(0)" : "translateY(4px)",
+        transition: `opacity var(--motion-slow) ease-out ${delay}ms, transform var(--motion-slow) ease-out ${delay}ms`,
       }}
     >
       {children}

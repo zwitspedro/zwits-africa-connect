@@ -159,7 +159,7 @@ export function PaymentProcessingDialog({
               <AlertTriangle className="size-5 text-destructive" />
             </div>
           ) : (
-            <meta.icon className="size-6 text-primary" />
+            <meta.icon className="size-6 text-primary-text" />
           )}
           <div>
             <h3 className="font-display text-lg font-semibold">
@@ -188,7 +188,7 @@ export function PaymentProcessingDialog({
                       </span>
                     )}
                     {preflight.state === "ok" && (
-                      <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-600">
+                      <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-success">
                         Ready
                       </span>
                     )}
@@ -249,7 +249,7 @@ export function PaymentProcessingDialog({
           )}
           {status === "processing" && (
             <div className="flex items-center gap-3">
-              <Loader2 className="size-5 animate-spin text-primary" />
+              <Loader2 className="size-5 animate-spin text-primary-text" />
               <div>
                 <div className="font-medium">Waiting for approval…</div>
                 <div className="text-xs text-muted-foreground">
@@ -259,7 +259,7 @@ export function PaymentProcessingDialog({
             </div>
           )}
           {status === "succeeded" && (
-            <div className="flex items-center gap-3 text-emerald-600">
+            <div className="flex items-center gap-3 text-success">
               <CheckCircle2 className="size-5" />
               <div>
                 <div className="font-medium text-foreground">Payment received</div>
@@ -306,7 +306,7 @@ export function PaymentProcessingDialog({
                             active ? "border-primary bg-primary/10" : "border-border bg-card hover:border-primary/40"
                           }`}
                         >
-                          <Icon className={`size-4 ${active ? "text-primary" : "text-muted-foreground"}`} />
+                          <Icon className={`size-4 ${active ? "text-primary-text" : "text-muted-foreground"}`} />
                           <div className="min-w-0">
                             <div className="truncate text-xs font-medium">{m.name}</div>
                             <div className="truncate text-[10px] text-muted-foreground">{m.hint}</div>
@@ -409,7 +409,7 @@ function PreflightRow({
   ) : blocked ? (
     <XCircle className="size-4 text-destructive" />
   ) : ok ? (
-    <CheckCircle2 className="size-4 text-emerald-600" />
+    <CheckCircle2 className="size-4 text-success" />
   ) : (
     <Loader2 className="size-4 text-muted-foreground/60" />
   );

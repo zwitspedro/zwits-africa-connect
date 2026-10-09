@@ -222,7 +222,7 @@ function ProviderBreakdown() {
         </Link>
 
         <div className="mt-3">
-          <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary">
+          <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary-text">
             <Users className="size-3" /> Provider payout
           </div>
           <h1 className="mt-2 font-display text-3xl font-bold">
@@ -398,7 +398,7 @@ function ProviderBreakdown() {
                     {Number(r.percent).toFixed(1)}% + ${Number(r.min_fee).toFixed(2)}
                   </span>
                 ) : (
-                  <span key="r" className="text-[11px] text-amber-500">
+                  <span key="r" className="text-[11px] text-warning">
                     no rate
                   </span>
                 ),
@@ -430,7 +430,7 @@ function ProviderBreakdown() {
                   key="p"
                   className={`rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider ${
                     b.payment_status === "paid"
-                      ? "bg-emerald-500/15 text-emerald-400"
+                      ? "bg-emerald-500/15 text-success"
                       : "bg-muted text-muted-foreground"
                   }`}
                 >
@@ -443,7 +443,7 @@ function ProviderBreakdown() {
                   key="l"
                   to="/admin/reconciliation/booking/$bookingId"
                   params={{ bookingId: b.id }}
-                  className="text-[11px] text-primary hover:underline"
+                  className="text-[11px] text-primary-text hover:underline"
                 >
                   Details →
                 </Link>,

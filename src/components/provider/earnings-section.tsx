@@ -53,7 +53,7 @@ export function EarningsSection({ data }: { data: ProviderData }) {
       <Panel
         title="Income trend"
         description="Net payouts over the last 8 weeks"
-        action={<TrendingUp className="size-4 text-primary" />}
+        action={<TrendingUp className="size-4 text-primary-text" />}
       >
         <div className="h-56 w-full">
           <ResponsiveContainer width="100%" height="100%">

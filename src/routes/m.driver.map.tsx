@@ -6,7 +6,8 @@ import { LiveTrackingMap } from "@/components/live-tracking-map";
 import { openNavigation, useLiveLocation } from "@/mobile/maps";
 import { AppBar, Card, Empty, GhostButton, Pill, Screen, Section, money } from "@/mobile/ui";
 
-export const Route = createFileRoute("/m/driver/map")({ component: DriverMap });
+export const Route = createFileRoute("/m/driver/map")({
+  head: () => ({ meta: [{"title": "Mobile Driver Map — Zwits"}, {"name": "description", "content": "Mobile Driver Map in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Driver Map — Zwits"}, {"property": "og:description", "content": "Mobile Driver Map in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: DriverMap });
 
 /** Live route view for the current run, with GPS sharing and hand-off to the phone's maps app. */
 function DriverMap() {

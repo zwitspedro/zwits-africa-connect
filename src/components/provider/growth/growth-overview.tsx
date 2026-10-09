@@ -81,7 +81,7 @@ function CoachPanel({ data, growth }: { data: ProviderData; growth: GrowthData }
   });
 
   const tone: Record<string, string> = {
-    high: "bg-primary/15 text-primary",
+    high: "bg-primary/15 text-primary-text",
     medium: "bg-gold/20 text-gold",
     low: "bg-muted text-muted-foreground",
   };
@@ -111,11 +111,11 @@ function CoachPanel({ data, growth }: { data: ProviderData; growth: GrowthData }
           {(advice?.tips ?? []).map((t, i) => (
             <li key={i} className="rounded-2xl border border-border/70 bg-background/40 p-4 transition-colors hover:border-primary/40">
               <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-3">
-                <Sparkles className="mt-0.5 size-4 shrink-0 text-primary" />
+                <Sparkles className="mt-0.5 size-4 shrink-0 text-primary-text" />
                 <div className="min-w-0">
                   <div className="font-medium">{t.title}</div>
                   <p className="mt-0.5 text-sm text-muted-foreground">{t.detail}</p>
-                  <div className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary">
+                  <div className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary-text">
                     <Zap className="size-3" /> {t.action}
                   </div>
                 </div>
@@ -155,7 +155,7 @@ function ChecklistPanel({ growth }: { growth: GrowthData }) {
             }`}
           >
             {t.done ? (
-              <CheckCircle2 className={`size-5 shrink-0 text-emerald-400 ${celebrate === t.key ? "scale-110" : ""} transition-transform`} />
+              <CheckCircle2 className={`size-5 shrink-0 text-success ${celebrate === t.key ? "scale-110" : ""} transition-transform`} />
             ) : (
               <Circle className="size-5 shrink-0 text-muted-foreground/50" />
             )}
@@ -163,7 +163,7 @@ function ChecklistPanel({ growth }: { growth: GrowthData }) {
               <div className={`truncate text-sm ${t.done ? "text-muted-foreground line-through" : ""}`}>{t.label}</div>
               {t.hint && <div className="text-[11px] text-muted-foreground/80">{t.hint}</div>}
             </div>
-            <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${t.done ? "bg-emerald-500/15 text-emerald-400" : "bg-muted text-muted-foreground"}`}>
+            <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${t.done ? "bg-emerald-500/15 text-success" : "bg-muted text-muted-foreground"}`}>
               +{t.xp} XP
             </span>
           </li>

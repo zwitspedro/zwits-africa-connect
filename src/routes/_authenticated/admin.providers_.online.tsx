@@ -29,7 +29,7 @@ function OnlineProviders() {
   return (
     <SiteShell>
       <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-        <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary">
+        <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary-text">
           <ShieldCheck className="size-3" /> Admin
         </div>
         <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
@@ -65,10 +65,10 @@ function OnlineProviders() {
               <li key={p.id} className="rounded-2xl border border-border/70 bg-card p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2 text-sm font-medium">
-                    <Activity className="size-4 text-emerald-400" />
+                    <Activity className="size-4 text-success" />
                     {p.business_name}
                   </div>
-                  <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] uppercase tracking-wider text-emerald-400">
+                  <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] uppercase tracking-wider text-success">
                     online · {p.verification_status}
                   </span>
                 </div>

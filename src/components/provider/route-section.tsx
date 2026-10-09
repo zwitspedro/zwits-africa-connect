@@ -38,7 +38,7 @@ export function RouteSection({ jobs }: { jobs: Booking[] }) {
         </div>
 
         <div className="mt-4 grid grid-cols-[auto_minmax(0,1fr)] items-start gap-3">
-          <span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary/12 text-primary">
+          <span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary/12 text-primary-text">
             <MapPin className="size-5" />
           </span>
           <div className="min-w-0">

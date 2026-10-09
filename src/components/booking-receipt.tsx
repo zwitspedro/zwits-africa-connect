@@ -37,7 +37,7 @@ export function BookingReceiptDialog({
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-3 sm:items-center">
       <div className="w-full max-w-md overflow-hidden rounded-3xl border border-border bg-card shadow-2xl">
         <div className="flex flex-col items-center gap-2 bg-primary/10 px-6 pt-8 pb-6 text-center">
-          <CheckCircle2 className="size-10 text-primary" />
+          <CheckCircle2 className="size-10 text-primary-text" />
           <h2 className="font-display text-xl font-bold">Booking confirmed</h2>
           <p className="text-xs text-muted-foreground">
             We've sent your request. You'll get a notification when a provider accepts.
@@ -70,7 +70,7 @@ export function BookingReceiptDialog({
             value={new Date(receipt.createdAt).toLocaleString()}
           />
 
-          <div className="mt-2 rounded-xl bg-amber-500/10 px-3 py-2 text-[11px] text-amber-700 dark:text-amber-300">
+          <div className="mt-2 rounded-xl bg-amber-500/10 px-3 py-2 text-[11px] text-warning dark:text-amber-300">
             Mock receipt — Paynow is not live yet. The provider will confirm
             payment manually on arrival.
           </div>

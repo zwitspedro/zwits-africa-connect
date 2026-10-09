@@ -8,7 +8,7 @@ import { Panel } from "./dashboard-kit";
 import type { ProviderData } from "./use-provider-data";
 
 const STATUS_COPY: Record<string, { label: string; tone: string }> = {
-  approved: { label: "Verified", tone: "bg-emerald-500/15 text-emerald-400" },
+  approved: { label: "Verified", tone: "bg-emerald-500/15 text-success" },
   pending: { label: "Under review", tone: "bg-gold/20 text-gold" },
   unverified: { label: "Not verified", tone: "bg-muted text-muted-foreground" },
   revoked: { label: "Revoked", tone: "bg-destructive/15 text-destructive" },

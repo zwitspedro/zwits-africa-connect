@@ -47,10 +47,10 @@ function Privacy() {
         <p>We use access controls to limit who can see personal information and take reasonable steps to protect it. No internet service can promise absolute security. We keep information while needed for your account, bookings, support, dispute resolution, security and applicable legal or accounting requirements. Some records may need to be retained after an account is closed; we will not promise immediate removal where retention is required.</p>
 
         <h2>6. Your choices and requests</h2>
-        <p>You can ask us to access, correct or delete personal information, or request that we close your account, by emailing <a className="text-primary underline" href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a> or using our <Link to="/contact" className="text-primary underline">contact page</Link>. We may need to verify your identity before acting and may retain information where law, safety or unresolved transactions require it. You can also change location permissions in your device settings.</p>
+        <p>You can ask us to access, correct or delete personal information, or request that we close your account, by emailing <a className="text-primary-text underline" href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a> or using our <Link to="/contact" className="text-primary-text underline">contact page</Link>. We may need to verify your identity before acting and may retain information where law, safety or unresolved transactions require it. You can also change location permissions in your device settings.</p>
 
         <h2>7. Updates and contact</h2>
-        <p>We may revise this policy as the service changes. The date above identifies the current version. For privacy questions, contact <a className="text-primary underline" href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a> or call <a className="text-primary underline" href={`tel:${BUSINESS.phone}`}>{BUSINESS.phoneDisplay}</a>. See also our <Link to="/terms" className="text-primary underline">Terms of Service</Link>.</p>
+        <p>We may revise this policy as the service changes. The date above identifies the current version. For privacy questions, contact <a className="text-primary-text underline" href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a> or call <a className="text-primary-text underline" href={`tel:${BUSINESS.phone}`}>{BUSINESS.phoneDisplay}</a>. See also our <Link to="/terms" className="text-primary-text underline">Terms of Service</Link>.</p>
       </Prose>
     </SiteShell>
   );

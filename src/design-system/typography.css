@@ -1,0 +1,28 @@
+@font-face {
+  font-family: "Archivo Black";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/archivo-black-latin.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Manrope";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url("/fonts/manrope-latin.woff2") format("woff2");
+}
+:root {
+  --font-display: "Archivo Black", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --type-display-xl: 4rem;
+  --type-display-l: 3rem;
+  --type-display-m: 2.25rem;
+  --type-heading-xl: 1.875rem;
+  --type-heading-l: 1.625rem;
+  --type-heading-m: 1.375rem;
+  --type-body-l: 1.125rem;
+  --type-body-m: 1rem;
+  --type-body-s: 0.875rem;
+  --type-caption: 0.75rem;
+}

@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button";
+import { Status } from "@/components/ui/status";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -22,7 +24,8 @@ import {
   money,
 } from "@/mobile/ui";
 
-export const Route = createFileRoute("/m/driver/deliveries")({ component: DriverDeliveries });
+export const Route = createFileRoute("/m/driver/deliveries")({
+  head: () => ({ meta: [{"title": "Mobile Driver Deliveries — Zwits"}, {"name": "description", "content": "Mobile Driver Deliveries in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Driver Deliveries — Zwits"}, {"property": "og:description", "content": "Mobile Driver Deliveries in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: DriverDeliveries });
 
 type Tab = "offers" | "active" | "history";
 
@@ -72,19 +75,19 @@ function DriverDeliveries() {
       <AppBar title="Deliveries" subtitle="Offers, runs and history" />
       <Screen>
         <div className="sticky top-14 z-20 bg-background/95 px-4 py-3 backdrop-blur">
-          <div className="grid grid-cols-3 gap-1 rounded-2xl bg-muted p-1">
+          <div className="grid grid-cols-3 gap-1 rounded-md bg-muted p-1">
             {tabs.map((t) => (
-              <button
+              <Button variant="ghost"
                 key={t.key}
                 onClick={() => setTab(t.key)}
-                className={`min-h-10 rounded-xl text-xs font-semibold transition ${
+                className={`min-h-12 rounded-md text-xs font-semibold transition ${
                   tab === t.key
                     ? "bg-background text-foreground shadow-sm"
                     : "text-muted-foreground"
                 }`}
               >
                 {t.label}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -139,9 +142,7 @@ function DeliveryList({ rows }: { rows: any[] }) {
                 </p>
               </div>
               <div className="shrink-0 text-right">
-                <Pill tone={r.status === "delivered" ? "accent" : "primary"}>
-                  {String(r.status).replace(/_/g, " ")}
-                </Pill>
+                <Status status={String(r.status)} />
                 <p className="mt-1 text-xs font-semibold">{money(r.price)}</p>
               </div>
             </div>
@@ -191,7 +192,7 @@ function OfferCard({ offer }: { offer: any }) {
     <Card>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-[11px] uppercase tracking-wider text-primary">
+          <p className="text-[11px] uppercase tracking-wider text-primary-text">
             {offer.delivery.serviceTier} · {offer.delivery.parcelSize}
           </p>
           <p className="truncate text-sm font-semibold">{offer.delivery.pickupAddress}</p>

@@ -218,7 +218,7 @@ export function WalletSection({ data }: { data: ProviderData }) {
                     </div>
                   </div>
                   <span
-                    className={`font-semibold tabular-nums ${amt >= 0 ? "text-emerald-400" : "text-destructive"}`}
+                    className={`font-semibold tabular-nums ${amt >= 0 ? "text-success" : "text-destructive"}`}
                   >
                     {amt >= 0 ? "+" : "−"}
                     {money(Math.abs(amt))}

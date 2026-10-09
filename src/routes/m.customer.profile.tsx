@@ -6,7 +6,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { useMobileProfile } from "@/mobile/profile";
 import { AppBar, Card, Screen, Section, StatTile, money } from "@/mobile/ui";
 
-export const Route = createFileRoute("/m/customer/profile")({ component: CustomerProfile });
+export const Route = createFileRoute("/m/customer/profile")({
+  head: () => ({ meta: [{"title": "Mobile Customer Profile — Zwits"}, {"name": "description", "content": "Mobile Customer Profile in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Customer Profile — Zwits"}, {"property": "og:description", "content": "Mobile Customer Profile in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: CustomerProfile });
 
 const LINKS = [
   { to: "/m/customer/favourites", label: "Favourite providers", icon: Heart },
@@ -49,7 +50,7 @@ function CustomerProfile() {
         <Section>
           <Card>
             <div className="flex items-center gap-4">
-              <span className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-3xl bg-primary/12 font-display text-xl font-bold text-primary">
+              <span className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-3xl bg-primary/12 font-display text-xl font-bold text-primary-text">
                 {profile?.avatar_url ? (
                   <img src={profile.avatar_url} alt="" className="size-full object-cover" />
                 ) : (

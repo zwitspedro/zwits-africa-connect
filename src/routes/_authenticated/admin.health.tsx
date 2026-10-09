@@ -29,7 +29,7 @@ export const Route = createFileRoute("/_authenticated/admin/health")({
 
 function Dot({ ok }: { ok: boolean }) {
   return ok ? (
-    <CheckCircle2 className="size-4 text-primary" />
+    <CheckCircle2 className="size-4 text-primary-text" />
   ) : (
     <XCircle className="size-4 text-destructive" />
   );

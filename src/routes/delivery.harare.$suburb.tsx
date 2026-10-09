@@ -97,7 +97,7 @@ function SuburbNotFound() {
         <p className="mt-3 text-sm text-muted-foreground">
           Zwits delivery is live across Harare. Check the areas we currently serve.
         </p>
-        <Link to="/delivery/harare" className="mt-5 inline-block text-primary underline">
+        <Link to="/delivery/harare" className="mt-5 inline-block text-primary-text underline">
           Delivery in Harare
         </Link>
       </div>

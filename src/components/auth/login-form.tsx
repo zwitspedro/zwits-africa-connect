@@ -90,7 +90,7 @@ export function LoginForm({ preferred, registerTo, registerLabel }: {
           <CheckField checked={remember} onChange={setRemember}>
             Remember me
           </CheckField>
-          <Link to="/forgot-password" className="text-sm font-medium text-primary hover:underline">
+          <Link to="/forgot-password" className="text-sm font-medium text-primary-text hover:underline">
             Forgot password?
           </Link>
         </div>

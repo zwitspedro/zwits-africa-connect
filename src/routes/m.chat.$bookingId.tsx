@@ -6,7 +6,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { useBookingChat } from "@/mobile/chat";
 import { AppBar, Screen } from "@/mobile/ui";
 
-export const Route = createFileRoute("/m/chat/$bookingId")({ component: ChatScreen });
+export const Route = createFileRoute("/m/chat/$bookingId")({
+  head: () => ({ meta: [{"title": "Mobile Chat — Zwits"}, {"name": "description", "content": "Mobile Chat in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Chat — Zwits"}, {"property": "og:description", "content": "Mobile Chat in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: ChatScreen });
 
 /** Shared conversation screen — used by the customer, provider and driver apps. */
 function ChatScreen() {

@@ -88,7 +88,7 @@ function ServicesPage() {
                 params={{ slug: s.slug }}
                 className="group flex flex-col rounded-3xl border border-border/70 bg-card/60 p-6 transition hover:border-primary/50 hover:shadow-glow"
               >
-                <div className="grid size-12 place-items-center rounded-xl bg-primary/15 text-primary transition group-hover:bg-primary group-hover:text-primary-foreground">
+                <div className="grid size-12 place-items-center rounded-xl bg-primary/15 text-primary-text transition group-hover:bg-primary group-hover:text-primary-foreground">
                   <Icon className="size-6" />
                 </div>
                 <h2 className="mt-5 font-display text-xl font-semibold">{s.name}</h2>
@@ -99,7 +99,7 @@ function ServicesPage() {
                     <span key={e} className="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">{e}</span>
                   ))}
                 </div>
-                <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-primary">
+                <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-primary-text">
                   View service
                   <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </span>
@@ -110,7 +110,7 @@ function ServicesPage() {
 
         {results.length === 0 && (
           <p className="mt-10 text-center text-sm text-muted-foreground">
-            No service matches “{q}”. <Link to="/contact" className="text-primary underline">Ask support</Link> and we'll find someone.
+            No service matches “{q}”. <Link to="/contact" className="text-primary-text underline">Ask support</Link> and we'll find someone.
           </p>
         )}
 
@@ -126,9 +126,9 @@ function ServicesPage() {
           </div>
           <p className="mt-6 text-sm text-muted-foreground">
             Need something moved instead?{" "}
-            <Link to="/delivery" className="text-primary underline">See Zwits delivery services</Link>. Run a business?{" "}
-            <Link to="/business" className="text-primary underline">Explore business delivery solutions</Link>. Want work?{" "}
-            <Link to="/providers" className="text-primary underline">Join Zwits as a service provider</Link>.
+            <Link to="/delivery" className="text-primary-text underline">See Zwits delivery services</Link>. Run a business?{" "}
+            <Link to="/business" className="text-primary-text underline">Explore business delivery solutions</Link>. Want work?{" "}
+            <Link to="/providers" className="text-primary-text underline">Join Zwits as a service provider</Link>.
           </p>
         </section>
       </section>

@@ -1,10 +1,13 @@
-import { useState, type InputHTMLAttributes, type ReactNode } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useState, useId, type InputHTMLAttributes, type ReactNode } from "react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { lovable } from "@/integrations/lovable";
 
 const inputClass =
-  "w-full rounded-2xl border border-input bg-background/70 px-4 py-3 text-sm outline-none transition placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25";
+  "min-h-12 w-full rounded-md border border-input bg-background px-4 py-3 text-base outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-ring";
 
 export function Field({
   label,
@@ -15,8 +18,8 @@ export function Field({
   return (
     <label className={`grid gap-1.5 ${className ?? ""}`}>
       <span className="text-xs font-medium text-muted-foreground">{label}</span>
-      <input {...props} className={inputClass} />
-      {hint ? <span className="text-[11px] text-muted-foreground/80">{hint}</span> : null}
+      <Input {...props} className={inputClass} />
+      {hint ? <span className="text-[11px] text-muted-foreground">{hint}</span> : null}
     </label>
   );
 }
@@ -65,7 +68,7 @@ export function TextareaField({
   return (
     <label className="grid gap-1.5">
       <span className="text-xs font-medium text-muted-foreground">{label}</span>
-      <textarea
+      <Textarea
         rows={rows}
         value={value}
         placeholder={placeholder}
@@ -92,11 +95,13 @@ export function PasswordField({
   hint?: string;
 }) {
   const [show, setShow] = useState(false);
+  const id = useId();
   return (
-    <label className="grid gap-1.5">
-      <span className="text-xs font-medium text-muted-foreground">{label}</span>
+    <div className="grid gap-1.5">
+      <label htmlFor={id} className="text-xs font-medium text-muted-foreground">{label}</label>
       <div className="relative">
-        <input
+        <Input
+          id={id}
           type={show ? "text" : "password"}
           value={value}
           required={required}
@@ -104,17 +109,17 @@ export function PasswordField({
           onChange={(e) => onChange(e.target.value)}
           className={`${inputClass} pr-12`}
         />
-        <button
+        <Button
           type="button"
-          aria-label={show ? "Hide password" : "Show password"}
+          variant="ghost" size="icon" aria-label={show ? "Hide password" : "Show password"}
           onClick={() => setShow((s) => !s)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1.5 text-muted-foreground transition hover:text-foreground"
+          className="absolute right-1 top-1/2 size-12 -translate-y-1/2 p-0 text-muted-foreground transition hover:text-foreground"
         >
           {show ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-        </button>
+        </Button>
       </div>
-      {hint ? <span className="text-[11px] text-muted-foreground/80">{hint}</span> : null}
-    </label>
+      {hint ? <span className="text-[11px] text-muted-foreground">{hint}</span> : null}
+    </div>
   );
 }
 
@@ -128,7 +133,7 @@ export function CheckField({
   children: ReactNode;
 }) {
   return (
-    <label className="flex cursor-pointer items-start gap-2.5 text-sm text-muted-foreground">
+    <label className="flex min-h-12 cursor-pointer items-center gap-2.5 text-sm text-muted-foreground">
       <input
         type="checkbox"
         checked={checked}
@@ -154,27 +159,28 @@ export function SubmitButton({
   disabled?: boolean;
 }) {
   return (
-    <button
+    <Button
       type={type}
       onClick={onClick}
       disabled={loading || disabled}
-      className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground shadow-glow transition hover:opacity-90 disabled:opacity-60"
+      aria-busy={loading}
+      className="inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-md bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground  transition hover:opacity-90 disabled:opacity-60"
     >
       {loading ? <Loader2 className="size-4 animate-spin" /> : null}
       {children}
-    </button>
+    </Button>
   );
 }
 
 export function GhostButton({ children, onClick }: { children: ReactNode; onClick?: () => void }) {
   return (
-    <button
+    <Button
       type="button"
       onClick={onClick}
-      className="inline-flex w-full items-center justify-center rounded-2xl border border-input bg-background/60 px-6 py-3.5 text-sm font-semibold transition hover:bg-muted"
+      variant="outline" className="inline-flex w-full items-center justify-center rounded-md border border-input bg-background/60 px-6 py-3.5 text-sm font-semibold transition hover:bg-muted"
     >
       {children}
-    </button>
+    </Button>
   );
 }
 
@@ -250,15 +256,15 @@ function SocialButton({
   children: ReactNode;
 }) {
   return (
-    <button
+    <Button
       type="button"
       onClick={onClick}
       disabled={busy}
-      className="inline-flex w-full items-center justify-center gap-2.5 rounded-2xl border border-input bg-background/60 px-4 py-3 text-sm font-medium transition hover:bg-muted disabled:opacity-60"
+      variant="outline" className="inline-flex w-full items-center justify-center gap-3 rounded-md border border-input bg-background/60 px-4 py-3 text-sm font-medium transition hover:bg-muted disabled:opacity-60"
     >
       {busy ? <Loader2 className="size-4 animate-spin" /> : children}
       {label}
-    </button>
+    </Button>
   );
 }
 

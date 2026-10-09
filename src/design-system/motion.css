@@ -1,0 +1,11 @@
+:root { --motion-fast: 150ms; --motion-normal: 220ms; --motion-slow: 350ms; }
+@keyframes zwits-pulse { 50% { opacity: 0.55; } }
+.zwits-status-active { animation: zwits-pulse 2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

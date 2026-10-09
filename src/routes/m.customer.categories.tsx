@@ -4,7 +4,8 @@ import { Search } from "lucide-react";
 import { services } from "@/data/services";
 import { AppBar, Card, Empty, Screen, Section, money } from "@/mobile/ui";
 
-export const Route = createFileRoute("/m/customer/categories")({ component: CategoriesScreen });
+export const Route = createFileRoute("/m/customer/categories")({
+  head: () => ({ meta: [{"title": "Mobile Customer Categories — Zwits"}, {"name": "description", "content": "Mobile Customer Categories in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Customer Categories — Zwits"}, {"property": "og:description", "content": "Mobile Customer Categories in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: CategoriesScreen });
 
 function CategoriesScreen() {
   const [q, setQ] = useState("");
@@ -49,12 +50,12 @@ function CategoriesScreen() {
                     navigate({ to: "/m/customer/book/$category", params: { category: s.slug } })
                   }
                 >
-                  <span className="grid size-10 place-items-center rounded-xl bg-primary/12 text-primary">
+                  <span className="grid size-10 place-items-center rounded-xl bg-primary/12 text-primary-text">
                     <s.icon className="size-5" />
                   </span>
                   <p className="mt-2 text-sm font-semibold">{s.name}</p>
                   <p className="line-clamp-2 text-[11px] text-muted-foreground">{s.tagline}</p>
-                  <p className="mt-2 text-[11px] font-medium text-primary">
+                  <p className="mt-2 text-[11px] font-medium text-primary-text">
                     from {money(s.estimate.from)}/{s.estimate.unit}
                   </p>
                 </Card>

@@ -118,7 +118,7 @@ export function VehicleSection({
           <ul className="space-y-2">
             {vehicles.map((v) => (
               <li key={v.id} className="flex items-center gap-3 rounded-2xl border border-border/70 p-3">
-                <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/12 text-primary">
+                <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary/12 text-primary-text">
                   <Truck className="size-4" />
                 </span>
                 <div className="min-w-0 flex-1">
@@ -204,7 +204,7 @@ export function VehicleSection({
       <Panel title="Driver documents" description="Driver's licence and insurance details">
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="text-xs text-muted-foreground">
-            Driver&apos;s licence {profile?.licence_url && <span className="text-emerald-600">· uploaded</span>}
+            Driver&apos;s licence {profile?.licence_url && <span className="text-success">· uploaded</span>}
             <input
               type="file"
               accept="image/*,application/pdf"
@@ -213,7 +213,7 @@ export function VehicleSection({
             />
           </label>
           <label className="text-xs text-muted-foreground">
-            Insurance / registration document {profile?.vehicle_doc_url && <span className="text-emerald-600">· uploaded</span>}
+            Insurance / registration document {profile?.vehicle_doc_url && <span className="text-success">· uploaded</span>}
             <input
               type="file"
               accept="image/*,application/pdf"
@@ -253,7 +253,7 @@ export function VehicleSection({
         <button
           onClick={onDone}
           disabled={!ready}
-          className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl border border-primary/40 bg-primary/10 px-6 text-sm font-bold text-primary disabled:opacity-50"
+          className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl border border-primary/40 bg-primary/10 px-6 text-sm font-bold text-primary-text disabled:opacity-50"
         >
           <Check className="size-4" /> {ready ? "Save & continue" : "Add a vehicle and licence to continue"}
           {!ready && <FileUp className="size-4" />}

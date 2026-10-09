@@ -124,7 +124,7 @@ export function ScheduleSection({ jobs }: { jobs: Booking[] }) {
           selected={selected}
           onSelect={setSelected}
           modifiers={{ booked }}
-          modifiersClassNames={{ booked: "bg-primary/20 text-primary font-semibold rounded-full" }}
+          modifiersClassNames={{ booked: "bg-primary/20 text-primary-text font-semibold rounded-full" }}
           className="pointer-events-auto p-0"
         />
       </Panel>
@@ -132,7 +132,7 @@ export function ScheduleSection({ jobs }: { jobs: Booking[] }) {
       <div className="grid gap-4">
         <Panel
           title={selected ? selected.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" }) : "Upcoming"}
-          action={<CalendarDays className="size-4 text-primary" />}
+          action={<CalendarDays className="size-4 text-primary-text" />}
         >
           {forSelected.length === 0 ? (
             <EmptyState title="Nothing scheduled for this day." />

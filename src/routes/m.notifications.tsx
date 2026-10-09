@@ -6,7 +6,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { qk } from "@/mobile/api";
 import { AppBar, Card, Empty, PullToRefresh, Screen, Section, SkeletonList } from "@/mobile/ui";
 
-export const Route = createFileRoute("/m/notifications")({ component: NotificationsScreen });
+export const Route = createFileRoute("/m/notifications")({
+  head: () => ({ meta: [{"title": "Mobile Notifications — Zwits"}, {"name": "description", "content": "Mobile Notifications in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Notifications — Zwits"}, {"property": "og:description", "content": "Mobile Notifications in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: NotificationsScreen });
 
 function NotificationsScreen() {
   const { user } = useAuth();

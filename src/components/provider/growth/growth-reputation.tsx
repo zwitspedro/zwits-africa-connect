@@ -132,7 +132,7 @@ function RankCard({ title, icon: Icon, rank, total }: { title: string; icon: any
   return (
     <Panel>
       <div className="flex items-center gap-3">
-        <div className="grid size-10 shrink-0 place-items-center rounded-full bg-primary/15 text-primary">
+        <div className="grid size-10 shrink-0 place-items-center rounded-full bg-primary/15 text-primary-text">
           <Icon className="size-5" />
         </div>
         <div className="min-w-0">

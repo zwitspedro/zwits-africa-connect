@@ -15,7 +15,7 @@ export function CompletedJobsSection({ data }: { data: ProviderData }) {
               key={j.id}
               className="grid min-h-16 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border border-border/70 bg-background/40 p-3"
             >
-              <span className="grid size-10 place-items-center rounded-full bg-emerald-500/12 text-emerald-500">
+              <span className="grid size-10 place-items-center rounded-full bg-emerald-500/12 text-success">
                 <CheckCircle2 className="size-5" />
               </span>
               <span className="min-w-0">
@@ -23,7 +23,7 @@ export function CompletedJobsSection({ data }: { data: ProviderData }) {
                 <span className="block truncate text-[11px] text-muted-foreground">{j.address}</span>
               </span>
               <span className="text-right">
-                <span className="block text-sm font-semibold tabular-nums text-emerald-500">
+                <span className="block text-sm font-semibold tabular-nums text-success">
                   ${netFor(j).toFixed(2)}
                 </span>
                 <span className="block text-[11px] text-muted-foreground">

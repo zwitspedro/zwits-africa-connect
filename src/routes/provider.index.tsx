@@ -37,7 +37,7 @@ function ProviderHub() {
       <section className="relative isolate overflow-hidden border-b border-border/60">
         <div className="pointer-events-none absolute inset-0 -z-10 aurora opacity-60" />
         <div className="mx-auto w-full max-w-4xl px-5 py-16 sm:px-8 sm:py-24">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-primary">Zwits Provider</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-primary-text">Zwits Provider</p>
           <h1 className="mt-4 font-display text-[2.3rem] font-bold leading-[1.06] tracking-[-0.035em] sm:text-5xl">
             Grow your business. Receive jobs. Get paid.
           </h1>
@@ -75,7 +75,7 @@ function ProviderHub() {
 
           <div className="mt-4 rounded-2xl border border-border/70 bg-card/60 p-4">
             <p className="flex items-center gap-2 text-sm font-semibold">
-              <Smartphone className="size-4 text-primary" /> Zwits Provider app for Android
+              <Smartphone className="size-4 text-primary-text" /> Zwits Provider app for Android
             </p>
             {PLAY_STORE_URL ? (
               <a
@@ -87,7 +87,7 @@ function ProviderHub() {
             ) : (
               <p className="mt-1 text-sm text-muted-foreground">
                 Coming soon to Google Play. In the meantime, use the mobile-optimised{" "}
-                <Link to="/m/provider" className="font-medium text-primary hover:underline">
+                <Link to="/m/provider" className="font-medium text-primary-text hover:underline">
                   provider app on the web
                 </Link>
                 .
@@ -97,7 +97,7 @@ function ProviderHub() {
 
           <p className="mt-6 text-sm text-muted-foreground">
             Didn&apos;t get your confirmation email?{" "}
-            <Link to="/resend-confirmation" className="font-medium text-primary hover:underline">
+            <Link to="/resend-confirmation" className="font-medium text-primary-text hover:underline">
               Resend it here
             </Link>
             .
@@ -114,7 +114,7 @@ function ProviderHub() {
             { icon: Wallet, t: "Go online & earn", d: "Receive dispatched jobs and get paid weekly." },
           ].map((s) => (
             <li key={s.t} className="rounded-3xl border border-border/70 bg-card/60 p-5">
-              <s.icon className="size-5 text-primary" />
+              <s.icon className="size-5 text-primary-text" />
               <p className="mt-3 font-semibold">{s.t}</p>
               <p className="mt-1 text-sm text-muted-foreground">{s.d}</p>
             </li>
@@ -122,7 +122,7 @@ function ProviderHub() {
         </ol>
         <Link
           to="/become-a-provider"
-          className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+          className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-primary-text hover:underline"
         >
           Learn more about partnering with Zwits <ArrowRight className="size-4" />
         </Link>

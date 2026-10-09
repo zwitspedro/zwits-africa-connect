@@ -126,7 +126,7 @@ function DeliveryHub() {
             Restaurants, retailers and online sellers use Zwits instead of hiring and managing their
             own riders. You get a delivery capacity that scales with your order volume, a live view
             of every trip, and one monthly statement instead of daily cash handling.{" "}
-            <Link to="/business" className="text-primary underline">
+            <Link to="/business" className="text-primary-text underline">
               See Zwits business delivery solutions
             </Link>
             .
