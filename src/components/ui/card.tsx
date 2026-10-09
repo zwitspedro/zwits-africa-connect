@@ -2,11 +2,11 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
+const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & { level?: "flat" | "surface" | "featured" }>(
+  ({ className, level = "surface", ...props }, ref) => (
     <div
       ref={ref}
-      className={cn("rounded-xl border border-border bg-card text-card-foreground", className)}
+      className={cn("text-card-foreground", level === "flat" ? "bg-transparent" : level === "featured" ? "rounded-xl border border-primary bg-success-surface" : "rounded-xl border border-border bg-card", className)}
       {...props}
     />
   ),
