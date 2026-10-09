@@ -1,3 +1,6 @@
+import { Status } from "@/components/ui/status";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -124,14 +127,14 @@ function AdminProviders() {
           <Link
             to="/admin/providers"
             search={{}}
-            className={`rounded-full px-3 py-1.5 ${!statusFilter && !online ? "bg-primary/15 font-semibold text-primary-text" : "border border-border text-muted-foreground hover:bg-muted"}`}
+            className={`inline-flex min-h-12 items-center rounded-md px-3 py-3 ${!statusFilter && !online ? "bg-primary/15 font-semibold text-primary-text" : "border border-border text-muted-foreground hover:bg-muted"}`}
           >
             All
           </Link>
           <Link
             to="/admin/providers"
             search={{ online: true }}
-            className={`rounded-full px-3 py-1.5 ${online ? "bg-emerald-500/15 font-semibold text-success" : "border border-border text-muted-foreground hover:bg-muted"}`}
+            className={`inline-flex min-h-12 items-center rounded-md px-3 py-3 ${online ? "bg-success-surface font-semibold text-success" : "border border-border text-muted-foreground hover:bg-muted"}`}
           >
             Online now
           </Link>
@@ -140,7 +143,7 @@ function AdminProviders() {
               role="status"
               className="ml-1 inline-flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-muted-foreground"
             >
-              <span className={`size-1.5 rounded-full ${providersLive || isFetching ? "animate-pulse bg-emerald-400" : "bg-emerald-500/60"}`} />
+              <span className={`size-1.5 rounded-full ${providersLive || isFetching ? "animate-pulse bg-success" : "bg-success"}`} />
               {providersLive ? "Live · realtime" : "Auto-refresh 30s"} · updated {new Date(dataUpdatedAt).toLocaleTimeString()}
             </span>
           )}
@@ -149,7 +152,7 @@ function AdminProviders() {
               key={s}
               to="/admin/providers"
               search={{ status: s }}
-              className={`rounded-full px-3 py-1.5 capitalize ${statusFilter === s && !online ? "bg-primary/15 font-semibold text-primary-text" : "border border-border text-muted-foreground hover:bg-muted"}`}
+              className={`inline-flex min-h-12 items-center rounded-md px-3 py-3 capitalize ${statusFilter === s && !online ? "bg-primary/15 font-semibold text-primary-text" : "border border-border text-muted-foreground hover:bg-muted"}`}
             >
               {s === "pending" ? "Pending review" : s}
             </Link>
@@ -190,9 +193,6 @@ function AdminProviderRow({ provider, onApprove, onRevoke }: { provider: any; on
   const [showAudit, setShowAudit] = useState(false);
 
   const status = provider.verification_status as string;
-  const statusColor = status === "approved" ? "text-success bg-emerald-500/15"
-    : status === "revoked" ? "text-destructive bg-destructive/15"
-    : "text-muted-foreground bg-muted";
 
   // Admins read document paths and review metadata through authorized RPCs,
   // not the table — those columns are revoked for the authenticated role.
@@ -227,21 +227,21 @@ function AdminProviderRow({ provider, onApprove, onRevoke }: { provider: any; on
         <div>
           <div className="flex items-center gap-2">
             <span className="font-medium">{provider.business_name}</span>
-            <span className={`rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider ${statusColor}`}>{status}</span>
+            <Status status={status} />
           </div>
           <div className="mt-0.5 text-xs text-muted-foreground">{provider.category} · {provider.city} · ${Number(provider.hourly_rate).toFixed(0)}/hr</div>
-          {review?.revoke_reason && <div className="mt-1 text-xs text-destructive">Reason: {review.revoke_reason}</div>}
+          {review?.revoke_reason && <div className="mt-1 text-xs text-danger">Reason: {review.revoke_reason}</div>}
         </div>
         <div className="flex gap-2">
           {status !== "approved" && (
-            <button onClick={onApprove} className="inline-flex items-center gap-1 rounded-full bg-emerald-500 px-3 py-1.5 text-xs text-background">
+            <Button variant="outline" onClick={onApprove} className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-xs text-primary-foreground">
               <ShieldCheck className="size-3" /> Approve
-            </button>
+            </Button>
           )}
           {status !== "revoked" && (
-            <button onClick={() => setConfirmRevoke((v) => !v)} className="inline-flex items-center gap-1 rounded-full border border-destructive/50 px-3 py-1.5 text-xs text-destructive">
+            <Button variant="outline" onClick={() => setConfirmRevoke((v) => !v)} className="inline-flex items-center gap-1 rounded-md border border-destructive/50 px-3 py-1.5 text-xs text-danger">
               <ShieldX className="size-3" /> Revoke
-            </button>
+            </Button>
           )}
         </div>
       </div>
@@ -253,13 +253,13 @@ function AdminProviderRow({ provider, onApprove, onRevoke }: { provider: any; on
       </div>
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border/60 pt-3">
-        <button
+        <Button variant="outline"
           type="button"
           onClick={() => setShowAudit((v) => !v)}
           className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground"
         >
           <History className="size-3" /> {showAudit ? "Hide" : "View"} audit history{audits?.length ? ` (${audits.length})` : ""}
-        </button>
+        </Button>
         {showAudit && (
           <AuditExportButtons
             rows={audits as any}
@@ -278,7 +278,7 @@ function AdminProviderRow({ provider, onApprove, onRevoke }: { provider: any; on
               <li key={a.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-background/50 px-2 py-1.5">
                 <span className="text-muted-foreground">{new Date(a.created_at).toLocaleString()}</span>
                 <span className="font-medium">{a.doc_key}</span>
-                <span className={a.status === "uploaded" ? "text-success" : a.status === "rejected" || a.status === "upload_error" ? "text-destructive" : "text-muted-foreground"}>{a.status}</span>
+                <span className={a.status === "uploaded" ? "text-success" : a.status === "rejected" || a.status === "upload_error" ? "text-danger" : "text-muted-foreground"}>{a.status}</span>
                 <span className="truncate text-muted-foreground">{a.file_name ?? "—"}</span>
               </li>
             ))}
@@ -288,16 +288,16 @@ function AdminProviderRow({ provider, onApprove, onRevoke }: { provider: any; on
 
       {confirmRevoke && (
         <div className="mt-3 grid gap-2 rounded-xl bg-muted/40 p-3">
-          <input
+          <Input aria-label="Reason for revoking verification"
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             placeholder="Reason (shown to provider)"
             className="rounded-lg border border-input bg-background px-3 py-2 text-xs"
           />
           <div className="flex gap-2">
-            <button onClick={() => { onRevoke(reason || "Verification revoked"); setConfirmRevoke(false); setReason(""); }}
-              className="rounded-full bg-destructive px-3 py-1.5 text-xs text-background">Confirm revoke</button>
-            <button onClick={() => setConfirmRevoke(false)} className="rounded-full border border-border px-3 py-1.5 text-xs">Cancel</button>
+            <Button variant="outline" onClick={() => { onRevoke(reason || "Verification revoked"); setConfirmRevoke(false); setReason(""); }}
+              className="rounded-full bg-destructive px-3 py-1.5 text-xs text-primary-foreground">Confirm revoke</Button>
+            <Button variant="outline" onClick={() => setConfirmRevoke(false)} className="rounded-md border border-border px-3 py-1.5 text-xs">Cancel</Button>
           </div>
         </div>
       )}
@@ -318,7 +318,7 @@ function DocLink({ path, label }: { path: string | null; label: string }) {
   if (!path) return <span className="rounded-full bg-muted px-2 py-1 text-[11px] text-muted-foreground">{label}: missing</span>;
   return (
     <a href={data ?? "#"} target="_blank" rel="noreferrer"
-       className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-2 py-1 text-[11px] text-primary-text hover:bg-primary/25">
+       className="inline-flex items-center gap-1 rounded-md bg-primary/15 px-2 py-1 text-[11px] text-primary-text hover:bg-primary/25">
       <FileText className="size-3" /> {label}
     </a>
   );

@@ -1,3 +1,6 @@
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -117,16 +120,16 @@ function BookScreen() {
               {service.estimate.unit}
             </p>
 
-            <label className="mt-4 block text-xs font-medium">Where?</label>
-            <input
+            <label htmlFor="mobile-job-address" className="mt-4 block text-xs font-medium">Where?</label>
+            <Input id="mobile-job-address"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               placeholder="Street, suburb, Harare"
               className="mt-1 min-h-12 w-full rounded-2xl border border-border bg-background px-4 text-sm outline-none focus:border-primary"
             />
-            <button
+            <Button variant="outline"
               onClick={() => void pinMyLocation()}
-              className="mt-2 inline-flex min-h-10 items-center gap-1.5 rounded-full bg-muted px-3 text-xs font-medium"
+              className="mt-2 inline-flex min-h-12 items-center gap-1.5 rounded-full bg-muted px-3 text-xs font-medium"
             >
               {locating ? (
                 <Loader2 className="size-3.5 animate-spin" />
@@ -134,27 +137,27 @@ function BookScreen() {
                 <MapPin className="size-3.5" />
               )}
               Use my current location
-            </button>
+            </Button>
 
             {addresses.length > 0 && (
               <div className="mt-3 flex flex-wrap gap-2">
                 {addresses.map((a) => (
-                  <button
+                  <Button variant="outline"
                     key={a.id}
                     onClick={() => {
                       setAddress(a.address);
                       setCoords(a.lat && a.lng ? { lat: a.lat, lng: a.lng } : null);
                     }}
-                    className="rounded-full border border-border px-3 py-1.5 text-[11px]"
+                    className="rounded-md border border-border px-3 py-1.5 text-[11px]"
                   >
                     {a.label}
-                  </button>
+                  </Button>
                 ))}
               </div>
             )}
 
-            <label className="mt-5 block text-xs font-medium">What needs doing?</label>
-            <textarea
+            <label htmlFor="mobile-job-details" className="mt-5 block text-xs font-medium">What needs doing?</label>
+            <Textarea id="mobile-job-details"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
@@ -162,10 +165,10 @@ function BookScreen() {
               className="mt-1 w-full resize-none rounded-2xl border border-border bg-background p-4 text-sm outline-none focus:border-primary"
             />
 
-            <div className="mt-4 grid grid-cols-2 gap-3">
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <div>
-                <label className="block text-xs font-medium">Budget (USD)</label>
-                <input
+                <label htmlFor="mobile-job-budget" className="block text-xs font-medium">Budget (USD)</label>
+                <Input id="mobile-job-budget"
                   inputMode="decimal"
                   value={budget}
                   onChange={(e) => setBudget(e.target.value)}
@@ -174,8 +177,8 @@ function BookScreen() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium">When</label>
-                <input
+                <label htmlFor="mobile-job-when" className="block text-xs font-medium">When</label>
+                <Input id="mobile-job-when"
                   type="datetime-local"
                   value={scheduledFor}
                   onChange={(e) => setScheduledFor(e.target.value)}
@@ -187,26 +190,26 @@ function BookScreen() {
             <label className="mt-5 block text-xs font-medium">Payment</label>
             <div className="mt-1 grid grid-cols-2 gap-2">
               {(["cash"] as const).map((m) => (
-                <button
+                <Button variant="outline"
                   key={m}
                   onClick={() => setPayment(m)}
-                  className={`min-h-11 rounded-2xl text-xs font-semibold capitalize ${
+                  className={`min-h-12 rounded-2xl text-xs font-semibold capitalize ${
                     payment === m
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted text-muted-foreground"
                   }`}
                 >
                   Cash on completion
-                </button>
+                </Button>
               ))}
             </div>
 
-            <button
+            <Button variant="outline"
               onClick={() => void addPhoto()}
-              className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-2xl border border-border px-4 text-xs font-medium"
+              className="mt-4 inline-flex min-h-12 items-center gap-2 rounded-2xl border border-border px-4 text-xs font-medium"
             >
               <Camera className="size-4" /> Add photo {photos.length > 0 && `(${photos.length})`}
-            </button>
+            </Button>
           </Card>
 
           <div className="mt-4">

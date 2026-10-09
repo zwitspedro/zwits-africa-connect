@@ -1,3 +1,7 @@
+import { Status } from "@/components/ui/status";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -47,7 +51,7 @@ function OperationsPage() {
   return (
     <SiteShell>
       <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-        <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary-text">
+        <div className="inline-flex items-center gap-2 rounded-md bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary-text">
           <ShieldCheck className="size-3" /> Admin
         </div>
         <h1 className="mt-2 font-display text-3xl font-bold">Disputes &amp; payouts</h1>
@@ -55,11 +59,11 @@ function OperationsPage() {
           Everything here writes to the ledger — adjustments and refunds are auditable.
         </p>
 
-        <div className="mt-5 inline-flex gap-1 rounded-full bg-muted p-1 text-xs">
+        <div className="mt-5 grid grid-cols-2 gap-1 rounded-md bg-muted p-1 text-xs">
           <Link
             to="/admin/operations"
             search={{ tab: "disputes" }}
-            className={`rounded-full px-4 py-1.5 ${
+            className={`inline-flex min-h-12 items-center rounded-md px-4 py-3 ${
               active === "disputes" ? "bg-background font-semibold shadow-sm" : "text-muted-foreground"
             }`}
           >
@@ -68,7 +72,7 @@ function OperationsPage() {
           <Link
             to="/admin/operations"
             search={{ tab: "withdrawals" }}
-            className={`rounded-full px-4 py-1.5 ${
+            className={`inline-flex min-h-12 items-center rounded-md px-4 py-3 ${
               active === "withdrawals" ? "bg-background font-semibold shadow-sm" : "text-muted-foreground"
             }`}
           >
@@ -123,7 +127,7 @@ function DisputesPanel() {
   );
 
   return (
-    <div className="rounded-3xl border border-border bg-card p-5">
+    <div className="border-t border-border py-6">
       <div className="flex items-center gap-2">
         <AlertTriangle className="size-4 text-destructive" />
         <h2 className="font-display text-lg font-semibold">Open disputes</h2>
@@ -141,9 +145,7 @@ function DisputesPanel() {
             <li key={d.id} className="rounded-2xl border border-border/70 bg-background/50 p-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="text-sm font-medium">{d.reason}</div>
-                <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] capitalize">
-                  {d.status}
-                </span>
+                <Status status={d.status} />
               </div>
               {d.description && (
                 <p className="mt-1 text-xs text-muted-foreground">{d.description}</p>
@@ -155,57 +157,57 @@ function DisputesPanel() {
 
               {openId === d.id ? (
                 <div className="mt-3 grid gap-2">
-                  <textarea
+                  <Textarea aria-label="Resolution notes"
                     value={resolution}
                     onChange={(e) => setResolution(e.target.value)}
                     rows={2}
                     placeholder="Resolution notes shared with the customer"
                     className="rounded-xl border border-border bg-background p-3 text-sm"
                   />
-                  <input
+                  <Input aria-label="Reverse provider earnings in USD"
                     value={refund}
                     inputMode="decimal"
                     onChange={(e) => setRefund(e.target.value)}
                     placeholder="Reverse provider earnings (optional, $)"
-                    className="min-h-11 rounded-xl border border-border bg-background px-3 text-sm"
+                    className="min-h-12 rounded-xl border border-border bg-background px-3 text-sm"
                   />
                   <div className="flex flex-wrap gap-2">
-                    <button
+                    <Button variant="outline"
                       disabled={act.isPending}
                       onClick={() => act.mutate({ id: d.id, status: "resolved" })}
-                      className="rounded-full bg-primary px-4 py-2 text-xs font-medium text-primary-foreground disabled:opacity-60"
+                      className="rounded-md bg-primary px-4 py-2 text-xs font-medium text-primary-foreground disabled:opacity-60"
                     >
                       {act.isPending ? "Saving…" : "Resolve"}
-                    </button>
-                    <button
+                    </Button>
+                    <Button variant="outline"
                       disabled={act.isPending}
                       onClick={() => act.mutate({ id: d.id, status: "rejected" })}
-                      className="rounded-full border border-border px-4 py-2 text-xs font-medium hover:bg-muted"
+                      className="rounded-md border border-border px-4 py-2 text-xs font-medium hover:bg-muted"
                     >
                       Reject
-                    </button>
-                    <button
+                    </Button>
+                    <Button variant="outline"
                       disabled={act.isPending}
                       onClick={() => act.mutate({ id: d.id, status: "investigating" })}
-                      className="rounded-full border border-border px-4 py-2 text-xs font-medium hover:bg-muted"
+                      className="rounded-md border border-border px-4 py-2 text-xs font-medium hover:bg-muted"
                     >
                       Mark investigating
-                    </button>
-                    <button
+                    </Button>
+                    <Button variant="outline"
                       onClick={() => setOpenId(null)}
                       className="rounded-full px-4 py-2 text-xs text-muted-foreground"
                     >
                       Cancel
-                    </button>
+                    </Button>
                   </div>
                 </div>
               ) : (
-                <button
+                <Button variant="outline"
                   onClick={() => setOpenId(d.id)}
-                  className="mt-3 rounded-full border border-border px-4 py-1.5 text-xs font-medium hover:bg-muted"
+                  className="mt-3 rounded-md border border-border px-4 py-1.5 text-xs font-medium hover:bg-muted"
                 >
                   Review
-                </button>
+                </Button>
               )}
             </li>
           ))}
@@ -244,7 +246,7 @@ function WithdrawalsPanel() {
   });
 
   return (
-    <div className="rounded-3xl border border-border bg-card p-5">
+    <div className="border-t border-border py-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Banknote className="size-4 text-primary-text" />
@@ -252,7 +254,7 @@ function WithdrawalsPanel() {
         </div>
         <div className="flex gap-1 rounded-full bg-muted p-1 text-xs">
           {(["requested", "processing", "all"] as const).map((s) => (
-            <button
+            <Button variant="outline"
               key={s}
               onClick={() => setStatus(s)}
               className={`rounded-full px-3 py-1 capitalize ${
@@ -260,7 +262,7 @@ function WithdrawalsPanel() {
               }`}
             >
               {s}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -290,31 +292,31 @@ function WithdrawalsPanel() {
               {["requested", "processing"].includes(w.status) && (
                 <div className="flex flex-wrap gap-2">
                   {w.status === "requested" && (
-                    <button
+                    <Button variant="outline"
                       disabled={act.isPending}
                       onClick={() => act.mutate({ id: w.id, outcome: "processing" })}
-                      className="rounded-full border border-border px-3 py-1.5 text-xs hover:bg-muted"
+                      className="rounded-md border border-border px-3 py-1.5 text-xs hover:bg-muted"
                     >
                       Processing
-                    </button>
+                    </Button>
                   )}
-                  <button
+                  <Button variant="outline"
                     disabled={act.isPending}
                     onClick={() => act.mutate({ id: w.id, outcome: "paid" })}
-                    className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground disabled:opacity-60"
+                    className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground disabled:opacity-60"
                   >
                     {act.isPending && <Loader2 className="size-3 animate-spin" />} Mark paid
-                  </button>
-                  <button
+                  </Button>
+                  <Button variant="outline"
                     disabled={act.isPending}
                     onClick={() => {
                       const reason = window.prompt("Why did this payout fail?") ?? undefined;
                       act.mutate({ id: w.id, outcome: "failed", reason });
                     }}
-                    className="rounded-full border border-destructive/40 px-3 py-1.5 text-xs text-destructive hover:bg-destructive/10"
+                    className="rounded-md border border-destructive/40 px-3 py-1.5 text-xs text-destructive hover:bg-destructive/10"
                   >
                     Failed
-                  </button>
+                  </Button>
                 </div>
               )}
             </li>

@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -99,13 +100,13 @@ function OfferCard({ offer, onRespond, busy }: { offer: Offer; onRespond: (a: "a
   if (left <= 0) return null;
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-border/70 bg-card/70 shadow-sm backdrop-blur">
+    <article className="overflow-hidden rounded-2xl border border-border/70 bg-card">
       <div className="flex items-center justify-between gap-3 border-b border-border/60 px-4 py-2.5">
         <span className="flex items-center gap-2 text-xs font-medium">
           <Package className="size-3.5 text-primary-text" />
           {tier?.label ?? offer.delivery.serviceTier}
         </span>
-        <span className="flex items-center gap-1.5 rounded-full bg-primary/12 px-2 py-0.5 text-xs font-semibold tabular-nums text-primary-text">
+        <span className="flex items-center gap-1.5 rounded-md bg-primary/12 px-2 py-0.5 text-xs font-semibold tabular-nums text-primary-text">
           <Timer className="size-3.5" /> {left}s
         </span>
       </div>
@@ -131,20 +132,20 @@ function OfferCard({ offer, onRespond, busy }: { offer: Offer; onRespond: (a: "a
         {offer.delivery.notes && <p className="text-xs text-muted-foreground">“{offer.delivery.notes}”</p>}
 
         <div className="flex gap-2 pt-1">
-          <button
+          <Button variant="outline"
             disabled={busy}
             onClick={() => onRespond("decline")}
             className="flex-1 rounded-xl border border-border px-4 py-2.5 text-sm font-medium disabled:opacity-50"
           >
             Decline
-          </button>
-          <button
+          </Button>
+          <Button variant="outline"
             disabled={busy}
             onClick={() => onRespond("accept")}
-            className="flex-[2] rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-50"
+            className="min-h-14 flex-[2] rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-50"
           >
             Accept delivery
-          </button>
+          </Button>
         </div>
       </div>
     </article>

@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -66,7 +67,7 @@ export function ActiveDelivery({ active }: { active: DeliveryRow[] }) {
               {current.recipient_phone && (
                 <a
                   href={`tel:${current.recipient_phone}`}
-                  className="mt-1 inline-flex items-center gap-1.5 text-xs text-primary-text"
+                  className="mt-1 inline-flex min-h-12 items-center gap-1.5 text-xs text-primary-text"
                 >
                   <Phone className="size-3.5" /> {current.recipient_phone}
                 </a>
@@ -81,26 +82,26 @@ export function ActiveDelivery({ active }: { active: DeliveryRow[] }) {
               href={mapsUrl(target)}
               target="_blank"
               rel="noreferrer"
-              className="flex-1 rounded-xl border border-border px-4 py-2.5 text-center text-sm font-medium"
+              className="inline-flex min-h-14 flex-1 items-center justify-center gap-2 rounded-md border border-border px-4 py-2.5 text-center text-sm font-medium"
             >
               Navigate
             </a>
             {current.status === "accepted" ? (
-              <button
+              <Button variant="outline"
                 disabled={mutation.isPending}
                 onClick={() => mutation.mutate({ deliveryId: current.id, status: "picked_up" })}
                 className="flex-[2] rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-50"
               >
                 <Truck className="mr-2 inline size-4" /> Confirm pickup
-              </button>
+              </Button>
             ) : (
-              <button
+              <Button variant="outline"
                 disabled={mutation.isPending}
                 onClick={() => mutation.mutate({ deliveryId: current.id, status: "delivered" })}
                 className="flex-[2] rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-50"
               >
                 <PackageCheck className="mr-2 inline size-4" /> Mark delivered
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -128,8 +129,8 @@ function Step({ icon: Icon, label, value, done }: { icon: any; label: string; va
       <span
         className={
           done
-            ? "grid size-8 shrink-0 place-items-center rounded-full bg-emerald-500/15 text-success"
-            : "grid size-8 shrink-0 place-items-center rounded-full bg-primary/12 text-primary-text"
+            ? "grid size-8 shrink-0 place-items-center rounded-full bg-success-surface text-success"
+            : "grid size-8 shrink-0 place-items-center rounded-md bg-primary/12 text-primary-text"
         }
       >
         <Icon className="size-4" />

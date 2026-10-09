@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -116,11 +118,32 @@ export function BookingCalendar({ rules, value, onChange, providerId }: Props) {
     : false;
   const allBooked = dayHasWorkingHours && availableCount === 0 && slots.length > 0;
 
+  const selectDate = (d: Date | undefined) => {
+              setDate(d);
+              if (!d) return;
+              if (value && value !== "ASAP") {
+                const prev = startOfDay(new Date(value));
+                if (prev.getTime() !== startOfDay(d).getTime()) onChange("");
+              }
+  };
+  const dateDisabled = (d: Date) => {
+              const day = startOfDay(d);
+              if (day < today) return true;
+              if (day > maxDate) return true;
+              if (!rules.workingDays.includes(day.getDay())) return true;
+              if (day.getTime() === today.getTime()) {
+                return generateSlots(day, rules, now).length === 0;
+              }
+              return false;
+  };
+  const dateFieldValue = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const [dateError, setDateError] = useState("");
+
   return (
     <TooltipProvider>
-      <div className="grid gap-3 rounded-2xl border border-border bg-card/50 p-3">
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <CalendarDays className="size-3.5" /> Pick a date and time
+      <div className="grid min-w-0 gap-4 border-t border-border py-4">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 text-xs text-muted-foreground">
+          <span className="flex items-center gap-2"><CalendarDays aria-hidden="true" className="size-4 shrink-0" />Pick a date and time</span>
           <span className="ml-auto">
             {rules.slotMinutes >= 60
               ? `${rules.slotMinutes / 60}h slots`
@@ -131,14 +154,14 @@ export function BookingCalendar({ rules, value, onChange, providerId }: Props) {
         </div>
 
         {rules.allowAsap && (
-          <button
+          <Button variant="outline"
             type="button"
             onClick={() => {
               onChange("ASAP");
               setDate(undefined);
             }}
             className={cn(
-              "flex items-center justify-between rounded-xl border px-4 py-2.5 text-left text-sm transition",
+              "grid min-h-14 h-auto grid-cols-[minmax(0,1fr)_auto] items-center gap-2 rounded-md border px-4 py-3 text-left text-sm transition",
               asap
                 ? "border-primary bg-primary/10 text-foreground"
                 : "border-border bg-background hover:border-primary/40"
@@ -148,35 +171,32 @@ export function BookingCalendar({ rules, value, onChange, providerId }: Props) {
               <Zap className="size-4 text-primary-text" /> ASAP — next available
             </span>
             <span className="text-xs text-muted-foreground">Recommended</span>
-          </button>
+          </Button>
         )}
 
-        <div className="grid gap-3 sm:grid-cols-[auto,1fr]">
+        <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+          <label className="grid min-w-0 gap-2 sm:hidden">
+            <span className="text-sm font-bold">Date</span>
+            <Input type="date" min={dateFieldValue(today)} max={dateFieldValue(maxDate)}
+              value={date ? dateFieldValue(date) : ""}
+              aria-invalid={!!dateError} aria-describedby={dateError ? "booking-date-error" : undefined}
+              onChange={(e) => {
+                if (!e.target.value) { selectDate(undefined); setDateError(""); return; }
+                const selected = new Date(`${e.target.value}T00:00:00`);
+                if (dateDisabled(selected)) { setDateError("Choose an available working day within the booking window."); return; }
+                setDateError(""); selectDate(selected);
+              }} />
+            {dateError && <span id="booking-date-error" role="alert" className="text-sm text-danger">{dateError}</span>}
+          </label>
           <Calendar
             mode="single"
             selected={date}
-            onSelect={(d) => {
-              setDate(d);
-              if (!d) return;
-              if (value && value !== "ASAP") {
-                const prev = startOfDay(new Date(value));
-                if (prev.getTime() !== startOfDay(d).getTime()) onChange("");
-              }
-            }}
-            disabled={(d) => {
-              const day = startOfDay(d);
-              if (day < today) return true;
-              if (day > maxDate) return true;
-              if (!rules.workingDays.includes(day.getDay())) return true;
-              if (day.getTime() === today.getTime()) {
-                return generateSlots(day, rules, now).length === 0;
-              }
-              return false;
-            }}
-            className="pointer-events-auto rounded-xl border border-border bg-background p-2"
+            onSelect={selectDate}
+            disabled={dateDisabled}
+            className="hidden pointer-events-auto rounded-xl border border-border bg-background p-4 sm:block"
           />
 
-          <div className="min-h-[12rem]">
+          <div className="min-w-0">
             <div className="mb-2 flex items-center gap-1.5 text-xs text-muted-foreground">
               <Clock className="size-3.5" />
               {date
@@ -186,7 +206,7 @@ export function BookingCalendar({ rules, value, onChange, providerId }: Props) {
                   : "Select a date"}
             </div>
             {date && (
-              <div className="grid max-h-64 grid-cols-3 gap-1.5 overflow-auto pr-1 sm:grid-cols-2 md:grid-cols-3">
+              <div className="grid max-h-64 grid-cols-2 gap-2 overflow-auto pr-1 md:grid-cols-3 lg:grid-cols-2">
                 {slots.length === 0 && (
                   <p className="col-span-full text-xs text-muted-foreground">
                     {dayHasWorkingHours
@@ -199,22 +219,22 @@ export function BookingCalendar({ rules, value, onChange, providerId }: Props) {
                   const active = selectedTimeIso === iso;
                   const taken = busyStarts.has(s.getTime());
                   const button = (
-                    <button
+                    <Button variant="outline"
                       key={iso}
                       type="button"
                       disabled={taken}
                       onClick={() => onChange(iso)}
                       className={cn(
-                        "rounded-lg border px-2 py-1.5 text-xs tabular-nums transition",
+                        "min-h-12 rounded-md border px-2 py-3 text-sm tabular-nums transition",
                         taken
-                          ? "cursor-not-allowed border-dashed border-border bg-muted/40 text-muted-foreground/60 line-through"
+                          ? "cursor-not-allowed border-dashed border-border bg-muted/40 text-muted-foreground line-through"
                           : active
                             ? "border-primary bg-primary text-primary-foreground"
                             : "border-border bg-background hover:border-primary/40"
                       )}
                     >
                       {s.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                    </button>
+                    </Button>
                   );
                   return taken ? (
                     <Tooltip key={iso}>
@@ -255,10 +275,10 @@ export function BookingCalendar({ rules, value, onChange, providerId }: Props) {
           </span>
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className="ml-auto flex cursor-help items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground">
+              <Button type="button" variant="ghost" className="ml-auto gap-2 text-xs text-muted-foreground">
                 <HelpCircle className="size-3" />
                 Why are some slots missing?
-              </span>
+              </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom" className="max-w-[14rem] space-y-1 text-xs">
               <p className="font-medium">Hidden slots mean:</p>

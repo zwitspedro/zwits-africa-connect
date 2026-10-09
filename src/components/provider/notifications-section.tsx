@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { Link } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Bell, CheckCheck } from "lucide-react";
@@ -21,12 +22,12 @@ export function NotificationsSection({ notifications }: { notifications: any[] }
       title="Notifications"
       description="Job alerts, payments, messages and platform updates."
       action={
-        <button
+        <Button variant="outline"
           onClick={() => markAll.mutate()}
-          className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-border px-4 text-xs font-medium hover:bg-muted"
+          className="inline-flex min-h-12 items-center gap-1.5 rounded-md border border-border px-4 text-xs font-medium hover:bg-muted"
         >
           <CheckCheck className="size-3.5" /> Mark all read
-        </button>
+        </Button>
       }
     >
       {notifications.length === 0 ? (
@@ -40,7 +41,7 @@ export function NotificationsSection({ notifications }: { notifications: any[] }
                 <div className="min-w-0">
                   <div className="truncate text-sm font-medium">{n.title}</div>
                   {n.body && <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">{n.body}</p>}
-                  <div className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground/70">
+                  <div className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground">
                     {new Date(n.created_at).toLocaleString()}
                   </div>
                 </div>
@@ -63,7 +64,7 @@ export function NotificationsSection({ notifications }: { notifications: any[] }
         </ul>
       )}
       <p className="mt-4 flex items-center gap-1.5 text-[11px] text-muted-foreground">
-        <Bell className="size-3" /> Install the Zwits app to receive push alerts for new jobs.
+        <Bell className="size-3" /> Job alerts appear here when your account receives updates.
       </p>
     </Panel>
   );
