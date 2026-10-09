@@ -4,7 +4,8 @@ import { Loader2 } from "lucide-react";
 import { useActiveRole } from "@/hooks/use-role";
 import { appHome, getAppTarget } from "@/mobile/app-target";
 
-export const Route = createFileRoute("/m/")({ component: MobileEntry });
+export const Route = createFileRoute("/m/")({
+  head: () => ({ meta: [{"title": "Mobile — Zwits"}, {"name": "description", "content": "Mobile in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile — Zwits"}, {"property": "og:description", "content": "Mobile in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: MobileEntry });
 
 /** Sends the signed-in user to the app that matches their strongest role. */
 function MobileEntry() {

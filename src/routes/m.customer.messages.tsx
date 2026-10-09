@@ -6,7 +6,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { AppBar, Card, Empty, PullToRefresh, Screen, Section, SkeletonList } from "@/mobile/ui";
 import { statusLabel } from "@/lib/job-lifecycle";
 
-export const Route = createFileRoute("/m/customer/messages")({ component: CustomerMessages });
+export const Route = createFileRoute("/m/customer/messages")({
+  head: () => ({ meta: [{"title": "Mobile Customer Messages — Zwits"}, {"name": "description", "content": "Mobile Customer Messages in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Customer Messages — Zwits"}, {"property": "og:description", "content": "Mobile Customer Messages in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: CustomerMessages });
 
 /** Conversation list: one thread per booking the customer is part of. */
 export function useConversations(

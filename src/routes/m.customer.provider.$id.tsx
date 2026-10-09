@@ -15,7 +15,8 @@ import {
   money,
 } from "@/mobile/ui";
 
-export const Route = createFileRoute("/m/customer/provider/$id")({ component: ProviderProfile });
+export const Route = createFileRoute("/m/customer/provider/$id")({
+  head: () => ({ meta: [{"title": "Mobile Customer Provider — Zwits"}, {"name": "description", "content": "Mobile Customer Provider in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Customer Provider — Zwits"}, {"property": "og:description", "content": "Mobile Customer Provider in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: ProviderProfile });
 
 function ProviderProfile() {
   const { id } = Route.useParams();

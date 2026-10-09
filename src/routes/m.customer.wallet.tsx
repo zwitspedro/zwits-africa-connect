@@ -15,7 +15,8 @@ import {
   money,
 } from "@/mobile/ui";
 
-export const Route = createFileRoute("/m/customer/wallet")({ component: WalletScreen });
+export const Route = createFileRoute("/m/customer/wallet")({
+  head: () => ({ meta: [{"title": "Mobile Customer Wallet — Zwits"}, {"name": "description", "content": "Mobile Customer Wallet in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Customer Wallet — Zwits"}, {"property": "og:description", "content": "Mobile Customer Wallet in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: WalletScreen });
 
 /** Spend + payment history, read from the bookings and deliveries the customer already owns. */
 function WalletScreen() {

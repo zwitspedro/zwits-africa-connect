@@ -5,7 +5,8 @@ import { useConversations } from "./m.customer.messages";
 import { statusLabel } from "@/lib/job-lifecycle";
 import { AppBar, Card, Empty, PullToRefresh, Screen, Section, SkeletonList } from "@/mobile/ui";
 
-export const Route = createFileRoute("/m/provider/messages")({ component: ProviderMessages });
+export const Route = createFileRoute("/m/provider/messages")({
+  head: () => ({ meta: [{"title": "Mobile Provider Messages — Zwits"}, {"name": "description", "content": "Mobile Provider Messages in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Provider Messages — Zwits"}, {"property": "og:description", "content": "Mobile Provider Messages in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: ProviderMessages });
 
 function ProviderMessages() {
   const navigate = useNavigate();

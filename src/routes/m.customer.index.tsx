@@ -24,7 +24,8 @@ import {
 } from "@/mobile/ui";
 import { CUSTOMER_STATUS_COPY, type JobStatus } from "@/lib/job-lifecycle";
 
-export const Route = createFileRoute("/m/customer/")({ component: CustomerHome });
+export const Route = createFileRoute("/m/customer/")({
+  head: () => ({ meta: [{"title": "Mobile Customer — Zwits"}, {"name": "description", "content": "Mobile Customer in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Customer — Zwits"}, {"property": "og:description", "content": "Mobile Customer in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: CustomerHome });
 
 function CustomerHome() {
   const { user } = useAuth();

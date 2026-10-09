@@ -5,7 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { AppBar, Card, Empty, PullToRefresh, Screen, Section, SkeletonList } from "@/mobile/ui";
 
-export const Route = createFileRoute("/m/driver/messages")({ component: DriverMessages });
+export const Route = createFileRoute("/m/driver/messages")({
+  head: () => ({ meta: [{"title": "Mobile Driver Messages — Zwits"}, {"name": "description", "content": "Mobile Driver Messages in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Driver Messages — Zwits"}, {"property": "og:description", "content": "Mobile Driver Messages in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: DriverMessages });
 
 /** Drivers chat per delivery — threads come from the deliveries assigned to them. */
 function DriverMessages() {

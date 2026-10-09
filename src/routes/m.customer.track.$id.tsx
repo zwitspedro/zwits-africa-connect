@@ -29,7 +29,8 @@ import {
   when,
 } from "@/mobile/ui";
 
-export const Route = createFileRoute("/m/customer/track/$id")({ component: TrackScreen });
+export const Route = createFileRoute("/m/customer/track/$id")({
+  head: () => ({ meta: [{"title": "Mobile Customer Tracking — Zwits"}, {"name": "description", "content": "Mobile Customer Tracking in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Customer Tracking — Zwits"}, {"property": "og:description", "content": "Mobile Customer Tracking in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: TrackScreen });
 
 const STEPS = LIFECYCLE.filter((s) => s !== "pending");
 

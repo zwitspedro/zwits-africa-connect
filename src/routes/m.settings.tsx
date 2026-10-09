@@ -9,7 +9,8 @@ import { registerPush, syncPushToken, unregisterPush } from "@/mobile/notificati
 import { clearOfflineCache } from "@/mobile/offline";
 import { AppBar, Card, PrimaryButton, Screen, Section } from "@/mobile/ui";
 
-export const Route = createFileRoute("/m/settings")({ component: SettingsScreen });
+export const Route = createFileRoute("/m/settings")({
+  head: () => ({ meta: [{"title": "Mobile Settings — Zwits"}, {"name": "description", "content": "Mobile Settings in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Settings — Zwits"}, {"property": "og:description", "content": "Mobile Settings in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: SettingsScreen });
 
 function Toggle({
   label,

@@ -7,7 +7,8 @@ import { useProviderData } from "@/components/provider/use-provider-data";
 import { statusLabel } from "@/lib/job-lifecycle";
 import { AppBar, Card, Empty, Pill, Screen, Section, SkeletonList, money } from "@/mobile/ui";
 
-export const Route = createFileRoute("/m/provider/calendar")({ component: ProviderCalendar });
+export const Route = createFileRoute("/m/provider/calendar")({
+  head: () => ({ meta: [{"title": "Mobile Provider Calendar — Zwits"}, {"name": "description", "content": "Mobile Provider Calendar in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Provider Calendar — Zwits"}, {"property": "og:description", "content": "Mobile Provider Calendar in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: ProviderCalendar });
 
 const DAY_MS = 86_400_000;
 const dayKey = (d: Date) => d.toISOString().slice(0, 10);

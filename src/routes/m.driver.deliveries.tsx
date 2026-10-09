@@ -24,7 +24,8 @@ import {
   money,
 } from "@/mobile/ui";
 
-export const Route = createFileRoute("/m/driver/deliveries")({ component: DriverDeliveries });
+export const Route = createFileRoute("/m/driver/deliveries")({
+  head: () => ({ meta: [{"title": "Mobile Driver Deliveries — Zwits"}, {"name": "description", "content": "Mobile Driver Deliveries in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Driver Deliveries — Zwits"}, {"property": "og:description", "content": "Mobile Driver Deliveries in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: DriverDeliveries });
 
 type Tab = "offers" | "active" | "history";
 

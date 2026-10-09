@@ -25,7 +25,8 @@ import {
   money,
 } from "@/mobile/ui";
 
-export const Route = createFileRoute("/m/provider/profile")({ component: ProviderProfile });
+export const Route = createFileRoute("/m/provider/profile")({
+  head: () => ({ meta: [{"title": "Mobile Provider Profile — Zwits"}, {"name": "description", "content": "Mobile Provider Profile in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Provider Profile — Zwits"}, {"property": "og:description", "content": "Mobile Provider Profile in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: ProviderProfile });
 
 function ProviderProfile() {
   const data = useProviderData();

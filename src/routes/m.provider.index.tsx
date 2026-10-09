@@ -23,7 +23,8 @@ import {
 } from "@/mobile/ui";
 import { statusLabel } from "@/lib/job-lifecycle";
 
-export const Route = createFileRoute("/m/provider/")({ component: ProviderDashboard });
+export const Route = createFileRoute("/m/provider/")({
+  head: () => ({ meta: [{"title": "Mobile Provider — Zwits"}, {"name": "description", "content": "Mobile Provider in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Provider — Zwits"}, {"property": "og:description", "content": "Mobile Provider in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: ProviderDashboard });
 
 function ProviderDashboard() {
   const { user } = useAuth();

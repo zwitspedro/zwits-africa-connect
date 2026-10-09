@@ -6,7 +6,8 @@ import { useSavedAddresses } from "@/mobile/local";
 import { currentPosition } from "@/mobile/maps";
 import { AppBar, Card, Empty, GhostButton, PrimaryButton, Screen, Section } from "@/mobile/ui";
 
-export const Route = createFileRoute("/m/customer/addresses")({ component: Addresses });
+export const Route = createFileRoute("/m/customer/addresses")({
+  head: () => ({ meta: [{"title": "Mobile Customer Addresses — Zwits"}, {"name": "description", "content": "Mobile Customer Addresses in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Customer Addresses — Zwits"}, {"property": "og:description", "content": "Mobile Customer Addresses in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: Addresses });
 
 function Addresses() {
   const { addresses, add, remove, loading } = useSavedAddresses();

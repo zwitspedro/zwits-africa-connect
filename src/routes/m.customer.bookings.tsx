@@ -22,7 +22,8 @@ import {
   when,
 } from "@/mobile/ui";
 
-export const Route = createFileRoute("/m/customer/bookings")({ component: BookingsScreen });
+export const Route = createFileRoute("/m/customer/bookings")({
+  head: () => ({ meta: [{"title": "Mobile Customer Bookings — Zwits"}, {"name": "description", "content": "Mobile Customer Bookings in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Customer Bookings — Zwits"}, {"property": "og:description", "content": "Mobile Customer Bookings in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: BookingsScreen });
 
 type Tab = "active" | "history";
 

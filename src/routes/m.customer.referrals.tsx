@@ -4,7 +4,8 @@ import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
 import { AppBar, Card, PrimaryButton, Screen, Section } from "@/mobile/ui";
 
-export const Route = createFileRoute("/m/customer/referrals")({ component: Referrals });
+export const Route = createFileRoute("/m/customer/referrals")({
+  head: () => ({ meta: [{"title": "Mobile Customer Referrals — Zwits"}, {"name": "description", "content": "Mobile Customer Referrals in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Customer Referrals — Zwits"}, {"property": "og:description", "content": "Mobile Customer Referrals in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: Referrals });
 
 function Referrals() {
   const { user } = useAuth();

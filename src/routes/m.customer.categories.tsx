@@ -4,7 +4,8 @@ import { Search } from "lucide-react";
 import { services } from "@/data/services";
 import { AppBar, Card, Empty, Screen, Section, money } from "@/mobile/ui";
 
-export const Route = createFileRoute("/m/customer/categories")({ component: CategoriesScreen });
+export const Route = createFileRoute("/m/customer/categories")({
+  head: () => ({ meta: [{"title": "Mobile Customer Categories — Zwits"}, {"name": "description", "content": "Mobile Customer Categories in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Customer Categories — Zwits"}, {"property": "og:description", "content": "Mobile Customer Categories in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: CategoriesScreen });
 
 function CategoriesScreen() {
   const [q, setQ] = useState("");
