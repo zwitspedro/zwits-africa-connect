@@ -16,7 +16,7 @@
 - [x] Report verification and remaining blockers without changing business logic.
 
 # Design System v1 completion audit
-- [ ] Correct remaining shared-control and calendar touch-target gaps.
-- [ ] Unify remaining role and operational presentation without changing behavior.
-- [ ] Audit requested public/account pages, keyboard access, viewport widths and initial requests.
-- [ ] Deliver the refreshed PASS/PARTIAL/BLOCKED report with honest remaining limits.
+- [x] Correct the audited shared-control and calendar touch-target gaps.
+- [x] Unify audited role and operational presentation without changing behavior; exhaustive migration is PARTIAL in the report.
+- [x] Audit 35 public/account pages, basic keyboard access, eight viewport widths and initial requests; deeper dynamic-state checks remain PARTIAL.
+- [x] Deliver the refreshed PASS/PARTIAL/BLOCKED report with honest remaining limits.
