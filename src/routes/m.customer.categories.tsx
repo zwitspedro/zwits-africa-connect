@@ -2,7 +2,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { services
-import { rankServices } from "@/lib/service-search"; } from "@/data/services";
+ } from "@/data/services";
+import { rankServices } from "@/lib/service-search";
 import { AppBar, Card, Empty, Screen, Section, money } from "@/mobile/ui";
 
 export const Route = createFileRoute("/m/customer/categories")({

@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { ArrowLeft, Search } from "lucide-react";
 import { services
-import { rankServices } from "@/lib/service-search";, popularServices } from "@/data/services";
+, popularServices } from "@/data/services";
+import { rankServices } from "@/lib/service-search";
 
 /**
  * Step 1 of the progressive customer flow: "What do you need?"
