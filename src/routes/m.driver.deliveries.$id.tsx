@@ -6,6 +6,7 @@ import { Camera, MessageSquare, Navigation, Package, Phone } from "lucide-react"
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { ZwitsLogo } from "@/components/zwits-logo";
 import { updateDeliveryStatus } from "@/lib/delivery.functions";
 import { openNavigation } from "@/mobile/maps";
 import { captureAndUpload } from "@/mobile/media";
@@ -114,6 +115,7 @@ function DeliveryDetail() {
       <AppBar
         title={`${d.service_tier} delivery`}
         subtitle={String(d.status).replace(/_/g, " ")}
+        right={stage !== "done" ? <ZwitsLogo wordmark={false} pulse /> : undefined}
         back
       />
       <Screen>

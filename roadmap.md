@@ -1,5 +1,7 @@
 # Current request
 
+- [ ] Add and verify subtle Z pulses for matching, active delivery and existing network activity, with dark/light surfaces and reduced-motion support.
+
 - [x] Expand Terms of Service to cover marketplace roles, cash payments, commission, cancellations and disputes.
 - [x] Expand Privacy Policy to cover account and job data, live location, sharing, retention and data requests.
 - [x] Verify both public legal pages on desktop and mobile.

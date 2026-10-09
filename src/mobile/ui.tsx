@@ -4,6 +4,7 @@
  * logic, so the three apps stay consistent without duplicating anything.
  */
 import { Button } from "@/components/ui/button";
+import { NetworkLogo } from "@/components/network-logo";
 import { type ReactNode, useCallback, useRef, useState } from "react";
 import { Link, useRouter } from "@tanstack/react-router";
 import { ArrowLeft, Loader2, type LucideIcon } from "lucide-react";
@@ -42,7 +43,7 @@ export function AppBar({
           </h1>
           {subtitle && <p className="truncate text-xs text-muted-foreground">{subtitle}</p>}
         </div>
-        {right}
+        {right ?? <NetworkLogo wordmark={false} />}
       </div>
     </header>
   );

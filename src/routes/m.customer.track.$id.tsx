@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { confirmCompletion } from "@/lib/dispatch.functions";
 import { LiveTrackingMap } from "@/components/live-tracking-map";
+import { ZwitsLogo } from "@/components/zwits-logo";
 import {
   CUSTOMER_STATUS_COPY,
   LIFECYCLE,
@@ -107,7 +108,12 @@ function TrackScreen() {
                     )}
                   </div>
                 </div>
-                <p className="mt-3 text-sm">{CUSTOMER_STATUS_COPY[b.status as JobStatus] ?? ""}</p>
+                <div className="mt-3 flex items-center gap-3">
+                  {["pending", "requested", "searching", "matching"].includes(b.status) && !b.provider_id && b.dispatch_state !== "no_providers" && (
+                    <ZwitsLogo wordmark={false} pulse />
+                  )}
+                  <p className="text-sm">{CUSTOMER_STATUS_COPY[b.status as JobStatus] ?? ""}</p>
+                </div>
 
                 <ol className="mt-4 flex items-center gap-1">
                   {STEPS.map((s, i) => (

@@ -5,9 +5,10 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   ArrowLeft, Calendar, MapPin, CreditCard, Clock, MessageSquare, Star,
-  RotateCcw, XCircle, CheckCircle2, CircleDashed, Loader2, Radar, Timer,
+  RotateCcw, XCircle, CheckCircle2, CircleDashed, Loader2, Timer,
 } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
+import { ZwitsLogo } from "@/components/zwits-logo";
 import { LiveTrackingMap } from "@/components/live-tracking-map";
 import { BookingAddressMap } from "@/components/booking-address-map";
 import { useAuth } from "@/hooks/use-auth";
@@ -451,7 +452,7 @@ function DispatchPanel({ booking }: { booking: any }) {
           </>
         ) : (
           <>
-            <Radar className="size-4 animate-pulse text-primary-text" />
+            <ZwitsLogo wordmark={false} pulse />
             {isQuotes ? "Collecting quotes" : "Finding you a provider"}
           </>
         )}

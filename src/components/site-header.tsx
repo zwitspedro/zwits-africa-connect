@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ZwitsLogo } from "@/components/zwits-logo";
+import { NetworkLogo } from "@/components/network-logo";
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -58,7 +58,7 @@ export function SiteHeader() {
       <div className="mx-auto grid h-20 max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 sm:px-8 lg:flex md:justify-between">
         {/* Marketing chrome points at /home; "/" is the data-light entry screen. */}
         <Link to="/home" className="flex min-w-0 items-center gap-2.5">
-          <ZwitsLogo />
+          <NetworkLogo />
         </Link>
 
         <nav aria-label="Primary navigation" className="hidden items-center gap-1 lg:flex" onMouseLeave={() => setMega(false)}>
