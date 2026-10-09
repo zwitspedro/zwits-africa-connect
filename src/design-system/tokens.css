@@ -105,7 +105,7 @@
   --info-surface: color-mix(in oklab, var(--zwits-info) 12%, var(--zwits-obsidian));
   --success: var(--zwits-green);
   --warning: var(--zwits-warning);
-  --danger: var(--zwits-danger);
+  --danger: color-mix(in oklab, var(--zwits-danger) 85%, var(--zwits-white));
   --info: var(--zwits-info);
   --destructive: var(--zwits-danger);
   --destructive-foreground: var(--zwits-obsidian);
