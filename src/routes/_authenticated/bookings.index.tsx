@@ -1,3 +1,7 @@
+import { Button } from "@/components/ui/button";
+import { Status } from "@/components/ui/status";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -8,7 +12,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/bookings/")({
-  head: () => ({ meta: [{ title: "My bookings — Zwits" }] }),
+  head: () => ({ meta: [{ title: "My bookings — Zwits" }, { name: "description", content: "Follow your Zwits service bookings and completed work." }, { property: "og:title", content: "My bookings — Zwits" }, { property: "og:description", content: "Follow your Zwits service bookings and completed work." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
   component: BookingsPage,
 });
 
@@ -46,7 +50,7 @@ function BookingsPage() {
   return (
     <SiteShell>
       <section className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-        <div className="flex items-center justify-between">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
           <h1 className="font-display text-3xl font-bold">My bookings</h1>
           <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">← Dashboard</Link>
         </div>
@@ -63,7 +67,7 @@ function BookingsPage() {
           {bookings?.map((b: any) => (
             <li key={b.id} className="rounded-2xl border border-border bg-card p-4 hover:border-primary/30 transition-colors">
               <Link to="/bookings/$id" params={{ id: b.id }} className="block">
-                <div className="flex items-start justify-between gap-3">
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
                   <div>
                     <div className="text-xs uppercase tracking-wider text-primary-text">{b.category}</div>
                     <div className="mt-1 font-medium">{b.providers?.business_name ?? "Awaiting provider"}</div>
@@ -72,21 +76,21 @@ function BookingsPage() {
                   </div>
                   <StatusBadge status={b.status} />
                 </div>
-                <div className="mt-3 flex items-center justify-between gap-3 text-xs">
+              </Link>
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs">
                   <span className="text-muted-foreground">{new Date(b.created_at).toLocaleString()}</span>
                   <div className="flex gap-2">
                     {b.status === "completed" && b.provider_id && !b.ratings?.length && (
                       <RateButton bookingId={b.id} providerId={b.provider_id} />
                     )}
                     {(b.status === "pending" || b.status === "accepted") && (
-                      <button
+                      <Button variant="outline"
                         onClick={(e) => { e.preventDefault(); cancel.mutate(b.id); }}
                         className="rounded-full border border-border px-3 py-1.5 hover:bg-muted"
-                      >Cancel</button>
+                      >Cancel</Button>
                     )}
                   </div>
                 </div>
-              </Link>
             </li>
           ))}
         </ul>
@@ -95,16 +99,7 @@ function BookingsPage() {
   );
 }
 
-function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, string> = {
-    pending: "bg-muted text-foreground",
-    accepted: "bg-gold/20 text-gold",
-    in_progress: "bg-primary/20 text-primary-text",
-    completed: "bg-emerald-500/20 text-success",
-    cancelled: "bg-destructive/20 text-destructive",
-  };
-  return <span className={`rounded-full px-2.5 py-1 text-xs ${map[status] ?? ""}`}>{status.replace("_", " ")}</span>;
-}
+function StatusBadge({ status }: { status: string }) { return <Status status={status} />; }
 
 function RateButton({ bookingId, providerId }: { bookingId: string; providerId: string }) {
   const { user } = useAuth();
@@ -128,29 +123,27 @@ function RateButton({ bookingId, providerId }: { bookingId: string; providerId: 
     onError: (e: any) => toast.error(e.message),
   });
 
-  if (!open) {
-    return (
-      <button onClick={() => setOpen(true)} className="rounded-full bg-gold px-3 py-1.5 text-background">Rate</button>
-    );
-  }
   return (
-    <div className="absolute inset-x-4 z-40 mt-2 rounded-2xl border border-border bg-card p-4 shadow-lg">
-      <div className="flex gap-1">
-        {[1, 2, 3, 4, 5].map((n) => (
-          <button key={n} onClick={() => setRating(n)}>
-            <Star className={`size-6 ${n <= rating ? "fill-gold text-gold" : "text-muted-foreground"}`} />
-          </button>
-        ))}
-      </div>
-      <textarea
-        value={review} onChange={(e) => setReview(e.target.value)}
-        placeholder="Leave a review (optional)"
-        className="mt-3 w-full rounded-lg border border-input bg-background p-2 text-sm"
-      />
-      <div className="mt-2 flex gap-2">
-        <button onClick={() => submit.mutate()} className="rounded-full bg-primary px-4 py-2 text-xs text-primary-foreground">Submit</button>
-        <button onClick={() => setOpen(false)} className="rounded-full border border-border px-4 py-2 text-xs">Cancel</button>
-      </div>
-    </div>
+    <>
+      <Button variant="outline" onClick={() => setOpen(true)}>Rate</Button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogTitle>Rate your service</DialogTitle>
+          <DialogDescription>How was your experience with this provider?</DialogDescription>
+          <div className="flex gap-1" aria-label="Service rating">
+            {[1, 2, 3, 4, 5].map((n) => (
+              <Button variant="ghost" size="icon" key={n} aria-label={`${n} ${n === 1 ? "star" : "stars"}`} aria-pressed={rating === n} onClick={() => setRating(n)}>
+                <Star aria-hidden="true" className={`size-6 ${n <= rating ? "fill-gold text-gold" : "text-muted-foreground"}`} />
+              </Button>
+            ))}
+          </div>
+          <label className="grid gap-2 text-sm">Review (optional)<Textarea value={review} onChange={(e) => setReview(e.target.value)} /></label>
+          <div className="flex gap-2">
+            <Button onClick={() => submit.mutate()} disabled={submit.isPending}>Submit</Button>
+            <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

@@ -51,7 +51,7 @@ function BookEntry() {
         <Link
           to="/"
           aria-label="Back"
-          className="grid size-9 place-items-center rounded-full border border-border transition hover:bg-muted"
+          className="grid size-12 place-items-center rounded-md border border-border transition hover:bg-muted"
         >
           <ArrowLeft className="size-4" />
         </Link>
@@ -77,7 +77,7 @@ function BookEntry() {
         {!q && (
           <section aria-label="Popular" className="mt-6">
             <p className="text-[12px] uppercase tracking-[0.18em] text-muted-foreground">Popular</p>
-            <div className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-6">
+            <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
               {popularServices.slice(0, 8).map((s) => (
                 <Link
                   key={s.slug}
@@ -89,7 +89,7 @@ function BookEntry() {
                   <span className="mx-auto grid size-9 place-items-center rounded-xl bg-primary/10 text-primary-text">
                     <s.icon className="size-4" aria-hidden />
                   </span>
-                  <span className="truncate text-[10px] font-medium">{s.name}</span>
+                  <span className="break-words text-xs font-medium">{s.name}</span>
                 </Link>
               ))}
             </div>

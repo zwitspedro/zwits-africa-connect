@@ -4,7 +4,7 @@ import { LoginForm } from "@/components/auth/login-form";
 
 const title = "Customer login — Zwits";
 const description =
-  "Log in to book services, track orders, manage your wallet and connect with trusted professionals on Zwits.";
+  "Log in to manage your Zwits bookings and connect with service providers in Harare.";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -27,7 +27,7 @@ function CustomerLogin() {
     <AuthShell
       variant="customer"
       title="Welcome Back"
-      subtitle="Log in to book services, track orders, manage your wallet, and connect with trusted professionals."
+      subtitle="Log in to manage bookings and connect with service providers in Harare."
       footer={
         <>
           Are you a professional?{" "}
