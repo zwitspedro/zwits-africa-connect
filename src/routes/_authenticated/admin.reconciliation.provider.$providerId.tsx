@@ -16,7 +16,7 @@ export const Route = createFileRoute(
     from: typeof s.from === "string" ? s.from : undefined,
     to: typeof s.to === "string" ? s.to : undefined,
   }),
-  head: () => ({ meta: [{ title: "Provider payout breakdown — Admin — Zwits" }] }),
+  head: () => ({ meta: [{"title": "Provider payout breakdown — Admin — Zwits"}, {"name": "description", "content": "Provider payout breakdown in your Zwits account for services and deliveries in Harare."}, {"property": "og:title", "content": "Provider payout breakdown — Admin — Zwits"}, {"property": "og:description", "content": "Provider payout breakdown in your Zwits account for services and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: AdminProviderBreakdownRoute,
 });
 

@@ -11,7 +11,7 @@ import { services } from "@/data/services";
 import { RoleGate } from "@/components/portal/role-gate";
 
 export const Route = createFileRoute("/_authenticated/admin/commissions")({
-  head: () => ({ meta: [{ title: "Commissions — Admin — Zwits" }] }),
+  head: () => ({ meta: [{"title": "Commissions — Admin — Zwits"}, {"name": "description", "content": "Commissions in your Zwits account for services and deliveries in Harare."}, {"property": "og:title", "content": "Commissions — Admin — Zwits"}, {"property": "og:description", "content": "Commissions in your Zwits account for services and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: AdminCommissionsScreenRoute,
 });
 

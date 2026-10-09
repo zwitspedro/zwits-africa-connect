@@ -9,7 +9,7 @@ import { useRoles } from "@/hooks/use-role";
 import { RoleGate } from "@/components/portal/role-gate";
 
 export const Route = createFileRoute("/_authenticated/admin/reconciliation/")({
-  head: () => ({ meta: [{ title: "Reconciliation — Admin — Zwits" }] }),
+  head: () => ({ meta: [{"title": "Reconciliation — Admin — Zwits"}, {"name": "description", "content": "Reconciliation in your Zwits account for services and deliveries in Harare."}, {"property": "og:title", "content": "Reconciliation — Admin — Zwits"}, {"property": "og:description", "content": "Reconciliation in your Zwits account for services and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: AdminReconciliationScreenRoute,
 });
 

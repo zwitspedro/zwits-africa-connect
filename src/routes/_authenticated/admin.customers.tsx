@@ -8,7 +8,7 @@ import { RoleGate } from "@/components/portal/role-gate";
 import { listAdminCustomers } from "@/lib/admin-metrics.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/customers")({
-  head: () => ({ meta: [{ title: "Customers — Zwits admin" }] }),
+  head: () => ({ meta: [{"title": "Customers — Zwits admin"}, {"name": "description", "content": "Customers in your Zwits account for services and deliveries in Harare."}, {"property": "og:title", "content": "Customers — Zwits admin"}, {"property": "og:description", "content": "Customers in your Zwits account for services and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: () => (
     <RoleGate role="admin">
       <AdminCustomers />

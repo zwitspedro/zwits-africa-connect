@@ -13,7 +13,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { services } from "@/data/services";
 
 export const Route = createFileRoute("/_authenticated/provider/setup")({
-  head: () => ({ meta: [{ title: "Provider onboarding — Zwits" }] }),
+  head: () => ({ meta: [{"title": "Provider onboarding — Zwits"}, {"name": "description", "content": "Provider onboarding in your Zwits account for services and deliveries in Harare."}, {"property": "og:title", "content": "Provider onboarding — Zwits"}, {"property": "og:description", "content": "Provider onboarding in your Zwits account for services and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: ProviderSetup,
 });
 

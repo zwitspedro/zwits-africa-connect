@@ -13,7 +13,7 @@ export const Route = createFileRoute("/_authenticated/admin/payments")({
   validateSearch: (s: Record<string, unknown>): Search => ({
     status: typeof s.status === "string" ? s.status : undefined,
   }),
-  head: () => ({ meta: [{ title: "Payments — Zwits admin" }] }),
+  head: () => ({ meta: [{"title": "Payments — Zwits admin"}, {"name": "description", "content": "Payments in your Zwits account for services and deliveries in Harare."}, {"property": "og:title", "content": "Payments — Zwits admin"}, {"property": "og:description", "content": "Payments in your Zwits account for services and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: () => (
     <RoleGate role="admin">
       <AdminPayments />
