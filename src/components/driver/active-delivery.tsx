@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { ZwitsLogo } from "@/components/zwits-logo";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -40,6 +41,10 @@ export function ActiveDelivery({ active }: { active: DeliveryRow[] }) {
     <div className="space-y-4">
       <Panel title="Active route" description={DELIVERY_STATUS_LABELS[current.status] ?? current.status}>
         <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <ZwitsLogo wordmark={false} pulse={current.status === "accepted" || current.status === "picked_up"} />
+            <span className="text-sm font-semibold">{DELIVERY_STATUS_LABELS[current.status] ?? current.status}</span>
+          </div>
           <ol className="space-y-3">
             <Step
               icon={MapPin}

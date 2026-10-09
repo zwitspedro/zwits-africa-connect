@@ -2,7 +2,8 @@ import { useEffect } from "react";
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { MapPin, Navigation, Package, Loader2 } from "lucide-react";
+import { MapPin, Navigation, Package } from "lucide-react";
+import { ZwitsLogo } from "@/components/zwits-logo";
 import { SiteShell } from "@/components/site-shell";
 import { Panel } from "@/components/provider/dashboard-kit";
 import { LiveTrackingMap } from "@/components/live-tracking-map";
@@ -98,7 +99,7 @@ function DeliveryTrackingPage() {
               <span className="text-muted-foreground">No drivers available right now — we'll keep trying.</span>
             ) : (
               <>
-                <Loader2 className="size-4 animate-spin text-primary-text" />
+                <ZwitsLogo wordmark={false} pulse />
                 <span className="text-muted-foreground">Offering your parcel to nearby drivers…</span>
               </>
             )}
@@ -106,7 +107,13 @@ function DeliveryTrackingPage() {
         )}
 
         {(delivery.status === "accepted" || delivery.status === "picked_up") && (
-          <LiveTrackingMap bookingId={delivery.id} destination={dest} />
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <ZwitsLogo wordmark={false} pulse />
+              <span className="text-sm font-semibold">{DELIVERY_STATUS_LABELS[delivery.status]}</span>
+            </div>
+            <LiveTrackingMap bookingId={delivery.id} destination={dest} />
+          </div>
         )}
 
         <Panel title="Route">

@@ -1,6 +1,16 @@
 :root { --motion-fast: 150ms; --motion-normal: 220ms; --motion-slow: 350ms; }
 @keyframes zwits-pulse { 50% { opacity: 0.55; } }
 .zwits-status-active { animation: zwits-pulse 2s ease-in-out infinite; }
+/* Keep the original dark-backed artwork intact on both surface themes. */
+.zwits-mark-surface { background: var(--zwits-obsidian); overflow: hidden; }
+@keyframes zwits-mark-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.82; transform: scale(0.96); }
+}
+.zwits-mark[data-pulse] { animation: zwits-mark-pulse 2.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .zwits-mark[data-pulse] { animation: none !important; }
+}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

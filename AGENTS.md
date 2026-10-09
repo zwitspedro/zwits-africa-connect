@@ -8,3 +8,4 @@
 - Scope experience themes to presentation shells using the matched route, never auth grants; colors must not change permissions or request behavior.
 - Self-host the two brand fonts with swap and no external font requests; preserve the data-light entry route without auth or data imports.
 - The entry route may load the existing compact Z mark only; no photographic media, maps, auth or provider data belong on the initial screen.
+- Keep the shared Z mark request-agnostic; opt into its pulse from existing matching/delivery state or a separate query-activity observer so the entry stays data-light.
