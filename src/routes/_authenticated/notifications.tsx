@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/_authenticated/notifications")({
-  head: () => ({ meta: [{ title: "Notifications — Zwits" }] }),
+  head: () => ({ meta: [{"title": "Notifications — Zwits"}, {"name": "description", "content": "Notifications in your Zwits account for services and deliveries in Harare."}, {"property": "og:title", "content": "Notifications — Zwits"}, {"property": "og:description", "content": "Notifications in your Zwits account for services and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: NotificationsPage,
 });
 

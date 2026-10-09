@@ -8,7 +8,7 @@ import { RoleGate } from "@/components/portal/role-gate";
 import { listAdminUploads } from "@/lib/admin-metrics.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/uploads")({
-  head: () => ({ meta: [{ title: "Failed uploads — Zwits admin" }] }),
+  head: () => ({ meta: [{"title": "Failed uploads — Zwits admin"}, {"name": "description", "content": "Failed uploads in your Zwits account for services and deliveries in Harare."}, {"property": "og:title", "content": "Failed uploads — Zwits admin"}, {"property": "og:description", "content": "Failed uploads in your Zwits account for services and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: () => (
     <RoleGate role="admin">
       <AdminUploads />

@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_authenticated/admin/providers")({
     status: typeof s.status === "string" ? s.status : undefined,
     online: s.online === true || s.online === "true" ? true : undefined,
   }),
-  head: () => ({ meta: [{ title: "Admin — Providers — Zwits" }] }),
+  head: () => ({ meta: [{"title": "Admin — Providers — Zwits"}, {"name": "description", "content": "Admin in your Zwits account for services and deliveries in Harare."}, {"property": "og:title", "content": "Admin — Providers — Zwits"}, {"property": "og:description", "content": "Admin in your Zwits account for services and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: AdminAdminProvidersRoute,
 });
 

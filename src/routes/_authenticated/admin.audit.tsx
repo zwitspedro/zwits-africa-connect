@@ -9,7 +9,7 @@ import { AuditExportButtons } from "@/components/audit-export-buttons";
 import { listAuditLog } from "@/lib/admin-metrics.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/audit")({
-  head: () => ({ meta: [{ title: "Audit log — Zwits admin" }] }),
+  head: () => ({ meta: [{"title": "Audit log — Zwits admin"}, {"name": "description", "content": "Audit log in your Zwits account for services and deliveries in Harare."}, {"property": "og:title", "content": "Audit log — Zwits admin"}, {"property": "og:description", "content": "Audit log in your Zwits account for services and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: () => (
     <RoleGate role="admin">
       <AdminAudit />

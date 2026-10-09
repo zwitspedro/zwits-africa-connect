@@ -36,7 +36,7 @@ export const Route = createFileRoute("/_authenticated/book/$category")({
   validateSearch: (search: Record<string, unknown>) => ({
     provider: typeof search.provider === "string" ? search.provider : undefined,
   }),
-  head: () => ({ meta: [{ title: "Book a service — Zwits" }] }),
+  head: () => ({ meta: [{"title": "Book a service — Zwits"}, {"name": "description", "content": "Book a service in your Zwits account for services and deliveries in Harare."}, {"property": "og:title", "content": "Book a service — Zwits"}, {"property": "og:description", "content": "Book a service in your Zwits account for services and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: BookCategory,
 });
 

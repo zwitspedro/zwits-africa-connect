@@ -17,7 +17,7 @@ import { MAX_WAVES } from "@/lib/dispatch-config";
 import { openDispute, listDisputes } from "@/lib/disputes.functions";
 
 export const Route = createFileRoute("/_authenticated/bookings/$id")({
-  head: () => ({ meta: [{ title: "Booking details — Zwits" }] }),
+  head: () => ({ meta: [{"title": "Booking details — Zwits"}, {"name": "description", "content": "Booking details in your Zwits account for services and deliveries in Harare."}, {"property": "og:title", "content": "Booking details — Zwits"}, {"property": "og:description", "content": "Booking details in your Zwits account for services and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: BookingDetailPage,
 });
 

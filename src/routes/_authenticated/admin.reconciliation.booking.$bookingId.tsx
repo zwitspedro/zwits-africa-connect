@@ -11,7 +11,7 @@ import { RoleGate } from "@/components/portal/role-gate";
 export const Route = createFileRoute(
   "/_authenticated/admin/reconciliation/booking/$bookingId",
 )({
-  head: () => ({ meta: [{ title: "Booking payout breakdown — Admin — Zwits" }] }),
+  head: () => ({ meta: [{"title": "Booking payout breakdown — Admin — Zwits"}, {"name": "description", "content": "Booking payout breakdown in your Zwits account for services and deliveries in Harare."}, {"property": "og:title", "content": "Booking payout breakdown — Admin — Zwits"}, {"property": "og:description", "content": "Booking payout breakdown in your Zwits account for services and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: AdminBookingBreakdownRoute,
 });
 

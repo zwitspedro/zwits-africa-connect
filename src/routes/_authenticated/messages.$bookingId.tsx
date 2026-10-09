@@ -10,7 +10,7 @@ import { isOpen, statusLabel } from "@/lib/job-lifecycle";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/messages/$bookingId")({
-  head: () => ({ meta: [{ title: "Messages — Zwits" }] }),
+  head: () => ({ meta: [{"title": "Messages — Zwits"}, {"name": "description", "content": "Messages in your Zwits account for services and deliveries in Harare."}, {"property": "og:title", "content": "Messages — Zwits"}, {"property": "og:description", "content": "Messages in your Zwits account for services and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: MessagesPage,
 });
 

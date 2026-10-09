@@ -8,7 +8,7 @@ import { listOnlineProviders } from "@/lib/admin-metrics.functions";
 import { useProvidersRealtime } from "@/hooks/use-providers-realtime";
 
 export const Route = createFileRoute("/_authenticated/admin/providers_/online")({
-  head: () => ({ meta: [{ title: "Providers online — Zwits admin" }] }),
+  head: () => ({ meta: [{"title": "Providers online — Zwits admin"}, {"name": "description", "content": "Providers online in your Zwits account for services and deliveries in Harare."}, {"property": "og:title", "content": "Providers online — Zwits admin"}, {"property": "og:description", "content": "Providers online in your Zwits account for services and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: () => (
     <RoleGate role="admin">
       <OnlineProviders />
