@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { ArrowLeft, Search } from "lucide-react";
 import { services, popularServices } from "@/data/services";
 import { rankServices } from "@/lib/service-search";
+import { useAreaAvailability, AvailabilityBadge } from "@/hooks/use-area-availability";
 
 /**
  * Step 1 of the progressive customer flow: "What do you need?"
@@ -35,6 +36,7 @@ export const Route = createFileRoute("/book/")({
 function BookEntry() {
   const [q, setQ] = useState("");
 
+  const avail = useAreaAvailability(q.trim().length > 0);
   const list = useMemo(() => {
     const term = q.trim().toLowerCase();
     if (!term) return services;
@@ -113,6 +115,7 @@ function BookEntry() {
                   <span className="block truncate text-[12px] text-muted-foreground">
                     {s.tagline}
                   </span>
+                  {q && <AvailabilityBadge slug={s.slug} counts={avail.data} loading={avail.isLoading} />}
                 </span>
                 <span className="shrink-0 text-[12px] text-muted-foreground">
                   from ${s.estimate.from}

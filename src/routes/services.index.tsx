@@ -6,6 +6,7 @@ import { PageHero } from "@/components/page-hero";
 import { Breadcrumbs } from "@/components/seo/seo-landing";
 import { services } from "@/data/services";
 import { rankServices } from "@/lib/service-search";
+import { useAreaAvailability, AvailabilityBadge } from "@/hooks/use-area-availability";
 import { seo, breadcrumbJsonLd, faqJsonLd, type Crumb, type Faq } from "@/lib/seo";
 
 const crumbs: Crumb[] = [
@@ -48,6 +49,7 @@ export const Route = createFileRoute("/services/")({
 function ServicesPage() {
   const [q, setQ] = useState("");
 
+  const avail = useAreaAvailability(q.trim().length > 0);
   const results = useMemo(() => {
     const term = q.trim().toLowerCase();
     if (!term) return services;
@@ -92,6 +94,7 @@ function ServicesPage() {
                 </div>
                 <h2 className="mt-5 font-display text-xl font-semibold">{s.name}</h2>
                 <p className="mt-1 text-sm text-gold">{s.tagline}</p>
+                {q && <span className="mt-2"><AvailabilityBadge slug={s.slug} counts={avail.data} loading={avail.isLoading} /></span>}
                 <p className="mt-3 flex-1 text-sm text-muted-foreground">{s.description}</p>
                 <div className="mt-4 flex flex-wrap gap-1.5">
                   {s.examples.map((e) => (

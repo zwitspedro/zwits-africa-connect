@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { services, popularServices } from "@/data/services";
 import { rankServices } from "@/lib/service-search";
+import { useAreaAvailability, AvailabilityBadge } from "@/hooks/use-area-availability";
 import { useMobileProfile } from "@/mobile/profile";
 import { useUnreadCount } from "@/mobile/notifications";
 import { useFavouriteProviders } from "@/mobile/local";
@@ -70,6 +71,7 @@ function CustomerHome() {
     },
   });
 
+  const avail = useAreaAvailability(q.trim().length > 0);
   const matches = useMemo(() => {
     return rankServices(services, q, 6);
   }, [q]);
@@ -123,7 +125,7 @@ function CustomerHome() {
                     className="flex min-h-11 items-center gap-3 rounded-xl px-3 text-left text-sm active:bg-muted"
                   >
                     <s.icon className="size-4 text-primary-text" />
-                    <span className="flex-1 truncate">{s.name}</span>
+                    <span className="min-w-0 flex-1"><span className="block truncate">{s.name}</span><AvailabilityBadge slug={s.slug} counts={avail.data} loading={avail.isLoading} /></span>
                     <span className="text-xs text-muted-foreground">
                       from {money(s.estimate.from)}
                     </span>
