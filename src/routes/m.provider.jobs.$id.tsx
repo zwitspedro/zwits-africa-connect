@@ -13,6 +13,7 @@ import {
   type JobStatus,
 } from "@/lib/job-lifecycle";
 import { openNavigation } from "@/mobile/maps";
+import { CashReceivedButton } from "@/components/provider/cash-received-button";
 import { captureAndUpload } from "@/mobile/media";
 import { requireOnline } from "@/mobile/offline";
 import {
@@ -70,7 +71,7 @@ function ProviderJobDetail() {
     onError: (e: any) => toast.error(e.message ?? "Could not update the job"),
   });
 
-  const addPhoto = async () => {
+  const _unusedAddPhoto = async () => {
     if (!user) return;
     try {
       const res = await captureAndUpload({ bucket: "job-photos", userId: user.id, scope: id });
@@ -205,12 +206,14 @@ function ProviderJobDetail() {
           </Section>
         )}
 
-        <Section title="Completion evidence">
-          <GhostButton onClick={() => void addPhoto()}>
-            <Camera className="size-4" /> Add photo (
-            {((j.completion_photos ?? []) as string[]).length})
-          </GhostButton>
-        </Section>
+        {j.status === "completed" && j.payment_status !== "paid" && (
+          <Section title="Payment">
+            <Card>
+              <p className="text-sm text-muted-foreground">Collected {money(j.price ?? j.budget)} in cash? Record it to close the job.</p>
+              <CashReceivedButton bookingId={id} className="mt-3 w-full" />
+            </Card>
+          </Section>
+        )}
 
         {action && (
           <div className="sticky bottom-24 px-4">
