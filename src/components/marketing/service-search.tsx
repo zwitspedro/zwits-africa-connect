@@ -3,6 +3,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { Search, ArrowRight } from "lucide-react";
 import { services } from "@/data/services";
 import { rankServices } from "@/lib/service-search";
+import { useAreaAvailability, AvailabilityBadge } from "@/hooks/use-area-availability";
 
 /** Big Zimbabwe-first "what do you need today?" search with live suggestions. */
 export function ServiceSearch() {
@@ -14,6 +15,8 @@ export function ServiceSearch() {
   const matches = useMemo(() => {
     return rankServices(services, q, 6);
   }, [q]);
+
+  const avail = useAreaAvailability(q.trim().length > 0);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,6 +72,7 @@ export function ServiceSearch() {
                   <span className="min-w-0">
                     <span className="block truncate text-sm font-medium">{s.name}</span>
                     <span className="block truncate text-xs text-muted-foreground">{s.tagline}</span>
+                    <AvailabilityBadge slug={s.slug} counts={avail.data} loading={avail.isLoading} />
                   </span>
                   <span className="ml-auto shrink-0 text-xs text-muted-foreground">
                     from ${s.estimate.from}

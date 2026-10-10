@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { services } from "@/data/services";
 import { rankServices } from "@/lib/service-search";
+import { useAreaAvailability, AvailabilityBadge } from "@/hooks/use-area-availability";
 import { AppBar, Card, Empty, Screen, Section, money } from "@/mobile/ui";
 
 export const Route = createFileRoute("/m/customer/categories")({
@@ -12,6 +13,7 @@ function CategoriesScreen() {
   const [q, setQ] = useState("");
   const navigate = useNavigate();
 
+  const avail = useAreaAvailability(q.trim().length > 0);
   const list = useMemo(() => {
     const term = q.trim().toLowerCase();
     if (!term) return services;
@@ -51,6 +53,7 @@ function CategoriesScreen() {
                   </span>
                   <p className="mt-2 text-sm font-semibold">{s.name}</p>
                   <p className="line-clamp-2 text-[11px] text-muted-foreground">{s.tagline}</p>
+                  {q && <AvailabilityBadge slug={s.slug} counts={avail.data} loading={avail.isLoading} />}
                   <p className="mt-2 text-[11px] font-medium text-primary-text">
                     from {money(s.estimate.from)}/{s.estimate.unit}
                   </p>

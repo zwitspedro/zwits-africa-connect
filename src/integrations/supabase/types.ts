@@ -1939,6 +1939,13 @@ export type Database = {
         Args: { _offer_id: string; _user_id: string }
         Returns: Json
       }
+      available_provider_counts: {
+        Args: { _city: string }
+        Returns: {
+          available_count: number
+          category: string
+        }[]
+      }
       booking_status_canonical: { Args: { _status: string }; Returns: string }
       booking_transition_allowed: {
         Args: { _new: string; _old: string }
