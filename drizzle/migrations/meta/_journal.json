@@ -8,6 +8,13 @@
       "when": 1791647048191,
       "tag": "0000_available_provider_counts",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791647523886,
+      "tag": "0001_settle_booking_cash_net",
+      "breakpoints": true
     }
   ]
 }
