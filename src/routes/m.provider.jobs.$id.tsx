@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Camera, MapPin, MessageSquare, Navigation, Phone } from "lucide-react";
+import { MapPin, MessageSquare, Navigation, Phone } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -14,7 +14,6 @@ import {
 } from "@/lib/job-lifecycle";
 import { openNavigation } from "@/mobile/maps";
 import { CashReceivedButton } from "@/components/provider/cash-received-button";
-import { captureAndUpload } from "@/mobile/media";
 import { requireOnline } from "@/mobile/offline";
 import {
   AppBar,
@@ -70,24 +69,6 @@ function ProviderJobDetail() {
     },
     onError: (e: any) => toast.error(e.message ?? "Could not update the job"),
   });
-
-  const _unusedAddPhoto = async () => {
-    if (!user) return;
-    try {
-      const res = await captureAndUpload({ bucket: "job-photos", userId: user.id, scope: id });
-      if (!res?.path) return;
-      const next = [...(((job.data as any)?.completion_photos ?? []) as string[]), res.path];
-      const { error } = await supabase
-        .from("bookings")
-        .update({ completion_photos: next } as any)
-        .eq("id", id);
-      if (error) throw error;
-      toast.success("Photo attached");
-      void job.refetch();
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Upload failed");
-    }
-  };
 
   if (job.isLoading) {
     return (
