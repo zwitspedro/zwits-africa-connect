@@ -281,7 +281,7 @@ export const confirmCompletion = createServerFn({ method: "POST" })
     // instead of a second payment release / notification.
     const { data: booking } = await db
       .from("bookings")
-      .update({ customer_confirmed_at: new Date().toISOString(), payment_status: "paid" })
+      .update({ customer_confirmed_at: new Date().toISOString() })
       .eq("id", data.bookingId)
       .eq("customer_id", context.userId)
       .eq("status", "completed")
