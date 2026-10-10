@@ -1,6 +1,7 @@
 import { CheckCircle2 } from "lucide-react";
 import { Panel, EmptyState } from "./dashboard-kit";
 import type { ProviderData } from "./use-provider-data";
+import { CashReceivedButton } from "./cash-received-button";
 
 export function CompletedJobsSection({ data }: { data: ProviderData }) {
   const { completed, netFor } = data;
@@ -21,6 +22,7 @@ export function CompletedJobsSection({ data }: { data: ProviderData }) {
               <span className="min-w-0">
                 <span className="block truncate text-sm font-medium capitalize">{j.category}</span>
                 <span className="block truncate text-[11px] text-muted-foreground">{j.address}</span>
+                {j.payment_status !== "paid" && <CashReceivedButton bookingId={j.id} className="mt-2" />}
               </span>
               <span className="text-right">
                 <span className="block text-sm font-semibold tabular-nums text-success">

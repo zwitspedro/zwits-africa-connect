@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Camera, MapPin, MessageSquare, Navigation, Phone } from "lucide-react";
+import { MapPin, MessageSquare, Navigation, Phone } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -13,7 +13,7 @@ import {
   type JobStatus,
 } from "@/lib/job-lifecycle";
 import { openNavigation } from "@/mobile/maps";
-import { captureAndUpload } from "@/mobile/media";
+import { CashReceivedButton } from "@/components/provider/cash-received-button";
 import { requireOnline } from "@/mobile/offline";
 import {
   AppBar,
@@ -69,24 +69,6 @@ function ProviderJobDetail() {
     },
     onError: (e: any) => toast.error(e.message ?? "Could not update the job"),
   });
-
-  const addPhoto = async () => {
-    if (!user) return;
-    try {
-      const res = await captureAndUpload({ bucket: "job-photos", userId: user.id, scope: id });
-      if (!res?.path) return;
-      const next = [...(((job.data as any)?.completion_photos ?? []) as string[]), res.path];
-      const { error } = await supabase
-        .from("bookings")
-        .update({ completion_photos: next } as any)
-        .eq("id", id);
-      if (error) throw error;
-      toast.success("Photo attached");
-      void job.refetch();
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Upload failed");
-    }
-  };
 
   if (job.isLoading) {
     return (
@@ -205,12 +187,14 @@ function ProviderJobDetail() {
           </Section>
         )}
 
-        <Section title="Completion evidence">
-          <GhostButton onClick={() => void addPhoto()}>
-            <Camera className="size-4" /> Add photo (
-            {((j.completion_photos ?? []) as string[]).length})
-          </GhostButton>
-        </Section>
+        {j.status === "completed" && j.payment_status !== "paid" && (
+          <Section title="Payment">
+            <Card>
+              <p className="text-sm text-muted-foreground">Collected {money(j.price ?? j.budget)} in cash? Record it to close the job.</p>
+              <CashReceivedButton bookingId={id} className="mt-3 w-full" />
+            </Card>
+          </Section>
+        )}
 
         {action && (
           <div className="sticky bottom-24 px-4">

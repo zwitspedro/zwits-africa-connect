@@ -66,7 +66,7 @@ export const confirmBookingPayment = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => z.object({ bookingId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
-    const { admin, verifyPayment, markPaid, settle } = await import("./payments.server");
+    const { admin, verifyPayment, markPaid, settle, openBookingPayment, bookingAmount } = await import("./payments.server");
 
     const { data: isAdmin } = await context.supabase.rpc("has_role", {
       _user_id: context.userId,
@@ -77,7 +77,7 @@ export const confirmBookingPayment = createServerFn({ method: "POST" })
 
     const { data: booking, error } = await db
       .from("bookings")
-      .select("id, status, category, customer_id, provider_id, providers(user_id)")
+      .select("id, status, category, customer_id, provider_id, price, budget, payment_method, providers(user_id)")
       .eq("id", data.bookingId)
       .maybeSingle();
     if (error) throw new Error(error.message);
@@ -92,11 +92,15 @@ export const confirmBookingPayment = createServerFn({ method: "POST" })
       throw new Error("The job must be completed before payment is settled");
     }
 
-    const { data: payment } = await db
+    let { data: payment } = await db
       .from("payments")
       .select("*")
       .eq("booking_id", booking.id)
       .maybeSingle();
+    // Cash bookings made from the app never open a payment record up front.
+    if (!payment && (booking.payment_method ?? "cash") === "cash") {
+      payment = await openBookingPayment(db, booking.id, booking.customer_id, "cash", bookingAmount(booking as any), null);
+    }
     if (!payment) throw new Error("No payment has been started for this booking");
 
     let current = payment;
