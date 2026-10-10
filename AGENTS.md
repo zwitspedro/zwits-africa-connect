@@ -9,3 +9,4 @@
 - Self-host the two brand fonts with swap and no external font requests; preserve the data-light entry route without auth or data imports.
 - The entry route may load the existing compact Z mark only; no photographic media, maps, auth or provider data belong on the initial screen.
 - Keep the shared Z mark request-agnostic; opt into its pulse from existing matching/delivery state or a separate query-activity observer so the entry stays data-light.
+- Cash bookings settle to the provider wallet as commission owed (earning offset by cash held); only platform-collected money becomes withdrawable.
