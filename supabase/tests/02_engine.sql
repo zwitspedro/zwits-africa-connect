@@ -149,7 +149,7 @@ BEGIN
   END;
   IF NOT failed THEN RAISE EXCEPTION 'FAIL T8 settled without payment'; END IF;
 
-  -- T9: settlement credits the wallet once ----------------------------------
+  -- T9: cash settlement records commission owed once (provider already holds the cash)
   PERFORM set_config('zwits.trusted', 'on', true);
   INSERT INTO public.payments (booking_id, customer_id, amount, currency, payment_method, status, paid_at)
   VALUES (bk, cust, 100, 'USD', 'cash', 'paid', now());
@@ -157,13 +157,13 @@ BEGIN
   PERFORM public.settle_booking(bk);
   SELECT available_balance INTO bal FROM public.provider_wallets WHERE provider_user_id = ua;
   comm := public.calc_commission('plumbing', 100);
-  IF bal <> 100 - comm THEN RAISE EXCEPTION 'FAIL T9 balance % expected %', bal, 100 - comm; END IF;
+  IF bal <> -comm THEN RAISE EXCEPTION 'FAIL T9 cash balance % expected %', bal, -comm; END IF;
 
   PERFORM public.settle_booking(bk);
   SELECT available_balance INTO bal2 FROM public.provider_wallets WHERE provider_user_id = ua;
   IF bal2 <> bal THEN RAISE EXCEPTION 'FAIL T9 double credit: % -> %', bal, bal2; END IF;
   SELECT count(*) INTO n FROM public.wallet_transactions WHERE booking_id = bk;
-  IF n <> 2 THEN RAISE EXCEPTION 'FAIL T9 ledger entries = %', n; END IF;
+  IF n <> 3 THEN RAISE EXCEPTION 'FAIL T9 ledger entries = %', n; END IF;
 
   -- T10: cancellation rules --------------------------------------------------
   failed := false;
