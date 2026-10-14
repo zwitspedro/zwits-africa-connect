@@ -84,7 +84,7 @@ export function EarningsSection({ data }: { data: ProviderData }) {
 
       <Panel
         title="Payout history"
-        description="Net payout = job price − platform commission"
+        description="Your earnings = job price − 10% Zwits commission (as set out in the Terms). Cash jobs are paid to you directly by the customer."
         action={
           <button
             onClick={downloadCsv}

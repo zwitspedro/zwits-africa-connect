@@ -8,10 +8,10 @@ import { Panel, StatCard, EmptyState } from "./dashboard-kit";
 import type { ProviderData } from "./use-provider-data";
 
 const METHODS = [
-  { id: "ecocash", label: "EcoCash", hint: "Mobile money number" },
-  { id: "innbucks", label: "InnBucks", hint: "Mobile money number" },
-  { id: "bank_transfer", label: "Bank transfer", hint: "Account number" },
-  { id: "cash", label: "Cash pickup", hint: "Pickup branch / contact" },
+  { id: "bank_transfer", label: "Bank transfer", hint: "Bank name and account number", live: true },
+  { id: "cash", label: "Cash pickup", hint: "Pickup contact number", live: true },
+  { id: "ecocash", label: "EcoCash", hint: "Coming soon", live: false },
+  { id: "innbucks", label: "InnBucks", hint: "Coming soon", live: false },
 ] as const;
 
 type MethodId = (typeof METHODS)[number]["id"];
@@ -24,7 +24,7 @@ export function WalletSection({ data }: { data: ProviderData }) {
   const submitWithdrawal = useServerFn(requestWithdrawal);
 
   const available = Number(wallet?.available_balance ?? 0);
-  const [method, setMethod] = useState<MethodId>("ecocash");
+  const [method, setMethod] = useState<MethodId>("bank_transfer");
   const [destination, setDestination] = useState("");
   const [amount, setAmount] = useState("");
 
@@ -69,11 +69,11 @@ export function WalletSection({ data }: { data: ProviderData }) {
     <div className="grid gap-4">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
         <StatCard
-          label="Available balance"
-          value={walletLoading ? "…" : money(available)}
+          label={available < 0 ? "Balance (commission owed)" : "Available balance"}
+          value={walletLoading ? "…" : available < 0 ? `−${money(Math.abs(available))}` : money(available)}
           icon={Wallet}
           accent="positive"
-          sub="Ready to withdraw"
+          sub={available > 0 ? "Ready to withdraw" : "Nothing to withdraw yet"}
         />
         <StatCard
           label="Pending clearance"
@@ -87,7 +87,20 @@ export function WalletSection({ data }: { data: ProviderData }) {
         />
       </div>
 
-      <Panel title="Withdraw funds" description="Payouts are processed from your available balance.">
+      {available < 0 && (
+        <div className="rounded-2xl border border-border bg-muted/40 p-4 text-sm">
+          <div className="font-semibold">Commission owed: {money(Math.abs(available))}</div>
+          <p className="mt-1 text-xs text-muted-foreground">
+            You keep the cash customers pay you. The 10% Zwits commission on those jobs is recorded
+            here and is settled against future earnings. Payouts open once your balance is above $0.00.
+          </p>
+        </div>
+      )}
+
+      <Panel
+        title="Request a payout"
+        description="Only money Zwits holds for you can be paid out. Cash you received from customers is already yours. Requests are reviewed and paid manually by the Zwits team."
+      >
         {pendingRequest ? (
           <div className="rounded-2xl border border-border/70 bg-background/40 p-4 text-sm">
             You have a withdrawal of{" "}
@@ -108,8 +121,10 @@ export function WalletSection({ data }: { data: ProviderData }) {
                 <button
                   type="button"
                   key={m.id}
-                  onClick={() => setMethod(m.id)}
-                  className={`rounded-2xl border p-4 text-left transition ${
+                  disabled={!m.live}
+                  aria-disabled={!m.live}
+                  onClick={() => m.live && setMethod(m.id)}
+                  className={`rounded-2xl border p-4 text-left transition disabled:cursor-not-allowed disabled:opacity-50 ${
                     method === m.id
                       ? "border-primary bg-primary/5"
                       : "border-border/70 bg-background/40 hover:bg-muted/40"
