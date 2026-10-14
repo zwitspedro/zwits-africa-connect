@@ -88,7 +88,7 @@ export function WalletSection({ data }: { data: ProviderData }) {
       </div>
 
       {available < 0 && (
-        <div className="rounded-2xl border border-warning/40 bg-warning/10 p-4 text-sm">
+        <div className="rounded-2xl border border-border bg-muted/40 p-4 text-sm">
           <div className="font-semibold">Commission owed: {money(Math.abs(available))}</div>
           <p className="mt-1 text-xs text-muted-foreground">
             You keep the cash customers pay you. The 10% Zwits commission on those jobs is recorded
