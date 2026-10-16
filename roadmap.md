@@ -1,5 +1,12 @@
 # Current request
 
+# Admin control centre
+- [ ] Audit existing admin workflows and report P0/P1/P2 gaps.
+- [ ] Harden verified financial and metric integrity defects.
+- [ ] Complete connected navigation, operational directories and search-quality inspection.
+- [ ] Verify authorized admin flows, regression tests and requested viewport widths.
+- [ ] Deliver an honest acceptance report with remaining dependencies.
+
 - [x] Add subtle Z pulses for matching, active delivery and existing network activity; verify idle/network and reduced-motion behavior.
 - [ ] Verify populated matching and active-delivery journeys (no eligible matching booking or active delivery available in the test account).
 

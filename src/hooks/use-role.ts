@@ -12,7 +12,8 @@ export function useRoles() {
     enabled: !!user,
     staleTime: 60_000,
     queryFn: async () => {
-      const { data, error } = await supabase.from("user_roles").select("role").eq("user_id", user!.id);
+      if (!user) throw new Error("Sign in to load roles");
+      const { data, error } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
       if (error) throw error;
       const roles = (data ?? []).map((r) => r.role as AppRole);
       return roles.length ? roles : (["customer"] as AppRole[]);
@@ -47,7 +48,8 @@ export function useActiveRole() {
     setStored(role);
   }, []);
 
-  return { activeRole, setActiveRole, roles: available, isLoading };
+  const { loading: authLoading } = useAuth();
+  return { activeRole, setActiveRole, roles: available, isLoading: isLoading || authLoading };
 }
 
 /**

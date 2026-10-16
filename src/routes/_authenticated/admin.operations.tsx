@@ -56,7 +56,7 @@ function OperationsPage() {
         </div>
         <h1 className="mt-2 font-display text-3xl font-bold">Disputes &amp; payouts</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Everything here writes to the ledger — adjustments and refunds are auditable.
+          Cash on completion is live. Payout settlement and customer refunds are unavailable until verified payment rails are connected.
         </p>
 
         <div className="mt-5 grid grid-cols-2 gap-1 rounded-md bg-muted p-1 text-xs">
@@ -94,11 +94,12 @@ function DisputesPanel() {
   const resolve = useServerFn(resolveDispute);
   const [openId, setOpenId] = useState<string | null>(null);
   const [resolution, setResolution] = useState("");
-  const [refund, setRefund] = useState("");
+  const [page, setPage] = useState(0);
+  const [filter, setFilter] = useState<"open" | "investigating" | "resolved" | "rejected" | "all">("open");
 
   const disputes = useQuery({
-    queryKey: ["admin-disputes"],
-    queryFn: () => fetchDisputes({ data: { page: 0 } }),
+    queryKey: ["admin-disputes", page, filter],
+    queryFn: () => fetchDisputes({ data: { page, status: filter } }),
   });
 
   const act = useMutation({
@@ -108,23 +109,21 @@ function DisputesPanel() {
           disputeId: vars.id,
           status: vars.status,
           resolution: resolution.trim() || null,
-          refundProviderEarnings: refund ? Number(refund) : undefined,
+
         },
       }),
     onSuccess: () => {
       toast.success("Dispute updated");
       setOpenId(null);
       setResolution("");
-      setRefund("");
+
       void qc.invalidateQueries({ queryKey: ["admin-disputes"] });
       void qc.invalidateQueries({ queryKey: ["admin-metrics"] });
     },
     onError: (e: any) => toast.error(e?.message ?? "Could not update dispute"),
   });
 
-  const rows = (disputes.data?.rows ?? []).filter((d: any) =>
-    ["open", "investigating"].includes(d.status),
-  );
+  const rows = disputes.data?.rows ?? [];
 
   return (
     <div className="border-t border-border py-6">
@@ -133,6 +132,7 @@ function DisputesPanel() {
         <h2 className="font-display text-lg font-semibold">Open disputes</h2>
       </div>
 
+      <div className="mt-4 flex flex-wrap gap-2"><select aria-label="Dispute status" className="min-h-12 rounded-md border border-input bg-background px-3" value={filter} onChange={e => {setFilter(e.target.value as typeof filter);setPage(0)}}>{["open","investigating","resolved","rejected","all"].map(s => <option key={s}>{s}</option>)}</select><Button variant="outline" disabled={page===0} onClick={()=>setPage(p=>p-1)}>Previous</Button><Button variant="outline" disabled={(page+1)*25>=(disputes.data?.total??0)} onClick={()=>setPage(p=>p+1)}>Next</Button></div>
       {disputes.isLoading ? (
         <div className="mt-4 h-16 animate-pulse rounded-2xl bg-muted/50" />
       ) : disputes.error ? (
@@ -151,7 +151,7 @@ function DisputesPanel() {
                 <p className="mt-1 text-xs text-muted-foreground">{d.description}</p>
               )}
               <p className="mt-1 text-[11px] text-muted-foreground">
-                Booking {String(d.booking_id).slice(0, 8).toUpperCase()} ·{" "}
+                {d.booking_id ? `Booking ${String(d.booking_id).slice(0,8).toUpperCase()}` : "Delivery dispute"} ·{" "}
                 {new Date(d.created_at).toLocaleString()}
               </p>
 
@@ -164,30 +164,23 @@ function DisputesPanel() {
                     placeholder="Resolution notes shared with the customer"
                     className="rounded-xl border border-border bg-background p-3 text-sm"
                   />
-                  <Input aria-label="Reverse provider earnings in USD"
-                    value={refund}
-                    inputMode="decimal"
-                    onChange={(e) => setRefund(e.target.value)}
-                    placeholder="Reverse provider earnings (optional, $)"
-                    className="min-h-12 rounded-xl border border-border bg-background px-3 text-sm"
-                  />
                   <div className="flex flex-wrap gap-2">
                     <Button variant="outline"
-                      disabled={act.isPending}
-                      onClick={() => act.mutate({ id: d.id, status: "resolved" })}
+                      disabled={act.isPending || resolution.trim().length < 3}
+                      onClick={() => {if(window.confirm("Resolve this dispute with these notes? No refund will be issued.")) act.mutate({ id: d.id, status: "resolved" });}}
                       className="rounded-md bg-primary px-4 py-2 text-xs font-medium text-primary-foreground disabled:opacity-60"
                     >
                       {act.isPending ? "Saving…" : "Resolve"}
                     </Button>
                     <Button variant="outline"
-                      disabled={act.isPending}
-                      onClick={() => act.mutate({ id: d.id, status: "rejected" })}
+                      disabled={act.isPending || resolution.trim().length < 3}
+                      onClick={() => {if(window.confirm("Reject this dispute with these notes?")) act.mutate({ id: d.id, status: "rejected" });}}
                       className="rounded-md border border-border px-4 py-2 text-xs font-medium hover:bg-muted"
                     >
                       Reject
                     </Button>
                     <Button variant="outline"
-                      disabled={act.isPending}
+                      disabled={act.isPending || resolution.trim().length < 3}
                       onClick={() => act.mutate({ id: d.id, status: "investigating" })}
                       className="rounded-md border border-border px-4 py-2 text-xs font-medium hover:bg-muted"
                     >
@@ -294,24 +287,24 @@ function WithdrawalsPanel() {
                   {w.status === "requested" && (
                     <Button variant="outline"
                       disabled={act.isPending}
-                      onClick={() => act.mutate({ id: w.id, outcome: "processing" })}
+                      onClick={() => { const reason = window.prompt("Reason for placing this request under review?"); if (reason && reason.trim().length >= 3 && window.confirm("Reserve this request for review? No payout will be sent.")) act.mutate({ id: w.id, outcome: "processing", reason }); }}
                       className="rounded-md border border-border px-3 py-1.5 text-xs hover:bg-muted"
                     >
                       Processing
                     </Button>
                   )}
                   <Button variant="outline"
-                    disabled={act.isPending}
-                    onClick={() => act.mutate({ id: w.id, outcome: "paid" })}
+                    disabled
+                    title="A verified payout rail and settlement evidence are required"
                     className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground disabled:opacity-60"
                   >
-                    {act.isPending && <Loader2 className="size-3 animate-spin" />} Mark paid
+                    {act.isPending && <Loader2 className="size-3 animate-spin" />} Settlement unavailable
                   </Button>
                   <Button variant="outline"
                     disabled={act.isPending}
                     onClick={() => {
-                      const reason = window.prompt("Why did this payout fail?") ?? undefined;
-                      act.mutate({ id: w.id, outcome: "failed", reason });
+                      const reason = window.prompt("Why did this payout fail?");
+                      if (reason && reason.trim().length >= 3 && window.confirm("Return reserved funds to the provider wallet?")) act.mutate({ id: w.id, outcome: "failed", reason });
                     }}
                     className="rounded-md border border-destructive/40 px-3 py-1.5 text-xs text-destructive hover:bg-destructive/10"
                   >

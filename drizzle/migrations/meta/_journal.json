@@ -15,6 +15,41 @@
       "when": 1791647523886,
       "tag": "0001_settle_booking_cash_net",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792140243823,
+      "tag": "0002_admin_control_integrity",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792140267680,
+      "tag": "0003_withdrawal_guard_rpc_context",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792140318671,
+      "tag": "0004_admin_period_aggregates",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792140675470,
+      "tag": "0005_admin_verification_atomic_audit",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792140807898,
+      "tag": "0006_admin_customer_directory",
+      "breakpoints": true
     }
   ]
 }

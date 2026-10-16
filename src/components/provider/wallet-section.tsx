@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Wallet, ArrowDownToLine, Loader2, AlertTriangle } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -8,7 +9,7 @@ import { Panel, StatCard, EmptyState } from "./dashboard-kit";
 import type { ProviderData } from "./use-provider-data";
 
 const METHODS = [
-  { id: "bank_transfer", label: "Bank transfer", hint: "Bank name and account number", live: true },
+  { id: "bank_transfer", label: "Bank transfer", hint: "Coming soon", live: false },
   { id: "cash", label: "Cash pickup", hint: "Pickup contact number", live: true },
   { id: "ecocash", label: "EcoCash", hint: "Coming soon", live: false },
   { id: "innbucks", label: "InnBucks", hint: "Coming soon", live: false },
@@ -24,7 +25,7 @@ export function WalletSection({ data }: { data: ProviderData }) {
   const submitWithdrawal = useServerFn(requestWithdrawal);
 
   const available = Number(wallet?.available_balance ?? 0);
-  const [method, setMethod] = useState<MethodId>("bank_transfer");
+  const [method, setMethod] = useState<MethodId>("cash");
   const [destination, setDestination] = useState("");
   const [amount, setAmount] = useState("");
 
@@ -39,7 +40,7 @@ export function WalletSection({ data }: { data: ProviderData }) {
       }),
     onSuccess: () => {
       toast.success("Withdrawal requested", {
-        description: "We'll notify you as soon as it's paid out.",
+        description: "Your funds are reserved for review; no payout has been sent.",
       });
       setAmount("");
       setDestination("");
@@ -92,14 +93,14 @@ export function WalletSection({ data }: { data: ProviderData }) {
           <div className="font-semibold">Commission owed: {money(Math.abs(available))}</div>
           <p className="mt-1 text-xs text-muted-foreground">
             You keep the cash customers pay you. The 10% Zwits commission on those jobs is recorded
-            here and is settled against future earnings. Payouts open once your balance is above $0.00.
+            here. Commission repayment arrangements are not connected yet. Payouts open once your balance is above $0.00.
           </p>
         </div>
       )}
 
       <Panel
         title="Request a payout"
-        description="Only money Zwits holds for you can be paid out. Cash you received from customers is already yours. Requests are reviewed and paid manually by the Zwits team."
+        description="Only money Zwits holds for you can be paid out. Cash you received from customers is already yours. Requests reserve your funds for review. Settlement remains unavailable until a verified payout process is connected."
       >
         {pendingRequest ? (
           <div className="rounded-2xl border border-border/70 bg-background/40 p-4 text-sm">
@@ -118,7 +119,7 @@ export function WalletSection({ data }: { data: ProviderData }) {
           >
             <div className="grid gap-2 sm:grid-cols-2">
               {METHODS.map((m) => (
-                <button
+                <Button
                   type="button"
                   key={m.id}
                   disabled={!m.live}
@@ -132,7 +133,7 @@ export function WalletSection({ data }: { data: ProviderData }) {
                 >
                   <div className="text-sm font-medium">{m.label}</div>
                   <div className="text-[11px] text-muted-foreground">{m.hint}</div>
-                </button>
+                </Button>
               ))}
             </div>
 
@@ -141,7 +142,7 @@ export function WalletSection({ data }: { data: ProviderData }) {
               <input
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
-                placeholder={METHODS.find((m) => m.id === method)!.hint}
+                placeholder={METHODS.find((m) => m.id === method)?.hint}
                 className="min-h-11 rounded-xl border border-border bg-background px-3 text-sm text-foreground"
               />
             </label>
@@ -163,7 +164,7 @@ export function WalletSection({ data }: { data: ProviderData }) {
               </p>
             )}
 
-            <button
+            <Button
               disabled={!canSubmit}
               className="inline-flex min-h-11 w-fit items-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground disabled:opacity-50"
             >
@@ -173,7 +174,7 @@ export function WalletSection({ data }: { data: ProviderData }) {
                 <ArrowDownToLine className="size-4" />
               )}
               {withdraw.isPending ? "Requesting…" : "Request withdrawal"}
-            </button>
+            </Button>
           </form>
         )}
       </Panel>

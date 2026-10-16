@@ -30,11 +30,13 @@ export const Route = createFileRoute("/_authenticated/admin/providers")({
 const STATUS_FILTERS = ["pending", "approved", "revoked"] as const;
 
 function AdminProviders() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { data: roles, isLoading: rolesLoading } = useRoles();
   const qc = useQueryClient();
   const isAdmin = (roles ?? []).includes("admin");
   const { status: statusFilter, online } = Route.useSearch();
+  const [page,setPage]=useState(0);
+  const [search,setSearch]=useState("");
 
   // Realtime first: any providers-table change invalidates this list instantly.
   // Polling (30s, background) only kicks in while "Online now" is active AND
@@ -45,16 +47,18 @@ function AdminProviders() {
     isLoading,
     isFetching,
     dataUpdatedAt,
+    error:providerError,
   } = useQuery({
-    queryKey: ["admin-providers"],
+    queryKey: ["admin-providers", page,search,statusFilter,online],
     enabled: !!user && isAdmin,
     refetchInterval: online && !providersLive ? 30_000 : false,
     placeholderData: (prev) => prev,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("providers")
-        .select(PROVIDER_SAFE_COLUMNS)
-        .order("created_at", { ascending: false });
+      let q = supabase.from("providers").select(PROVIDER_SAFE_COLUMNS).order("created_at", { ascending: false }).range(page*25,page*25+24);
+      if(online) q=q.eq("available",true).eq("verification_status","approved");
+      else if(statusFilter && ["pending","approved","revoked","unverified"].includes(statusFilter)) q=q.eq("verification_status",statusFilter as "pending"|"approved"|"revoked"|"unverified");
+      if(search.trim()) q=q.ilike("business_name",`%${search.replace(/[%_]/g,"").trim()}%`);
+      const {data,error}=await q;
       if (error) throw error;
       return data;
     },
@@ -93,7 +97,7 @@ function AdminProviders() {
     return true;
   });
 
-  if (rolesLoading) return <SiteShell><div className="p-10 text-sm text-muted-foreground">Loading…</div></SiteShell>;
+  if (rolesLoading || authLoading) return <SiteShell><div className="p-10 text-sm text-muted-foreground">Loading…</div></SiteShell>;
   if (!isAdmin) {
     return (
       <SiteShell>
@@ -159,6 +163,9 @@ function AdminProviders() {
           ))}
         </div>
 
+        <Input aria-label="Search providers" className="mt-4 max-w-sm" placeholder="Search business name" value={search} onChange={e=>{setSearch(e.target.value);setPage(0)}}/>
+        <div className="mt-3 flex gap-2"><Button variant="outline" disabled={page===0} onClick={()=>setPage(p=>p-1)}>Previous</Button><Button variant="outline" disabled={(providers?.length??0)<25} onClick={()=>setPage(p=>p+1)}>Next</Button></div>
+        {providerError && <p role="alert" className="mt-4 text-destructive">Provider list unavailable. Retry by refreshing.</p>}
         {isLoading && <p className="mt-6 text-sm text-muted-foreground">Loading providers…</p>}
 
         <ul className="mt-6 grid gap-3">
@@ -166,11 +173,11 @@ function AdminProviders() {
             <AdminProviderRow
               key={p.id}
               provider={p}
-              onApprove={() => setStatus.mutate({ id: p.id, status: "approved" })}
+              onApprove={() => {const reason=window.prompt("Review reason for approval?");if(reason && reason.trim().length>=3 && window.confirm("Approve this provider after reviewing their documents?")) setStatus.mutate({id:p.id,status:"approved",reason});}}
               onRevoke={(reason) => setStatus.mutate({ id: p.id, status: "revoked", reason })}
             />
           ))}
-          {filteredProviders.length === 0 && !isLoading && (
+          {filteredProviders.length === 0 && !isLoading && !providerError && (
             <li className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
               {online
                 ? "No providers online right now."
@@ -295,7 +302,7 @@ function AdminProviderRow({ provider, onApprove, onRevoke }: { provider: any; on
             className="rounded-lg border border-input bg-background px-3 py-2 text-xs"
           />
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => { onRevoke(reason || "Verification revoked"); setConfirmRevoke(false); setReason(""); }}
+            <Button variant="outline" disabled={reason.trim().length < 3} onClick={() => { onRevoke(reason); setConfirmRevoke(false); setReason(""); }}
               className="rounded-full bg-destructive px-3 py-1.5 text-xs text-primary-foreground">Confirm revoke</Button>
             <Button variant="outline" onClick={() => setConfirmRevoke(false)} className="rounded-md border border-border px-3 py-1.5 text-xs">Cancel</Button>
           </div>
@@ -310,7 +317,7 @@ function DocLink({ path, label }: { path: string | null; label: string }) {
     queryKey: ["admin-doc", path],
     enabled: !!path,
     queryFn: async () => {
-      const { data, error } = await supabase.storage.from("provider-verification").createSignedUrl(path!, 60 * 10);
+      const { data, error } = await supabase.storage.from("provider-verification").createSignedUrl(path ?? "", 60 * 10);
       if (error) throw error;
       return data.signedUrl;
     },
