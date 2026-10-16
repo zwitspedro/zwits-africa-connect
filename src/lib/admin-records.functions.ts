@@ -66,7 +66,8 @@ export const getAdminRecord = createServerFn({method:'GET'}).middleware([require
  .handler(async({data,context})=>{
   const {data:allowed,error:roleError}=await context.supabase.rpc('has_role',{_user_id:context.userId,_role:'admin'});
   if(roleError||!allowed) throw new Error('Forbidden');
-  const db=context.supabase;
+  const {supabaseAdmin} = await import('@/integrations/supabase/client.server');
+  const db=supabaseAdmin as any;
   const {data:row,error}=await db.from(data.kind==='booking'?'bookings':'deliveries').select('*').eq('id',data.id).maybeSingle();
   if(error||!row) throw new Error('Record unavailable');
   const eventsResult = data.kind === 'booking'
@@ -75,6 +76,6 @@ export const getAdminRecord = createServerFn({method:'GET'}).middleware([require
   const {data:events,error:eventError}=eventsResult;
   const {data:payments,error:paymentError}=await db.from('payments').select('id,amount,currency,status,payment_method,paid_at,failure_reason').eq(data.kind==='booking'?'booking_id':'delivery_id',data.id).limit(25);
   const {data:disputes,error:disputeError}=await db.from('disputes').select('id,status,reason,resolution,created_at').eq(data.kind==='booking'?'booking_id':'delivery_id',data.id).limit(25);
-  if(eventError||paymentError||disputeError) throw new Error('Record history unavailable');
+  if(eventError||paymentError||disputeError) {console.error("Admin history query failed",eventError, paymentError,disputeError);throw new Error('Record history unavailable');}
   return {row,events:events??[],payments:payments??[],disputes:disputes??[]};
  });
