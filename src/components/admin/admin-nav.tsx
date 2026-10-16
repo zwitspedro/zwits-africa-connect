@@ -11,6 +11,6 @@ const sections = [
 export function AdminNav() {
  const path=useRouterState({select:s=>s.location.pathname.replace(/\/$/,'')});
  return <nav aria-label="Admin sections" className="mx-auto flex w-full max-w-6xl flex-wrap gap-1 border-b border-border px-4 py-3 sm:px-6">
- {sections.map(([label,to])=><Button key={to} asChild variant={path===to?'secondary':'ghost'} size="sm" className="text-xs"><Link to={to} aria-current={path===to?'page':undefined}>{label}</Link></Button>)}
+ {sections.map(([label,to])=><Button key={to} asChild variant={(path===to || (to!=='/admin' && path.startsWith(to+'/')))?'secondary':'ghost'} size="sm" className="text-xs"><Link to={to} aria-current={(path===to || (to!=='/admin' && path.startsWith(to+'/')))?'page':undefined}>{label}</Link></Button>)}
  </nav>;
 }

@@ -69,7 +69,7 @@ function AdminDashboard() {
   });
 
   // Data-light panels: small, bounded previews only — never full tables.
-  const { data: audits } = useQuery({
+  const { data: audits, error: auditsError } = useQuery({
     queryKey: ["admin-dash-audits"],
     enabled: !!user && isAdmin,
     queryFn: async () => {
@@ -83,7 +83,7 @@ function AdminDashboard() {
     },
   });
 
-  const { data: revoked } = useQuery({
+  const { data: revoked, error: revokedError } = useQuery({
     queryKey: ["admin-dash-revoked"],
     enabled: !!user && isAdmin,
     queryFn: async () => {
@@ -97,7 +97,7 @@ function AdminDashboard() {
     },
   });
 
-  const { data: bookings } = useQuery({
+  const { data: bookings, error: bookingsError } = useQuery({
     queryKey: ["admin-dash-bookings"],
     enabled: !!user && isAdmin,
     queryFn: async () => {
@@ -131,8 +131,8 @@ function AdminDashboard() {
   };
 
   const onlineValue =
-    onlineQuery.data?.count ?? (onlineQuery.error && failed ? undefined : metrics?.onlineProviders);
-  const onlineState = onlineQuery.error && failed ? "error" : onlineValue == null ? "loading" : "ok";
+    onlineQuery.data?.count ?? (onlineQuery.error ? undefined : metrics?.onlineProviders);
+  const onlineState = onlineQuery.error ? "error" : onlineValue == null ? "loading" : "ok";
 
   const state = (n: number | null | undefined): "loading" | "error" | "ok" =>
     failed ? "error" : loading || n == null ? "loading" : "ok";
@@ -215,12 +215,13 @@ function AdminDashboard() {
           <KpiCard icon={Activity} label="Drivers online" value={metrics?.onlineDrivers} state={state(metrics?.onlineDrivers)} sub="Approved and available" to="/admin/drivers" search={{status:"online"}} cta="View drivers" />
           <KpiCard icon={Wallet} label="Wallet liabilities" value={metrics ? `$${metrics.walletLiabilities.toFixed(2)}` : undefined} state={state(metrics?.walletLiabilities)} sub="Positive available USD balances" to="/admin/wallets" search={{status:"positive"}} cta="Inspect wallets" />
           <KpiCard icon={Wallet} label="Commission owed" value={metrics ? `$${metrics.commissionDebt.toFixed(2)}` : undefined} state={state(metrics?.commissionDebt)} sub="Negative USD wallet balances" to="/admin/wallets" search={{status:"debt"}} cta="Inspect wallets" />
-          <KpiCard icon={Users} label="Customers" value={metrics?.customers} state={state(metrics?.customers)} sub="Registrations in selected period" tone="primary" to="/admin/customers" cta="View customers" />
+          <KpiCard icon={Users} label="Customers" value={metrics?.customers} state={state(metrics?.customers)} sub="Registrations in selected period" tone="primary" to="/admin/customers" search={{...range}} cta="View customers" />
         </div>
 
         <div className="mt-8 grid gap-4 lg:grid-cols-3">
           <Panel title="Recent document uploads" link={{ to: "/admin/uploads", label: "Open" }} className="lg:col-span-2">
-            {(audits ?? []).length === 0 && <Empty>No upload activity yet.</Empty>}
+            {auditsError && <Empty>Upload activity unavailable. Refresh to retry.</Empty>}
+            {!auditsError && (audits ?? []).length === 0 && <Empty>No upload activity yet.</Empty>}
             <ul className="grid gap-1.5">
               {(audits ?? []).map((a: any) => (
                 <li key={a.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-muted/30 px-3 py-2 text-[11px]">
@@ -241,7 +242,8 @@ function AdminDashboard() {
           </Panel>
 
           <Panel title="Revoked providers" link={{ to: "/admin/providers", label: "Review", search: { status: "revoked" } }}>
-            {(revoked ?? []).length === 0 && <Empty>No revoked providers.</Empty>}
+            {revokedError && <Empty>Provider activity unavailable. Refresh to retry.</Empty>}
+            {!revokedError && (revoked ?? []).length === 0 && <Empty>No revoked providers.</Empty>}
             <ul className="grid gap-1.5">
               {(revoked ?? []).map((p: any) => (
                 <li key={p.id} className="rounded-lg bg-muted/30 px-3 py-2 text-[11px]">
@@ -253,7 +255,8 @@ function AdminDashboard() {
           </Panel>
 
           <Panel title="Latest bookings" link={{ to: "/admin/reconciliation", label: "Open" }} className="lg:col-span-3">
-            {(bookings ?? []).length === 0 && <Empty>No bookings yet.</Empty>}
+            {bookingsError && <Empty>Booking activity unavailable. Refresh to retry.</Empty>}
+            {!bookingsError && (bookings ?? []).length === 0 && <Empty>No bookings yet.</Empty>}
             <div className="overflow-x-auto">
               <table className="w-full text-left text-[11px]">
                 <thead className="text-muted-foreground">

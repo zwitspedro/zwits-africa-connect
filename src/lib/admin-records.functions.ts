@@ -77,5 +77,5 @@ export const getAdminRecord = createServerFn({method:'GET'}).middleware([require
   const {data:payments,error:paymentError}=await db.from('payments').select('id,amount,currency,status,payment_method,paid_at,failure_reason').eq(data.kind==='booking'?'booking_id':'delivery_id',data.id).limit(25);
   const {data:disputes,error:disputeError}=await db.from('disputes').select('id,status,reason,resolution,created_at').eq(data.kind==='booking'?'booking_id':'delivery_id',data.id).limit(25);
   if(eventError||paymentError||disputeError) {console.error("Admin history query failed",eventError, paymentError,disputeError);throw new Error('Record history unavailable');}
-  return {row,events:events??[],payments:payments??[],disputes:disputes??[]};
+  return {row: row as Record<string,any>,events:(events??[]) as Record<string,any>[],payments:(payments??[]) as Record<string,any>[],disputes:(disputes??[]) as Record<string,any>[]};
  });
