@@ -1939,6 +1939,26 @@ export type Database = {
         Args: { _offer_id: string; _user_id: string }
         Returns: Json
       }
+      admin_customer_directory: {
+        Args: { _from?: string; _page?: number; _term?: string; _to?: string }
+        Returns: Json
+      }
+      admin_decide_withdrawal: {
+        Args: { _id: string; _outcome: string; _reason: string }
+        Returns: Json
+      }
+      admin_period_metrics: {
+        Args: { _from: string; _to: string }
+        Returns: Json
+      }
+      admin_resolve_dispute: {
+        Args: { _id: string; _resolution: string; _status: string }
+        Returns: Json
+      }
+      admin_review_provider: {
+        Args: { _id: string; _reason: string; _status: string }
+        Returns: Json
+      }
       available_provider_counts: {
         Args: { _city: string }
         Returns: {
@@ -2077,6 +2097,10 @@ export type Database = {
           msg_id: number
           read_ct: number
         }[]
+      }
+      request_wallet_withdrawal: {
+        Args: { _amount: number; _destination: string; _method: string }
+        Returns: Json
       }
       settle_booking: {
         Args: { _booking_id: string }

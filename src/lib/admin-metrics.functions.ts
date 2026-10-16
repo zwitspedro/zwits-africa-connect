@@ -2,104 +2,25 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-/** Live operational picture for the admin dashboard. Real data only. */
+export type AdminMetrics = {
+  customers: number; providers: number; onlineProviders: number; onlineDrivers: number;
+  pendingVerification: number; activeJobs: number; activeDeliveries: number; completedJobs: number;
+  completedDeliveries: number; cancelledJobs: number; openDisputes: number; failedPayments: number;
+  pendingWithdrawals: number; auditEvents: number; failedUploads: number; approvedProviders: number;
+  revokedProviders: number; avgRating: number | null; ratingsCount: number; revenue: number;
+  providerEarnings: number; commission: number; grossTransactionValue: number; cashPayments: number;
+  electronicPayments: number; walletLiabilities: number; commissionDebt: number;
+  pendingWithdrawalValue: number; settledWithdrawalValue: number; checkedAt: string;
+};
 export const getAdminMetrics = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    const { data: isAdmin } = await context.supabase.rpc("has_role", {
-      _user_id: context.userId,
-      _role: "admin",
+  .inputValidator((input) => z.object({ from: z.string().datetime(), to: z.string().datetime() }).parse(input))
+  .handler(async ({ data, context }) => {
+    const { data: metrics, error } = await context.supabase.rpc("admin_period_metrics", {
+      _from: data.from, _to: data.to,
     });
-    if (!isAdmin) throw new Error("Forbidden");
-
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const db = supabaseAdmin as any;
-
-    const count = async (table: string, build: (q: any) => any = (q) => q) => {
-      const { count: c } = await build(db.from(table).select("id", { count: "exact", head: true }));
-      return c ?? 0;
-    };
-
-    const [
-      customers,
-      providers,
-      onlineProviders,
-      pendingVerification,
-      activeJobs,
-      completedJobs,
-      cancelledJobs,
-      openDisputes,
-      failedPayments,
-      pendingWithdrawals,
-      auditEvents,
-      failedUploads,
-    ] = await Promise.all([
-      count("user_roles", (q) => q.eq("role", "customer")),
-      count("providers"),
-      count("providers", (q) => q.eq("available", true).eq("verification_status", "approved")),
-      count("providers", (q) => q.eq("verification_status", "pending")),
-      count("bookings", (q) =>
-        q.in("status", ["accepted", "travelling", "arrived", "in_progress"]),
-      ),
-      count("bookings", (q) => q.eq("status", "completed")),
-      count("bookings", (q) => q.eq("status", "cancelled")),
-      count("disputes", (q) => q.in("status", ["open", "investigating"])),
-      count("payments", (q) => q.eq("status", "failed")),
-      count("provider_withdrawals", (q) => q.in("status", ["requested", "processing"])),
-      count("admin_audit_log"),
-      count("provider_document_audits", (q) => q.in("status", ["rejected", "upload_error"])),
-    ]);
-
-    const { data: revenueRows } = await db
-      .from("payments")
-      .select("amount")
-      .eq("status", "paid")
-      .limit(10000);
-    const revenue = (revenueRows ?? []).reduce((s: number, r: any) => s + Number(r.amount), 0);
-
-    const { data: earningRows } = await db
-      .from("wallet_transactions")
-      .select("amount")
-      .eq("type", "job_earning")
-      .limit(10000);
-    const providerEarnings = (earningRows ?? []).reduce(
-      (s: number, r: any) => s + Number(r.amount),
-      0,
-    );
-
-    const { data: ratingRows } = await db.from("ratings").select("rating").limit(10000);
-    const ratingsCount = (ratingRows ?? []).length;
-    const avgRating = ratingsCount
-      ? Math.round(
-          ((ratingRows ?? []).reduce((s: number, r: any) => s + Number(r.rating ?? 0), 0) /
-            ratingsCount) *
-            100,
-        ) / 100
-      : null;
-
-    return {
-      customers,
-      providers,
-      onlineProviders,
-      pendingVerification,
-      activeJobs,
-      completedJobs,
-      cancelledJobs,
-      openDisputes,
-      failedPayments,
-      pendingWithdrawals,
-      auditEvents,
-      failedUploads,
-      approvedProviders: await count("providers", (q) =>
-        q.eq("verification_status", "approved"),
-      ),
-      revokedProviders: await count("providers", (q) => q.eq("verification_status", "revoked")),
-      avgRating,
-      ratingsCount,
-      revenue: Math.round(revenue * 100) / 100,
-      providerEarnings: Math.round(providerEarnings * 100) / 100,
-      commission: Math.round((revenue - providerEarnings) * 100) / 100,
-    };
+    if (error || !metrics) throw new Error("Unable to load authoritative metrics. Please retry.");
+    return metrics as unknown as AdminMetrics;
   });
 
 /**
@@ -199,6 +120,8 @@ export const listAdminPayments = createServerFn({ method: "GET" })
     z
       .object({
         status: z.string().max(30).optional(),
+        from: z.string().datetime().optional(),
+        to: z.string().datetime().optional(),
         page: z.number().int().min(0).max(500).default(0),
       })
       .parse(input ?? {}),
@@ -219,6 +142,8 @@ export const listAdminPayments = createServerFn({ method: "GET" })
       .order("created_at", { ascending: false })
       .range(from, from + size - 1);
     if (data.status && data.status !== "all") q = q.eq("status", data.status);
+    if (data.from) q = q.gte(data.status === "paid" ? "paid_at" : "created_at", data.from);
+    if (data.to) q = q.lt(data.status === "paid" ? "paid_at" : "created_at", data.to);
     const { data: rows, count, error } = await q;
     if (error) throw new Error(error.message);
 
@@ -286,64 +211,12 @@ export const listAdminUploads = createServerFn({ method: "GET" })
     };
   });
 
-/** Paginated, searchable customer directory for admins. */
+/** Owner details are exposed only after an admin check in the database. */
 export const listAdminCustomers = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((input) =>
-    z
-      .object({
-        search: z.string().max(80).optional(),
-        page: z.number().int().min(0).max(500).default(0),
-      })
-      .parse(input ?? {}),
-  )
-  .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase, context.userId);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const db = supabaseAdmin as any;
-
-    const { data: roleRows, error: roleErr } = await db
-      .from("user_roles")
-      .select("user_id")
-      .eq("role", "customer")
-      .limit(10000);
-    if (roleErr) throw new Error(roleErr.message);
-    const ids = [...new Set((roleRows ?? []).map((r: any) => r.user_id))];
-    if (ids.length === 0) return { rows: [], total: 0, page: data.page };
-
-    const size = 25;
-    const from = data.page * size;
-    let q = db
-      .from("profiles")
-      .select("user_id, display_name, phone, city, country, account_type, created_at, updated_at", {
-        count: "exact",
-      })
-      .in("user_id", ids)
-      .order("created_at", { ascending: false })
-      .range(from, from + size - 1);
-    const term = data.search ? cleanTerm(data.search) : "";
-    if (term) q = q.or(`display_name.ilike.%${term}%,phone.ilike.%${term}%`);
-    const { data: rows, count, error } = await q;
-    if (error) throw new Error(error.message);
-
-    const pageIds = (rows ?? []).map((r: any) => r.user_id);
-    const bookingCounts: Record<string, number> = {};
-    if (pageIds.length) {
-      const { data: bk } = await db
-        .from("bookings")
-        .select("customer_id")
-        .in("customer_id", pageIds)
-        .limit(5000);
-      for (const b of bk ?? []) {
-        bookingCounts[b.customer_id] = (bookingCounts[b.customer_id] ?? 0) + 1;
-      }
-    }
-    return {
-      rows: (rows ?? []).map((r: any) => ({
-        ...r,
-        bookings_count: bookingCounts[r.user_id] ?? 0,
-      })),
-      total: count ?? 0,
-      page: data.page,
-    };
-  });
+ .middleware([requireSupabaseAuth])
+ .inputValidator(input=>z.object({search:z.string().max(80).optional(),page:z.number().int().min(0).max(10000).default(0),from:z.string().datetime().optional(),to:z.string().datetime().optional()}).parse(input??{}))
+ .handler(async({data,context})=>{
+  const {data:result,error}=await context.supabase.rpc("admin_customer_directory",{_term:data.search??"",_page:data.page,_from:data.from,_to:data.to});
+  if(error) throw new Error("Unable to load customer directory");
+  return result as {rows:Record<string,any>[];total:number;page:number};
+ });

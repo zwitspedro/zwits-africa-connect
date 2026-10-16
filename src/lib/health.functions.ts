@@ -27,7 +27,7 @@ export const getBackendHealth = createServerFn({ method: "GET" })
         return {
           ok: false as const,
           ms: Date.now() - started,
-          detail: e instanceof Error ? e.message : "Unknown error",
+          detail: "Probe failed. Retry or contact operations support.",
         };
       }
     };
@@ -56,13 +56,15 @@ export const getBackendHealth = createServerFn({ method: "GET" })
 
     const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     const countSince = async (table: string, column: string, build: (q: any) => any = (q) => q) => {
-      const { count } = await build(
+      const { count, error } = await build(
         db.from(table).select("id", { count: "exact", head: true }).gte(column, since),
       );
+      if (error) throw new Error("Activity metrics unavailable. Please retry.");
       return count ?? 0;
     };
     const latest = async (table: string, column = "created_at") => {
-      const { data } = await db.from(table).select(column).order(column, { ascending: false }).limit(1);
+      const { data, error } = await db.from(table).select(column).order(column, { ascending: false }).limit(1);
+      if (error) throw new Error("Recent activity unavailable. Please retry.");
       return (data?.[0]?.[column] as string | undefined) ?? null;
     };
 
@@ -86,12 +88,13 @@ export const getBackendHealth = createServerFn({ method: "GET" })
         latest("admin_audit_log"),
       ]);
 
-    const { data: sendState } = await db
+    const { data: sendState, error: sendError } = await db
       .from("email_send_state")
       .select("retry_after_until, batch_size")
       .eq("id", 1)
       .maybeSingle();
 
+    if (sendError || !sendState) throw new Error("Email processing state unavailable. Please retry.");
     const payments = availableMethods();
 
     return {

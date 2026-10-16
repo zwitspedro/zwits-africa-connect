@@ -2,6 +2,7 @@ import { useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { SiteHeader } from "./site-header";
 import { SiteFooter } from "./site-footer";
+import { AdminNav } from "./admin/admin-nav";
 import { InstallPrompt } from "./install-prompt";
 
 export function SiteShell({ children }: { children: ReactNode }) {
@@ -10,7 +11,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
   return (
     <div data-experience={experience} className="flex min-h-dvh flex-col bg-background text-foreground">
       <SiteHeader />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1">{experience === "admin" && <AdminNav />}{children}</main>
       <SiteFooter />
       <InstallPrompt />
     </div>

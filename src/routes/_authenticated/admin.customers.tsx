@@ -1,4 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
@@ -8,6 +10,7 @@ import { RoleGate } from "@/components/portal/role-gate";
 import { listAdminCustomers } from "@/lib/admin-metrics.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/customers")({
+  validateSearch:(s:Record<string,unknown>):{from?:string;to?:string}=>({from:typeof s.from=== "string"?s.from:undefined,to:typeof s.to=== "string"?s.to:undefined}),
   head: () => ({ meta: [{"title": "Customers — Zwits admin"}, {"name": "description", "content": "Customers in your Zwits account for services and deliveries in Harare."}, {"property": "og:title", "content": "Customers — Zwits admin"}, {"property": "og:description", "content": "Customers in your Zwits account for services and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: () => (
     <RoleGate role="admin">
@@ -17,14 +20,15 @@ export const Route = createFileRoute("/_authenticated/admin/customers")({
 });
 
 function AdminCustomers() {
+  const {from,to}=Route.useSearch();
   const fetchCustomers = useServerFn(listAdminCustomers);
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState("");
   const [openId, setOpenId] = useState<string | null>(null);
 
   const list = useQuery({
-    queryKey: ["admin-customers", search, page],
-    queryFn: () => fetchCustomers({ data: { search: search || undefined, page } }),
+    queryKey: ["admin-customers", search, page,from,to],
+    queryFn: () => fetchCustomers({ data: { search: search || undefined, page,from,to } }),
   });
 
   const total = list.data?.total ?? 0;
@@ -38,18 +42,18 @@ function AdminCustomers() {
         </div>
         <h1 className="mt-2 font-display text-3xl font-bold">Customers</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Registered customer accounts. Authentication details are never exposed here.
+          Registered customer accounts. Email and contact details are restricted to authorized administrators.
         </p>
 
         <div className="relative mt-5 max-w-sm">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
-          <input
+          <Input
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
               setPage(0);
             }}
-            placeholder="Search by name or phone…"
+            placeholder="Search by name, email or phone…"
             className="w-full rounded-xl border border-input bg-background py-2 pl-9 pr-3 text-xs"
           />
         </div>
@@ -59,9 +63,9 @@ function AdminCustomers() {
         ) : list.error ? (
           <div className="mt-6 rounded-xl border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
             {(list.error as Error).message}{" "}
-            <button onClick={() => list.refetch()} className="ml-2 underline">
+            <Button onClick={() => list.refetch()} className="ml-2 underline">
               Retry
-            </button>
+            </Button>
           </div>
         ) : (list.data?.rows ?? []).length === 0 ? (
           <p className="mt-6 rounded-xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
@@ -73,7 +77,7 @@ function AdminCustomers() {
               const open = openId === c.user_id;
               return (
                 <li key={c.user_id} className="rounded-2xl border border-border/70 bg-card">
-                  <button
+                  <Button
                     type="button"
                     onClick={() => setOpenId(open ? null : c.user_id)}
                     aria-expanded={open}
@@ -94,7 +98,7 @@ function AdminCustomers() {
                     <ChevronDown
                       className={`size-4 text-muted-foreground transition ${open ? "rotate-180" : ""}`}
                     />
-                  </button>
+                  </Button>
                   {open && (
                     <dl className="grid grid-cols-2 gap-3 border-t border-border/60 px-4 py-3 text-xs sm:grid-cols-4">
                       <div>
@@ -117,6 +121,8 @@ function AdminCustomers() {
                           {new Date(c.updated_at).toLocaleDateString()}
                         </dd>
                       </div>
+                      <div className="col-span-2 break-all"><dt className="text-muted-foreground">Email</dt><dd>{c.email??"—"}</dd></div>
+                      <div className="col-span-2 flex flex-wrap gap-2"><Button asChild variant="outline"><Link to="/admin/bookings" search={{status:"all"}}>Booking directory</Link></Button><Button asChild variant="outline"><Link to="/admin/deliveries" search={{status:"all"}}>Delivery directory</Link></Button></div>
                     </dl>
                   )}
                 </li>
@@ -127,23 +133,23 @@ function AdminCustomers() {
 
         {pages > 1 && (
           <div className="mt-6 flex items-center justify-between text-xs text-muted-foreground">
-            <button
+            <Button
               disabled={page === 0}
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               className="rounded-full border border-border px-3 py-1.5 hover:bg-muted disabled:opacity-40"
             >
               Previous
-            </button>
+            </Button>
             <span>
               Page {page + 1} of {pages} · {total} customers
             </span>
-            <button
+            <Button
               disabled={page + 1 >= pages}
               onClick={() => setPage((p) => p + 1)}
               className="rounded-full border border-border px-3 py-1.5 hover:bg-muted disabled:opacity-40"
             >
               Next
-            </button>
+            </Button>
           </div>
         )}
       </section>

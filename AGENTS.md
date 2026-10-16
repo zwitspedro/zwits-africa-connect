@@ -10,3 +10,7 @@
 - The entry route may load the existing compact Z mark only; no photographic media, maps, auth or provider data belong on the initial screen.
 - Keep the shared Z mark request-agnostic; opt into its pulse from existing matching/delivery state or a separate query-activity observer so the entry stays data-light.
 - Cash bookings settle to the provider wallet as commission owed (earning offset by cash held); only platform-collected money becomes withdrawable.
+
+- Use authorized PostgreSQL RPC transactions for withdrawal requests, withdrawal decisions, dispute decisions and provider reviews so record, ledger, notification and actor audit changes commit together.
+- Aggregate admin financial totals in PostgreSQL with Harare date boundaries; separate period flows from current snapshots to prevent truncated totals and misleading revenue.
+- Reuse shared admin navigation and paginated directory/detail views inside the existing application; non-nested investigation routes prevent parent lists from swallowing detail pages.

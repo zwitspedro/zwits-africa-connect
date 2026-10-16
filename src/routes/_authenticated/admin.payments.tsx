@@ -7,11 +7,12 @@ import { SiteShell } from "@/components/site-shell";
 import { RoleGate } from "@/components/portal/role-gate";
 import { listAdminPayments } from "@/lib/admin-metrics.functions";
 
-type Search = { status?: string };
+type Search = { status?: string; from?:string; to?:string };
 
 export const Route = createFileRoute("/_authenticated/admin/payments")({
   validateSearch: (s: Record<string, unknown>): Search => ({
     status: typeof s.status === "string" ? s.status : undefined,
+    from:typeof s.from === "string"?s.from:undefined,to:typeof s.to === "string"?s.to:undefined,
   }),
   head: () => ({ meta: [{"title": "Payments — Zwits admin"}, {"name": "description", "content": "Payments in your Zwits account for services and deliveries in Harare."}, {"property": "og:title", "content": "Payments — Zwits admin"}, {"property": "og:description", "content": "Payments in your Zwits account for services and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: () => (
@@ -25,14 +26,14 @@ const TABS = ["failed", "pending", "paid", "all"] as const;
 const money = (n: any, c?: string) => `${c === "USD" || !c ? "$" : `${c} `}${Number(n ?? 0).toFixed(2)}`;
 
 function AdminPayments() {
-  const { status } = Route.useSearch();
+  const { status, from, to } = Route.useSearch();
   const active = (status ?? "failed") as (typeof TABS)[number];
   const [page, setPage] = useState(0);
 
   const fetchPayments = useServerFn(listAdminPayments);
   const list = useQuery({
-    queryKey: ["admin-payments", active, page],
-    queryFn: () => fetchPayments({ data: { status: active, page } }),
+    queryKey: ["admin-payments", active, page, from, to],
+    queryFn: () => fetchPayments({ data: { status: active, page, from, to } }),
   });
 
   const total = list.data?.total ?? 0;
@@ -56,7 +57,7 @@ function AdminPayments() {
             <Link
               key={t}
               to="/admin/payments"
-              search={{ status: t }}
+              search={{ status: t, from, to }}
               onClick={() => setPage(0)}
               className={`rounded-full px-3 py-1 capitalize ${
                 active === t ? "bg-background font-semibold shadow-sm" : "text-muted-foreground"
@@ -126,9 +127,7 @@ function AdminPayments() {
                     </Link>
                   )}
                   {p.delivery_id && (
-                    <span className="inline-flex items-center rounded-full bg-muted px-3 py-1 text-[11px] text-muted-foreground">
-                      Delivery {String(p.delivery_id).slice(0, 8).toUpperCase()}
-                    </span>
+                    <Link to="/admin/deliveries/$id" params={{id:p.delivery_id}} search={{}} className="text-primary-text">Open delivery</Link>
                   )}
                 </div>
               </li>
