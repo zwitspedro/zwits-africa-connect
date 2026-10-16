@@ -69,7 +69,7 @@ export const getAdminRecord = createServerFn({method:'GET'}).middleware([require
   const {supabaseAdmin} = await import('@/integrations/supabase/client.server');
   const db=supabaseAdmin as any;
   const {data:row,error}=await db.from(data.kind==='booking'?'bookings':'deliveries').select('*').eq('id',data.id).maybeSingle();
-  if(error||!row) throw new Error('Record unavailable');
+  if(error||!row) {console.error('Admin record unavailable',error);throw new Error('Record unavailable');}
   const eventsResult = data.kind === 'booking'
     ? await db.from('booking_status_history').select('*').eq('booking_id', data.id).order('created_at',{ascending:true}).limit(200)
     : await db.from('delivery_events').select('*').eq('delivery_id', data.id).order('created_at',{ascending:true}).limit(200);
