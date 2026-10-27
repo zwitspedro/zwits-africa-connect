@@ -246,15 +246,17 @@ function AdminDashboard() {
             {!revokedError && (revoked ?? []).length === 0 && <Empty>No revoked providers.</Empty>}
             <ul className="grid gap-1.5">
               {(revoked ?? []).map((p: any) => (
-                <li key={p.id} className="rounded-lg bg-muted/30 px-3 py-2 text-[11px]">
-                  <div className="font-medium">{p.business_name}</div>
-                  <div className="text-muted-foreground">{p.category} · {p.city}</div>
+                <li key={p.id}>
+                  <Link to="/admin/reconciliation/provider/$providerId" params={{ providerId: p.id }} search={{} as any} className="block rounded-lg bg-muted/30 px-3 py-2 text-[11px] hover:bg-muted">
+                    <div className="font-medium">{p.business_name}</div>
+                    <div className="text-muted-foreground">{p.category} · {p.city}</div>
+                  </Link>
                 </li>
               ))}
             </ul>
           </Panel>
 
-          <Panel title="Latest bookings" link={{ to: "/admin/reconciliation", label: "Open" }} className="lg:col-span-3">
+          <Panel title="Latest bookings" link={{ to: "/admin/bookings", label: "All bookings" }} className="lg:col-span-3">
             {bookingsError && <Empty>Booking activity unavailable. Refresh to retry.</Empty>}
             {!bookingsError && (bookings ?? []).length === 0 && <Empty>No bookings yet.</Empty>}
             <div className="overflow-x-auto">
@@ -279,8 +281,8 @@ function AdminDashboard() {
                       <td className="py-1.5 pr-3 text-right">${Number(b.price ?? 0).toFixed(0)}</td>
                       <td className="py-1.5 pr-3 text-right">
                         <Link
-                          to="/admin/reconciliation/booking/$bookingId"
-                          params={{ bookingId: b.id }}
+                          to="/admin/bookings/$id"
+                          params={{ id: b.id }}
                           className="inline-flex items-center gap-1 text-primary-text hover:underline"
                         >
                           Open <ArrowRight className="size-3" />
