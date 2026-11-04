@@ -1,4 +1,7 @@
 # Current request
+- [ ] Verify cash checkout from homepage search without dispatching to real providers.
+- [ ] Verify provider acceptance, completion and cash accounting in a rolled-back test.
+- [ ] Report observed results and any unverified steps.
 
 # Admin control centre
 - [x] Audit existing admin workflows and report P0/P1/P2 gaps.
