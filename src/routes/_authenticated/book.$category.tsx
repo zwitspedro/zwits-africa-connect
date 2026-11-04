@@ -485,9 +485,9 @@ function BookCategory() {
 
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4">
-                <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Final price</div>
-                <div className="mt-1 font-display text-2xl font-bold tabular-nums">${estimate.price.toFixed(2)}</div>
-                <div className="text-[11px] text-muted-foreground">≈ 1 hr at ${estimate.hourly.toFixed(2)}/hr</div>
+                <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Estimated price</div>
+                <div className="mt-1 font-display text-2xl font-bold tabular-nums">{estimate.price > 0 ? `$${estimate.price.toFixed(2)}` : "Awaiting price"}</div>
+                <div className="text-[11px] text-muted-foreground">{estimate.price > 0 ? `≈ 1 hr at $${estimate.hourly.toFixed(2)}/hr` : "Agree the price with your provider before work starts."}</div>
               </div>
               <div className="rounded-2xl border border-border bg-background/60 p-4">
                 <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Estimated ETA</div>
@@ -518,7 +518,7 @@ function BookCategory() {
                 {create.isPending
                   ? "Finalising…"
                   : paymentMethod === "cash"
-                    ? `Confirm cash booking — $${estimate.price.toFixed(2)}`
+                    ? estimate.price > 0 ? `Confirm cash booking — $${estimate.price.toFixed(2)}` : "Send cash booking request"
                     : `Pay $${estimate.price.toFixed(2)} & confirm`}
               </Button>
             </div>
