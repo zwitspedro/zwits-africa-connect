@@ -1,4 +1,5 @@
 import { Smartphone, Wallet, CreditCard, Banknote } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export type PaymentMethod = "ecocash" | "onemoney" | "innbucks" | "card" | "cash";
 
@@ -18,7 +19,7 @@ export const PAYMENT_METHODS: {
   { id: "onemoney", name: "OneMoney", hint: "NetOne wallet", icon: Smartphone, refLabel: "OneMoney number", refPlaceholder: "+263 71 123 4567", refType: "tel", refPattern: "^\\+?[0-9 ]{9,16}$", needsRef: true },
   { id: "innbucks", name: "InnBucks", hint: "Scan-to-pay voucher", icon: Wallet, refLabel: "InnBucks phone", refPlaceholder: "+263 …", refType: "tel", refPattern: "^\\+?[0-9 ]{9,16}$", needsRef: true },
   { id: "card", name: "Visa / Mastercard", hint: "Debit or credit card", icon: CreditCard, refLabel: "Card last 4 digits", refPlaceholder: "1234", refType: "text", refPattern: "^[0-9]{4}$", needsRef: true },
-  { id: "cash", name: "Cash on delivery", hint: "Pay the provider in person", icon: Banknote, refLabel: "", refPlaceholder: "", refType: "text", needsRef: false, enabled: true },
+  { id: "cash", name: "Pay with cash", hint: "Pay the provider when the job is completed", icon: Banknote, refLabel: "", refPlaceholder: "", refType: "text", needsRef: false, enabled: true },
 ];
 
 export function PaymentMethodPicker({
@@ -36,28 +37,46 @@ export function PaymentMethodPicker({
 
   return (
     <div className="grid gap-3">
-      <div className="rounded-lg border border-dashed border-amber-500/40 bg-amber-500/10 px-3 py-2 text-[11px] text-warning dark:text-amber-300">
-        Cash on delivery only for now. Card and mobile money (EcoCash, OneMoney, InnBucks) are coming soon.
-      </div>
+      <Button
+        type="button"
+        variant={value === "cash" ? "default" : "outline"}
+        aria-pressed={value === "cash"}
+        onClick={() => {
+          onChange("cash");
+          onReferenceChange("");
+        }}
+        className="h-auto min-h-14 w-full justify-start gap-3 whitespace-normal rounded-lg px-4 py-3 text-left"
+      >
+        <Banknote className="size-5 shrink-0" />
+        <span className="grid gap-1">
+          <span className="text-sm font-semibold">Pay with cash</span>
+          <span className="text-xs font-normal">Pay the provider when the job is completed. Nothing is charged now.</span>
+        </span>
+      </Button>
+      <p className="text-xs text-muted-foreground">
+        Card and mobile money (EcoCash, OneMoney, InnBucks) are coming soon.
+      </p>
       <div className="grid gap-2 sm:grid-cols-2">
-        {PAYMENT_METHODS.map((m) => {
+        {PAYMENT_METHODS.filter((m) => m.id !== "cash").map((m) => {
           const active = value === m.id;
           const disabled = !m.enabled;
           const Icon = m.icon;
           return (
-            <button
+            <Button
               key={m.id}
               type="button"
+              variant="outline"
               disabled={disabled}
               aria-disabled={disabled}
+              aria-pressed={active}
               onClick={() => !disabled && onChange(m.id)}
-              className={`flex items-center gap-3 rounded-2xl border p-3 text-left transition ${
+              className={`h-auto min-h-12 justify-start gap-3 whitespace-normal rounded-lg border p-3 text-left transition ${
                 active ? "border-primary bg-primary/10" : "border-border bg-card"
               } ${disabled ? "cursor-not-allowed opacity-50" : "hover:border-primary/40"}`}
             >
               <Icon className={`size-5 ${active ? "text-primary-text" : "text-muted-foreground"}`} />
               <div className="min-w-0">
-                <div className="flex items-center gap-2 text-sm font-medium">
+                <div className="flex flex-wrap items-center gap-2 text-sm font-medium">
                   {m.name}
                   {disabled && (
                     <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-normal text-muted-foreground">
@@ -65,9 +84,9 @@ export function PaymentMethodPicker({
                     </span>
                   )}
                 </div>
-                <div className="truncate text-xs text-muted-foreground">{m.hint}</div>
+                <div className="text-xs text-muted-foreground">{m.hint}</div>
               </div>
-            </button>
+            </Button>
           );
         })}
       </div>
@@ -94,7 +113,7 @@ export function PaymentMethodPicker({
 
       {value === "cash" && (
         <p className="rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">
-          Have the exact amount ready when your provider arrives.
+          Have the agreed amount ready to pay when the job is completed.
         </p>
       )}
     </div>
