@@ -83,6 +83,7 @@ import { Route as AuthenticatedDeliveriesIdRouteImport } from './routes/_authent
 import { Route as AuthenticatedMessagesBookingIdRouteImport } from './routes/_authenticated/messages.$bookingId'
 import { Route as AuthenticatedProviderApplyRouteImport } from './routes/_authenticated/provider.apply'
 import { Route as AuthenticatedProviderDashboardRouteImport } from './routes/_authenticated/provider.dashboard'
+import { Route as AuthenticatedProviderProfileRouteImport } from './routes/_authenticated/provider.profile'
 import { Route as AuthenticatedProviderSetupRouteImport } from './routes/_authenticated/provider.setup'
 import { Route as AuthenticatedProviderVerifyRouteImport } from './routes/_authenticated/provider.verify'
 import { Route as DeliveryHarareIndexRouteImport } from './routes/delivery.harare.index'
@@ -522,6 +523,12 @@ const AuthenticatedProviderDashboardRoute =
     path: '/provider/dashboard',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedProviderProfileRoute =
+  AuthenticatedProviderProfileRouteImport.update({
+    id: '/provider/profile',
+    path: '/provider/profile',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedProviderSetupRoute =
   AuthenticatedProviderSetupRouteImport.update({
     id: '/provider/setup',
@@ -810,6 +817,7 @@ export interface FileRoutesByFullPath {
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/provider/apply': typeof AuthenticatedProviderApplyRoute
   '/provider/dashboard': typeof AuthenticatedProviderDashboardRoute
+  '/provider/profile': typeof AuthenticatedProviderProfileRoute
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/provider/verify': typeof AuthenticatedProviderVerifyRoute
   '/delivery/harare/$suburb': typeof DeliveryHarareSuburbRoute
@@ -918,6 +926,7 @@ export interface FileRoutesByTo {
   '/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/provider/apply': typeof AuthenticatedProviderApplyRoute
   '/provider/dashboard': typeof AuthenticatedProviderDashboardRoute
+  '/provider/profile': typeof AuthenticatedProviderProfileRoute
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/provider/verify': typeof AuthenticatedProviderVerifyRoute
   '/delivery/harare/$suburb': typeof DeliveryHarareSuburbRoute
@@ -1036,6 +1045,7 @@ export interface FileRoutesById {
   '/_authenticated/messages/$bookingId': typeof AuthenticatedMessagesBookingIdRoute
   '/_authenticated/provider/apply': typeof AuthenticatedProviderApplyRoute
   '/_authenticated/provider/dashboard': typeof AuthenticatedProviderDashboardRoute
+  '/_authenticated/provider/profile': typeof AuthenticatedProviderProfileRoute
   '/_authenticated/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/_authenticated/provider/verify': typeof AuthenticatedProviderVerifyRoute
   '/delivery/harare/$suburb': typeof DeliveryHarareSuburbRoute
@@ -1154,6 +1164,7 @@ export interface FileRouteTypes {
     | '/messages/$bookingId'
     | '/provider/apply'
     | '/provider/dashboard'
+    | '/provider/profile'
     | '/provider/setup'
     | '/provider/verify'
     | '/delivery/harare/$suburb'
@@ -1262,6 +1273,7 @@ export interface FileRouteTypes {
     | '/messages/$bookingId'
     | '/provider/apply'
     | '/provider/dashboard'
+    | '/provider/profile'
     | '/provider/setup'
     | '/provider/verify'
     | '/delivery/harare/$suburb'
@@ -1379,6 +1391,7 @@ export interface FileRouteTypes {
     | '/_authenticated/messages/$bookingId'
     | '/_authenticated/provider/apply'
     | '/_authenticated/provider/dashboard'
+    | '/_authenticated/provider/profile'
     | '/_authenticated/provider/setup'
     | '/_authenticated/provider/verify'
     | '/delivery/harare/$suburb'
@@ -1980,6 +1993,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProviderDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/provider/profile': {
+      id: '/_authenticated/provider/profile'
+      path: '/provider/profile'
+      fullPath: '/provider/profile'
+      preLoaderRoute: typeof AuthenticatedProviderProfileRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/provider/setup': {
       id: '/_authenticated/provider/setup'
       path: '/provider/setup'
@@ -2304,6 +2324,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedMessagesBookingIdRoute: typeof AuthenticatedMessagesBookingIdRoute
   AuthenticatedProviderApplyRoute: typeof AuthenticatedProviderApplyRoute
   AuthenticatedProviderDashboardRoute: typeof AuthenticatedProviderDashboardRoute
+  AuthenticatedProviderProfileRoute: typeof AuthenticatedProviderProfileRoute
   AuthenticatedProviderSetupRoute: typeof AuthenticatedProviderSetupRoute
   AuthenticatedProviderVerifyRoute: typeof AuthenticatedProviderVerifyRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
@@ -2350,6 +2371,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedMessagesBookingIdRoute: AuthenticatedMessagesBookingIdRoute,
   AuthenticatedProviderApplyRoute: AuthenticatedProviderApplyRoute,
   AuthenticatedProviderDashboardRoute: AuthenticatedProviderDashboardRoute,
+  AuthenticatedProviderProfileRoute: AuthenticatedProviderProfileRoute,
   AuthenticatedProviderSetupRoute: AuthenticatedProviderSetupRoute,
   AuthenticatedProviderVerifyRoute: AuthenticatedProviderVerifyRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
