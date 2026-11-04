@@ -14,3 +14,4 @@
 - Use authorized PostgreSQL RPC transactions for withdrawal requests, withdrawal decisions, dispute decisions and provider reviews so record, ledger, notification and actor audit changes commit together.
 - Aggregate admin financial totals in PostgreSQL with Harare date boundaries; separate period flows from current snapshots to prevent truncated totals and misleading revenue.
 - Reuse shared admin navigation and paginated directory/detail views inside the existing application; non-nested investigation routes prevent parent lists from swallowing detail pages.
+- Reuse provider profile and payment editors on the dashboard and protected profile page; owner-scoped writes preserve verification and financial records.

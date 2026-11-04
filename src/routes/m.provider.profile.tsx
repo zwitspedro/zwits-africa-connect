@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 import { useProviderData } from "@/components/provider/use-provider-data";
 import { clearOfflineCache } from "@/mobile/offline";
 import {
@@ -46,6 +47,7 @@ function ProviderProfile() {
     <>
       <AppBar title="Profile" large />
       <Screen>
+        <Button asChild variant="outline" className="w-full"><Link to="/provider/profile">Edit profile & payment details</Link></Button>
         {data.isLoading ? (
           <Section>
             <SkeletonList rows={3} />

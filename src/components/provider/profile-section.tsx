@@ -4,11 +4,13 @@ import { toast } from "sonner";
 import { BadgeCheck, ShieldAlert, User } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { toCanonicalPhone } from "@/lib/phone";
 import { Panel } from "./dashboard-kit";
 import type { ProviderData } from "./use-provider-data";
 
 const STATUS_COPY: Record<string, { label: string; tone: string }> = {
-  approved: { label: "Verified", tone: "bg-emerald-500/15 text-success" },
+  approved: { label: "Verified", tone: "bg-success/15 text-success" },
   pending: { label: "Under review", tone: "bg-gold/20 text-gold" },
   unverified: { label: "Not verified", tone: "bg-muted text-muted-foreground" },
   revoked: { label: "Revoked", tone: "bg-destructive/15 text-destructive" },
@@ -17,6 +19,7 @@ const STATUS_COPY: Record<string, { label: string; tone: string }> = {
 export function ProfileSection({ data }: { data: ProviderData }) {
   const { provider, profile, user } = data;
   const qc = useQueryClient();
+  const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({
     display_name: profile?.display_name ?? "",
     phone: profile?.phone ?? "",
@@ -28,11 +31,16 @@ export function ProfileSection({ data }: { data: ProviderData }) {
 
   const save = useMutation({
     mutationFn: async () => {
-      const { error: pe } = await supabase
+      if (!user) throw new Error("Sign in to save your profile.");
+      if (!form.display_name.trim()) throw new Error("Enter your full name.");
+      const phone = form.phone.trim() ? toCanonicalPhone(form.phone) : null;
+      if (form.phone.trim() && !phone) throw new Error("Enter a valid phone number, such as +263 77 123 4567.");
+      const { data: saved, error: pe } = await supabase
         .from("profiles")
-        .update({ display_name: form.display_name, phone: form.phone })
-        .eq("user_id", user!.id);
+        .update({ display_name: form.display_name.trim(), phone })
+        .eq("user_id", user.id).select("user_id").single();
       if (pe) throw pe;
+      if (!saved) throw new Error("Your profile was not saved.");
       if (provider?.id) {
         const { error: ve } = await supabase
           .from("providers")
@@ -46,19 +54,22 @@ export function ProfileSection({ data }: { data: ProviderData }) {
         if (ve) throw ve;
       }
     },
-    onSuccess: () => {
+    onSuccess: async () => {
+      setError(null);
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ["my-provider"] }),
+        qc.invalidateQueries({ queryKey: ["my-profile"] }),
+      ]);
       toast.success("Profile updated");
-      qc.invalidateQueries({ queryKey: ["my-provider"] });
-      qc.invalidateQueries({ queryKey: ["my-profile"] });
     },
-    onError: (e: any) => toast.error(e.message ?? "Could not save"),
+    onError: (e: Error) => { setError(e.message); toast.error(e.message); },
   });
 
   const status = STATUS_COPY[provider?.verification_status ?? "unverified"];
 
   return (
     <div className="grid gap-4">
-      <Panel title="Public profile" description="This is what customers see when you are matched to a job.">
+      <Panel title="Contact & public profile">
         <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-4">
           <span className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-2xl bg-muted">
             {profile?.avatar_url ? (
@@ -87,7 +98,7 @@ export function ProfileSection({ data }: { data: ProviderData }) {
           className="mt-5 grid gap-3 sm:grid-cols-2"
         >
           <Field label="Full name" value={form.display_name} onChange={(v) => setForm({ ...form, display_name: v })} />
-          <Field label="Phone" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
+          <Field label="Phone" type="tel" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
           <Field label="Business name" value={form.business_name} onChange={(v) => setForm({ ...form, business_name: v })} />
           <Field label="City" value={form.city} onChange={(v) => setForm({ ...form, city: v })} />
           <Field label="Hourly rate (USD)" type="number" value={form.hourly_rate} onChange={(v) => setForm({ ...form, hourly_rate: v })} />
@@ -101,12 +112,13 @@ export function ProfileSection({ data }: { data: ProviderData }) {
               className="rounded-xl border border-input bg-background px-3 py-2 text-sm"
             />
           </label>
-          <button
+          {error && <p role="alert" className="text-sm text-destructive sm:col-span-2">{error}</p>}
+          <Button type="submit"
             disabled={save.isPending}
-            className="inline-flex min-h-11 items-center justify-center rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground disabled:opacity-60 sm:col-span-2 sm:justify-self-start"
+            className="sm:col-span-2 sm:justify-self-start"
           >
             {save.isPending ? "Saving…" : "Save profile"}
-          </button>
+          </Button>
         </form>
       </Panel>
 
@@ -146,9 +158,10 @@ function Field({
       <span className="text-muted-foreground">{label}</span>
       <input
         type={type}
+        maxLength={type === "tel" ? 30 : 150}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded-xl border border-input bg-background px-3 py-2 text-sm"
+        className="min-h-12 rounded-md border border-input bg-background px-3 py-2 text-sm"
       />
     </label>
   );

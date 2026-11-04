@@ -219,7 +219,11 @@ function ProviderDashboard() {
             {section === "performance" && <PerformanceSection data={data} />}
             {section === "growth" && <GrowthSection data={data} />}
             {section === "notifications" && <NotificationsSection notifications={notifications} />}
-            {section === "profile" && <ProfileSection data={data} />}
+            {section === "profile" && <>
+              <Button asChild variant="outline"><Link to="/provider/profile">Edit profile & payment details</Link></Button>
+              <ProfileSection data={data} />
+              {data.onboardingRow !== undefined && <PayoutSection data={data} />}
+            </>}
             {section === "documents" && <DocumentsSection data={data} />}
             {section === "vehicle" && <VehicleInfoSection data={data} />}
             {section === "area" && <ServiceAreaSection data={data} />}
