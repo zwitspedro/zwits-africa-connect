@@ -1,4 +1,6 @@
 # Current request
+- [ ] Add provider profile page linked from dashboard with contact, bank and payment preference editing.
+- [ ] Verify saved details read back through the signed-in profile page.
 - [x] Verify cash checkout from homepage search without dispatching to real providers; corrected unknown price display.
 - [x] Verify provider acceptance, completion and cash accounting in a rolled-back test; restored missing default 10% commission.
 - [x] Report observed results and any unverified steps.
