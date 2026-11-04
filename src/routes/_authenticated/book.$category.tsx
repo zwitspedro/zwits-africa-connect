@@ -518,7 +518,7 @@ function BookCategory() {
                 {create.isPending
                   ? "Finalising…"
                   : paymentMethod === "cash"
-                    ? `Confirm — $${estimate.price.toFixed(2)}`
+                    ? `Confirm cash booking — $${estimate.price.toFixed(2)}`
                     : `Pay $${estimate.price.toFixed(2)} & confirm`}
               </Button>
             </div>
