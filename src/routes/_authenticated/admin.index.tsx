@@ -4,7 +4,7 @@ import { adminRange, type AdminPeriod } from "@/lib/admin-period";
 import { Status } from "@/components/ui/status";
 import { Button } from "@/components/ui/button";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getAdminMetrics, getOnlineProvidersCount } from "@/lib/admin-metrics.functions";
 import {
@@ -36,6 +36,7 @@ export const Route = createFileRoute("/_authenticated/admin/")({
 });
 
 function AdminDashboard() {
+  const queryClient = useQueryClient();
   const { user, loading: authLoading } = useAuth();
   const { data: roles, isLoading: rolesLoading } = useRoles();
   const isAdmin = (roles ?? []).includes("admin");
@@ -127,8 +128,7 @@ function AdminDashboard() {
   }
 
   const refreshAll = () => {
-    void metricsQuery.refetch();
-    void onlineQuery.refetch();
+    void queryClient.invalidateQueries({predicate:q=>String(q.queryKey[0]).startsWith('admin')});
   };
 
   const onlineValue =

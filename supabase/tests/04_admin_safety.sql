@@ -8,13 +8,13 @@ BEGIN
     PERFORM public.admin_period_metrics('2026-10-01','2026-10-02');
     RAISE EXCEPTION 'FAIL: anonymous metrics allowed';
   EXCEPTION WHEN OTHERS THEN
-    IF SQLERRM <> 'Forbidden' THEN RAISE; END IF;
+    IF SQLERRM <> 'Forbidden' AND SQLSTATE <> '42501' THEN RAISE; END IF;
   END;
   BEGIN
     PERFORM public.admin_decide_withdrawal('00000000-0000-4000-8000-000000000000','paid','test');
     RAISE EXCEPTION 'FAIL: anonymous payout allowed';
   EXCEPTION WHEN OTHERS THEN
-    IF SQLERRM <> 'Forbidden' THEN RAISE; END IF;
+    IF SQLERRM <> 'Forbidden' AND SQLSTATE <> '42501' THEN RAISE; END IF;
   END;
 END $$;
 ROLLBACK;
