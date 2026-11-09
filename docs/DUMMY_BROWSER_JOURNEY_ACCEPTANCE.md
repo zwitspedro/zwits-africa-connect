@@ -16,6 +16,6 @@ Both journeys used existing test59557@example.com (customer) and test60566@examp
 - Cash: f0070f85-a10a-4c4c-a075-0e46d660cd33.
 - Manual bank: 60b1f0c3-b434-427b-a9bf-8cc650b701e0.
 - Both descriptions and addresses identify dummy tests. Their simulated ledger records remain auditable; they are not real revenue.
-- Temporary dummy verification references and bank details must be removed after regression, and the dummy provider taken offline so test credentials are not offered to customers.
+- Temporary dummy verification references and bank details were removed after the passing acceptance regression, and the dummy provider was taken offline so test credentials are not offered to customers.
 
 Screenshots were inspected for cash wallet, manual transfer selection, final wallet and customer receipt readback. Cash/transfer testing does not verify actual service delivery or money receipt.

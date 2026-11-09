@@ -5,6 +5,9 @@ DECLARE bid uuid; uid uuid := 'b5fe6a6e-b70b-4abd-9407-b3606198d13c'; pid uuid; 
 BEGIN
  SELECT id INTO pid FROM public.providers WHERE user_id=uid;
  IF pid IS NULL THEN RAISE EXCEPTION 'Dummy provider fixture required'; END IF;
+ PERFORM set_config('zwits.trusted','on',true);
+ UPDATE public.providers SET available=true,id_document_url='dummy-test/id',selfie_url='dummy-test/selfie',business_doc_url='dummy-test/business' WHERE id=pid;
+ PERFORM set_config('zwits.trusted','off',true);
  PERFORM set_config('request.jwt.claim.sub','88942034-e764-4d39-9e26-ab02856bed40',true);
  INSERT INTO public.bookings(customer_id,provider_id,category,address,description,fulfilment_mode,payment_method,price)
  VALUES('88942034-e764-4d39-9e26-ab02856bed40',pid,'cleaning','DUMMY REGRESSION ONLY','DUMMY ROLLED BACK ACCEPTANCE TEST','direct','cash',25) RETURNING id INTO bid;
