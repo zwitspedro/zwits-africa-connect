@@ -34,7 +34,7 @@ export const Route = createFileRoute("/lovable/email/transactional/send")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const supabaseUrl = import.meta.env['VITE_SUPABASE_URL']
+        const supabaseUrl = process.env['SUPABASE_URL']
         const supabaseServiceKey = process.env['SUPABASE_SERVICE_ROLE_KEY']
 
         if (!supabaseUrl || !supabaseServiceKey) {
@@ -53,7 +53,7 @@ export const Route = createFileRoute("/lovable/email/transactional/send")({
         }
 
         const token = authHeader.slice('Bearer '.length).trim()
-        const supabase = createClient(supabaseUrl, supabaseServiceKey)
+        const supabase = createClient(supabaseUrl, supabaseServiceKey, { auth: { persistSession: false }, global: { fetch: (input, init) => { const h = new Headers(init?.headers); if (supabaseServiceKey.startsWith('sb_') && h.get('Authorization') === `Bearer ${supabaseServiceKey}`) h.delete('Authorization'); h.set('apikey',supabaseServiceKey); return fetch(input,{...init,headers:h}); } } })
         const { data: { user }, error: authError } = await supabase.auth.getUser(token)
 
         if (authError || !user) {
@@ -88,6 +88,24 @@ export const Route = createFileRoute("/lovable/email/transactional/send")({
             { status: 400 }
           )
         }
+
+        // Recipient and content are derived from the authorized review event,
+        // never from client-provided names, decisions, reasons or addresses.
+        if (templateName !== 'provider-decision') return Response.json({ error: 'Unsupported app email' }, { status: 400 })
+        const eventId = templateData.eventId
+        if (typeof eventId !== 'string' || !/^[0-9a-f-]{36}$/i.test(eventId)) return Response.json({ error: 'A review event is required' }, { status: 400 })
+        const { data: isAdmin, error: roleError } = await supabase.rpc('has_role',{ _user_id: user.id, _role: 'admin' })
+        if (roleError || !isAdmin) return Response.json({ error: 'Forbidden' }, { status: 403 })
+        const { data: event, error: eventError } = await supabase.from('provider_review_events').select('*').eq('id',eventId).single()
+        if (eventError || !event) return Response.json({ error: 'Review not found' }, { status: 404 })
+        if (['queued','sent','suppressed'].includes(event.email_state)) return Response.json({ success: true, queued: event.email_state !== 'suppressed', reason: event.email_state === 'suppressed' ? 'email_suppressed' : undefined })
+        const { data: recipient, error: recipientError } = await supabase.auth.admin.getUserById(event.provider_user_id)
+        const { data: provider } = await supabase.from('providers').select('business_name').eq('id',event.provider_id).single()
+        if (recipientError || !recipient.user?.email) return Response.json({ error: 'Provider email unavailable' }, { status: 400 })
+        recipientEmail = recipient.user.email
+        templateData = { name: provider?.business_name, status: event.status, reason: event.reason }
+        idempotencyKey = `provider-decision:${event.id}`
+        messageId = event.id
 
         // 1. Look up template from registry (early — needed to resolve recipient)
         const template = TEMPLATES[templateName]
@@ -136,6 +154,7 @@ export const Route = createFileRoute("/lovable/email/transactional/send")({
         }
 
         if (suppressed) {
+          await supabase.from('provider_review_events').update({ email_state: 'suppressed' }).eq('id',event.id)
           // Log the suppressed attempt
           await supabase.from('email_send_log').insert({
             message_id: messageId,
@@ -270,6 +289,9 @@ export const Route = createFileRoute("/lovable/email/transactional/send")({
         // 5. Enqueue the pre-rendered email for async processing by the dispatcher.
         // The dispatcher (process-email-queue) handles sending, retries, and rate-limit backoff.
 
+        const { data: claim, error: claimError } = await supabase.from('provider_review_events').update({ email_state: 'queueing' }).eq('id',event.id).in('email_state',['not_requested','failed']).select('id').maybeSingle()
+        if (claimError) return Response.json({ error: 'Unable to prepare review email' }, { status: 500 })
+        if (!claim) return Response.json({ success: false, reason: 'already_processing' })
         // Log pending BEFORE enqueue so we have a record even if enqueue crashes
         await supabase.from('email_send_log').insert({
           message_id: messageId,
@@ -297,6 +319,7 @@ export const Route = createFileRoute("/lovable/email/transactional/send")({
         })
 
         if (enqueueError) {
+          await supabase.from('provider_review_events').update({ email_state: 'failed' }).eq('id',event.id)
           console.error('Failed to enqueue email', {
             code: enqueueError.code,
             message: enqueueError.message,
@@ -318,6 +341,7 @@ export const Route = createFileRoute("/lovable/email/transactional/send")({
           )
         }
 
+        await supabase.from('provider_review_events').update({ email_state: 'queued' }).eq('id',event.id)
         console.log('Transactional email enqueued', {
           templateName,
           recipient_redacted: redactEmail(effectiveRecipient),
