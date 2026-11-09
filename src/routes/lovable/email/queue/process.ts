@@ -65,7 +65,7 @@ export const Route = createFileRoute("/lovable/email/queue/process")({
     handlers: {
       POST: async ({ request }) => {
         const apiKey = process.env.LOVABLE_API_KEY
-        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+        const supabaseUrl = process.env['SUPABASE_URL']
         const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
         if (!apiKey || !supabaseUrl || !supabaseServiceKey) {
@@ -88,7 +88,7 @@ export const Route = createFileRoute("/lovable/email/queue/process")({
           return Response.json({ error: 'Forbidden' }, { status: 403 })
         }
 
-        const supabase: SupabaseClient<any, any> = createClient(supabaseUrl, supabaseServiceKey)
+        const supabase: SupabaseClient<any, any> = createClient(supabaseUrl, supabaseServiceKey, { auth: { persistSession: false }, global: { fetch: (input, init) => { const headers = new Headers(init?.headers); if (supabaseServiceKey.startsWith('sb_') && headers.get('Authorization') === `Bearer ${supabaseServiceKey}`) headers.delete('Authorization'); headers.set('apikey',supabaseServiceKey); return fetch(input,{...init,headers}); } } })
 
         // 1. Check rate-limit cooldown and read queue config
         const { data: state } = await supabase

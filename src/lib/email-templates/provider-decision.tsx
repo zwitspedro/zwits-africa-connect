@@ -1,0 +1,7 @@
+import { Html, Head, Body, Container, Heading, Text, Button, Preview } from "@react-email/components";
+import type { TemplateEntry } from "./registry";
+type Props = { name?: string; status?: string; reason?: string };
+export function ProviderDecisionEmail({ name, status = "pending", reason }: Props) {
+  return <Html lang="en"><Head/><Preview>Your Zwits provider profile review: {status}</Preview><Body style={{ backgroundColor: "#ffffff", fontFamily: "Arial, sans-serif", color: "#090B0A" }}><Container style={{ padding: "32px 24px", maxWidth: "560px" }}><Heading>ZWITS</Heading><Text>TRUST. DELIVERED.</Text><Heading as="h2">Provider review: {status}</Heading><Text>{name ? `Hello ${name},` : "Hello,"}</Text><Text>Your provider profile has been reviewed by Zwits.</Text><Text>{reason || "View your account for the review details."}</Text><Button href="https://www.zwits.co.zw/provider/dashboard?section=documents" style={{ backgroundColor: "#18A957", color: "#090B0A", padding: "16px 24px", borderRadius: "8px" }}>View review & documents</Button><Text>For help with this decision, contact support@zwits.co.zw.</Text></Container></Body></Html>;
+}
+export const template = { component: ProviderDecisionEmail, subject: (data: Record<string, unknown>) => `Zwits provider review — ${String(data.status ?? "pending")}`, displayName: "Provider review decision", previewData: { name: "Provider", status: "approved", reason: "Your verification documents have been reviewed." } } satisfies TemplateEntry;

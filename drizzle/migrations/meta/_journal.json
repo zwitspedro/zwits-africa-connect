@@ -64,6 +64,20 @@
       "when": 1794219341940,
       "tag": "0008_participant_disputes_provider_review_cash_integrity",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1794220004872,
+      "tag": "0009_provider_approval_events_upload_registration",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1794220105918,
+      "tag": "0010_provider_review_email_delivery_tracking",
+      "breakpoints": true
     }
   ]
 }

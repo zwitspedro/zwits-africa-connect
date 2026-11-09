@@ -35,6 +35,7 @@ import { Route as ServicesRouteImport } from './routes/services'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as AuthenticatedBusinessPortalRouteImport } from './routes/_authenticated/business-portal'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDisputesRouteImport } from './routes/_authenticated/disputes'
@@ -46,6 +47,7 @@ import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as BookIndexRouteImport } from './routes/book.index'
 import { Route as DeliveryIndexRouteImport } from './routes/delivery.index'
 import { Route as DeliveryHarareRouteImport } from './routes/delivery.harare'
+import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as MIndexRouteImport } from './routes/m.index'
 import { Route as MCustomerRouteImport } from './routes/m.customer'
 import { Route as MDriverRouteImport } from './routes/m.driver'
@@ -90,6 +92,7 @@ import { Route as AuthenticatedProviderSetupRouteImport } from './routes/_authen
 import { Route as AuthenticatedProviderVerifyRouteImport } from './routes/_authenticated/provider.verify'
 import { Route as DeliveryHarareIndexRouteImport } from './routes/delivery.harare.index'
 import { Route as DeliveryHarareSuburbRouteImport } from './routes/delivery.harare.$suburb'
+import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as MChatBookingIdRouteImport } from './routes/m.chat.$bookingId'
 import { Route as MCustomerIndexRouteImport } from './routes/m.customer.index'
 import { Route as MCustomerAddressesRouteImport } from './routes/m.customer.addresses'
@@ -120,6 +123,8 @@ import { Route as ApiPublicHooksDispatchSweepRouteImport } from './routes/api/pu
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
+import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
+import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 import { Route as MCustomerBookCategoryRouteImport } from './routes/m.customer.book.$category'
 import { Route as MCustomerProviderIdRouteImport } from './routes/m.customer.provider.$id'
 import { Route as MCustomerTrackIdRouteImport } from './routes/m.customer.track.$id'
@@ -257,6 +262,11 @@ const TermsRoute = TermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UnsubscribeRoute = UnsubscribeRouteImport.update({
+  id: '/unsubscribe',
+  path: '/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedBusinessPortalRoute =
   AuthenticatedBusinessPortalRouteImport.update({
     id: '/business-portal',
@@ -314,6 +324,11 @@ const DeliveryHarareRoute = DeliveryHarareRouteImport.update({
   id: '/harare',
   path: '/harare',
   getParentRoute: () => DeliveryRoute,
+} as any)
+const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
+  id: '/email/unsubscribe',
+  path: '/email/unsubscribe',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const MIndexRoute = MIndexRouteImport.update({
   id: '/',
@@ -564,6 +579,11 @@ const DeliveryHarareSuburbRoute = DeliveryHarareSuburbRouteImport.update({
   path: '/$suburb',
   getParentRoute: () => DeliveryHarareRoute,
 } as any)
+const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
+  id: '/lovable/email/suppression',
+  path: '/lovable/email/suppression',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MChatBookingIdRoute = MChatBookingIdRouteImport.update({
   id: '/chat/$bookingId',
   path: '/chat/$bookingId',
@@ -720,6 +740,18 @@ const LovableEmailQueueProcessRoute =
     path: '/lovable/email/queue/process',
     getParentRoute: () => rootRouteImport,
   } as any)
+const LovableEmailTransactionalPreviewRoute =
+  LovableEmailTransactionalPreviewRouteImport.update({
+    id: '/lovable/email/transactional/preview',
+    path: '/lovable/email/transactional/preview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const LovableEmailTransactionalSendRoute =
+  LovableEmailTransactionalSendRouteImport.update({
+    id: '/lovable/email/transactional/send',
+    path: '/lovable/email/transactional/send',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const MCustomerBookCategoryRoute = MCustomerBookCategoryRouteImport.update({
   id: '/book/$category',
   path: '/book/$category',
@@ -784,6 +816,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/business-portal': typeof AuthenticatedBusinessPortalRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/disputes': typeof AuthenticatedDisputesRoute
@@ -793,6 +826,7 @@ export interface FileRoutesByFullPath {
   '/workspace': typeof AuthenticatedWorkspaceRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/delivery/harare': typeof DeliveryHarareRouteWithChildren
+  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/m/customer': typeof MCustomerRouteWithChildren
   '/m/driver': typeof MDriverRouteWithChildren
   '/m/notifications': typeof MNotificationsRoute
@@ -836,6 +870,7 @@ export interface FileRoutesByFullPath {
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/provider/verify': typeof AuthenticatedProviderVerifyRoute
   '/delivery/harare/$suburb': typeof DeliveryHarareSuburbRoute
+  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/m/chat/$bookingId': typeof MChatBookingIdRoute
   '/m/customer/addresses': typeof MCustomerAddressesRoute
   '/m/customer/bookings': typeof MCustomerBookingsRoute
@@ -868,6 +903,8 @@ export interface FileRoutesByFullPath {
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
   '/m/customer/book/$category': typeof MCustomerBookCategoryRoute
   '/m/customer/provider/$id': typeof MCustomerProviderIdRoute
   '/m/customer/track/$id': typeof MCustomerTrackIdRoute
@@ -900,6 +937,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/business-portal': typeof AuthenticatedBusinessPortalRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/disputes': typeof AuthenticatedDisputesRoute
@@ -908,6 +946,7 @@ export interface FileRoutesByTo {
   '/send-delivery': typeof AuthenticatedSendDeliveryRoute
   '/workspace': typeof AuthenticatedWorkspaceRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/m/notifications': typeof MNotificationsRoute
   '/m/settings': typeof MSettingsRoute
   '/book': typeof BookIndexRoute
@@ -947,6 +986,7 @@ export interface FileRoutesByTo {
   '/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/provider/verify': typeof AuthenticatedProviderVerifyRoute
   '/delivery/harare/$suburb': typeof DeliveryHarareSuburbRoute
+  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/m/chat/$bookingId': typeof MChatBookingIdRoute
   '/m/customer/addresses': typeof MCustomerAddressesRoute
   '/m/customer/bookings': typeof MCustomerBookingsRoute
@@ -979,6 +1019,8 @@ export interface FileRoutesByTo {
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
   '/m/customer/book/$category': typeof MCustomerBookCategoryRoute
   '/m/customer/provider/$id': typeof MCustomerProviderIdRoute
   '/m/customer/track/$id': typeof MCustomerTrackIdRoute
@@ -1016,6 +1058,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/_authenticated/business-portal': typeof AuthenticatedBusinessPortalRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/disputes': typeof AuthenticatedDisputesRoute
@@ -1025,6 +1068,7 @@ export interface FileRoutesById {
   '/_authenticated/workspace': typeof AuthenticatedWorkspaceRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/delivery/harare': typeof DeliveryHarareRouteWithChildren
+  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/m/customer': typeof MCustomerRouteWithChildren
   '/m/driver': typeof MDriverRouteWithChildren
   '/m/notifications': typeof MNotificationsRoute
@@ -1068,6 +1112,7 @@ export interface FileRoutesById {
   '/_authenticated/provider/setup': typeof AuthenticatedProviderSetupRoute
   '/_authenticated/provider/verify': typeof AuthenticatedProviderVerifyRoute
   '/delivery/harare/$suburb': typeof DeliveryHarareSuburbRoute
+  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/m/chat/$bookingId': typeof MChatBookingIdRoute
   '/m/customer/addresses': typeof MCustomerAddressesRoute
   '/m/customer/bookings': typeof MCustomerBookingsRoute
@@ -1100,6 +1145,8 @@ export interface FileRoutesById {
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
   '/m/customer/book/$category': typeof MCustomerBookCategoryRoute
   '/m/customer/provider/$id': typeof MCustomerProviderIdRoute
   '/m/customer/track/$id': typeof MCustomerTrackIdRoute
@@ -1137,6 +1184,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/terms'
+    | '/unsubscribe'
     | '/business-portal'
     | '/dashboard'
     | '/disputes'
@@ -1146,6 +1194,7 @@ export interface FileRouteTypes {
     | '/workspace'
     | '/auth/callback'
     | '/delivery/harare'
+    | '/email/unsubscribe'
     | '/m/customer'
     | '/m/driver'
     | '/m/notifications'
@@ -1189,6 +1238,7 @@ export interface FileRouteTypes {
     | '/provider/setup'
     | '/provider/verify'
     | '/delivery/harare/$suburb'
+    | '/lovable/email/suppression'
     | '/m/chat/$bookingId'
     | '/m/customer/addresses'
     | '/m/customer/bookings'
@@ -1221,6 +1271,8 @@ export interface FileRouteTypes {
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
+    | '/lovable/email/transactional/preview'
+    | '/lovable/email/transactional/send'
     | '/m/customer/book/$category'
     | '/m/customer/provider/$id'
     | '/m/customer/track/$id'
@@ -1253,6 +1305,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/terms'
+    | '/unsubscribe'
     | '/business-portal'
     | '/dashboard'
     | '/disputes'
@@ -1261,6 +1314,7 @@ export interface FileRouteTypes {
     | '/send-delivery'
     | '/workspace'
     | '/auth/callback'
+    | '/email/unsubscribe'
     | '/m/notifications'
     | '/m/settings'
     | '/book'
@@ -1300,6 +1354,7 @@ export interface FileRouteTypes {
     | '/provider/setup'
     | '/provider/verify'
     | '/delivery/harare/$suburb'
+    | '/lovable/email/suppression'
     | '/m/chat/$bookingId'
     | '/m/customer/addresses'
     | '/m/customer/bookings'
@@ -1332,6 +1387,8 @@ export interface FileRouteTypes {
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
+    | '/lovable/email/transactional/preview'
+    | '/lovable/email/transactional/send'
     | '/m/customer/book/$category'
     | '/m/customer/provider/$id'
     | '/m/customer/track/$id'
@@ -1368,6 +1425,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/sitemap.xml'
     | '/terms'
+    | '/unsubscribe'
     | '/_authenticated/business-portal'
     | '/_authenticated/dashboard'
     | '/_authenticated/disputes'
@@ -1377,6 +1435,7 @@ export interface FileRouteTypes {
     | '/_authenticated/workspace'
     | '/auth/callback'
     | '/delivery/harare'
+    | '/email/unsubscribe'
     | '/m/customer'
     | '/m/driver'
     | '/m/notifications'
@@ -1420,6 +1479,7 @@ export interface FileRouteTypes {
     | '/_authenticated/provider/setup'
     | '/_authenticated/provider/verify'
     | '/delivery/harare/$suburb'
+    | '/lovable/email/suppression'
     | '/m/chat/$bookingId'
     | '/m/customer/addresses'
     | '/m/customer/bookings'
@@ -1452,6 +1512,8 @@ export interface FileRouteTypes {
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
+    | '/lovable/email/transactional/preview'
+    | '/lovable/email/transactional/send'
     | '/m/customer/book/$category'
     | '/m/customer/provider/$id'
     | '/m/customer/track/$id'
@@ -1489,13 +1551,18 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
+  UnsubscribeRoute: typeof UnsubscribeRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
+  EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   BookIndexRoute: typeof BookIndexRoute
   ProviderIndexRoute: typeof ProviderIndexRoute
+  LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   ApiPublicHooksDispatchSweepRoute: typeof ApiPublicHooksDispatchSweepRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
+  LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
+  LovableEmailTransactionalSendRoute: typeof LovableEmailTransactionalSendRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1682,6 +1749,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/unsubscribe': {
+      id: '/unsubscribe'
+      path: '/unsubscribe'
+      fullPath: '/unsubscribe'
+      preLoaderRoute: typeof UnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/business-portal': {
       id: '/_authenticated/business-portal'
       path: '/business-portal'
@@ -1758,6 +1832,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/delivery/harare'
       preLoaderRoute: typeof DeliveryHarareRouteImport
       parentRoute: typeof DeliveryRoute
+    }
+    '/email/unsubscribe': {
+      id: '/email/unsubscribe'
+      path: '/email/unsubscribe'
+      fullPath: '/email/unsubscribe'
+      preLoaderRoute: typeof EmailUnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/m/': {
       id: '/m/'
@@ -2067,6 +2148,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DeliveryHarareSuburbRouteImport
       parentRoute: typeof DeliveryHarareRoute
     }
+    '/lovable/email/suppression': {
+      id: '/lovable/email/suppression'
+      path: '/lovable/email/suppression'
+      fullPath: '/lovable/email/suppression'
+      preLoaderRoute: typeof LovableEmailSuppressionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/m/chat/$bookingId': {
       id: '/m/chat/$bookingId'
       path: '/chat/$bookingId'
@@ -2275,6 +2363,20 @@ declare module '@tanstack/react-router' {
       path: '/lovable/email/queue/process'
       fullPath: '/lovable/email/queue/process'
       preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/transactional/preview': {
+      id: '/lovable/email/transactional/preview'
+      path: '/lovable/email/transactional/preview'
+      fullPath: '/lovable/email/transactional/preview'
+      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/transactional/send': {
+      id: '/lovable/email/transactional/send'
+      path: '/lovable/email/transactional/send'
+      fullPath: '/lovable/email/transactional/send'
+      preLoaderRoute: typeof LovableEmailTransactionalSendRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/m/customer/book/$category': {
@@ -2636,13 +2738,18 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
+  UnsubscribeRoute: UnsubscribeRoute,
   AuthCallbackRoute: AuthCallbackRoute,
+  EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   BookIndexRoute: BookIndexRoute,
   ProviderIndexRoute: ProviderIndexRoute,
+  LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   ApiPublicHooksDispatchSweepRoute: ApiPublicHooksDispatchSweepRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
+  LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
+  LovableEmailTransactionalSendRoute: LovableEmailTransactionalSendRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

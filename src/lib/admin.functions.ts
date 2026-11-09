@@ -21,5 +21,13 @@ export const setProviderVerification = createServerFn({ method: "POST" })
       _id: data.providerId, _status: data.status, _reason: data.reason ?? "",
     });
     if (error) throw new Error(error.message);
-    return result as {ok: true; status: string};
+    const { data: event } = await context.supabase.from("provider_review_events").select("id").eq("provider_id", data.providerId).eq("actor", context.userId).order("created_at", { ascending: false }).limit(1).single();
+    let emailState = "failed";
+    if (event) {
+      try {
+        const { sendProviderDecision } = await import("./provider-review-email.server");
+        emailState = (await sendProviderDecision(event.id, context.userId)).emailState;
+      } catch { emailState = "failed"; }
+    }
+    return { ...(result as {ok: true; status: string}), emailState };
   });
