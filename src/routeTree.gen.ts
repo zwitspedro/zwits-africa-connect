@@ -72,6 +72,7 @@ import { Route as AuthenticatedAdminPaymentsRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminProvidersRouteImport } from './routes/_authenticated/admin.providers'
 import { Route as AuthenticatedAdminReportsRouteImport } from './routes/_authenticated/admin.reports'
 import { Route as AuthenticatedAdminReviewRouteImport } from './routes/_authenticated/admin.review'
+import { Route as AuthenticatedAdminSearchRouteImport } from './routes/_authenticated/admin.search'
 import { Route as AuthenticatedAdminSearchQualityRouteImport } from './routes/_authenticated/admin.search-quality'
 import { Route as AuthenticatedAdminUploadsRouteImport } from './routes/_authenticated/admin.uploads'
 import { Route as AuthenticatedAdminWalletsRouteImport } from './routes/_authenticated/admin.wallets'
@@ -458,6 +459,12 @@ const AuthenticatedAdminReviewRoute =
     path: '/admin/review',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedAdminSearchRoute =
+  AuthenticatedAdminSearchRouteImport.update({
+    id: '/admin/search',
+    path: '/admin/search',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedAdminSearchQualityRoute =
   AuthenticatedAdminSearchQualityRouteImport.update({
     id: '/admin/search-quality',
@@ -807,6 +814,7 @@ export interface FileRoutesByFullPath {
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/admin/reports': typeof AuthenticatedAdminReportsRoute
   '/admin/review': typeof AuthenticatedAdminReviewRoute
+  '/admin/search': typeof AuthenticatedAdminSearchRoute
   '/admin/search-quality': typeof AuthenticatedAdminSearchQualityRoute
   '/admin/uploads': typeof AuthenticatedAdminUploadsRoute
   '/admin/wallets': typeof AuthenticatedAdminWalletsRoute
@@ -916,6 +924,7 @@ export interface FileRoutesByTo {
   '/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/admin/reports': typeof AuthenticatedAdminReportsRoute
   '/admin/review': typeof AuthenticatedAdminReviewRoute
+  '/admin/search': typeof AuthenticatedAdminSearchRoute
   '/admin/search-quality': typeof AuthenticatedAdminSearchQualityRoute
   '/admin/uploads': typeof AuthenticatedAdminUploadsRoute
   '/admin/wallets': typeof AuthenticatedAdminWalletsRoute
@@ -1035,6 +1044,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/providers': typeof AuthenticatedAdminProvidersRoute
   '/_authenticated/admin/reports': typeof AuthenticatedAdminReportsRoute
   '/_authenticated/admin/review': typeof AuthenticatedAdminReviewRoute
+  '/_authenticated/admin/search': typeof AuthenticatedAdminSearchRoute
   '/_authenticated/admin/search-quality': typeof AuthenticatedAdminSearchQualityRoute
   '/_authenticated/admin/uploads': typeof AuthenticatedAdminUploadsRoute
   '/_authenticated/admin/wallets': typeof AuthenticatedAdminWalletsRoute
@@ -1154,6 +1164,7 @@ export interface FileRouteTypes {
     | '/admin/providers'
     | '/admin/reports'
     | '/admin/review'
+    | '/admin/search'
     | '/admin/search-quality'
     | '/admin/uploads'
     | '/admin/wallets'
@@ -1263,6 +1274,7 @@ export interface FileRouteTypes {
     | '/admin/providers'
     | '/admin/reports'
     | '/admin/review'
+    | '/admin/search'
     | '/admin/search-quality'
     | '/admin/uploads'
     | '/admin/wallets'
@@ -1381,6 +1393,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/providers'
     | '/_authenticated/admin/reports'
     | '/_authenticated/admin/review'
+    | '/_authenticated/admin/search'
     | '/_authenticated/admin/search-quality'
     | '/_authenticated/admin/uploads'
     | '/_authenticated/admin/wallets'
@@ -1916,6 +1929,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminReviewRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin/search': {
+      id: '/_authenticated/admin/search'
+      path: '/admin/search'
+      fullPath: '/admin/search'
+      preLoaderRoute: typeof AuthenticatedAdminSearchRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/admin/search-quality': {
       id: '/_authenticated/admin/search-quality'
       path: '/admin/search-quality'
@@ -2314,6 +2334,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAdminProvidersRoute: typeof AuthenticatedAdminProvidersRoute
   AuthenticatedAdminReportsRoute: typeof AuthenticatedAdminReportsRoute
   AuthenticatedAdminReviewRoute: typeof AuthenticatedAdminReviewRoute
+  AuthenticatedAdminSearchRoute: typeof AuthenticatedAdminSearchRoute
   AuthenticatedAdminSearchQualityRoute: typeof AuthenticatedAdminSearchQualityRoute
   AuthenticatedAdminUploadsRoute: typeof AuthenticatedAdminUploadsRoute
   AuthenticatedAdminWalletsRoute: typeof AuthenticatedAdminWalletsRoute
@@ -2361,6 +2382,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminProvidersRoute: AuthenticatedAdminProvidersRoute,
   AuthenticatedAdminReportsRoute: AuthenticatedAdminReportsRoute,
   AuthenticatedAdminReviewRoute: AuthenticatedAdminReviewRoute,
+  AuthenticatedAdminSearchRoute: AuthenticatedAdminSearchRoute,
   AuthenticatedAdminSearchQualityRoute: AuthenticatedAdminSearchQualityRoute,
   AuthenticatedAdminUploadsRoute: AuthenticatedAdminUploadsRoute,
   AuthenticatedAdminWalletsRoute: AuthenticatedAdminWalletsRoute,

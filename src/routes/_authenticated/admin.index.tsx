@@ -4,7 +4,7 @@ import { adminRange, type AdminPeriod } from "@/lib/admin-period";
 import { Status } from "@/components/ui/status";
 import { Button } from "@/components/ui/button";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getAdminMetrics, getOnlineProvidersCount } from "@/lib/admin-metrics.functions";
 import {
@@ -28,6 +28,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
 import { RoleGate } from "@/components/portal/role-gate";
 import { useProvidersRealtime } from "@/hooks/use-providers-realtime";
+import { ExecutivePanels } from "@/components/admin/executive-panels";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   head: () => ({ meta: [{ title: "Operations dashboard — Zwits" }, { name: "description", content: "Manage Zwits providers, bookings, payments and operational reviews." }, { property: "og:title", content: "Operations dashboard — Zwits" }, { property: "og:description", content: "Manage Zwits providers, bookings, payments and operational reviews." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
@@ -35,6 +36,7 @@ export const Route = createFileRoute("/_authenticated/admin/")({
 });
 
 function AdminDashboard() {
+  const queryClient = useQueryClient();
   const { user, loading: authLoading } = useAuth();
   const { data: roles, isLoading: rolesLoading } = useRoles();
   const isAdmin = (roles ?? []).includes("admin");
@@ -49,7 +51,7 @@ function AdminDashboard() {
   const metricsQuery = useQuery({
     queryKey: ["admin-metrics", range],
     enabled: !!user && isAdmin && !!range,
-    refetchInterval: 60_000,
+    staleTime: 60_000,
     queryFn: () => { if (!range) throw new Error("Select a valid date range"); return fetchMetrics({ data: range }); },
   });
   const metrics = metricsQuery.data;
@@ -126,8 +128,7 @@ function AdminDashboard() {
   }
 
   const refreshAll = () => {
-    void metricsQuery.refetch();
-    void onlineQuery.refetch();
+    void queryClient.invalidateQueries({predicate:q=>String(q.queryKey[0]).startsWith('admin')});
   };
 
   const onlineValue =
@@ -145,7 +146,7 @@ function AdminDashboard() {
             <div className="inline-flex items-center gap-2 rounded-md bg-primary/10 px-3 py-1 text-[11px] uppercase tracking-wider text-primary-text">
               <ShieldCheck className="size-3" /> Admin
             </div>
-            <h1 className="mt-2 font-display text-3xl font-bold">Operations dashboard</h1>
+            <h1 className="mt-2 font-display text-3xl font-bold">Executive overview</h1>
             <p className="mt-1 text-sm text-muted-foreground">Harare operations</p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -182,7 +183,7 @@ function AdminDashboard() {
 
         <div className="mt-5 flex flex-wrap items-center gap-2">
           <select aria-label="Metrics period" className="min-h-12 rounded-md border border-input bg-background px-3 text-sm" value={period} onChange={e => setPeriod(e.target.value as AdminPeriod)}>
-            <option value="today">Today</option><option value="7days">Last 7 days</option><option value="30days">Last 30 days</option><option value="month">This month</option><option value="previous">Previous month</option><option value="custom">Custom range</option>
+            <option value="today">Today</option><option value="7days">Last 7 days</option><option value="30days">Last 30 days</option><option value="90days">Last 90 days</option><option value="month">This month</option><option value="previous">Previous month</option><option value="custom">Custom range</option>
           </select>
           {period === "custom" && <><Input type="date" aria-label="Start date" className="w-auto" value={from} onChange={e => setFrom(e.target.value)}/><Input type="date" aria-label="End date" className="w-auto" value={to} onChange={e => setTo(e.target.value)}/></>}
           <span className="text-xs text-muted-foreground">{metrics && !failed ? `Refreshed ${new Date(metrics.checkedAt).toLocaleTimeString()}` : "Not refreshed"}</span>
@@ -196,27 +197,32 @@ function AdminDashboard() {
         )}
 
         <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          <KpiCard icon={Users} label="Total customers" value={metrics?.totalCustomers} state={state(metrics?.totalCustomers)} sub="All registrations · current" to="/admin/customers"/>
+          <KpiCard icon={Activity} label="Active drivers" value={metrics?.approvedDrivers} state={state(metrics?.approvedDrivers)} sub="Approved network · current" to="/admin/drivers" search={{status:"approved"}}/>
+          <KpiCard icon={CalendarCheck} label="Total bookings" value={metrics?.totalBookings} state={state(metrics?.totalBookings)} sub="Created in selected period" to="/admin/bookings" search={{...range}}/>
+          <KpiCard icon={Activity} label="Completed deliveries" value={metrics?.completedDeliveries} state={state(metrics?.completedDeliveries)} sub="Completed in selected period" to="/admin/deliveries" search={{status:"delivered",...range}}/>
           <KpiCard icon={Users} label="Approved providers" value={metrics?.approvedProviders} state={state(metrics?.approvedProviders)} sub={`${metrics?.pendingVerification ?? 0} pending · ${metrics?.revokedProviders ?? 0} revoked`} tone="emerald" to="/admin/providers" search={{ status: "approved" }} cta="View providers" />
-          <KpiCard icon={CalendarCheck} label="Active bookings" value={metrics?.activeJobs} state={state(metrics?.activeJobs)} sub={`${metrics?.completedJobs ?? 0} completed`} tone="primary" to="/admin/bookings" cta="View bookings" />
+          <KpiCard icon={CalendarCheck} label="Active bookings" value={metrics?.activeJobs} state={state(metrics?.activeJobs)} sub="Current non-final bookings" tone="primary" to="/admin/bookings" search={{status:"active"}} cta="View bookings" />
           <KpiCard icon={Wallet} label="Confirmed payments" value={metrics ? `$${metrics.revenue.toFixed(0)}` : undefined} state={state(metrics?.revenue)} sub="USD paid records · includes cash held by providers" tone="primary" to="/admin/payments" search={{ status: "paid", ...range }} cta="View payments" />
           <KpiCard icon={Star} label="Avg rating" value={metrics ? (metrics.avgRating ?? "—") : undefined} state={failed ? "error" : loading ? "loading" : "ok"} sub={`${metrics?.ratingsCount ?? 0} reviews`} tone="amber" to="/admin/providers" search={{ status: "approved" }} cta="View providers" />
           <KpiCard icon={Activity} label="Providers online" value={onlineValue} state={onlineState} sub={`${metrics?.providers ?? 0} total providers · live`} tone="primary" to="/admin/providers/online" cta="View online providers" />
           <KpiCard icon={AlertTriangle} label="Open disputes" value={metrics?.openDisputes} state={state(metrics?.openDisputes)} sub="Awaiting resolution" tone={(metrics?.openDisputes ?? 0) > 0 ? "destructive" : "muted"} to="/admin/disputes" cta="View disputes" />
           <KpiCard icon={Wallet} label="Pending withdrawals" value={metrics?.pendingWithdrawals} state={state(metrics?.pendingWithdrawals)} sub="Requested or processing" tone={(metrics?.pendingWithdrawals ?? 0) > 0 ? "amber" : "muted"} to="/admin/withdrawals" cta="View withdrawals" />
-          <KpiCard icon={AlertTriangle} label="Failed payments" value={metrics?.failedPayments} state={state(metrics?.failedPayments)} sub="Needs follow-up" tone={(metrics?.failedPayments ?? 0) > 0 ? "destructive" : "muted"} to="/admin/payments" search={{ status: "failed" }} cta="View payments" />
+          <KpiCard icon={AlertTriangle} label="Failed payments" value={metrics?.failedPayments} state={state(metrics?.failedPayments)} sub="Selected period · needs follow-up" tone={(metrics?.failedPayments ?? 0) > 0 ? "destructive" : "muted"} to="/admin/payments" search={{ status: "failed",...range }} cta="View payments" />
           <KpiCard icon={FileSearch} label="Audit events" value={metrics?.auditEvents} state={state(metrics?.auditEvents)} sub="Privileged actions" tone="primary" to="/admin/audit" cta="View audit log" />
           <KpiCard icon={AlertTriangle} label="Failed uploads" value={metrics?.failedUploads} state={state(metrics?.failedUploads)} sub="Rejected or errored" tone={(metrics?.failedUploads ?? 0) > 0 ? "destructive" : "muted"} to="/admin/uploads" cta="View uploads" />
           <KpiCard icon={ShieldCheck} label="Pending review" value={metrics?.pendingVerification} state={state(metrics?.pendingVerification)} sub="Awaiting verification" tone={(metrics?.pendingVerification ?? 0) > 0 ? "amber" : "muted"} to="/admin/review" cta="View pending" />
           <KpiCard icon={Wallet} label="Commission recorded" value={metrics ? `$${metrics.commission.toFixed(2)}` : undefined} state={state(metrics?.commission)} sub="Ledger commission · not necessarily collected" to="/admin/reconciliation" cta="Inspect ledger" />
           <KpiCard icon={Wallet} label="Completed transaction value" value={metrics ? `$${metrics.grossTransactionValue.toFixed(2)}` : undefined} state={state(metrics?.grossTransactionValue)} sub="Completed booking and delivery prices" to="/admin/reports" cta="View report" />
           <KpiCard icon={Wallet} label="Cash confirmed" value={metrics ? `$${metrics.cashPayments.toFixed(2)}` : undefined} state={state(metrics?.cashPayments)} sub="Cash held by providers · not platform revenue" to="/admin/payments" search={{status:"paid", ...range}} cta="View payments" />
-          <KpiCard icon={Wallet} label="Electronic payments" value={metrics ? `$${metrics.electronicPayments.toFixed(2)}` : undefined} state={state(metrics?.electronicPayments)} sub="Only confirmed USD electronic records" to="/admin/payments" search={{status:"paid", ...range}} cta="View payments" />
-          <KpiCard icon={Activity} label="Active deliveries" value={metrics?.activeDeliveries} state={state(metrics?.activeDeliveries)} sub="Current non-final deliveries" to="/admin/deliveries" cta="View deliveries" />
+          <KpiCard icon={Activity} label="Active deliveries" value={metrics?.activeDeliveries} state={state(metrics?.activeDeliveries)} sub="Current non-final deliveries" to="/admin/deliveries" search={{status:"active"}} cta="View deliveries" />
           <KpiCard icon={Activity} label="Drivers online" value={metrics?.onlineDrivers} state={state(metrics?.onlineDrivers)} sub="Approved and available" to="/admin/drivers" search={{status:"online"}} cta="View drivers" />
           <KpiCard icon={Wallet} label="Wallet liabilities" value={metrics ? `$${metrics.walletLiabilities.toFixed(2)}` : undefined} state={state(metrics?.walletLiabilities)} sub="Positive available USD balances" to="/admin/wallets" search={{status:"positive"}} cta="Inspect wallets" />
           <KpiCard icon={Wallet} label="Commission owed" value={metrics ? `$${metrics.commissionDebt.toFixed(2)}` : undefined} state={state(metrics?.commissionDebt)} sub="Negative USD wallet balances" to="/admin/wallets" search={{status:"debt"}} cta="Inspect wallets" />
           <KpiCard icon={Users} label="Customers" value={metrics?.customers} state={state(metrics?.customers)} sub="Registrations in selected period" tone="primary" to="/admin/customers" search={{...range}} cta="View customers" />
         </div>
+
+        <ExecutivePanels metrics={metrics} failed={failed} periodLabel={range ? `${new Date(range.from).toLocaleDateString('en-GB',{timeZone:'Africa/Harare'})} – ${new Date(new Date(range.to).getTime()-1).toLocaleDateString('en-GB',{timeZone:'Africa/Harare'})}` : 'Invalid reporting period'}/>
 
         <div className="mt-8 grid gap-4 lg:grid-cols-3">
           <Panel title="Recent document uploads" link={{ to: "/admin/uploads", label: "Open" }} className="lg:col-span-2">
