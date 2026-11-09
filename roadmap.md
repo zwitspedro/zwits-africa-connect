@@ -1,4 +1,5 @@
 # Current request
+- [ ] Verify Peter's requested real-account cash and manual-transfer browser journeys (awaiting selected provider, genuine work/payment details and authorized provider access; do not fabricate receipt).
 - [x] Add direct provider EcoCash/bank payments, private account editing/display, provider receipt confirmation and direct-money ledger accounting; rollback regression and signed-in empty-account UI passed.
 - [ ] Verify populated direct-payment browser journey (requires isolated provider account details and booking; real financial records preserved).
 - [ ] Run a real cash booking in the browser (needs actual job, provider, agreed amount and confirmation that work/cash receipt are genuine).
