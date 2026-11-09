@@ -1,7 +1,9 @@
 # Current request
-- [ ] Extend admin approval queue with secure document uploads and review status tracking.
-- [ ] Add automatic individual provider decision emails; sender verification is currently failed.
-- [ ] Verify queue/upload/email safeguards and report sending limitations.
+- [x] Extend admin approval queue with secure document uploads and review status tracking.
+- [x] Add automatic individual provider decision emails, protected recipient selection and delivery status/retry tracking.
+- [x] Verify queue/upload/email safeguards and report sending limitations in approval acceptance report.
+- [ ] Verify actual provider email delivery (blocked by failed sender DNS verification; More → Emails → Retry setup after delegation correction).
+- [ ] Verify successful document replacement and full review/email browser journey (requires isolated test records; real provider documents and decisions preserved).
 - [x] Complete customer/provider dispute submission and status tracking with admin resolutions; transactional regression passed, browser submission on real records intentionally avoided.
 - [x] Complete secure provider document review, profile decisions and in-app notifications; regression and signed-in document access/control checks passed.
 - [x] Fix provider detail navigation, atomic cash confirmation, historical commission display and completed-job visibility; regression passed and existing completed records verified.

@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ShieldCheck, ShieldX, FileText, History, Mail } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
@@ -222,6 +222,7 @@ function AdminProviderRow({ provider, pending, onApprove, onRevoke }: { provider
     queryKey: ["admin-provider-docs", provider.id],
     queryFn: () => fetchProviderDocuments(provider.id),
   });
+  useEffect(() => { setReviewed(false); }, [docs?.id_document_url, docs?.selfie_url, docs?.business_doc_url]);
 
   const { data: review } = useQuery({
     queryKey: ["admin-provider-review", provider.id],
