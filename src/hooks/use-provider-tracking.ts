@@ -19,7 +19,7 @@ export function useProviderTracking({ bookingId, enabled }: { bookingId: string 
         const now = Date.now();
         if (now - lastPush.current < 4000) return; // throttle to ~one row / 4s
         lastPush.current = now;
-        await supabase.from("provider_locations").insert({
+        const { error } = await supabase.from("provider_locations").upsert({
           booking_id: bookingId,
           provider_user_id: user.id,
           lat: pos.coords.latitude,
@@ -27,12 +27,13 @@ export function useProviderTracking({ bookingId, enabled }: { bookingId: string 
           heading: pos.coords.heading ?? null,
           speed: pos.coords.speed ?? null,
           accuracy: pos.coords.accuracy ?? null,
-        });
+        }, { onConflict: 'provider_user_id,booking_id' });
+        if (error) console.warn('Location sharing unavailable', error.message);
       },
       (err) => console.warn("Geolocation error", err),
       { enableHighAccuracy: true, maximumAge: 2000, timeout: 10000 },
     );
 
-    return () => navigator.geolocation.clearWatch(watchId);
+    return () => { navigator.geolocation.clearWatch(watchId); lastPush.current = 0; };
   }, [enabled, bookingId, user]);
 }

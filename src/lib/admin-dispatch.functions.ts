@@ -2,6 +2,15 @@ import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
 import { dispatchFilters, controlSchema, responseSchema } from './admin-dispatch-schema';
+import type { DispatchLocation } from './provider-location';
+
+export const getDispatchLocations = createServerFn({method:'GET'}).middleware([requireSupabaseAuth]).handler(async({context})=>{
+ const {data:allowed,error:roleError}=await context.supabase.rpc('has_role',{_user_id:context.userId,_role:'admin'});
+ if(roleError||!allowed) throw new Error('Forbidden');
+ const {data,error}=await context.supabase.rpc('admin_dispatch_locations');
+ if(error) throw new Error('Provider locations unavailable');
+ return data as unknown as {rows:DispatchLocation[];total:number};
+});
 
 export const listDispatchJobs = createServerFn({method:'GET'}).middleware([requireSupabaseAuth]).inputValidator(input=>dispatchFilters.parse(input)).handler(async({data,context})=>{
  const {data:allowed,error:roleError}=await context.supabase.rpc('has_role',{_user_id:context.userId,_role:'admin'});

@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { BadgeCheck, Power, ShieldAlert, ShieldX, Star, ChevronRight } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { useProviderTracking } from "@/hooks/use-provider-tracking";
+import { TRACKING_STATUSES } from "@/lib/provider-location";
 import { useProviderData, type ProviderData } from "@/components/provider/use-provider-data";
 import { Panel, EmptyState, MetricBar } from "@/components/provider/dashboard-kit";
 import type { SectionKey } from "@/components/provider/dashboard-nav";
@@ -77,7 +78,7 @@ function ProviderDashboard() {
   }, [search.section]);
 
   const { provider, profile, active, notifications, isLoading } = data;
-  const trackingJob = active.find((j: any) => j.status === "in_progress") ?? null;
+  const trackingJob = active.find((j: any) => TRACKING_STATUSES.some(s => s === j.status)) ?? null;
   const unread = notifications.filter((n: any) => !n.read_at).length;
 
   const goOnline = useServerFn(setProviderOnline);
