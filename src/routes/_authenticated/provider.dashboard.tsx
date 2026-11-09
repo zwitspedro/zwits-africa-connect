@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Status } from "@/components/ui/status";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { setProviderOnline } from "@/lib/provider-status.functions";
@@ -38,6 +38,7 @@ import { OnboardingPanel } from "@/components/provider/onboarding-panel";
 import { RoleGate } from "@/components/portal/role-gate";
 
 export const Route = createFileRoute("/_authenticated/provider/dashboard")({
+  validateSearch: (search: Record<string, unknown>) => ({ section: typeof search.section === "string" ? search.section : undefined }),
   head: () => ({
     meta: [
       { title: "Provider dashboard — Zwits" },
@@ -65,10 +66,15 @@ function TrackingBridge({ bookingId }: { bookingId: string | null }) {
 }
 
 function ProviderDashboard() {
+  const search = Route.useSearch();
   const data = useProviderData();
   const qc = useQueryClient();
   const [tab, setTab] = useState<TabKey>("home");
   const [section, setSection] = useState<SectionKey>("home");
+  useEffect(() => {
+    const target = TABS.flatMap(t => t.sections).find(s => s.key === search.section);
+    if (target) { setSection(target.key); setTab(tabForSection(target.key)); }
+  }, [search.section]);
 
   const { provider, profile, active, notifications, isLoading } = data;
   const trackingJob = active.find((j: any) => j.status === "in_progress") ?? null;

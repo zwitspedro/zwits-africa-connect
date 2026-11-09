@@ -30,7 +30,7 @@ import {
 } from "@/mobile/ui";
 
 export const Route = createFileRoute("/m/provider/jobs/$id")({
-  head: () => ({ meta: [{"title": "Mobile Provider Jobs — Zwits"}, {"name": "description", "content": "Mobile Provider Jobs in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Provider Jobs — Zwits"}, {"property": "og:description", "content": "Mobile Provider Jobs in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: ProviderJobDetail });
+  head: () => ({ meta: [{"title": "Provider job details — Zwits"}, {"name": "description", "content": "Complete your assigned Zwits job, record cash received and track issues."}, {"property": "og:title", "content": "Provider job details — Zwits"}, {"property": "og:description", "content": "Complete your assigned Zwits job, record cash received and track issues."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: ProviderJobDetail });
 
 const STEPS = LIFECYCLE.filter((s) => s !== "pending");
 
@@ -201,7 +201,7 @@ function ProviderJobDetail() {
           </Section>
         )}
 
-        {j.status === "completed" && j.payment_status === "paid" && <Section title="Payment"><p className="text-sm">Cash received · commission recorded</p></Section>}
+        {j.status === "completed" && j.payment_status === "paid" && <Section title="Payment"><p className="text-sm">{j.payment_method === "cash" ? "Cash received · commission recorded" : "Payment recorded"}</p></Section>}
         <Section><DisputePanel bookingId={id} status={j.status}/></Section>
 
         {action && (
