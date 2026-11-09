@@ -162,7 +162,7 @@ function TrackScreen() {
                 <Card>
                   <p className="text-sm font-semibold">Confirm the work is done</p>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    Confirming releases payment to your provider.
+                    Confirming records that the work is finished. Your provider separately confirms receipt of payment.
                   </p>
                   <div className="mt-3">
                     <PrimaryButton
