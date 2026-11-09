@@ -10,12 +10,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Status } from '@/components/ui/status';
 import { adminHead } from '@/lib/admin-period';
+import { DispatchTracking } from '@/components/admin/dispatch-tracking';
 const options=(filters:DispatchFilters)=>queryOptions({queryKey:['admin-dispatch',filters],queryFn:()=>listDispatchJobs({data:filters}),staleTime:15000});
 export const Route=createFileRoute('/_authenticated/admin/dispatch')({ssr:false,validateSearch:(input):Partial<DispatchFilters>=>dispatchFilters.parse(input),loaderDeps:({search})=>dispatchFilters.parse(search),loader:({context,deps})=>context.queryClient.ensureQueryData(options(deps)),head:()=>adminHead('Dispatch & job control','Oversee Zwits service jobs and deliveries, assignments and customer-approved changes.'),component:DispatchPage});
 const views=[['all','All jobs'],['unassigned','Unassigned'],['awaiting_acceptance','Awaiting acceptance'],['assigned','Assigned'],['accepted','Accepted'],['awaiting_collection','Awaiting collection'],['in_transit','In transit'],['completed','Completed'],['failed','Failed / unfulfilled'],['cancelled','Cancelled'],['intervention','Intervention']] as const;
 function DispatchPage(){const filters=dispatchFilters.parse(Route.useSearch()),navigate=Route.useNavigate(),q=useSuspenseQuery(options(filters));const [form,setForm]=useState(filters);
  const update=(key:keyof DispatchFilters,value:string)=>setForm(f=>({...f,[key]:value}));
  return <RoleGate role="admin"><AdminShell><section className="px-4 py-8 sm:px-6"><div className="flex flex-wrap items-start gap-4"><div className="mr-auto"><p className="text-xs font-semibold uppercase text-primary-text">Operations</p><h1 className="mt-2 font-display text-2xl">Dispatch & job control</h1><p className="mt-2 text-sm text-muted-foreground">{q.data.total} matching jobs</p></div><Button asChild variant="outline"><Link to="/admin/dispatch-drivers">Driver operations</Link></Button><Button variant="outline" size="icon" aria-label="Refresh dispatch" onClick={()=>q.refetch()}><RefreshCw className="size-4"/></Button></div>
+ <DispatchTracking/>
  <form className="mt-6 grid gap-3 border-y border-border py-5 sm:grid-cols-2 xl:grid-cols-4" onSubmit={e=>{e.preventDefault();void navigate({search:{...form,page:0}});}}>
  <label className="grid gap-2 text-xs">Search<Input value={form.term} onChange={e=>update('term',e.target.value)} placeholder="Full job reference, address or service"/></label>
  <label className="grid gap-2 text-xs">Job type<select className="min-h-12 rounded-md border border-input bg-background px-3 text-sm" value={form.kind} onChange={e=>update('kind',e.target.value)}><option value="all">Services & deliveries</option><option value="booking">Service bookings</option><option value="delivery">Deliveries</option></select></label>
