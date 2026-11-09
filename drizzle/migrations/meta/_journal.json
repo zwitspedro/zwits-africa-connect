@@ -71,6 +71,13 @@
       "when": 1794220004872,
       "tag": "0009_provider_approval_events_upload_registration",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1794220105918,
+      "tag": "0010_provider_review_email_delivery_tracking",
+      "breakpoints": true
     }
   ]
 }
