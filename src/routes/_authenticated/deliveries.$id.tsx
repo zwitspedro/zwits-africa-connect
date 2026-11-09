@@ -9,6 +9,7 @@ import { Panel } from "@/components/provider/dashboard-kit";
 import { LiveTrackingMap } from "@/components/live-tracking-map";
 import { supabase } from "@/integrations/supabase/client";
 import { DELIVERY_FLOW, DELIVERY_STATUS_LABELS, TIERS, type ServiceTier } from "@/lib/delivery-config";
+import { JobChangeLink } from "@/components/job-change-link";
 import { advanceDeliveryDispatch } from "@/lib/delivery.functions";
 
 const title = "Track your delivery — Zwits";
@@ -68,6 +69,7 @@ function DeliveryTrackingPage() {
   if (!delivery)
     return (
       <SiteShell>
+<JobChangeLink/>
         <div className="mx-auto max-w-3xl px-4 py-16">
           <p className="text-sm text-muted-foreground">Delivery not found.</p>
           <Link to="/dashboard" className="mt-4 inline-block text-sm text-primary-text">Back to dashboard</Link>
@@ -85,6 +87,7 @@ function DeliveryTrackingPage() {
 
   return (
     <SiteShell>
+<JobChangeLink/>
       <div className="mx-auto max-w-3xl space-y-5 px-4 py-10 sm:px-6">
         <header>
           <p className="text-sm text-gold">{TIERS[delivery.service_tier as ServiceTier]?.label ?? "Delivery"}</p>

@@ -92,6 +92,41 @@
       "when": 1794223285102,
       "tag": "0012_authorized_direct_booking_acceptance",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1794224161549,
+      "tag": "0013_admin_dispatch_control_transactions",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1794224570859,
+      "tag": "0014_dispatch_proposal_validation_and_delivery_progress",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1794224650885,
+      "tag": "0015_dispatch_monotonic_job_versions",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1794224692272,
+      "tag": "0016_dispatch_shared_trigger_row_access",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1794224833106,
+      "tag": "0017_dispatch_paged_operational_directory",
+      "breakpoints": true
     }
   ]
 }

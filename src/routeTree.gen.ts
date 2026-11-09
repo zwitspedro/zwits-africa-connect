@@ -40,6 +40,7 @@ import { Route as AuthenticatedBusinessPortalRouteImport } from './routes/_authe
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDisputesRouteImport } from './routes/_authenticated/disputes'
 import { Route as AuthenticatedDriverRouteImport } from './routes/_authenticated/driver'
+import { Route as AuthenticatedJobChangesRouteImport } from './routes/_authenticated/job-changes'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedSendDeliveryRouteImport } from './routes/_authenticated/send-delivery'
 import { Route as AuthenticatedWorkspaceRouteImport } from './routes/_authenticated/workspace'
@@ -66,6 +67,8 @@ import { Route as AuthenticatedAdminCommissionsRouteImport } from './routes/_aut
 import { Route as AuthenticatedAdminConfigurationRouteImport } from './routes/_authenticated/admin.configuration'
 import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authenticated/admin.customers'
 import { Route as AuthenticatedAdminDeliveriesRouteImport } from './routes/_authenticated/admin.deliveries'
+import { Route as AuthenticatedAdminDispatchRouteImport } from './routes/_authenticated/admin.dispatch'
+import { Route as AuthenticatedAdminDispatchDriversRouteImport } from './routes/_authenticated/admin.dispatch-drivers'
 import { Route as AuthenticatedAdminDisputesRouteImport } from './routes/_authenticated/admin.disputes'
 import { Route as AuthenticatedAdminDriversRouteImport } from './routes/_authenticated/admin.drivers'
 import { Route as AuthenticatedAdminEmailRouteImport } from './routes/_authenticated/admin.email'
@@ -117,6 +120,7 @@ import { Route as ServicesSlugIndexRouteImport } from './routes/services.$slug.i
 import { Route as ServicesSlugCityRouteImport } from './routes/services.$slug.$city'
 import { Route as AuthenticatedAdminBookingsIdRouteImport } from './routes/_authenticated/admin.bookings_.$id'
 import { Route as AuthenticatedAdminDeliveriesIdRouteImport } from './routes/_authenticated/admin.deliveries_.$id'
+import { Route as AuthenticatedAdminDispatchDriversIdRouteImport } from './routes/_authenticated/admin.dispatch-drivers_.$id'
 import { Route as AuthenticatedAdminProvidersOnlineRouteImport } from './routes/_authenticated/admin.providers_.online'
 import { Route as AuthenticatedAdminReconciliationIndexRouteImport } from './routes/_authenticated/admin.reconciliation.index'
 import { Route as ApiPublicHooksDispatchSweepRouteImport } from './routes/api/public/hooks/dispatch-sweep'
@@ -288,6 +292,11 @@ const AuthenticatedDriverRoute = AuthenticatedDriverRouteImport.update({
   path: '/driver',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedJobChangesRoute = AuthenticatedJobChangesRouteImport.update({
+  id: '/job-changes',
+  path: '/job-changes',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedNotificationsRoute =
   AuthenticatedNotificationsRouteImport.update({
     id: '/notifications',
@@ -425,6 +434,18 @@ const AuthenticatedAdminDeliveriesRoute =
   AuthenticatedAdminDeliveriesRouteImport.update({
     id: '/admin/deliveries',
     path: '/admin/deliveries',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAdminDispatchRoute =
+  AuthenticatedAdminDispatchRouteImport.update({
+    id: '/admin/dispatch',
+    path: '/admin/dispatch',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedAdminDispatchDriversRoute =
+  AuthenticatedAdminDispatchDriversRouteImport.update({
+    id: '/admin/dispatch-drivers',
+    path: '/admin/dispatch-drivers',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedAdminDisputesRoute =
@@ -706,6 +727,12 @@ const AuthenticatedAdminDeliveriesIdRoute =
     path: '/admin/deliveries/$id',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedAdminDispatchDriversIdRoute =
+  AuthenticatedAdminDispatchDriversIdRouteImport.update({
+    id: '/admin/dispatch-drivers_/$id',
+    path: '/admin/dispatch-drivers/$id',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedAdminProvidersOnlineRoute =
   AuthenticatedAdminProvidersOnlineRouteImport.update({
     id: '/admin/providers_/online',
@@ -821,6 +848,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/disputes': typeof AuthenticatedDisputesRoute
   '/driver': typeof AuthenticatedDriverRoute
+  '/job-changes': typeof AuthenticatedJobChangesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/send-delivery': typeof AuthenticatedSendDeliveryRoute
   '/workspace': typeof AuthenticatedWorkspaceRoute
@@ -846,6 +874,8 @@ export interface FileRoutesByFullPath {
   '/admin/configuration': typeof AuthenticatedAdminConfigurationRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/admin/deliveries': typeof AuthenticatedAdminDeliveriesRoute
+  '/admin/dispatch': typeof AuthenticatedAdminDispatchRoute
+  '/admin/dispatch-drivers': typeof AuthenticatedAdminDispatchDriversRoute
   '/admin/disputes': typeof AuthenticatedAdminDisputesRoute
   '/admin/drivers': typeof AuthenticatedAdminDriversRoute
   '/admin/email': typeof AuthenticatedAdminEmailRoute
@@ -898,6 +928,7 @@ export interface FileRoutesByFullPath {
   '/services/$slug/': typeof ServicesSlugIndexRoute
   '/admin/bookings/$id': typeof AuthenticatedAdminBookingsIdRoute
   '/admin/deliveries/$id': typeof AuthenticatedAdminDeliveriesIdRoute
+  '/admin/dispatch-drivers/$id': typeof AuthenticatedAdminDispatchDriversIdRoute
   '/admin/providers/online': typeof AuthenticatedAdminProvidersOnlineRoute
   '/api/public/hooks/dispatch-sweep': typeof ApiPublicHooksDispatchSweepRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -942,6 +973,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/disputes': typeof AuthenticatedDisputesRoute
   '/driver': typeof AuthenticatedDriverRoute
+  '/job-changes': typeof AuthenticatedJobChangesRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/send-delivery': typeof AuthenticatedSendDeliveryRoute
   '/workspace': typeof AuthenticatedWorkspaceRoute
@@ -962,6 +994,8 @@ export interface FileRoutesByTo {
   '/admin/configuration': typeof AuthenticatedAdminConfigurationRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/admin/deliveries': typeof AuthenticatedAdminDeliveriesRoute
+  '/admin/dispatch': typeof AuthenticatedAdminDispatchRoute
+  '/admin/dispatch-drivers': typeof AuthenticatedAdminDispatchDriversRoute
   '/admin/disputes': typeof AuthenticatedAdminDisputesRoute
   '/admin/drivers': typeof AuthenticatedAdminDriversRoute
   '/admin/email': typeof AuthenticatedAdminEmailRoute
@@ -1014,6 +1048,7 @@ export interface FileRoutesByTo {
   '/services/$slug': typeof ServicesSlugIndexRoute
   '/admin/bookings/$id': typeof AuthenticatedAdminBookingsIdRoute
   '/admin/deliveries/$id': typeof AuthenticatedAdminDeliveriesIdRoute
+  '/admin/dispatch-drivers/$id': typeof AuthenticatedAdminDispatchDriversIdRoute
   '/admin/providers/online': typeof AuthenticatedAdminProvidersOnlineRoute
   '/api/public/hooks/dispatch-sweep': typeof ApiPublicHooksDispatchSweepRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -1063,6 +1098,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/disputes': typeof AuthenticatedDisputesRoute
   '/_authenticated/driver': typeof AuthenticatedDriverRoute
+  '/_authenticated/job-changes': typeof AuthenticatedJobChangesRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/send-delivery': typeof AuthenticatedSendDeliveryRoute
   '/_authenticated/workspace': typeof AuthenticatedWorkspaceRoute
@@ -1088,6 +1124,8 @@ export interface FileRoutesById {
   '/_authenticated/admin/configuration': typeof AuthenticatedAdminConfigurationRoute
   '/_authenticated/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/_authenticated/admin/deliveries': typeof AuthenticatedAdminDeliveriesRoute
+  '/_authenticated/admin/dispatch': typeof AuthenticatedAdminDispatchRoute
+  '/_authenticated/admin/dispatch-drivers': typeof AuthenticatedAdminDispatchDriversRoute
   '/_authenticated/admin/disputes': typeof AuthenticatedAdminDisputesRoute
   '/_authenticated/admin/drivers': typeof AuthenticatedAdminDriversRoute
   '/_authenticated/admin/email': typeof AuthenticatedAdminEmailRoute
@@ -1140,6 +1178,7 @@ export interface FileRoutesById {
   '/services/$slug/': typeof ServicesSlugIndexRoute
   '/_authenticated/admin/bookings_/$id': typeof AuthenticatedAdminBookingsIdRoute
   '/_authenticated/admin/deliveries_/$id': typeof AuthenticatedAdminDeliveriesIdRoute
+  '/_authenticated/admin/dispatch-drivers_/$id': typeof AuthenticatedAdminDispatchDriversIdRoute
   '/_authenticated/admin/providers_/online': typeof AuthenticatedAdminProvidersOnlineRoute
   '/api/public/hooks/dispatch-sweep': typeof ApiPublicHooksDispatchSweepRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -1189,6 +1228,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/disputes'
     | '/driver'
+    | '/job-changes'
     | '/notifications'
     | '/send-delivery'
     | '/workspace'
@@ -1214,6 +1254,8 @@ export interface FileRouteTypes {
     | '/admin/configuration'
     | '/admin/customers'
     | '/admin/deliveries'
+    | '/admin/dispatch'
+    | '/admin/dispatch-drivers'
     | '/admin/disputes'
     | '/admin/drivers'
     | '/admin/email'
@@ -1266,6 +1308,7 @@ export interface FileRouteTypes {
     | '/services/$slug/'
     | '/admin/bookings/$id'
     | '/admin/deliveries/$id'
+    | '/admin/dispatch-drivers/$id'
     | '/admin/providers/online'
     | '/api/public/hooks/dispatch-sweep'
     | '/lovable/email/auth/preview'
@@ -1310,6 +1353,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/disputes'
     | '/driver'
+    | '/job-changes'
     | '/notifications'
     | '/send-delivery'
     | '/workspace'
@@ -1330,6 +1374,8 @@ export interface FileRouteTypes {
     | '/admin/configuration'
     | '/admin/customers'
     | '/admin/deliveries'
+    | '/admin/dispatch'
+    | '/admin/dispatch-drivers'
     | '/admin/disputes'
     | '/admin/drivers'
     | '/admin/email'
@@ -1382,6 +1428,7 @@ export interface FileRouteTypes {
     | '/services/$slug'
     | '/admin/bookings/$id'
     | '/admin/deliveries/$id'
+    | '/admin/dispatch-drivers/$id'
     | '/admin/providers/online'
     | '/api/public/hooks/dispatch-sweep'
     | '/lovable/email/auth/preview'
@@ -1430,6 +1477,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/disputes'
     | '/_authenticated/driver'
+    | '/_authenticated/job-changes'
     | '/_authenticated/notifications'
     | '/_authenticated/send-delivery'
     | '/_authenticated/workspace'
@@ -1455,6 +1503,8 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/configuration'
     | '/_authenticated/admin/customers'
     | '/_authenticated/admin/deliveries'
+    | '/_authenticated/admin/dispatch'
+    | '/_authenticated/admin/dispatch-drivers'
     | '/_authenticated/admin/disputes'
     | '/_authenticated/admin/drivers'
     | '/_authenticated/admin/email'
@@ -1507,6 +1557,7 @@ export interface FileRouteTypes {
     | '/services/$slug/'
     | '/_authenticated/admin/bookings_/$id'
     | '/_authenticated/admin/deliveries_/$id'
+    | '/_authenticated/admin/dispatch-drivers_/$id'
     | '/_authenticated/admin/providers_/online'
     | '/api/public/hooks/dispatch-sweep'
     | '/lovable/email/auth/preview'
@@ -1784,6 +1835,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDriverRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/job-changes': {
+      id: '/_authenticated/job-changes'
+      path: '/job-changes'
+      fullPath: '/job-changes'
+      preLoaderRoute: typeof AuthenticatedJobChangesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/notifications': {
       id: '/_authenticated/notifications'
       path: '/notifications'
@@ -1964,6 +2022,20 @@ declare module '@tanstack/react-router' {
       path: '/admin/deliveries'
       fullPath: '/admin/deliveries'
       preLoaderRoute: typeof AuthenticatedAdminDeliveriesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin/dispatch': {
+      id: '/_authenticated/admin/dispatch'
+      path: '/admin/dispatch'
+      fullPath: '/admin/dispatch'
+      preLoaderRoute: typeof AuthenticatedAdminDispatchRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin/dispatch-drivers': {
+      id: '/_authenticated/admin/dispatch-drivers'
+      path: '/admin/dispatch-drivers'
+      fullPath: '/admin/dispatch-drivers'
+      preLoaderRoute: typeof AuthenticatedAdminDispatchDriversRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/admin/disputes': {
@@ -2323,6 +2395,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminDeliveriesIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin/dispatch-drivers_/$id': {
+      id: '/_authenticated/admin/dispatch-drivers_/$id'
+      path: '/admin/dispatch-drivers/$id'
+      fullPath: '/admin/dispatch-drivers/$id'
+      preLoaderRoute: typeof AuthenticatedAdminDispatchDriversIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/admin/providers_/online': {
       id: '/_authenticated/admin/providers_/online'
       path: '/admin/providers/online'
@@ -2436,6 +2515,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDisputesRoute: typeof AuthenticatedDisputesRoute
   AuthenticatedDriverRoute: typeof AuthenticatedDriverRoute
+  AuthenticatedJobChangesRoute: typeof AuthenticatedJobChangesRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedSendDeliveryRoute: typeof AuthenticatedSendDeliveryRoute
   AuthenticatedWorkspaceRoute: typeof AuthenticatedWorkspaceRoute
@@ -2447,6 +2527,8 @@ interface AuthenticatedRouteChildren {
   AuthenticatedAdminConfigurationRoute: typeof AuthenticatedAdminConfigurationRoute
   AuthenticatedAdminCustomersRoute: typeof AuthenticatedAdminCustomersRoute
   AuthenticatedAdminDeliveriesRoute: typeof AuthenticatedAdminDeliveriesRoute
+  AuthenticatedAdminDispatchRoute: typeof AuthenticatedAdminDispatchRoute
+  AuthenticatedAdminDispatchDriversRoute: typeof AuthenticatedAdminDispatchDriversRoute
   AuthenticatedAdminDisputesRoute: typeof AuthenticatedAdminDisputesRoute
   AuthenticatedAdminDriversRoute: typeof AuthenticatedAdminDriversRoute
   AuthenticatedAdminEmailRoute: typeof AuthenticatedAdminEmailRoute
@@ -2474,6 +2556,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedBookingsIndexRoute: typeof AuthenticatedBookingsIndexRoute
   AuthenticatedAdminBookingsIdRoute: typeof AuthenticatedAdminBookingsIdRoute
   AuthenticatedAdminDeliveriesIdRoute: typeof AuthenticatedAdminDeliveriesIdRoute
+  AuthenticatedAdminDispatchDriversIdRoute: typeof AuthenticatedAdminDispatchDriversIdRoute
   AuthenticatedAdminProvidersOnlineRoute: typeof AuthenticatedAdminProvidersOnlineRoute
   AuthenticatedAdminReconciliationIndexRoute: typeof AuthenticatedAdminReconciliationIndexRoute
   AuthenticatedAdminReconciliationBookingBookingIdRoute: typeof AuthenticatedAdminReconciliationBookingBookingIdRoute
@@ -2485,6 +2568,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDisputesRoute: AuthenticatedDisputesRoute,
   AuthenticatedDriverRoute: AuthenticatedDriverRoute,
+  AuthenticatedJobChangesRoute: AuthenticatedJobChangesRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedSendDeliveryRoute: AuthenticatedSendDeliveryRoute,
   AuthenticatedWorkspaceRoute: AuthenticatedWorkspaceRoute,
@@ -2496,6 +2580,9 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminConfigurationRoute: AuthenticatedAdminConfigurationRoute,
   AuthenticatedAdminCustomersRoute: AuthenticatedAdminCustomersRoute,
   AuthenticatedAdminDeliveriesRoute: AuthenticatedAdminDeliveriesRoute,
+  AuthenticatedAdminDispatchRoute: AuthenticatedAdminDispatchRoute,
+  AuthenticatedAdminDispatchDriversRoute:
+    AuthenticatedAdminDispatchDriversRoute,
   AuthenticatedAdminDisputesRoute: AuthenticatedAdminDisputesRoute,
   AuthenticatedAdminDriversRoute: AuthenticatedAdminDriversRoute,
   AuthenticatedAdminEmailRoute: AuthenticatedAdminEmailRoute,
@@ -2523,6 +2610,8 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedBookingsIndexRoute: AuthenticatedBookingsIndexRoute,
   AuthenticatedAdminBookingsIdRoute: AuthenticatedAdminBookingsIdRoute,
   AuthenticatedAdminDeliveriesIdRoute: AuthenticatedAdminDeliveriesIdRoute,
+  AuthenticatedAdminDispatchDriversIdRoute:
+    AuthenticatedAdminDispatchDriversIdRoute,
   AuthenticatedAdminProvidersOnlineRoute:
     AuthenticatedAdminProvidersOnlineRoute,
   AuthenticatedAdminReconciliationIndexRoute:

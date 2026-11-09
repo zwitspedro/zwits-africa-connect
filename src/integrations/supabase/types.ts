@@ -44,6 +44,123 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_job_actions: {
+        Row: {
+          action: string
+          action_key: string
+          actor: string
+          after_values: Json
+          before_values: Json
+          created_at: string
+          id: string
+          job_id: string
+          kind: string
+          reason: string
+        }
+        Insert: {
+          action: string
+          action_key: string
+          actor: string
+          after_values: Json
+          before_values: Json
+          created_at?: string
+          id?: string
+          job_id: string
+          kind: string
+          reason: string
+        }
+        Update: {
+          action?: string
+          action_key?: string
+          actor?: string
+          after_values?: Json
+          before_values?: Json
+          created_at?: string
+          id?: string
+          job_id?: string
+          kind?: string
+          reason?: string
+        }
+        Relationships: []
+      }
+      admin_job_changes: {
+        Row: {
+          actor: string
+          assignee_decided_at: string | null
+          assignee_user_id: string | null
+          before_values: Json
+          created_at: string
+          customer_decided_at: string | null
+          customer_id: string
+          expected_updated_at: string
+          id: string
+          job_id: string
+          kind: string
+          proposed_values: Json
+          reason: string
+          status: string
+        }
+        Insert: {
+          actor: string
+          assignee_decided_at?: string | null
+          assignee_user_id?: string | null
+          before_values: Json
+          created_at?: string
+          customer_decided_at?: string | null
+          customer_id: string
+          expected_updated_at: string
+          id?: string
+          job_id: string
+          kind: string
+          proposed_values: Json
+          reason: string
+          status?: string
+        }
+        Update: {
+          actor?: string
+          assignee_decided_at?: string | null
+          assignee_user_id?: string | null
+          before_values?: Json
+          created_at?: string
+          customer_decided_at?: string | null
+          customer_id?: string
+          expected_updated_at?: string
+          id?: string
+          job_id?: string
+          kind?: string
+          proposed_values?: Json
+          reason?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      admin_job_controls: {
+        Row: {
+          held: boolean
+          hold_reason: string | null
+          job_id: string
+          kind: string
+          manual_dispatch: boolean
+          updated_at: string
+        }
+        Insert: {
+          held?: boolean
+          hold_reason?: string | null
+          job_id: string
+          kind: string
+          manual_dispatch?: boolean
+          updated_at?: string
+        }
+        Update: {
+          held?: boolean
+          hold_reason?: string | null
+          job_id?: string
+          kind?: string
+          manual_dispatch?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       auth_otp_codes: {
         Row: {
           attempts: number
@@ -192,6 +309,7 @@ export type Database = {
           budget: number | null
           category: string
           completed_at: string | null
+          contact_phone: string | null
           created_at: string
           customer_confirmed_at: string | null
           customer_id: string
@@ -204,6 +322,7 @@ export type Database = {
           id: string
           lat: number | null
           lng: number | null
+          location_notes: string | null
           payment_method: string | null
           payment_reference: string | null
           payment_status: string
@@ -219,6 +338,7 @@ export type Database = {
           budget?: number | null
           category: string
           completed_at?: string | null
+          contact_phone?: string | null
           created_at?: string
           customer_confirmed_at?: string | null
           customer_id: string
@@ -231,6 +351,7 @@ export type Database = {
           id?: string
           lat?: number | null
           lng?: number | null
+          location_notes?: string | null
           payment_method?: string | null
           payment_reference?: string | null
           payment_status?: string
@@ -246,6 +367,7 @@ export type Database = {
           budget?: number | null
           category?: string
           completed_at?: string | null
+          contact_phone?: string | null
           created_at?: string
           customer_confirmed_at?: string | null
           customer_id?: string
@@ -258,6 +380,7 @@ export type Database = {
           id?: string
           lat?: number | null
           lng?: number | null
+          location_notes?: string | null
           payment_method?: string | null
           payment_reference?: string | null
           payment_status?: string
@@ -441,6 +564,7 @@ export type Database = {
           dropoff_lat: number | null
           dropoff_lng: number | null
           id: string
+          location_notes: string | null
           notes: string | null
           parcel_size: string
           payment_method: string | null
@@ -469,6 +593,7 @@ export type Database = {
           dropoff_lat?: number | null
           dropoff_lng?: number | null
           id?: string
+          location_notes?: string | null
           notes?: string | null
           parcel_size?: string
           payment_method?: string | null
@@ -497,6 +622,7 @@ export type Database = {
           dropoff_lat?: number | null
           dropoff_lng?: number | null
           id?: string
+          location_notes?: string | null
           notes?: string | null
           parcel_size?: string
           payment_method?: string | null
@@ -2054,6 +2180,20 @@ export type Database = {
         Args: { _id: string; _outcome: string; _reason: string }
         Returns: Json
       }
+      admin_dispatch_action: {
+        Args: {
+          _action: string
+          _assignee?: string
+          _expected: string
+          _id: string
+          _key: string
+          _kind: string
+          _patch?: Json
+          _reason: string
+        }
+        Returns: Json
+      }
+      admin_dispatch_directory: { Args: { _filters?: Json }; Returns: Json }
       admin_period_metrics: {
         Args: { _from: string; _to: string }
         Returns: Json
@@ -2110,6 +2250,10 @@ export type Database = {
       }
       delivery_transition_allowed: {
         Args: { _new: string; _old: string }
+        Returns: boolean
+      }
+      dispatch_job_blocked: {
+        Args: { _id: string; _kind: string }
         Returns: boolean
       }
       email_queue_dispatch: { Args: never; Returns: undefined }
@@ -2235,6 +2379,14 @@ export type Database = {
         Args: { _amount: number; _destination: string; _method: string }
         Returns: Json
       }
+      respond_admin_job_change: {
+        Args: { _decision: string; _id: string }
+        Returns: Json
+      }
+      respond_delivery_offer_atomic: {
+        Args: { _action: string; _offer_id: string }
+        Returns: Json
+      }
       settle_booking: {
         Args: { _booking_id: string }
         Returns: {
@@ -2250,6 +2402,10 @@ export type Database = {
           gross: number
           provider_earnings: number
         }[]
+      }
+      update_delivery_progress_atomic: {
+        Args: { _id: string; _proof?: string; _status: string }
+        Returns: Json
       }
     }
     Enums: {

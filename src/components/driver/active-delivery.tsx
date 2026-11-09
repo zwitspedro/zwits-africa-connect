@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { DeliveryEvidence } from "./delivery-evidence";
+import { JobChangeLink } from "@/components/job-change-link";
 import { Button } from "@/components/ui/button";
 import { ZwitsLogo } from "@/components/zwits-logo";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -5,7 +8,6 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { MapPin, Navigation, PackageCheck, Truck, Phone } from "lucide-react";
 import { EmptyState, Panel } from "@/components/provider/dashboard-kit";
-import { useProviderTracking } from "@/hooks/use-provider-tracking";
 import { DELIVERY_STATUS_LABELS, driverPayout } from "@/lib/delivery-config";
 import { updateDeliveryStatus } from "@/lib/delivery.functions";
 import type { DeliveryRow } from "./use-driver-data";
@@ -14,12 +16,13 @@ export function ActiveDelivery({ active }: { active: DeliveryRow[] }) {
   const qc = useQueryClient();
   const update = useServerFn(updateDeliveryStatus);
   const current = active[0] ?? null;
+  const [proof,setProof]=useState<{id:string;path:string}|null>(null);
 
   // Publish live location while a delivery is in progress.
-  useProviderTracking({ bookingId: current?.id ?? null, enabled: !!current });
+  // Delivery IDs are not booking IDs; do not publish them to booking-only tracking.
 
   const mutation = useMutation({
-    mutationFn: (v: { deliveryId: string; status: "picked_up" | "delivered" }) => update({ data: v }),
+    mutationFn: (v: { deliveryId: string; status: "picked_up" | "delivered"; proofPhotoUrl?:string }) => update({ data: v }),
     onSuccess: (_r, v) => {
       toast.success(v.status === "picked_up" ? "Marked as picked up" : "Delivery completed");
       qc.invalidateQueries({ queryKey: ["driver-deliveries"] });
@@ -82,6 +85,8 @@ export function ActiveDelivery({ active }: { active: DeliveryRow[] }) {
 
           {current.notes && <p className="text-xs text-muted-foreground">“{current.notes}”</p>}
 
+          <JobChangeLink/>
+          {current.status === "picked_up" && <DeliveryEvidence id={current.id} onUploaded={path=>setProof({id:current.id,path})}/>}
           <div className="flex flex-col gap-2 sm:flex-row">
             <a
               href={mapsUrl(target)}
@@ -101,8 +106,8 @@ export function ActiveDelivery({ active }: { active: DeliveryRow[] }) {
               </Button>
             ) : (
               <Button variant="outline"
-                disabled={mutation.isPending}
-                onClick={() => mutation.mutate({ deliveryId: current.id, status: "delivered" })}
+                disabled={mutation.isPending||proof?.id!==current.id}
+                onClick={() => mutation.mutate({ deliveryId: current.id, status: "delivered",proofPhotoUrl:proof?.path })}
                 className="flex-[2] rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-50"
               >
                 <PackageCheck className="mr-2 inline size-4" /> Mark delivered

@@ -15,6 +15,7 @@ import {
 } from "@/lib/job-lifecycle";
 import { openNavigation } from "@/mobile/maps";
 import { CashReceivedButton } from "@/components/provider/cash-received-button";
+import { JobChangeLink } from "@/components/job-change-link";
 import { DisputePanel } from "@/components/dispute-panel";
 import { requireOnline } from "@/mobile/offline";
 import {
@@ -206,7 +207,7 @@ function ProviderJobDetail() {
         )}
 
         {j.status === "completed" && j.payment_status === "paid" && <Section title="Payment"><p className="text-sm">{j.payment_method === "cash" ? (j.account ? "Cash received · commission recorded" : "Marked paid · settlement not recorded") : "Payment recorded"}</p></Section>}
-        <Section><DisputePanel bookingId={id} status={j.status}/></Section>
+        <Section><JobChangeLink/><DisputePanel bookingId={id} status={j.status}/></Section>
 
         {action && (
           <div className="sticky bottom-24 px-4">
