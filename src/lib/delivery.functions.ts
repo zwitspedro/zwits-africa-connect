@@ -131,37 +131,9 @@ export const respondToDeliveryOffer = createServerFn({ method: "POST" })
     z.object({ offerId: z.string().uuid(), action: z.enum(["accept", "decline"]) }).parse(input),
   )
   .handler(async ({ data, context }) => {
-    const { admin, claimDelivery, advanceDelivery, logDeliveryEvent } = await import("./delivery.server");
-    const db = await admin();
-
-    if (data.action === "decline") {
-      const { data: declined } = await db
-        .from("delivery_offers")
-        .update({ status: "declined", responded_at: new Date().toISOString() })
-        .eq("id", data.offerId)
-        .eq("driver_user_id", context.userId)
-        .eq("status", "offered")
-        .select("id, delivery_id")
-        .maybeSingle();
-      if (declined) {
-        await logDeliveryEvent(
-          db,
-          declined.delivery_id as string,
-          "driver_declined",
-          context.userId,
-          { offer_id: data.offerId },
-          `driver_declined:${data.offerId}`,
-        );
-        // Move dispatch on immediately instead of waiting for the timeout.
-        try {
-          await advanceDelivery(db, declined.delivery_id as string);
-        } catch {
-          /* the scheduled sweep will retry */
-        }
-      }
-      return { won: false, declined: true };
-    }
-    return claimDelivery(db, data.offerId, context.userId);
+    const { data: result, error } = await context.supabase.rpc("respond_delivery_offer_atomic", { _offer_id: data.offerId, _action: data.action });
+    if (error) throw new Error(error.message);
+    return result as { won: boolean; declined?: boolean; reason?: string; deliveryId?: string; idempotent?: boolean };
   });
 
 /** Driver moves a delivery along: picked_up → delivered. */
