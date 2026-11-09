@@ -1,10 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { activePaymentMethodSchema } from "./payment-policy";
 
 const MethodSchema = z.object({
   bookingId: z.string().uuid(),
-  method: z.enum(["cash", "ecocash", "innbucks", "zipit", "mukuru", "bank_transfer"]),
+  method: activePaymentMethodSchema,
 });
 
 /** Payment rails the platform can actually take money through right now. */
@@ -169,7 +170,7 @@ export const startDeliveryPayment = createServerFn({ method: "POST" })
     z
       .object({
         deliveryId: z.string().uuid(),
-        method: z.enum(["cash", "ecocash", "innbucks", "zipit", "mukuru", "bank_transfer"]),
+        method: activePaymentMethodSchema,
       })
       .parse(input),
   )
