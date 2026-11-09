@@ -1,0 +1,5 @@
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+import type { AdminMetrics } from '@/lib/admin-metrics.functions';
+export default function PerformanceChart({daily}:{daily:AdminMetrics['daily']}) {
+ return <div className="h-64 w-full min-w-0" role="img" aria-label="Daily confirmed payments and recorded commission in US dollars"><ResponsiveContainer width="100%" height="100%"><AreaChart data={daily} margin={{top:12,right:12,bottom:4,left:0}}><CartesianGrid stroke="var(--border)" vertical={false}/><XAxis dataKey="date" tickFormatter={v=>String(v).slice(5)} minTickGap={32} stroke="var(--muted-foreground)" fontSize={10}/><YAxis stroke="var(--muted-foreground)" fontSize={10} width={48}/><Tooltip contentStyle={{background:'var(--card)',borderColor:'var(--border)',color:'var(--foreground)'}}/><Area name="Confirmed payments (USD)" type="monotone" dataKey="revenue" stroke="var(--chart-1)" fill="var(--success-surface)"/><Area name="Commission recorded (USD)" type="monotone" dataKey="commission" stroke="var(--chart-3)" fill="var(--warning-surface)"/></AreaChart></ResponsiveContainer></div>;
+}
