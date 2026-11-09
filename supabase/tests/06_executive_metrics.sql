@@ -1,5 +1,6 @@
 -- Read-only assertions against real aggregates. No business rows are changed.
 BEGIN;
+SET LOCAL ROLE authenticated;
 DO $$
 DECLARE actor uuid; m jsonb; expected bigint; total numeric;
 BEGIN
