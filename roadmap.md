@@ -1,7 +1,7 @@
 # Current request
-- [ ] Verify cash and manual-transfer browser journeys using Peter-authorized dummy accounts and simulated receipts (blocked: managed test-account creation is unavailable for this project; no live jobs/payments changed).
+- [x] Verify cash and manual-bank-transfer browser journeys using existing dummy accounts; fixed direct Accept failure, confirmed simulated receipts and wallet −$5 for two $25 jobs; no money moved.
 - [x] Add direct provider EcoCash/bank payments, private account editing/display, provider receipt confirmation and direct-money ledger accounting; rollback regression and signed-in empty-account UI passed.
-- [ ] Verify populated direct-payment browser journey (requires isolated provider account details and booking; real financial records preserved).
+- [x] Verify populated manual-bank-payment browser journey with dummy accounts and customer receipt readback; actual transfers remain unavailable.
 - [ ] Run a real cash booking in the browser (needs actual job, provider, agreed amount and confirmation that work/cash receipt are genuine).
 - [ ] Connect provider EcoCash accounts and real outbound payouts (user reports approved account; blocked pending official outbound API documentation, secure credentials and settlement verification).
 - [x] Extend admin approval queue with secure document uploads and review status tracking.
