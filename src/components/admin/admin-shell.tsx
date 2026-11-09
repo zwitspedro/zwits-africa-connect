@@ -19,7 +19,7 @@ export function AdminShell({children}:{children:ReactNode}) {
   <div className="min-w-0"><header className="flex flex-wrap items-center gap-3 border-b border-border bg-card px-4 py-4 sm:px-6">
    <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open admin navigation" aria-expanded={open} onClick={()=>setOpen(!open)}><Menu className="size-5"/></Button>
    <Link to="/admin" className="lg:hidden"><ZwitsLogo wordmark={false}/></Link>
-   <span className="mr-auto text-sm font-semibold capitalize">{title}</span>
+   <span className="mr-auto max-w-24 truncate text-sm font-semibold capitalize sm:max-w-none">{title}</span>
    <form action="/admin/search" className="order-last flex w-full items-center gap-1 sm:order-none sm:w-64"><Input name="q" aria-label="Global administrative search" placeholder="Search records…" value={term} onChange={e=>setTerm(e.target.value)} minLength={2}/><Button type="submit" variant="ghost" size="icon" aria-label="Search admin records"><Search className="size-4"/></Button></form>
    <Button variant="ghost" size="icon" title="Refresh admin records" aria-label="Refresh admin records" onClick={()=>qc.invalidateQueries({predicate:q=>String(q.queryKey[0]).startsWith('admin')})}><RefreshCw className="size-4"/></Button>
    <Button asChild variant="ghost" size="icon"><Link to="/notifications" aria-label="Notification centre"><Bell className="size-4"/></Link></Button>
