@@ -16,7 +16,7 @@ export function EarningsSection({ data }: { data: ProviderData }) {
         gross: Number(j.price) || 0,
         fee: jobFeeFor(j),
         net: netFor(j),
-        status: j.account ? (j.payment_method === "cash" ? "Cash received" : "Settled") : "Not settled · estimate",
+        status: j.account ? (["cash", "direct_ecocash", "direct_bank"].includes(j.payment_method) ? "Received directly" : "Settled") : "Not settled · estimate",
       })),
     [completed, jobFeeFor, netFor],
   );
@@ -84,7 +84,7 @@ export function EarningsSection({ data }: { data: ProviderData }) {
 
       <Panel
         title="Job income history"
-        description="Your earnings = job price − 10% Zwits commission (as set out in the Terms). Cash jobs are paid to you directly by the customer."
+        description="Your earnings = job price − 10% Zwits commission. Cash and personal-account transfers are received directly, not credited as withdrawable wallet funds."
         action={
           <button
             onClick={downloadCsv}

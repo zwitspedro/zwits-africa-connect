@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { advanceDispatch, acceptQuote, confirmCompletion } from "@/lib/dispatch.functions";
 import { MAX_WAVES } from "@/lib/dispatch-config";
 import { DisputePanel } from "@/components/dispute-panel";
+import { DirectPaymentPanel } from "@/components/direct-payment-panel";
 
 export const Route = createFileRoute("/_authenticated/bookings/$id")({
   head: () => ({ meta: [{"title": "Booking details — Zwits"}, {"name": "description", "content": "Booking details in your Zwits account for services and deliveries in Harare."}, {"property": "og:title", "content": "Booking details — Zwits"}, {"property": "og:description", "content": "Booking details in your Zwits account for services and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
@@ -127,6 +128,7 @@ function BookingDetailPage() {
             )}
 
             <DisputePanel bookingId={booking.id} status={booking.status as string} />
+            <DirectPaymentPanel bookingId={booking.id} status={booking.status} paid={booking.payment_status === "paid"} providerAssigned={!!booking.provider_id} />
 
 
 
