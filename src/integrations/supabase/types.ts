@@ -107,6 +107,44 @@ export type Database = {
         }
         Relationships: []
       }
+      booking_direct_receipts: {
+        Row: {
+          account_snapshot: Json
+          booking_id: string
+          confirmed_at: string | null
+          confirmed_by: string | null
+          created_at: string
+          method: string
+          provider_user_id: string
+        }
+        Insert: {
+          account_snapshot: Json
+          booking_id: string
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          method: string
+          provider_user_id: string
+        }
+        Update: {
+          account_snapshot?: Json
+          booking_id?: string
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          method?: string
+          provider_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_direct_receipts_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: true
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       booking_status_history: {
         Row: {
           booking_id: string
@@ -1193,6 +1231,33 @@ export type Database = {
         }
         Relationships: []
       }
+      provider_direct_accounts: {
+        Row: {
+          account_holder: string
+          bank_account: string | null
+          bank_name: string | null
+          ecocash_number: string | null
+          provider_user_id: string
+          updated_at: string
+        }
+        Insert: {
+          account_holder: string
+          bank_account?: string | null
+          bank_name?: string | null
+          ecocash_number?: string | null
+          provider_user_id: string
+          updated_at?: string
+        }
+        Update: {
+          account_holder?: string
+          bank_account?: string | null
+          bank_name?: string | null
+          ecocash_number?: string | null
+          provider_user_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       provider_document_audits: {
         Row: {
           created_at: string
@@ -2018,6 +2083,7 @@ export type Database = {
           category: string
         }[]
       }
+      booking_direct_accounts: { Args: { _booking_id: string }; Returns: Json }
       booking_status_canonical: { Args: { _status: string }; Returns: string }
       booking_transition_allowed: {
         Args: { _new: string; _old: string }
@@ -2031,7 +2097,12 @@ export type Database = {
         Args: { _actor: string; _booking_id: string; _reason: string }
         Returns: Json
       }
+      choose_booking_direct_payment: {
+        Args: { _booking_id: string; _method: string }
+        Returns: Json
+      }
       confirm_cash_booking: { Args: { _booking_id: string }; Returns: Json }
+      confirm_direct_booking: { Args: { _booking_id: string }; Returns: Json }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
