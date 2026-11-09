@@ -11,6 +11,10 @@ export type AdminMetrics = {
   providerEarnings: number; commission: number; grossTransactionValue: number; cashPayments: number;
   electronicPayments: number; walletLiabilities: number; commissionDebt: number;
   pendingWithdrawalValue: number; settledWithdrawalValue: number; checkedAt: string;
+  totalCustomers: number; totalBookings: number; approvedDrivers: number; pendingDrivers: number;
+  newProviders: number; newBookings: number; acceptedBookings: number; pendingBookings: number;
+  totalDeliveries: number; failedDeliveries: number; failedWithdrawalValue: number;
+  daily: {date: string; revenue: number; commission: number; bookings: number; deliveries: number}[];
 };
 export const getAdminMetrics = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])

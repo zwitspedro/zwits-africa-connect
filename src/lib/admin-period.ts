@@ -1,4 +1,4 @@
-export type AdminPeriod = 'today' | '7days' | '30days' | 'month' | 'previous' | 'custom';
+export type AdminPeriod = 'today' | '7days' | '30days' | '90days' | 'month' | 'previous' | 'custom';
 const DAY = 86400000;
 export function adminRange(period: AdminPeriod, now = new Date(), from?: string, to?: string) {
   const local = new Date(now.getTime() + 2 * 3600000);
@@ -7,6 +7,7 @@ export function adminRange(period: AdminPeriod, now = new Date(), from?: string,
   let start = midnight, end = midnight + DAY;
   if (period === '7days') start -= 6 * DAY;
   if (period === '30days') start -= 29 * DAY;
+  if (period === '90days') start -= 89 * DAY;
   if (period === 'month') start = Date.UTC(year, month, 1) - 2 * 3600000;
   if (period === 'previous') { start = Date.UTC(year, month - 1, 1) - 2 * 3600000; end = Date.UTC(year, month, 1) - 2 * 3600000; }
   if (period === 'custom') { start = Date.parse(`${from}T00:00:00+02:00`); end = Date.parse(`${to}T00:00:00+02:00`) + DAY; }
