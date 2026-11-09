@@ -6,8 +6,9 @@ import { dispatchFilters, controlSchema, responseSchema } from './admin-dispatch
 export const listDispatchJobs = createServerFn({method:'GET'}).middleware([requireSupabaseAuth]).inputValidator(input=>dispatchFilters.parse(input)).handler(async({data,context})=>{
  const {data:allowed,error:roleError}=await context.supabase.rpc('has_role',{_user_id:context.userId,_role:'admin'});
  if(roleError||!allowed) throw new Error('Forbidden');
- const { readDispatchJobs }=await import('./admin-dispatch.server');
- return readDispatchJobs(data);
+ const {data:result,error}=await context.supabase.rpc('admin_dispatch_directory',{_filters:data});
+ if(error)throw new Error('Dispatch records unavailable');
+ return result as unknown as {rows:Record<string,any>[];total:number};
 });
 export const getDispatchJob = createServerFn({method:'GET'}).middleware([requireSupabaseAuth]).inputValidator(input=>z.object({kind:z.enum(['booking','delivery']),id:z.string().uuid()}).parse(input)).handler(async({data,context})=>{
  const {data:allowed,error:roleError}=await context.supabase.rpc('has_role',{_user_id:context.userId,_role:'admin'});
