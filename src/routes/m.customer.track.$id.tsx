@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { confirmCompletion } from "@/lib/dispatch.functions";
+import { DirectPaymentPanel } from "@/components/direct-payment-panel";
 import { LiveTrackingMap } from "@/components/live-tracking-map";
 import { ZwitsLogo } from "@/components/zwits-logo";
 import {
@@ -146,6 +147,7 @@ function TrackScreen() {
               )}
 
               <div className="grid grid-cols-2 gap-3">
+                <div className="col-span-2"><DirectPaymentPanel bookingId={b.id} status={b.status} paid={b.payment_status === "paid"} providerAssigned={!!b.provider_id} /></div>
                 <Link
                   to="/m/chat/$bookingId"
                   params={{ bookingId: b.id }}
@@ -160,7 +162,7 @@ function TrackScreen() {
                 <Card>
                   <p className="text-sm font-semibold">Confirm the work is done</p>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    Confirming releases payment to your provider.
+                    Confirming records that the work is finished. Your provider separately confirms receipt of payment.
                   </p>
                   <div className="mt-3">
                     <PrimaryButton

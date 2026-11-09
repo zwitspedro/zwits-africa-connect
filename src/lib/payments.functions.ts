@@ -71,7 +71,12 @@ export const confirmBookingPayment = createServerFn({ method: "POST" })
 
     const { data: visible, error: visibleError } = await context.supabase.from("bookings").select("payment_method").eq("id", data.bookingId).maybeSingle();
     if (visibleError || !visible) throw new Error("Booking not found");
-    if (visible.payment_method === "cash") {
+    if (["cash", "direct_ecocash", "direct_bank"].includes(visible.payment_method ?? "")) {
+      if (visible.payment_method !== "cash") {
+        const { data: result, error } = await context.supabase.rpc("confirm_direct_booking", { _booking_id: data.bookingId });
+        if (error) throw new Error(error.message);
+        return result as { ok: true; gross: number; commission: number; providerEarnings: number };
+      }
       const { data: result, error } = await context.supabase.rpc("confirm_cash_booking", { _booking_id: data.bookingId });
       if (error) throw new Error(error.message);
       return result as { ok: true; gross: number; commission: number; providerEarnings: number };

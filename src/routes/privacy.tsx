@@ -24,7 +24,7 @@ function Privacy() {
     <SiteShell>
       <PageHero eyebrow="Legal" title="Privacy Policy" />
       <Prose>
-        <p>Last updated: 1 October 2026. {BUSINESS.legalName} operates Zwits. This policy explains how we handle personal information when you visit our site, create an account or use our services in Harare.</p>
+        <p>Last updated: 9 November 2026. {BUSINESS.legalName} operates Zwits. This policy explains how we handle personal information when you visit our site, create an account or use our services in Harare.</p>
 
         <h2>1. Information we collect</h2>
         <ul>
@@ -41,6 +41,7 @@ function Privacy() {
         <p>We use this information to create and secure accounts, match and coordinate jobs, show booking progress, record cash settlement and provider earnings, review verification documents, respond to support requests and disputes, prevent misuse and meet legal obligations. We do not treat coming-soon electronic payment options as active payment methods.</p>
 
         <h2>4. Who receives information</h2>
+        <p>With the provider’s consent, their account holder name and personal EcoCash or bank account details are shared only with the customer on an accepted service booking. The chosen details are retained with the booking to record the payment destination and resolve disputes, even if the provider later edits their account. We record provider-confirmed receipt, not access to their wallet or bank transactions. Never provide an EcoCash PIN, banking password or one-time code to Zwits or another user.</p>
         <p>We share relevant job and contact details with the customer and assigned provider or driver so they can carry out the booking. Our hosting, authentication, mapping and communications providers may process information to operate the platform. We may disclose information where legally required or necessary to address fraud or safety. We do not sell personal information. Other users should use details received through Zwits only for the booking.</p>
 
         <h2>5. Storage and retention</h2>

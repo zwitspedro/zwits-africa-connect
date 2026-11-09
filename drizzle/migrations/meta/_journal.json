@@ -78,6 +78,13 @@
       "when": 1794220105918,
       "tag": "0010_provider_review_email_delivery_tracking",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1794220797125,
+      "tag": "0011_provider_direct_payment_receipts",
+      "breakpoints": true
     }
   ]
 }

@@ -23,8 +23,8 @@ export function CompletedJobsSection({ data }: { data: ProviderData }) {
               <span className="min-w-0">
                 <span className="block truncate text-sm font-medium capitalize">{j.category}</span>
                 <span className="block truncate text-[11px] text-muted-foreground">{j.address}</span>
-                <span className="block text-xs text-muted-foreground">{j.payment_method === "cash" ? (j.payment_status === "paid" ? (j.account ? "Cash received · commission recorded" : "Marked paid · settlement not recorded") : "Cash not yet recorded") : j.payment_status}</span>
-                {j.payment_method === "cash" && (j.payment_status !== "paid" || !j.account) && <CashReceivedButton bookingId={j.id} className="mt-2" />}
+                <span className="block text-xs text-muted-foreground">{["cash", "direct_ecocash", "direct_bank"].includes(j.payment_method) ? (j.payment_status === "paid" ? (j.account ? "Payment received · commission recorded" : "Marked paid · settlement not recorded") : "Receipt not yet confirmed") : j.payment_status}</span>
+                {["cash", "direct_ecocash", "direct_bank"].includes(j.payment_method) && (j.payment_status !== "paid" || !j.account) && <CashReceivedButton bookingId={j.id} method={j.payment_method} className="mt-2" />}
                 <Link to="/m/provider/jobs/$id" params={{ id: j.id }} className="mt-2 inline-flex min-h-12 items-center text-xs text-primary-text">Job details & issues</Link>
               </span>
               <span className="text-right">

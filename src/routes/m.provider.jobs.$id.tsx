@@ -196,11 +196,11 @@ function ProviderJobDetail() {
           </Section>
         )}
 
-        {j.status === "completed" && j.payment_method === "cash" && (j.payment_status !== "paid" || !j.account) && (
+        {j.status === "completed" && ["cash", "direct_ecocash", "direct_bank"].includes(j.payment_method) && (j.payment_status !== "paid" || !j.account) && (
           <Section title="Payment">
             <Card>
-              <p className="text-sm text-muted-foreground">Collected {money(j.price ?? j.budget)} in cash? Record it to close the job.</p>
-              <CashReceivedButton bookingId={id} className="mt-3 w-full" />
+              <p className="text-sm text-muted-foreground">Received {money(j.price ?? j.budget)} {j.payment_method === "cash" ? "in cash" : "in your personal account"}? Confirm only after checking receipt.</p>
+              <CashReceivedButton bookingId={id} method={j.payment_method} className="mt-3 w-full" />
             </Card>
           </Section>
         )}

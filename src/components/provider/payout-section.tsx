@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { PROVIDER_PAYMENT_PREFERENCES, canSelectProviderPaymentPreference } from "@/lib/provider-payment-preferences";
 import { Panel } from "./dashboard-kit";
 import type { ProviderData } from "./use-provider-data";
+import { DirectAccountEditor } from "./direct-account-editor";
 
 export function PayoutSection({ data }: { data: ProviderData }) {
   const { user, onboardingRow } = data;
@@ -67,6 +68,7 @@ export function PayoutSection({ data }: { data: ProviderData }) {
         {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
         <Button type="submit" disabled={save.isPending || !user} className="sm:justify-self-start"><Save />{save.isPending ? "Saving…" : "Save payment details"}</Button>
       </form>
+      {user && <DirectAccountEditor userId={user.id} />}
     </Panel>
   );
 }

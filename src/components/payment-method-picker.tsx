@@ -51,7 +51,7 @@ export function PaymentMethodPicker({
         </span>
       </Button>
       <p className="text-xs text-muted-foreground">
-        Card and mobile money (EcoCash, OneMoney, InnBucks) are coming soon.
+        Direct payment to your provider’s personal EcoCash or bank account can be chosen from booking details after acceptance. Platform card and mobile-money payments are unavailable.
       </p>
       {value === "cash" && (
         <p className="rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">
