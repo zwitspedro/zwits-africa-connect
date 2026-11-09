@@ -68,6 +68,14 @@ export const confirmBookingPayment = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { admin, verifyPayment, markPaid, settle, openBookingPayment, bookingAmount } = await import("./payments.server");
 
+    const { data: visible, error: visibleError } = await context.supabase.from("bookings").select("payment_method").eq("id", data.bookingId).maybeSingle();
+    if (visibleError || !visible) throw new Error("Booking not found");
+    if (visible.payment_method === "cash") {
+      const { data: result, error } = await context.supabase.rpc("confirm_cash_booking", { _booking_id: data.bookingId });
+      if (error) throw new Error(error.message);
+      return result as { ok: true; gross: number; commission: number; providerEarnings: number };
+    }
+
     const { data: isAdmin } = await context.supabase.rpc("has_role", {
       _user_id: context.userId,
       _role: "admin",

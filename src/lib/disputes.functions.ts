@@ -13,12 +13,13 @@ export const openDispute = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => OpenSchema.parse(input))
   .handler(async ({ data, context }) => {
-    const { data: existing } = await context.supabase
+    const { data: existing, error: lookupError } = await context.supabase
       .from("disputes")
       .select("id")
       .eq("booking_id", data.bookingId)
       .in("status", ["open", "investigating"])
       .maybeSingle();
+    if (lookupError) throw new Error(lookupError.message);
     if (existing) throw new Error("A dispute is already open on this booking");
 
     const { data: row, error } = await context.supabase
@@ -39,27 +40,27 @@ export const openDispute = createServerFn({ method: "POST" })
 export const listDisputes = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) =>
-    z.object({ page: z.number().int().min(0).max(200).default(0), status: z.enum(["all", "open", "investigating", "resolved", "rejected"]).default("all") }).parse(input ?? {}),
+    z.object({ bookingId: z.string().uuid().optional(), page: z.number().int().min(0).max(200).default(0), status: z.enum(["all", "open", "investigating", "resolved", "rejected"]).default("all") }).parse(input ?? {}),
   )
   .handler(async ({ data, context }) => {
     const size = 25;
     const from = data.page * size;
     let q = context.supabase
       .from("disputes")
-      .select("id, booking_id, reason, description, status, resolution, created_at, resolved_at", {
+      .select("id, booking_id, delivery_id, opened_by, reason, description, status, resolution, created_at, resolved_at", {
         count: "exact",
       })
       .order("created_at", { ascending: false })
       .range(from, from + size - 1);
     if (data.status !== "all") q = q.eq("status", data.status);
+    if (data.bookingId) q = q.eq("booking_id", data.bookingId);
     const { data: rows, count, error } = await q;
     if (error) throw new Error(error.message);
     return { rows: rows ?? [], total: count ?? 0, page: data.page };
   });
 
 /**
- * Admin resolution. A refund reverses the provider's earning through the
- * ledger rather than editing a balance, so the trail stays auditable.
+ * Admin records an audited resolution; this never issues financial refunds.
  */
 export const resolveDispute = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

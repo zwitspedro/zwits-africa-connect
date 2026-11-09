@@ -4,7 +4,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const VerificationSchema = z.object({
   providerId: z.string().uuid(),
-  status: z.enum(["approved", "revoked", "pending"]),
+  status: z.enum(["approved", "rejected", "revoked", "pending"]),
   reason: z.string().max(500).optional().nullable(),
 });
 

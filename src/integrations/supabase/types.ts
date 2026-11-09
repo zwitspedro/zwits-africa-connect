@@ -1979,6 +1979,7 @@ export type Database = {
         Args: { _actor: string; _booking_id: string; _reason: string }
         Returns: Json
       }
+      confirm_cash_booking: { Args: { _booking_id: string }; Returns: Json }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -2082,6 +2083,14 @@ export type Database = {
           _withdrawal_id?: string
         }
         Returns: string
+      }
+      provider_job_accounts: {
+        Args: never
+        Returns: {
+          booking_id: string
+          commission: number
+          gross: number
+        }[]
       }
       provider_readiness: { Args: { _user_id: string }; Returns: Json }
       providers_available_at: {

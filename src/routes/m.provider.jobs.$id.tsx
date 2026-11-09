@@ -10,10 +10,12 @@ import {
   STATUS_LABEL,
   stageIndex,
   statusLabel,
+  canonicalProviderStatus,
   type JobStatus,
 } from "@/lib/job-lifecycle";
 import { openNavigation } from "@/mobile/maps";
 import { CashReceivedButton } from "@/components/provider/cash-received-button";
+import { DisputePanel } from "@/components/dispute-panel";
 import { requireOnline } from "@/mobile/offline";
 import {
   AppBar,
@@ -29,7 +31,7 @@ import {
 } from "@/mobile/ui";
 
 export const Route = createFileRoute("/m/provider/jobs/$id")({
-  head: () => ({ meta: [{"title": "Mobile Provider Jobs — Zwits"}, {"name": "description", "content": "Mobile Provider Jobs in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Provider Jobs — Zwits"}, {"property": "og:description", "content": "Mobile Provider Jobs in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: ProviderJobDetail });
+  head: () => ({ meta: [{"title": "Provider job details — Zwits"}, {"name": "description", "content": "Complete your assigned Zwits job, record cash received and track issues."}, {"property": "og:title", "content": "Provider job details — Zwits"}, {"property": "og:description", "content": "Complete your assigned Zwits job, record cash received and track issues."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: ProviderJobDetail });
 
 const STEPS = LIFECYCLE.filter((s) => s !== "pending");
 
@@ -40,15 +42,22 @@ function ProviderJobDetail() {
   const navigate = useNavigate();
 
   const job = useQuery({
-    queryKey: ["m", "provider-job", id],
+    queryKey: ["m", "provider-job", id, user?.id],
+    enabled: !!user,
     queryFn: async () => {
+      if (!user) return null;
+      const { data: provider } = await supabase.from("providers").select("id").eq("user_id", user.id).maybeSingle();
+      if (!provider) return null;
       const { data, error } = await supabase
         .from("bookings")
         .select("*")
         .eq("id", id)
+        .eq("provider_id", provider.id)
         .maybeSingle();
       if (error) throw error;
-      return data;
+      const { data: accounts, error: accountsError } = await supabase.rpc("provider_job_accounts");
+      if (accountsError) throw accountsError;
+      return data ? { ...data, account: accounts?.find(a => a.booking_id === id) } : null;
     },
   });
 
@@ -60,7 +69,7 @@ function ProviderJobDetail() {
       const { error } = await supabase
         .from("bookings")
         .update(patch as any)
-        .eq("id", id);
+        .eq("id", id).select("id").single();
       if (error) throw error;
     },
     onSuccess: () => {
@@ -70,7 +79,7 @@ function ProviderJobDetail() {
     onError: (e: any) => toast.error(e.message ?? "Could not update the job"),
   });
 
-  if (job.isLoading) {
+  if (!user || job.isPending) {
     return (
       <>
         <AppBar title="Job" back />
@@ -97,7 +106,7 @@ function ProviderJobDetail() {
     );
   }
 
-  const action = NEXT_ACTION[j.status as JobStatus];
+  const action = NEXT_ACTION[canonicalProviderStatus(j.status) as JobStatus];
   const step = stageIndex(j.status) - 1;
 
   return (
@@ -187,7 +196,7 @@ function ProviderJobDetail() {
           </Section>
         )}
 
-        {j.status === "completed" && j.payment_status !== "paid" && (
+        {j.status === "completed" && j.payment_method === "cash" && (j.payment_status !== "paid" || !j.account) && (
           <Section title="Payment">
             <Card>
               <p className="text-sm text-muted-foreground">Collected {money(j.price ?? j.budget)} in cash? Record it to close the job.</p>
@@ -196,9 +205,12 @@ function ProviderJobDetail() {
           </Section>
         )}
 
+        {j.status === "completed" && j.payment_status === "paid" && <Section title="Payment"><p className="text-sm">{j.payment_method === "cash" ? (j.account ? "Cash received · commission recorded" : "Marked paid · settlement not recorded") : "Payment recorded"}</p></Section>}
+        <Section><DisputePanel bookingId={id} status={j.status}/></Section>
+
         {action && (
           <div className="sticky bottom-24 px-4">
-            <PrimaryButton loading={advance.isPending} onClick={() => advance.mutate(action.next)}>
+            <PrimaryButton loading={advance.isPending} onClick={() => { if (action.next !== "completed" || window.confirm("Mark this job completed? Record cash received next.")) advance.mutate(action.next); }}>
               {action.label}
             </PrimaryButton>
           </div>

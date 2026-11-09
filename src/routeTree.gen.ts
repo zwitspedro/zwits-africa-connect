@@ -37,6 +37,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthenticatedBusinessPortalRouteImport } from './routes/_authenticated/business-portal'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedDisputesRouteImport } from './routes/_authenticated/disputes'
 import { Route as AuthenticatedDriverRouteImport } from './routes/_authenticated/driver'
 import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
 import { Route as AuthenticatedSendDeliveryRouteImport } from './routes/_authenticated/send-delivery'
@@ -265,6 +266,11 @@ const AuthenticatedBusinessPortalRoute =
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedDisputesRoute = AuthenticatedDisputesRouteImport.update({
+  id: '/disputes',
+  path: '/disputes',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedDriverRoute = AuthenticatedDriverRouteImport.update({
@@ -780,6 +786,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/business-portal': typeof AuthenticatedBusinessPortalRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/disputes': typeof AuthenticatedDisputesRoute
   '/driver': typeof AuthenticatedDriverRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/send-delivery': typeof AuthenticatedSendDeliveryRoute
@@ -895,6 +902,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/business-portal': typeof AuthenticatedBusinessPortalRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/disputes': typeof AuthenticatedDisputesRoute
   '/driver': typeof AuthenticatedDriverRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/send-delivery': typeof AuthenticatedSendDeliveryRoute
@@ -1010,6 +1018,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/_authenticated/business-portal': typeof AuthenticatedBusinessPortalRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/disputes': typeof AuthenticatedDisputesRoute
   '/_authenticated/driver': typeof AuthenticatedDriverRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
   '/_authenticated/send-delivery': typeof AuthenticatedSendDeliveryRoute
@@ -1130,6 +1139,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/business-portal'
     | '/dashboard'
+    | '/disputes'
     | '/driver'
     | '/notifications'
     | '/send-delivery'
@@ -1245,6 +1255,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/business-portal'
     | '/dashboard'
+    | '/disputes'
     | '/driver'
     | '/notifications'
     | '/send-delivery'
@@ -1359,6 +1370,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/_authenticated/business-portal'
     | '/_authenticated/dashboard'
+    | '/_authenticated/disputes'
     | '/_authenticated/driver'
     | '/_authenticated/notifications'
     | '/_authenticated/send-delivery'
@@ -1682,6 +1694,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/disputes': {
+      id: '/_authenticated/disputes'
+      path: '/disputes'
+      fullPath: '/disputes'
+      preLoaderRoute: typeof AuthenticatedDisputesRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/driver': {
@@ -2313,6 +2332,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteChildren {
   AuthenticatedBusinessPortalRoute: typeof AuthenticatedBusinessPortalRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDisputesRoute: typeof AuthenticatedDisputesRoute
   AuthenticatedDriverRoute: typeof AuthenticatedDriverRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedSendDeliveryRoute: typeof AuthenticatedSendDeliveryRoute
@@ -2361,6 +2381,7 @@ interface AuthenticatedRouteChildren {
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedBusinessPortalRoute: AuthenticatedBusinessPortalRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDisputesRoute: AuthenticatedDisputesRoute,
   AuthenticatedDriverRoute: AuthenticatedDriverRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
   AuthenticatedSendDeliveryRoute: AuthenticatedSendDeliveryRoute,

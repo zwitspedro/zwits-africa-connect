@@ -2,6 +2,7 @@ import { CheckCircle2 } from "lucide-react";
 import { Panel, EmptyState } from "./dashboard-kit";
 import type { ProviderData } from "./use-provider-data";
 import { CashReceivedButton } from "./cash-received-button";
+import { Link } from "@tanstack/react-router";
 
 export function CompletedJobsSection({ data }: { data: ProviderData }) {
   const { completed, netFor } = data;
@@ -22,12 +23,15 @@ export function CompletedJobsSection({ data }: { data: ProviderData }) {
               <span className="min-w-0">
                 <span className="block truncate text-sm font-medium capitalize">{j.category}</span>
                 <span className="block truncate text-[11px] text-muted-foreground">{j.address}</span>
-                {j.payment_status !== "paid" && <CashReceivedButton bookingId={j.id} className="mt-2" />}
+                <span className="block text-xs text-muted-foreground">{j.payment_method === "cash" ? (j.payment_status === "paid" ? (j.account ? "Cash received · commission recorded" : "Marked paid · settlement not recorded") : "Cash not yet recorded") : j.payment_status}</span>
+                {j.payment_method === "cash" && (j.payment_status !== "paid" || !j.account) && <CashReceivedButton bookingId={j.id} className="mt-2" />}
+                <Link to="/m/provider/jobs/$id" params={{ id: j.id }} className="mt-2 inline-flex min-h-12 items-center text-xs text-primary-text">Job details & issues</Link>
               </span>
               <span className="text-right">
                 <span className="block text-sm font-semibold tabular-nums text-success">
                   ${netFor(j).toFixed(2)}
                 </span>
+                {!j.account && <span className="block text-xs text-muted-foreground">Estimate</span>}
                 <span className="block text-[11px] text-muted-foreground">
                   {new Date(j.completed_at ?? j.updated_at ?? j.created_at).toLocaleDateString()}
                 </span>
@@ -36,6 +40,7 @@ export function CompletedJobsSection({ data }: { data: ProviderData }) {
           ))}
         </ul>
       )}
+      <Link to="/disputes" className="inline-flex min-h-12 items-center text-sm text-primary-text">Track all issues</Link>
     </Panel>
   );
 }

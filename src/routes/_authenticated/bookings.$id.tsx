@@ -15,7 +15,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { advanceDispatch, acceptQuote, confirmCompletion } from "@/lib/dispatch.functions";
 import { MAX_WAVES } from "@/lib/dispatch-config";
-import { openDispute, listDisputes } from "@/lib/disputes.functions";
+import { DisputePanel } from "@/components/dispute-panel";
 
 export const Route = createFileRoute("/_authenticated/bookings/$id")({
   head: () => ({ meta: [{"title": "Booking details — Zwits"}, {"name": "description", "content": "Booking details in your Zwits account for services and deliveries in Harare."}, {"property": "og:title", "content": "Booking details — Zwits"}, {"property": "og:description", "content": "Booking details in your Zwits account for services and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
@@ -45,7 +45,7 @@ function BookingDetailPage() {
         .from("bookings")
         .select("*, providers(id, business_name, rating_avg, bio, city), ratings(rating)")
         .eq("id", id)
-        .eq("customer_id", user!.id)
+        .eq("customer_id", user?.id ?? "")
         .single();
       if (error) throw error;
       return data;
@@ -329,7 +329,7 @@ function RatePanel({ bookingId, providerId }: { bookingId: string; providerId: s
       const { error } = await supabase.from("ratings").insert({
         booking_id: bookingId,
         provider_id: providerId,
-        customer_id: user!.id,
+        customer_id: user?.id ?? "",
         rating,
         review,
       });
@@ -533,99 +533,3 @@ function ConfirmCompletion({ bookingId }: { bookingId: string }) {
   );
 }
 
-/** Raise or track a dispute on this booking. Backed by the disputes table. */
-function DisputePanel({ bookingId, status }: { bookingId: string; status: string }) {
-  const qc = useQueryClient();
-  const fetchDisputes = useServerFn(listDisputes);
-  const raise = useServerFn(openDispute);
-  const [open, setOpen] = useState(false);
-  const [reason, setReason] = useState("");
-  const [description, setDescription] = useState("");
-
-  const disputes = useQuery({
-    queryKey: ["disputes", bookingId],
-    queryFn: () => fetchDisputes({ data: { page: 0 } }),
-  });
-  const mine = (disputes.data?.rows ?? []).filter((d: any) => d.booking_id === bookingId);
-
-  const submit = useMutation({
-    mutationFn: () =>
-      raise({ data: { bookingId, reason: reason.trim(), description: description.trim() || null } }),
-    onSuccess: () => {
-      toast.success("Dispute opened — our team will review it");
-      setOpen(false);
-      setReason("");
-      setDescription("");
-      void qc.invalidateQueries({ queryKey: ["disputes", bookingId] });
-    },
-    onError: (e: any) => toast.error(e?.message ?? "Could not open dispute"),
-  });
-
-  const eligible = ["completed", "in_progress", "cancelled", "disputed"].includes(status);
-  if (!eligible && mine.length === 0) return null;
-
-  return (
-    <div className="mt-5 rounded-2xl border border-border bg-background/50 p-4">
-      <div className="flex items-center justify-between gap-3">
-        <div className="text-sm font-semibold">Something wrong with this job?</div>
-        {mine.length === 0 && (
-          <button
-            onClick={() => setOpen((v) => !v)}
-            className="rounded-full border border-border px-4 py-1.5 text-xs font-medium hover:bg-muted"
-          >
-            {open ? "Close" : "Raise a dispute"}
-          </button>
-        )}
-      </div>
-
-      {mine.length > 0 && (
-        <ul className="mt-3 grid gap-2">
-          {mine.map((d: any) => (
-            <li key={d.id} className="rounded-xl bg-muted/40 p-3 text-xs">
-              <div className="flex items-center justify-between gap-2">
-                <span className="font-medium">{d.reason}</span>
-                <span className="rounded-full bg-background px-2 py-0.5 capitalize">{d.status}</span>
-              </div>
-              {d.resolution && <p className="mt-1 text-muted-foreground">{d.resolution}</p>}
-              <p className="mt-1 text-[11px] text-muted-foreground">
-                Opened {new Date(d.created_at).toLocaleString()}
-              </p>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      {open && mine.length === 0 && (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (reason.trim().length >= 3) submit.mutate();
-          }}
-          className="mt-3 grid gap-2"
-        >
-          <input
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            placeholder="Reason (e.g. work not completed)"
-            maxLength={120}
-            className="min-h-11 rounded-xl border border-border bg-background px-3 text-sm"
-          />
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Tell us what happened"
-            rows={3}
-            maxLength={2000}
-            className="rounded-xl border border-border bg-background p-3 text-sm"
-          />
-          <button
-            disabled={submit.isPending || reason.trim().length < 3}
-            className="w-fit rounded-full bg-primary px-5 py-2 text-xs font-medium text-primary-foreground disabled:opacity-60"
-          >
-            {submit.isPending ? "Submitting…" : "Submit dispute"}
-          </button>
-        </form>
-      )}
-    </div>
-  );
-}

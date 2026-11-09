@@ -12,13 +12,13 @@ export function CashReceivedButton({ bookingId, className }: { bookingId: string
   const m = useMutation({
     mutationFn: () => confirm({ data: { bookingId } }),
     onSuccess: (r) => {
-      toast.success(`Cash recorded. Zwits commission $${Number(r.commission).toFixed(2)} added to your wallet.`);
+      toast.success(`Cash recorded. Zwits commission owed: $${Number(r.commission).toFixed(2)}.`);
       void qc.invalidateQueries();
     },
     onError: (e: Error) => toast.error(e.message || "Could not record the cash payment."),
   });
   return (
-    <Button size="sm" variant="outline" className={className} disabled={m.isPending} onClick={() => m.mutate()}>
+    <Button size="sm" variant="outline" className={className} disabled={m.isPending} onClick={() => { if (window.confirm("Confirm you received the agreed cash payment from the customer?")) m.mutate(); }}>
       <Banknote className="size-4" /> {m.isPending ? "Recording…" : "I received the cash"}
     </Button>
   );

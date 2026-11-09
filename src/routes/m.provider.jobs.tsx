@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Status } from "@/components/ui/status";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -27,7 +27,12 @@ import {
 } from "@/mobile/ui";
 
 export const Route = createFileRoute("/m/provider/jobs")({
-  head: () => ({ meta: [{"title": "Mobile Provider Jobs — Zwits"}, {"name": "description", "content": "Mobile Provider Jobs in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Provider Jobs — Zwits"}, {"property": "og:description", "content": "Mobile Provider Jobs in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: ProviderJobs });
+  head: () => ({ meta: [{"title": "Mobile Provider Jobs — Zwits"}, {"name": "description", "content": "Mobile Provider Jobs in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:title", "content": "Mobile Provider Jobs — Zwits"}, {"property": "og:description", "content": "Mobile Provider Jobs in your Zwits account for services, work and deliveries in Harare."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }), component: ProviderJobsRoute });
+
+function ProviderJobsRoute() {
+  const pathname = useRouterState({ select: s => s.location.pathname });
+  return pathname === "/m/provider/jobs" ? <><ProviderJobs/><Outlet/></> : <Outlet/>;
+}
 
 type Tab = "offers" | "active" | "completed" | "cancelled";
 

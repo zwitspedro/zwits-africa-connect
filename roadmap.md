@@ -1,4 +1,8 @@
 # Current request
+- [x] Complete customer/provider dispute submission and status tracking with admin resolutions; transactional regression passed, browser submission on real records intentionally avoided.
+- [x] Complete secure provider document review, profile decisions and in-app notifications; regression and signed-in document access/control checks passed.
+- [x] Fix provider detail navigation, atomic cash confirmation, historical commission display and completed-job visibility; regression passed and existing completed records verified.
+- [ ] Verify new provider cash completion and both-party dispute decisions entirely through the browser (requires isolated test accounts/records; real work and decisions were not changed).
 - [x] Enhance executive admin navigation, search, overview, analytics and live operational previews using existing records; incomplete capabilities classified in acceptance report.
 - [x] Verify signed-in admin flows, permissions, date filters and mobile layout; deliver requirement-by-requirement report.
 - [x] Add provider profile page linked from dashboard with contact, bank and payment preference editing.
