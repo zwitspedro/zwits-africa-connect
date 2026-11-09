@@ -18,6 +18,11 @@ export function ActiveJobsSection({ jobs }: { jobs: Booking[] }) {
 
   const updateStatus = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      if (status === "accepted") {
+        const { error } = await supabase.rpc("accept_direct_booking", { _booking_id: id });
+        if (error) throw error;
+        return;
+      }
       const patch: Record<string, unknown> = { status };
       if (status === "completed") patch.completed_at = new Date().toISOString();
       const { data, error } = await supabase.from("bookings").update(patch as any).eq("id", id).select("id").single();
