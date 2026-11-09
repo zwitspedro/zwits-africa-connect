@@ -149,94 +149,9 @@ export const updateDeliveryStatus = createServerFn({ method: "POST" })
       .parse(input),
   )
   .handler(async ({ data, context }) => {
-    const { admin, logDeliveryEvent } = await import("./delivery.server");
-    const db = await admin();
-
-    const { data: delivery, error } = await db
-      .from("deliveries")
-      .select("id, customer_id, driver_id, status")
-      .eq("id", data.deliveryId)
-      .single();
-    if (error || !delivery) throw new Error("Delivery not found");
-
-    const isDriver = delivery.driver_id === context.userId;
-    const isCustomer = delivery.customer_id === context.userId;
-    if (!isDriver && !(isCustomer && data.status === "cancelled")) throw new Error("Not allowed");
-
-    const patch: Record<string, unknown> = { status: data.status };
-    if (data.status === "picked_up") patch.picked_up_at = new Date().toISOString();
-    if (data.status === "delivered") {
-      patch.delivered_at = new Date().toISOString();
-      // Payment is NEVER marked paid by a status update — it is verified and
-      // settled through confirmDeliveryPayment / the gateway.
-      if (data.proofPhotoUrl) patch.proof_photo_url = data.proofPhotoUrl;
-    }
-
-    const { error: upErr } = await db.from("deliveries").update(patch).eq("id", data.deliveryId);
-    if (upErr) throw new Error(upErr.message);
-
-    const auditEvent =
-      data.status === "picked_up"
-        ? "delivery_started"
-        : data.status === "delivered"
-          ? "delivery_completed"
-          : "delivery_cancelled";
-    await logDeliveryEvent(db, data.deliveryId, auditEvent, context.userId, null, auditEvent);
-
-    // A repeated call for a status the delivery is already in must not
-    // re-notify or re-count the completion.
-    if (delivery.status === data.status) return { ok: true, unchanged: true };
-
-    // Completed + already-paid deliveries settle straight away; the ledger
-    // references make this safe to reach more than once.
-    if (data.status === "delivered") {
-      const { data: paid } = await db
-        .from("payments")
-        .select("id")
-        .eq("delivery_id", data.deliveryId)
-        .eq("status", "paid")
-        .maybeSingle();
-      if (paid) {
-        try {
-          const { settleDelivery } = await import("./payments.server");
-          await db.from("deliveries").update({ payment_status: "paid" }).eq("id", data.deliveryId);
-          await settleDelivery(db, data.deliveryId);
-        } catch {
-          /* settlement is retried by confirmDeliveryPayment; never lose the completion */
-        }
-      }
-    }
-
-
-
-    if (data.status === "delivered" && delivery.driver_id) {
-      const { data: prof } = await db
-        .from("driver_profiles")
-        .select("deliveries_completed")
-        .eq("user_id", delivery.driver_id)
-        .maybeSingle();
-      await db
-        .from("driver_profiles")
-        .update({ deliveries_completed: (prof?.deliveries_completed ?? 0) + 1 })
-        .eq("user_id", delivery.driver_id);
-    }
-
-    const notifyUser = isDriver ? delivery.customer_id : delivery.driver_id;
-    if (notifyUser) {
-      const titles: Record<string, string> = {
-        picked_up: "Parcel picked up",
-        delivered: "Delivered",
-        cancelled: "Delivery cancelled",
-      };
-      await db.from("notifications").insert({
-        user_id: notifyUser,
-        title: titles[data.status],
-        body: `Your delivery is now ${data.status.replace("_", " ")}.`,
-        link: `/deliveries/${data.deliveryId}`,
-        kind: `delivery_${data.status}`,
-      });
-    }
-    return { ok: true };
+    const {data:result,error}=await context.supabase.rpc('update_delivery_progress_atomic',{_id:data.deliveryId,_status:data.status,_proof:data.proofPhotoUrl??undefined});
+    if(error)throw new Error(error.message);
+    return result as {ok:boolean;unchanged?:boolean};
   });
 
 /** Nudges dispatch forward while a delivery is still looking for a driver. */

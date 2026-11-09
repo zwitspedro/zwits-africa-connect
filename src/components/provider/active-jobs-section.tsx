@@ -9,6 +9,7 @@ import { ProviderJobsMap } from "@/components/provider-jobs-map";
 import { LIFECYCLE, NEXT_ACTION, STATUS_LABEL, stageIndex, canonicalProviderStatus, type JobStatus } from "@/lib/job-lifecycle";
 import { EmptyState, Panel } from "./dashboard-kit";
 import type { Booking } from "./use-provider-data";
+import { JobChangeLink } from "@/components/job-change-link";
 import { DisputePanel } from "@/components/dispute-panel";
 
 const TIMELINE = LIFECYCLE.filter((s) => s !== "pending").map((s) => ({ key: s, label: STATUS_LABEL[s] }));
@@ -134,7 +135,7 @@ export function ActiveJobsSection({ jobs }: { jobs: Booking[] }) {
               )}
             </div>
 
-            <DisputePanel bookingId={j.id} status={j.status} />
+            <JobChangeLink/><DisputePanel bookingId={j.id} status={j.status} />
           </Panel>
         );
       })}

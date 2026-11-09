@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { advanceDispatch, acceptQuote, confirmCompletion } from "@/lib/dispatch.functions";
 import { MAX_WAVES } from "@/lib/dispatch-config";
 import { DisputePanel } from "@/components/dispute-panel";
+import { JobChangeLink } from "@/components/job-change-link";
 import { DirectPaymentPanel } from "@/components/direct-payment-panel";
 
 export const Route = createFileRoute("/_authenticated/bookings/$id")({
@@ -84,7 +85,7 @@ function BookingDetailPage() {
 
   return (
     <SiteShell>
-      <section className="mx-auto max-w-2xl px-4 py-6 sm:px-6">
+      <section className="mx-auto max-w-2xl px-4 py-6 sm:px-6"><JobChangeLink/>
         <Link
           to="/bookings"
           className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"

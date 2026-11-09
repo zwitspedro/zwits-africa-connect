@@ -23,7 +23,7 @@ export const dispatchAction = createServerFn({method:'POST'}).middleware([requir
  if(error) throw new Error(error.message); return result;
 });
 export const listJobChanges = createServerFn({method:'GET'}).middleware([requireSupabaseAuth]).handler(async({context})=>{
- const {data,error}=await context.supabase.from('admin_job_changes').select('*').in('status',['pending_customer','pending_assignee']).order('created_at',{ascending:false}).limit(50);
+ const {data,error}=await context.supabase.from('admin_job_changes').select('*').or(`customer_id.eq.${context.userId},assignee_user_id.eq.${context.userId}`).in('status',['pending_customer','pending_assignee']).order('created_at',{ascending:false}).limit(50);
  if(error) throw new Error('Unable to load job changes'); return {rows:data??[],userId:context.userId};
 });
 export const respondJobChange = createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator(input=>responseSchema.parse(input)).handler(async({data,context})=>{

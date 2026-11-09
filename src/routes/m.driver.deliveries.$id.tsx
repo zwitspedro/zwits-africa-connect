@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { ZwitsLogo } from "@/components/zwits-logo";
+import { JobChangeLink } from "@/components/job-change-link";
 import { updateDeliveryStatus } from "@/lib/delivery.functions";
 import { openNavigation } from "@/mobile/maps";
 import { captureAndUpload } from "@/mobile/media";
@@ -162,6 +163,7 @@ function DeliveryDetail() {
           </Card>
         </Section>
 
+        <Section><JobChangeLink/></Section>
         <Section title="Recipient">
           <Card className="text-sm">
             <p className="font-medium">{d.recipient_name ?? "—"}</p>
@@ -183,6 +185,7 @@ function DeliveryDetail() {
           <div className="sticky bottom-24 px-4">
             <PrimaryButton
               loading={busy}
+              disabled={stage === "dropoff" && !proof}
               onClick={() => void advance(stage === "pickup" ? "picked_up" : "delivered")}
             >
               {stage === "pickup" ? "Confirm pickup" : "Mark delivered"}
