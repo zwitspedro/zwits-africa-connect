@@ -1,4 +1,5 @@
 # Current request
+- [ ] Add direct provider EcoCash/bank payments, private account editing/display, provider receipt confirmation and direct-money ledger accounting; verify permissions and UI without moving money.
 - [ ] Run a real cash booking in the browser (needs actual job, provider, agreed amount and confirmation that work/cash receipt are genuine).
 - [ ] Connect provider EcoCash accounts and real outbound payouts (user reports approved account; blocked pending official outbound API documentation, secure credentials and settlement verification).
 - [x] Extend admin approval queue with secure document uploads and review status tracking.
