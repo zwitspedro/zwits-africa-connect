@@ -52,7 +52,7 @@ Overview, operations, customers, providers, review, drivers, catalogue, search q
 - 90-day selection and daily chart rendered; custom report 1–9 November loaded; invalid range displayed error.
 - Date-boundary Vitest: 7 passed.
 - Anonymous metrics/payout SQL denial: passed; accepts role rejection or execute-permission denial as valid protection.
-- Read-only executive aggregate SQL test added for customer/active counts, 30 Harare buckets, daily financial reconciliation and reversed-date rejection; execution requires an authenticated-capable database session.
+- Read-only executive aggregate SQL test added for customer/active counts, 30 Harare buckets, daily financial reconciliation and reversed-date rejection. Execution BLOCKED: the sandbox SQL connection cannot execute the protected function or assume the authenticated role; grants were not widened. Independently queried totals matched the signed-in UI.
 - Simulated RPC failure: 22 unavailable tiles; retry returned to zero unavailable tiles.
 - Latest automated build: clean after repairs.
 
