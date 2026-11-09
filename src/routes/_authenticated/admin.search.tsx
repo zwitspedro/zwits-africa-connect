@@ -1,0 +1,13 @@
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useServerFn } from '@tanstack/react-start';
+import { searchAdminRecords } from '@/lib/admin-records.functions';
+import { adminHead } from '@/lib/admin-period';
+import { SiteShell } from '@/components/site-shell';
+import { RoleGate } from '@/components/portal/role-gate';
+import { Button } from '@/components/ui/button';
+import { Status } from '@/components/ui/status';
+export const Route=createFileRoute('/_authenticated/admin/search')({validateSearch:(s:Record<string,unknown>):{q?:string}=>({q:typeof s.q==='string'?s.q.slice(0,80):undefined}),head:()=>adminHead('Search records','Authorized search across Zwits customer, provider, driver, booking, delivery and payment records.'),component:()=> <RoleGate role="admin"><SearchPage/></RoleGate>});
+function SearchPage(){const {q:term}=Route.useSearch();const [page,setPage]=useState(0);const fetch=useServerFn(searchAdminRecords);const q=useQuery({queryKey:['admin-search',term,page],enabled:(term?.trim().length??0)>=2,queryFn:()=>fetch({data:{term:term||'',page}})});
+return <SiteShell><section className="mx-auto max-w-5xl px-4 py-8 sm:px-6"><h1 className="font-display text-2xl">Search records</h1><p className="mt-2 text-sm text-muted-foreground">{term?`Results for “${term}”`:'Enter at least two characters.'}</p>{q.isFetching?<p className="py-8">Searching…</p>:q.isError?<p role="alert" className="py-8 text-destructive">Search unavailable. <Button onClick={()=>q.refetch()}>Retry</Button></p>:<div className="mt-6 divide-y divide-border">{q.data?.rows.length===0&&<p className="py-8 text-muted-foreground">No matching records.</p>}{q.data?.rows.map(r=><div key={`${r.kind}-${r.id}`} className="flex flex-wrap items-center gap-4 py-4"><div className="min-w-0 flex-1"><p className="break-words font-medium">{r.label}</p><p className="mt-1 break-all text-xs text-muted-foreground">{r.kind} · {r.id}</p></div><Status status={r.status}/><Button asChild variant="outline"><Link to={r.kind==='booking'?'/admin/bookings/$id':r.kind==='delivery'?'/admin/deliveries/$id':r.kind==='provider'?'/admin/reconciliation/provider/$providerId':r.kind==='customer'?'/admin/customers':r.kind==='driver'?'/admin/drivers':'/admin/payments'} params={{id:r.id,providerId:r.id}}>View</Link></Button></div>)}</div>}<div className="mt-6 flex gap-2"><Button variant="outline" disabled={page===0||q.isFetching} onClick={()=>setPage(p=>p-1)}>Previous</Button><Button variant="outline" disabled={!q.data?.hasMore||q.isFetching} onClick={()=>setPage(p=>p+1)}>Next</Button></div></section></SiteShell>}
