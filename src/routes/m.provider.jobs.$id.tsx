@@ -54,7 +54,9 @@ function ProviderJobDetail() {
         .eq("provider_id", provider.id)
         .maybeSingle();
       if (error) throw error;
-      return data;
+      const { data: accounts, error: accountsError } = await supabase.rpc("provider_job_accounts");
+      if (accountsError) throw accountsError;
+      return data ? { ...data, account: accounts?.find(a => a.booking_id === id) } : null;
     },
   });
 
@@ -193,7 +195,7 @@ function ProviderJobDetail() {
           </Section>
         )}
 
-        {j.status === "completed" && j.payment_method === "cash" && j.payment_status !== "paid" && (
+        {j.status === "completed" && j.payment_method === "cash" && (j.payment_status !== "paid" || !j.account) && (
           <Section title="Payment">
             <Card>
               <p className="text-sm text-muted-foreground">Collected {money(j.price ?? j.budget)} in cash? Record it to close the job.</p>
@@ -202,7 +204,7 @@ function ProviderJobDetail() {
           </Section>
         )}
 
-        {j.status === "completed" && j.payment_status === "paid" && <Section title="Payment"><p className="text-sm">{j.payment_method === "cash" ? "Cash received · commission recorded" : "Payment recorded"}</p></Section>}
+        {j.status === "completed" && j.payment_status === "paid" && <Section title="Payment"><p className="text-sm">{j.payment_method === "cash" ? (j.account ? "Cash received · commission recorded" : "Marked paid · settlement not recorded") : "Payment recorded"}</p></Section>}
         <Section><DisputePanel bookingId={id} status={j.status}/></Section>
 
         {action && (

@@ -47,7 +47,7 @@ export function EarningsSection({ data }: { data: ProviderData }) {
         <StatCard label="Today" value={`$${earnings.today.toFixed(2)}`} accent="primary" />
         <StatCard label="This week" value={`$${earnings.week.toFixed(2)}`} />
         <StatCard label="This month" value={`$${earnings.month.toFixed(2)}`} />
-        <StatCard label="All time net" value={`$${earnings.net.toFixed(2)}`} sub={`Fees $${earnings.fees.toFixed(2)}`} accent="gold" />
+        <StatCard label="All time net" value={`$${earnings.net.toFixed(2)}`} sub={`Fees $${earnings.fees.toFixed(2)}${completed.some(j => !j.account) ? " · includes estimates" : ""}`} accent="gold" />
       </div>
 
       <Panel
