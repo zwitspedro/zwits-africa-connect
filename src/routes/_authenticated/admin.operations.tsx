@@ -155,13 +155,15 @@ function DisputesPanel() {
                 {new Date(d.created_at).toLocaleString()}
               </p>
 
-              {openId === d.id ? (
+              {d.resolution && <p className="mt-2 whitespace-pre-wrap break-words text-sm">Decision: {d.resolution}</p>}
+              {d.booking_id && <Link to="/admin/bookings/$id" params={{ id: d.booking_id }} className="inline-flex min-h-12 items-center text-xs text-primary-text">View booking record</Link>}
+              {openId === d.id && ["open","investigating"].includes(d.status) ? (
                 <div className="mt-3 grid gap-2">
                   <Textarea aria-label="Resolution notes"
                     value={resolution}
                     onChange={(e) => setResolution(e.target.value)}
                     rows={2}
-                    placeholder="Resolution notes shared with the customer"
+                    placeholder="Decision notes shared with both parties"
                     className="rounded-xl border border-border bg-background p-3 text-sm"
                   />
                   <div className="flex flex-wrap gap-2">
@@ -194,14 +196,14 @@ function DisputesPanel() {
                     </Button>
                   </div>
                 </div>
-              ) : (
+              ) : ["open","investigating"].includes(d.status) ? (
                 <Button variant="outline"
-                  onClick={() => setOpenId(d.id)}
+                  onClick={() => {setOpenId(d.id);setResolution(d.resolution ?? "");}}
                   className="mt-3 rounded-md border border-border px-4 py-1.5 text-xs font-medium hover:bg-muted"
                 >
                   Review
                 </Button>
-              )}
+              ) : null}
             </li>
           ))}
         </ul>

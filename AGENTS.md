@@ -16,3 +16,5 @@
 - Reuse shared admin navigation and paginated directory/detail views inside the existing application; non-nested investigation routes prevent parent lists from swallowing detail pages.
 - Reuse provider profile and payment editors on the dashboard and protected profile page; owner-scoped writes preserve verification and financial records.
 - Keep the executive admin shell shared by existing admin pages; extend authoritative aggregates and use bounded, server-authorized search and feeds without duplicating workflows.
+
+- Serialize participant disputes on their job and confirm cash through an authenticated atomic RPC; reuse booking-scoped issue panels and ledger-backed historical amounts to prevent missing issues and misleading balances.

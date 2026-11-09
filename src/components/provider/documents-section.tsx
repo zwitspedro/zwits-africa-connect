@@ -32,6 +32,8 @@ export function DocumentsSection({ data }: { data: ProviderData }) {
           </Link>
         }
       >
+        <p className="mb-3 text-sm capitalize">Verification: {provider?.verification_status === "revoked" ? "Not approved" : provider?.verification_status}</p>
+        {provider?.revoke_reason && <p className="mb-3 whitespace-pre-wrap break-words text-sm text-destructive">Review decision: {provider.revoke_reason}</p>}
         <ul className="grid gap-2">
           {required.map((d) => (
             <li key={d.key} className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border border-border/70 bg-background/40 p-3">

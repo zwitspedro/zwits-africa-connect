@@ -2,7 +2,6 @@ import { CheckCircle2 } from "lucide-react";
 import { Panel, EmptyState } from "./dashboard-kit";
 import type { ProviderData } from "./use-provider-data";
 import { CashReceivedButton } from "./cash-received-button";
-import { DisputePanel } from "@/components/dispute-panel";
 import { Link } from "@tanstack/react-router";
 
 export function CompletedJobsSection({ data }: { data: ProviderData }) {

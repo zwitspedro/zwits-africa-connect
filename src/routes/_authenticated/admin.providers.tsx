@@ -14,6 +14,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useRoles } from "@/hooks/use-role";
 import { setProviderVerification } from "@/lib/admin.functions";
 import { RoleGate } from "@/components/portal/role-gate";
+import { useServerFn } from "@tanstack/react-start";
 import { useProvidersRealtime } from "@/hooks/use-providers-realtime";
 
 type Search = { status?: string; online?: boolean };
@@ -33,6 +34,7 @@ function AdminProviders() {
   const { user, loading: authLoading } = useAuth();
   const { data: roles, isLoading: rolesLoading } = useRoles();
   const qc = useQueryClient();
+  const reviewProvider = useServerFn(setProviderVerification);
   const isAdmin = (roles ?? []).includes("admin");
   const { status: statusFilter, online } = Route.useSearch();
   const [page,setPage]=useState(0);
@@ -65,13 +67,16 @@ function AdminProviders() {
   });
 
   const setStatus = useMutation({
-    mutationFn: async ({ id, status, reason }: { id: string; status: "approved" | "revoked"; reason?: string }) => {
+    mutationFn: async ({ id, status, reason }: { id: string; status: "approved" | "revoked" | "rejected"; reason?: string }) => {
       // Server-side admin authorization — never a client-side role check.
-      await setProviderVerification({ data: { providerId: id, status, reason: reason ?? null } });
+      await reviewProvider({ data: { providerId: id, status, reason: reason ?? null } });
     },
     onSuccess: () => {
       toast.success("Provider updated");
       qc.invalidateQueries({ queryKey: ["admin-providers"] });
+      qc.invalidateQueries({ queryKey: ["admin-provider-review"] });
+      qc.invalidateQueries({ queryKey: ["admin-provider-audits"] });
+      qc.invalidateQueries({ queryKey: ["admin-metrics"] });
     },
     onError: (e: any) => toast.error(e.message ?? "Update failed"),
   });
@@ -173,8 +178,9 @@ function AdminProviders() {
             <AdminProviderRow
               key={p.id}
               provider={p}
+              pending={setStatus.isPending}
               onApprove={() => {const reason=window.prompt("Review reason for approval?");if(reason && reason.trim().length>=3 && window.confirm("Approve this provider after reviewing their documents?")) setStatus.mutate({id:p.id,status:"approved",reason});}}
-              onRevoke={(reason) => setStatus.mutate({ id: p.id, status: "revoked", reason })}
+              onRevoke={(reason) => setStatus.mutate({ id: p.id, status: p.verification_status === "approved" ? "revoked" : "rejected", reason })}
             />
           ))}
           {filteredProviders.length === 0 && !isLoading && !providerError && (
@@ -194,16 +200,17 @@ function AdminProviders() {
   );
 }
 
-function AdminProviderRow({ provider, onApprove, onRevoke }: { provider: any; onApprove: () => void; onRevoke: (reason: string) => void }) {
+function AdminProviderRow({ provider, pending, onApprove, onRevoke }: { provider: any; pending: boolean; onApprove: () => void; onRevoke: (reason: string) => void }) {
   const [confirmRevoke, setConfirmRevoke] = useState(false);
   const [reason, setReason] = useState("");
   const [showAudit, setShowAudit] = useState(false);
+  const [reviewed, setReviewed] = useState(false);
 
   const status = provider.verification_status as string;
 
   // Admins read document paths and review metadata through authorized RPCs,
   // not the table — those columns are revoked for the authenticated role.
-  const { data: docs } = useQuery({
+  const { data: docs, error: docsError, isPending: docsLoading } = useQuery({
     queryKey: ["admin-provider-docs", provider.id],
     queryFn: () => fetchProviderDocuments(provider.id),
   });
@@ -241,13 +248,13 @@ function AdminProviderRow({ provider, onApprove, onRevoke }: { provider: any; on
         </div>
         <div className="flex gap-2">
           {status !== "approved" && (
-            <Button variant="outline" onClick={onApprove} className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-xs text-primary-foreground">
+            <Button variant="outline" disabled={pending || !reviewed || !docs?.id_document_url || !docs?.selfie_url || !docs?.business_doc_url} onClick={onApprove} className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-xs text-primary-foreground">
               <ShieldCheck className="size-3" /> Approve
             </Button>
           )}
           {status !== "revoked" && (
-            <Button variant="outline" onClick={() => setConfirmRevoke((v) => !v)} className="inline-flex items-center gap-1 rounded-md border border-destructive/50 px-3 py-1.5 text-xs text-danger">
-              <ShieldX className="size-3" /> Revoke
+            <Button variant="outline" disabled={pending} onClick={() => setConfirmRevoke((v) => !v)} className="inline-flex items-center gap-1 rounded-md border border-destructive/50 px-3 py-1.5 text-xs text-danger">
+              <ShieldX className="size-3" /> {status === "approved" ? "Revoke" : "Reject profile"}
             </Button>
           )}
         </div>
@@ -258,6 +265,10 @@ function AdminProviderRow({ provider, onApprove, onRevoke }: { provider: any; on
         <DocLink path={docs?.selfie_url ?? null} label="Selfie" />
         <DocLink path={docs?.business_doc_url ?? null} label="Business doc" />
       </div>
+
+      {docsLoading && <p role="status">Loading documents…</p>}
+      {docsError && <p role="alert" className="text-destructive">Documents unavailable.</p>}
+      {status !== "approved" && <label className="mt-3 flex min-h-12 items-center gap-2 text-sm"><input type="checkbox" checked={reviewed} onChange={e => setReviewed(e.target.checked)}/> I reviewed the ID, selfie and business documents</label>}
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border/60 pt-3">
         <Button variant="outline"
@@ -302,9 +313,9 @@ function AdminProviderRow({ provider, onApprove, onRevoke }: { provider: any; on
             className="rounded-lg border border-input bg-background px-3 py-2 text-xs"
           />
           <div className="flex gap-2">
-            <Button variant="outline" disabled={reason.trim().length < 3} onClick={() => { onRevoke(reason); setConfirmRevoke(false); setReason(""); }}
-              className="rounded-full bg-destructive px-3 py-1.5 text-xs text-primary-foreground">Confirm revoke</Button>
-            <Button variant="outline" onClick={() => setConfirmRevoke(false)} className="rounded-md border border-border px-3 py-1.5 text-xs">Cancel</Button>
+            <Button variant="outline" disabled={pending || reason.trim().length < 3} onClick={() => { if(window.confirm("Record this decision and notify the provider?")) { onRevoke(reason); setConfirmRevoke(false); setReason(""); } }}
+              className="rounded-full bg-destructive px-3 py-1.5 text-xs text-primary-foreground">Confirm {status === "approved" ? "revocation" : "rejection"}</Button>
+            <Button variant="outline" disabled={pending} onClick={() => setConfirmRevoke(false)} className="rounded-md border border-border px-3 py-1.5 text-xs">Cancel</Button>
           </div>
         </div>
       )}
@@ -313,7 +324,7 @@ function AdminProviderRow({ provider, onApprove, onRevoke }: { provider: any; on
 }
 
 function DocLink({ path, label }: { path: string | null; label: string }) {
-  const { data } = useQuery({
+  const { data, error } = useQuery({
     queryKey: ["admin-doc", path],
     enabled: !!path,
     queryFn: async () => {
@@ -323,8 +334,9 @@ function DocLink({ path, label }: { path: string | null; label: string }) {
     },
   });
   if (!path) return <span className="rounded-full bg-muted px-2 py-1 text-[11px] text-muted-foreground">{label}: missing</span>;
+  if (!data || error) return <span role={error ? "alert" : "status"} className="text-xs text-muted-foreground">{label}: {error ? "unavailable" : "loading…"}</span>;
   return (
-    <a href={data ?? "#"} target="_blank" rel="noreferrer"
+    <a href={data} target="_blank" rel="noreferrer"
        className="inline-flex items-center gap-1 rounded-md bg-primary/15 px-2 py-1 text-[11px] text-primary-text hover:bg-primary/25">
       <FileText className="size-3" /> {label}
     </a>

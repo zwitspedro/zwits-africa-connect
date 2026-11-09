@@ -5,7 +5,7 @@ import { Panel, StatCard, EmptyState } from "./dashboard-kit";
 import type { ProviderData } from "./use-provider-data";
 
 export function EarningsSection({ data }: { data: ProviderData }) {
-  const { earnings, completed, netFor, feeFor, rateByCategory } = data;
+  const { earnings, completed, netFor, jobFeeFor } = data;
 
   const rows = useMemo(
     () =>
@@ -14,11 +14,11 @@ export function EarningsSection({ data }: { data: ProviderData }) {
         category: j.category,
         address: j.address,
         gross: Number(j.price) || 0,
-        fee: feeFor(j.category, Number(j.price) || 0),
+        fee: jobFeeFor(j),
         net: netFor(j),
-        released: !!j.customer_confirmed_at,
+        status: j.account ? (j.payment_method === "cash" ? "Cash received" : "Settled") : "Not settled · estimate",
       })),
-    [completed, feeFor, netFor],
+    [completed, jobFeeFor, netFor],
   );
 
   const downloadCsv = () => {
@@ -30,7 +30,7 @@ export function EarningsSection({ data }: { data: ProviderData }) {
       r.gross.toFixed(2),
       r.fee.toFixed(2),
       r.net.toFixed(2),
-      r.released ? "Released" : "Pending",
+      r.status,
     ]);
     const csv = [header, ...body].map((l) => l.join(",")).join("\n");
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
@@ -52,7 +52,7 @@ export function EarningsSection({ data }: { data: ProviderData }) {
 
       <Panel
         title="Income trend"
-        description="Net payouts over the last 8 weeks"
+        description="Net job income over the last 8 weeks"
         action={<TrendingUp className="size-4 text-primary-text" />}
       >
         <div className="h-56 w-full">
@@ -83,7 +83,7 @@ export function EarningsSection({ data }: { data: ProviderData }) {
       </Panel>
 
       <Panel
-        title="Payout history"
+        title="Job income history"
         description="Your earnings = job price − 10% Zwits commission (as set out in the Terms). Cash jobs are paid to you directly by the customer."
         action={
           <button
@@ -100,15 +100,13 @@ export function EarningsSection({ data }: { data: ProviderData }) {
         ) : (
           <ul className="grid gap-2">
             {rows.slice(0, 30).map((r, i) => {
-              const rate: any = rateByCategory.get(r.category);
               return (
                 <li key={i} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border border-border/70 bg-background/40 p-3">
                   <div className="min-w-0">
                     <div className="truncate text-sm font-medium capitalize">{r.category} — {r.address}</div>
                     <div className="mt-0.5 truncate text-[11px] text-muted-foreground">
                       {r.date} · ${r.gross.toFixed(2)} gross
-                      {rate ? ` · ${Number(rate.percent).toFixed(1)}% + $${Number(rate.min_fee).toFixed(2)}` : " · no rate set"}
-                      {r.released ? " · released" : " · pending confirmation"}
+                      {` · commission $${r.fee.toFixed(2)} · ${r.status}`}
                     </div>
                   </div>
                   <div className="text-right">
