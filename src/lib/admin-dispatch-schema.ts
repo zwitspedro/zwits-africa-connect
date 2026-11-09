@@ -8,7 +8,7 @@ export const dispatchFilters = z.object({
 });
 export type DispatchFilters = z.infer<typeof dispatchFilters>;
 export type JobKind = 'booking'|'delivery';
-export const controlSchema = z.object({kind:z.enum(['booking','delivery']),id:z.string().uuid(),expected:z.string().datetime(),key:z.string().uuid(),action:z.enum(['note','hold','release','cancel','assign','unassign','reopen','propose','withdraw_proposal']),reason:z.string().trim().min(5).max(1000),assignee:z.string().uuid().optional(),patch:z.record(z.string(),z.unknown()).optional()});
+export const controlSchema = z.object({kind:z.enum(['booking','delivery']),id:z.string().uuid(),expected:z.string().datetime({offset:true}),key:z.string().uuid(),action:z.enum(['note','hold','release','cancel','assign','unassign','reopen','propose','withdraw_proposal']),reason:z.string().trim().min(5).max(1000),assignee:z.string().uuid().optional(),patch:z.record(z.string(),z.unknown()).optional()});
 export const responseSchema = z.object({id:z.string().uuid(),decision:z.enum(['approve','reject','acknowledge'])});
 export const materialBookingFields = ['address','lat','lng','scheduled_for','description','price'];
 export const materialDeliveryFields = ['pickup_address','dropoff_address','pickup_lat','pickup_lng','dropoff_lat','dropoff_lng','price','parcel_size'];
