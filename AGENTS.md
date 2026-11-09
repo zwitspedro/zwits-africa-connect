@@ -18,3 +18,4 @@
 - Keep the executive admin shell shared by existing admin pages; extend authoritative aggregates and use bounded, server-authorized search and feeds without duplicating workflows.
 
 - Serialize participant disputes on their job and confirm cash through an authenticated atomic RPC; reuse booking-scoped issue panels and ledger-backed historical amounts to prevent missing issues and misleading balances.
+- Capture provider decisions as protected review events; derive individual email recipients and content from those events through the shared app-email send route, and validate administrator uploads before registering private provider-owned paths.

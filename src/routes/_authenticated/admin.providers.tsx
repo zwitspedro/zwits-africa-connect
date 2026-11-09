@@ -5,7 +5,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { ShieldCheck, ShieldX, FileText, History } from "lucide-react";
+import { ShieldCheck, ShieldX, FileText, History, Mail } from "lucide-react";
 import { SiteShell } from "@/components/site-shell";
 import { AuditExportButtons } from "@/components/audit-export-buttons";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,6 +16,8 @@ import { setProviderVerification } from "@/lib/admin.functions";
 import { RoleGate } from "@/components/portal/role-gate";
 import { useServerFn } from "@tanstack/react-start";
 import { useProvidersRealtime } from "@/hooks/use-providers-realtime";
+import { ProviderDocumentUpload } from "@/components/admin/provider-document-upload";
+import { requestProviderDecisionEmail } from "@/lib/provider-review.functions";
 
 type Search = { status?: string; online?: boolean };
 
@@ -69,14 +71,15 @@ function AdminProviders() {
   const setStatus = useMutation({
     mutationFn: async ({ id, status, reason }: { id: string; status: "approved" | "revoked" | "rejected"; reason?: string }) => {
       // Server-side admin authorization — never a client-side role check.
-      await reviewProvider({ data: { providerId: id, status, reason: reason ?? null } });
+      return reviewProvider({ data: { providerId: id, status, reason: reason ?? null } });
     },
-    onSuccess: () => {
-      toast.success("Provider updated");
+    onSuccess: (result) => {
+      toast.success(result.emailState === "queued" ? "Decision saved · provider email queued" : "Decision saved · check provider email status");
       qc.invalidateQueries({ queryKey: ["admin-providers"] });
       qc.invalidateQueries({ queryKey: ["admin-provider-review"] });
       qc.invalidateQueries({ queryKey: ["admin-provider-audits"] });
       qc.invalidateQueries({ queryKey: ["admin-metrics"] });
+      qc.invalidateQueries({ queryKey: ["provider-review-events"] });
     },
     onError: (e: any) => toast.error(e.message ?? "Update failed"),
   });
@@ -120,7 +123,7 @@ function AdminProviders() {
       <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h1 className="font-display text-3xl font-bold">Provider verification</h1>
+            <h1 className="font-display text-3xl font-bold">Provider approval queue</h1>
             <p className="mt-2 text-sm text-muted-foreground">Review documents and manage verification status.</p>
           </div>
           <AuditExportButtons
@@ -205,6 +208,11 @@ function AdminProviderRow({ provider, pending, onApprove, onRevoke }: { provider
   const [reason, setReason] = useState("");
   const [showAudit, setShowAudit] = useState(false);
   const [reviewed, setReviewed] = useState(false);
+  const qc = useQueryClient();
+  const sendEmail = useServerFn(requestProviderDecisionEmail);
+  const events = useQuery({ queryKey: ["provider-review-events", provider.id], queryFn: async () => { const { data,error } = await supabase.from("provider_review_events").select("id,status,reason,email_state,created_at").eq("provider_id",provider.id).order("created_at",{ascending:false}).limit(10); if(error) throw error;return data; }, refetchInterval: 30000 });
+  const retryEmail = useMutation({ mutationFn: (eventId: string) => sendEmail({data:{eventId}}), onSuccess: result => {toast(result.emailState === "queued" ? "Provider email queued" : "Email not queued. Check email settings.");void qc.invalidateQueries({queryKey:["provider-review-events",provider.id]});}, onError:(e:Error)=>toast.error(e.message) });
+  const latest = events.data?.[0];
 
   const status = provider.verification_status as string;
 
@@ -241,7 +249,7 @@ function AdminProviderRow({ provider, pending, onApprove, onRevoke }: { provider
         <div>
           <div className="flex items-center gap-2">
             <span className="font-medium">{provider.business_name}</span>
-            <Status status={status} />
+            <Status status={status === "revoked" && latest?.status === "rejected" ? "rejected" : status} />
           </div>
           <div className="mt-0.5 text-xs text-muted-foreground">{provider.category} · {provider.city} · ${Number(provider.hourly_rate).toFixed(0)}/hr</div>
           {review?.revoke_reason && <div className="mt-1 text-xs text-danger">Reason: {review.revoke_reason}</div>}
@@ -265,6 +273,9 @@ function AdminProviderRow({ provider, pending, onApprove, onRevoke }: { provider
         <DocLink path={docs?.selfie_url ?? null} label="Selfie" />
         <DocLink path={docs?.business_doc_url ?? null} label="Business doc" />
       </div>
+      <p className="mt-3 text-xs text-muted-foreground">Documents: {[docs?.id_document_url,docs?.selfie_url,docs?.business_doc_url].filter(Boolean).length}/3 uploaded · {provider.submitted_at ? `Submitted ${new Date(provider.submitted_at).toLocaleString()}` : "Not submitted"}</p>
+      {review?.reviewed_at && <p className="mt-1 text-xs text-muted-foreground">Last reviewed {new Date(review.reviewed_at).toLocaleString()}</p>}
+      <div className="mt-3 flex flex-wrap gap-2"><ProviderDocumentUpload providerId={provider.id} docKey="id_document_url" label="ID"/><ProviderDocumentUpload providerId={provider.id} docKey="selfie_url" label="selfie"/><ProviderDocumentUpload providerId={provider.id} docKey="business_doc_url" label="business document"/></div>
 
       {docsLoading && <p role="status">Loading documents…</p>}
       {docsError && <p role="alert" className="text-destructive">Documents unavailable.</p>}
@@ -303,6 +314,8 @@ function AdminProviderRow({ provider, pending, onApprove, onRevoke }: { provider
           </ul>
         </div>
       )}
+      {events.error && <p role="alert" className="mt-3 text-xs text-destructive">Review history unavailable.</p>}
+      {!!events.data?.length && <div className="mt-4 border-t border-border pt-3"><h3 className="text-sm font-semibold">Review & email history</h3><ul className="mt-2 grid gap-3">{events.data.map(event=><li key={event.id} className="text-xs"><div className="flex flex-wrap items-center gap-2"><Status status={event.status}/><span>{new Date(event.created_at).toLocaleString()}</span><span className="flex items-center gap-1"><Mail className="size-3"/>Email: {event.email_state === "queued" ? "queued — not confirmed sent" : event.email_state.replace(/_/g," ")}</span>{["not_requested","failed"].includes(event.email_state) && <Button size="sm" variant="outline" disabled={retryEmail.isPending} onClick={()=>retryEmail.mutate(event.id)}>Retry email</Button>}</div><p className="mt-1 whitespace-pre-wrap break-words text-muted-foreground">{event.reason}</p></li>)}</ul></div>}
 
       {confirmRevoke && (
         <div className="mt-3 grid gap-2 rounded-xl bg-muted/40 p-3">

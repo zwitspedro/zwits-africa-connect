@@ -1,5 +1,5 @@
 import { getRequest } from "@tanstack/react-start/server";
-export async function sendProviderDecision(eventId: string, actorId: string) {
+export async function sendProviderDecision(eventId: string, _actorId: string) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data: event, error } = await supabaseAdmin.from("provider_review_events").select("id,email_state").eq("id", eventId).single();
   if (error || !event) return { emailState: "failed" };
@@ -11,5 +11,5 @@ export async function sendProviderDecision(eventId: string, actorId: string) {
     return { emailState: "failed" };
   }
   const result = await response.json() as { queued?: boolean; reason?: string };
-  return { emailState: result.queued ? "queued" : result.reason === "email_suppressed" ? "suppressed" : "failed" };
+  return { emailState: result.queued ? "queued" : result.reason === "email_suppressed" ? "suppressed" : result.reason === "already_processing" ? "queueing" : "failed" };
 }
