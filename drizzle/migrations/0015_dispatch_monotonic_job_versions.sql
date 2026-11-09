@@ -1,0 +1,3 @@
+CREATE OR REPLACE FUNCTION public.dispatch_job_version() RETURNS trigger LANGUAGE plpgsql SET search_path=public AS $$ BEGIN NEW.updated_at:=greatest(clock_timestamp(),OLD.updated_at+interval '1 microsecond');RETURN NEW;END $$;
+CREATE TRIGGER zz_dispatch_booking_version BEFORE UPDATE ON public.bookings FOR EACH ROW EXECUTE FUNCTION public.dispatch_job_version();
+CREATE TRIGGER zz_dispatch_delivery_version BEFORE UPDATE ON public.deliveries FOR EACH ROW EXECUTE FUNCTION public.dispatch_job_version();
