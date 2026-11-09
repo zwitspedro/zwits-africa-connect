@@ -72,7 +72,7 @@ function unconfigured(id: string, label: string, envKey: string): PaymentGateway
   return {
     id,
     label,
-    configured: () => Boolean(process.env[envKey]),
+    configured: () => false,
     async initiate() {
       throw new Error(`${label} is not connected yet. Choose another payment method.`);
     },

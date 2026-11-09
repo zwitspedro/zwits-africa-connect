@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { activePaymentMethodSchema } from "./payment-policy";
 
 const CreateDeliverySchema = z.object({
   serviceTier: z.enum(["express_bike", "standard_van", "business_courier"]),
@@ -14,7 +15,7 @@ const CreateDeliverySchema = z.object({
   recipientName: z.string().max(120).nullable().optional(),
   recipientPhone: z.string().max(40).nullable().optional(),
   notes: z.string().max(1000).nullable().optional(),
-  paymentMethod: z.string().max(30).default("cash"),
+  paymentMethod: activePaymentMethodSchema.default("cash"),
 });
 
 export const createDelivery = createServerFn({ method: "POST" })

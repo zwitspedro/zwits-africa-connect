@@ -25,7 +25,6 @@ export const PAYMENT_METHODS: {
 export function PaymentMethodPicker({
   value,
   onChange,
-  reference,
   onReferenceChange,
 }: {
   value: PaymentMethod | null;
@@ -33,8 +32,6 @@ export function PaymentMethodPicker({
   reference: string;
   onReferenceChange: (v: string) => void;
 }) {
-  const selected = PAYMENT_METHODS.find((m) => m.id === value);
-
   return (
     <div className="grid gap-3">
       <Button
@@ -56,61 +53,6 @@ export function PaymentMethodPicker({
       <p className="text-xs text-muted-foreground">
         Card and mobile money (EcoCash, OneMoney, InnBucks) are coming soon.
       </p>
-      <div className="grid gap-2 sm:grid-cols-2">
-        {PAYMENT_METHODS.filter((m) => m.id !== "cash").map((m) => {
-          const active = value === m.id;
-          const disabled = !m.enabled;
-          const Icon = m.icon;
-          return (
-            <Button
-              key={m.id}
-              type="button"
-              variant="outline"
-              disabled={disabled}
-              aria-disabled={disabled}
-              aria-pressed={active}
-              onClick={() => !disabled && onChange(m.id)}
-              className={`h-auto min-h-12 justify-start gap-3 whitespace-normal rounded-lg border p-3 text-left transition ${
-                active ? "border-primary bg-primary/10" : "border-border bg-card"
-              } ${disabled ? "cursor-not-allowed opacity-50" : "hover:border-primary/40"}`}
-            >
-              <Icon className={`size-5 ${active ? "text-primary-text" : "text-muted-foreground"}`} />
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-2 text-sm font-medium">
-                  {m.name}
-                  {disabled && (
-                    <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-normal text-muted-foreground">
-                      Coming soon
-                    </span>
-                  )}
-                </div>
-                <div className="text-xs text-muted-foreground">{m.hint}</div>
-              </div>
-            </Button>
-          );
-        })}
-      </div>
-
-      {selected?.needsRef && (
-        <label className="grid gap-1.5">
-          <span className="text-xs text-muted-foreground">{selected.refLabel}</span>
-          <input
-            required
-            type={selected.refType}
-            inputMode={selected.refType === "tel" ? "tel" : "text"}
-            pattern={selected.refPattern}
-            maxLength={32}
-            value={reference}
-            onChange={(e) => onReferenceChange(e.target.value)}
-            placeholder={selected.refPlaceholder}
-            className="rounded-lg border border-input bg-background px-3 py-2.5 text-sm"
-          />
-          <span className="text-[11px] text-muted-foreground">
-            You'll receive a confirmation prompt on your phone. Payment is captured on service completion.
-          </span>
-        </label>
-      )}
-
       {value === "cash" && (
         <p className="rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">
           Have the agreed amount ready to pay when the job is completed.
