@@ -2193,6 +2193,7 @@ export type Database = {
         }
         Returns: Json
       }
+      admin_dispatch_directory: { Args: { _filters?: Json }; Returns: Json }
       admin_period_metrics: {
         Args: { _from: string; _to: string }
         Returns: Json
