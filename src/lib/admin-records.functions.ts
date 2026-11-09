@@ -29,13 +29,17 @@ export const listAdminRecords = createServerFn({ method: 'GET' }).middleware([re
     q = db.from('user_roles').select('id,user_id,created_at',{count:'exact'}).eq('role','business').order('created_at',{ascending:false});
   }
   if (data.status!=='all') {
-    if (data.kind==='bookings'||data.kind==='deliveries') q=q.eq('status',data.status);
+    if (data.kind==='bookings'||data.kind==='deliveries') {
+      if(data.status==='active') q=data.kind==='bookings'?q.in('status',['matching','offered','pending','accepted','travelling','provider_arriving','arrived','in_progress']):q.not('status','in','(delivered,cancelled,failed)');
+      else q=q.eq('status',data.status);
+    }
     if (data.kind==='drivers') q=data.status==='online'?q.eq('available',true).eq('verification_status','approved'):q.eq('verification_status',data.status);
     if (data.kind==='catalogue') q=q.eq('active',data.status==='active');
     if (data.kind==='wallets') q=data.status==='debt'?q.lt('available_balance',0):q.gt('available_balance',0);
   }
-  if(data.from) q=q.gte('created_at',data.from);
-  if(data.to) q=q.lt('created_at',data.to);
+  const dateColumn=data.kind==='deliveries'&&data.status==='delivered'?'delivered_at':data.kind==='bookings'&&data.status==='completed'?'completed_at':'created_at';
+  if(data.from) q=q.gte(dateColumn,data.from);
+  if(data.to) q=q.lt(dateColumn,data.to);
   const term=data.term.replace(/[%_,"()\\]/g,' ').trim();
   if(term) {
     if(data.kind==='bookings'||data.kind==='deliveries') {
@@ -103,10 +107,11 @@ export const searchAdminRecords = createServerFn({method:'GET'}).middleware([req
   const [customers,...results]=await Promise.all([customerQuery,...queries]);
   if(customers.error||results.some(r=>r.error)) throw new Error('Search unavailable. Please retry.');
   type Result={id:string;kind:string;label:string;status:string;created_at:string;relatedId?:string};
-  const rows:Result[]=(customers.data?.rows??[]).map((r:any)=>({id:r.user_id,kind:'customer',label:r.display_name||'Customer',status:'registered',created_at:r.created_at}));
+  const directory=customers.data as {rows:Record<string,any>[];total:number}|null;
+  const rows:Result[]=(directory?.rows??[]).map((r:any)=>({id:r.user_id,kind:'customer',label:r.display_name||'Customer',status:'registered',created_at:r.created_at}));
   const kinds=['provider','driver','booking','delivery','payment'];
   results.forEach((r,i)=>(r.data??[]).forEach((v:any)=>rows.push({id:v.id,kind:kinds[i],label:v.business_name||v.full_name||v.category||v.service_tier||`Payment ${v.id.slice(0,8)}`,status:v.status||v.verification_status,created_at:v.created_at,relatedId:v.booking_id||v.delivery_id})));
-  return {rows,hasMore:results.some(r=>r.data?.length===5)||((data.page+1)*25<(customers.data?.total??0))};
+  return {rows,hasMore:results.some(r=>r.data?.length===5)||((data.page+1)*25<(directory?.total??0))};
  });
 
 /** Small operational previews; no payment destinations, private documents or audit metadata. */

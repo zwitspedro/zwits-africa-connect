@@ -16,7 +16,7 @@ function Records({kind,title,initialStatus,from,to}:{kind:RecordKind;title:strin
  const [page,setPage]=useState(0),[term,setTerm]=useState(''),[draft,setDraft]=useState(''),[status,setStatus]=useState(initialStatus);
  const fetch=useServerFn(listAdminRecords);
  const q=useQuery({queryKey:['admin-records',kind,page,term,status,from,to],queryFn:()=>fetch({data:{kind,page,term,status,from,to}})});
- const statuses = kind==='bookings'?['all','matching','offered','accepted','travelling','arrived','in_progress','completed','cancelled']:kind==='deliveries'?['all','requested','matching','accepted','picked_up','delivered','cancelled','failed']:kind==='drivers'?['all','online','pending','approved','revoked']:kind==='wallets'?['all','positive','debt']:kind==='catalogue'?['all','active','inactive']:['all'];
+ const statuses = kind==='bookings'?['all','active','pending','matching','offered','accepted','travelling','arrived','in_progress','completed','cancelled']:kind==='deliveries'?['all','active','requested','matching','accepted','picked_up','delivered','cancelled','failed']:kind==='drivers'?['all','online','pending','approved','revoked']:kind==='wallets'?['all','positive','debt']:kind==='catalogue'?['all','active','inactive']:['all'];
  return <SiteShell><section className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
  <h1 className="font-display text-3xl">{title}</h1>
  {kind==='wallets'&&<p className="mt-2 text-sm text-muted-foreground">USD balances. Negative balances are commission owed; positive balances are withdrawable funds.</p>}
