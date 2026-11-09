@@ -10,6 +10,6 @@ Live provider locations for assigned active service bookings in the existing dis
 - PASS: dispatch map renders OpenStreetMap tiles, stale marker, Harare update timestamp and accuracy on existing populated records. Refresh succeeds; three real active assignments read back, one stale report and two missing reports.
 - PASS: realtime subscription reports Connected, is effect-scoped and cleaned up; 15-second polling provides fallback. Local freshness checks every 10 seconds mark reports stale at 60 seconds without changing the device timestamp.
 - PASS: desktop and 423×729 mobile checks have no horizontal overflow or page errors.
-- PASS: automated freshness/stage tests and rollback-only admin authorization/current-location upsert regression.
+- PASS: automated freshness/stage tests and rollback-only RPC caller authorization/current-location upsert regression. The SQL test connection cannot assume the authenticated role; signed-in admin reads were separately verified in the browser, while provider write-policy execution remains unverified.
 - PARTIALLY COMPLETE: moving-device publication through to admin realtime marker movement has not been exercised with an isolated provider device; existing locations were not altered or represented as live for demonstration. Browser geolocation permission, an open provider job screen and connectivity are required. Background tracking while the app is closed is not supported.
 - NOT IMPLEMENTED: bulk dispatch, accepted-job reassignment and full driver verification remain separate outstanding work.

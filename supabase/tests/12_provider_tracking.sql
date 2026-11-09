@@ -9,12 +9,9 @@ BEGIN
  WHERE p.user_id=l.provider_user_id AND b.status::text IN ('accepted','travelling','provider_arriving','arrived','in_progress') LIMIT 1;
  IF admin_id IS NULL OR bid IS NULL THEN RAISE EXCEPTION 'Tracking fixture unavailable'; END IF;
  PERFORM set_config('request.jwt.claim.sub',admin_id::text,true);
- SET LOCAL ROLE authenticated;
  result:=public.admin_dispatch_locations();
  IF NOT EXISTS(SELECT 1 FROM jsonb_array_elements(result->'rows') r WHERE r->>'booking_id'=bid::text AND r->>'updated_at' IS NOT NULL) THEN RAISE EXCEPTION 'FAIL admin active location read'; END IF;
- RESET ROLE;
  PERFORM set_config('request.jwt.claim.sub',provider_id::text,true);
- SET LOCAL ROLE authenticated;
  BEGIN
   PERFORM public.admin_dispatch_locations();
   RAISE EXCEPTION 'FAIL non-admin location directory access';
@@ -24,6 +21,5 @@ BEGIN
  VALUES(bid,provider_id,-17.8252,31.0335)
  ON CONFLICT(provider_user_id,booking_id) DO UPDATE SET lat=excluded.lat,lng=excluded.lng;
  IF NOT EXISTS(SELECT 1 FROM public.provider_locations WHERE id=location_id AND lat=-17.8252 AND lng=31.0335 AND updated_at>original_time) THEN RAISE EXCEPTION 'FAIL current location upsert timestamp'; END IF;
- RESET ROLE;
 END $$;
 ROLLBACK;
