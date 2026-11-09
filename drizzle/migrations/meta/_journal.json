@@ -85,6 +85,13 @@
       "when": 1794220797125,
       "tag": "0011_provider_direct_payment_receipts",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1794223285102,
+      "tag": "0012_authorized_direct_booking_acceptance",
+      "breakpoints": true
     }
   ]
 }
