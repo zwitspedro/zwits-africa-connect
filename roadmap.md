@@ -1,5 +1,6 @@
 # Current request
-- [ ] Add and verify live provider tracking in the dispatch centre, with update timestamps, stale indicators and secure active-job reads.
+- [x] Add live provider tracking in the dispatch centre; populated admin map/timestamps, mobile layout, freshness tests and rollback permissions/upsert verified.
+- [ ] Verify moving-device provider-to-admin realtime updates; needs an isolated provider device/location session, not fabricated live locations on real jobs.
 - [x] Audit and map uploaded Admin Dispatch and Job Control Centre v2 requirements onto existing workflows.
 - [x] Add unified dispatch oversight, controlled proposals, manual pre-acceptance offers, holds and cancellation; populated dummy browser journeys verified.
 - [x] Verify dispatch permission/approval/hold/stale/payment subset and dummy customer/provider notices; report remaining concurrency, driver/evidence and exception workflows honestly.
