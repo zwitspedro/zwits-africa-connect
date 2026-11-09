@@ -1426,6 +1426,47 @@ export type Database = {
         }
         Relationships: []
       }
+      provider_review_events: {
+        Row: {
+          actor: string
+          created_at: string
+          email_state: string
+          id: string
+          provider_id: string
+          provider_user_id: string
+          reason: string
+          status: string
+        }
+        Insert: {
+          actor: string
+          created_at?: string
+          email_state?: string
+          id?: string
+          provider_id: string
+          provider_user_id: string
+          reason: string
+          status: string
+        }
+        Update: {
+          actor?: string
+          created_at?: string
+          email_state?: string
+          id?: string
+          provider_id?: string
+          provider_user_id?: string
+          reason?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_review_events_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       provider_services: {
         Row: {
           active: boolean
@@ -1949,6 +1990,17 @@ export type Database = {
       }
       admin_period_metrics: {
         Args: { _from: string; _to: string }
+        Returns: Json
+      }
+      admin_register_provider_document: {
+        Args: {
+          _doc_key: string
+          _file_name: string
+          _file_size: number
+          _mime: string
+          _path: string
+          _provider_id: string
+        }
         Returns: Json
       }
       admin_resolve_dispute: {
