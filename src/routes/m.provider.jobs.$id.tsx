@@ -4,6 +4,8 @@ import { MapPin, MessageSquare, Navigation, Phone } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { useProviderTracking } from '@/hooks/use-provider-tracking';
+import { TRACKING_STATUSES } from '@/lib/provider-location';
 import {
   LIFECYCLE,
   NEXT_ACTION,
@@ -61,6 +63,8 @@ function ProviderJobDetail() {
       return data ? { ...data, account: accounts?.find(a => a.booking_id === id) } : null;
     },
   });
+
+  useProviderTracking({ bookingId: job.data?.id ?? null, enabled: TRACKING_STATUSES.some(s => s === job.data?.status) });
 
   const advance = useMutation({
     mutationFn: async (status: JobStatus) => {

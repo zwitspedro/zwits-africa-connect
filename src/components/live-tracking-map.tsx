@@ -37,7 +37,7 @@ export function LiveTrackingMap({
         .from("provider_locations")
         .select("lat,lng")
         .eq("booking_id", bookingId)
-        .order("created_at", { ascending: false })
+        .order("updated_at", { ascending: false })
         .limit(1)
         .maybeSingle();
       if (error) throw error;
@@ -48,24 +48,24 @@ export function LiveTrackingMap({
   const [pos, setPos] = useState<LatLng | null>(null);
 
   useEffect(() => {
-    if (initialPos && !pos) setPos({ lat: initialPos.lat, lng: initialPos.lng });
-  }, [initialPos, pos]);
+    if (initialPos) setPos({ lat: initialPos.lat, lng: initialPos.lng });
+  }, [initialPos]);
 
   // Subscribe to live inserts
   useEffect(() => {
     const channel = supabase
-      .channel(`provider_locations:${bookingId}`)
+      .channel(`provider_locations:${bookingId}:${crypto.randomUUID()}`)
       .on(
         "postgres_changes",
         {
-          event: "INSERT",
+          event: "*",
           schema: "public",
           table: "provider_locations",
           filter: `booking_id=eq.${bookingId}`,
         },
         (payload) => {
           const row = payload.new as { lat: number; lng: number };
-          setPos({ lat: row.lat, lng: row.lng });
+          if (Number.isFinite(row.lat) && Number.isFinite(row.lng)) setPos({ lat: row.lat, lng: row.lng });
         },
       )
       .subscribe();
@@ -121,7 +121,10 @@ export function LiveTrackingMap({
     queryKey: ["route", bookingId, etaKey],
     enabled: !!pos && !!destination,
     staleTime: 20_000,
-    queryFn: () => fetchRoute({ data: { origin: pos!, destination: destination! } }),
+    queryFn: () => {
+      if (!pos || !destination) throw new Error('Location unavailable');
+      return fetchRoute({ data: { origin: pos, destination } });
+    },
   });
 
   // Draw the route line
