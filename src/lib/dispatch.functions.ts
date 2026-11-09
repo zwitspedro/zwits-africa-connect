@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { activePaymentMethodSchema } from "./payment-policy";
 
 const CreateJobSchema = z.object({
   category: z.string().min(1).max(60),
@@ -12,7 +13,7 @@ const CreateJobSchema = z.object({
   budget: z.number().min(0).max(100000).nullable().optional(),
   price: z.number().min(0).max(100000).nullable().optional(),
   photos: z.array(z.string().min(1).max(400)).max(6).default([]),
-  paymentMethod: z.string().max(30).default("cash"),
+  paymentMethod: activePaymentMethodSchema.default("cash"),
   preferredProviderId: z.string().uuid().nullable().optional(),
   rankedProviderIds: z.array(z.string().uuid()).max(200).default([]),
 });
