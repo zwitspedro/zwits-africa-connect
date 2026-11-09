@@ -2402,6 +2402,10 @@ export type Database = {
           provider_earnings: number
         }[]
       }
+      update_delivery_progress_atomic: {
+        Args: { _id: string; _proof?: string; _status: string }
+        Returns: Json
+      }
     }
     Enums: {
       app_role: "customer" | "provider" | "admin" | "driver" | "business"
