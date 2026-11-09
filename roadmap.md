@@ -1,4 +1,7 @@
 # Current request
+- [ ] Audit and map uploaded Admin Dispatch and Job Control Centre v2 requirements onto existing workflows.
+- [ ] Add unified dispatch oversight, controlled request editing, assignment/reassignment and exception handling after implementation-map review.
+- [ ] Verify dispatch permissions, concurrent assignment, lifecycle/evidence/payment safeguards and customer/driver notices; report each requirement honestly.
 - [x] Verify cash and manual-bank-transfer browser journeys using existing dummy accounts; fixed direct Accept failure, confirmed simulated receipts and wallet −$5 for two $25 jobs; no money moved.
 - [x] Add direct provider EcoCash/bank payments, private account editing/display, provider receipt confirmation and direct-money ledger accounting; rollback regression and signed-in empty-account UI passed.
 - [x] Verify populated manual-bank-payment browser journey with dummy accounts and customer receipt readback; actual transfers remain unavailable.
