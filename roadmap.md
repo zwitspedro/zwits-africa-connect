@@ -1,6 +1,6 @@
 # Current request
 - [ ] Run a real cash booking in the browser (needs actual job, provider, agreed amount and confirmation that work/cash receipt are genuine).
-- [ ] Connect provider EcoCash accounts and real outbound payouts (needs verified EcoCash disbursement service, credentials and funded business account).
+- [ ] Connect provider EcoCash accounts and real outbound payouts (user reports approved account; blocked pending official outbound API documentation, secure credentials and settlement verification).
 - [x] Extend admin approval queue with secure document uploads and review status tracking.
 - [x] Add automatic individual provider decision emails, protected recipient selection and delivery status/retry tracking.
 - [x] Verify queue/upload/email safeguards and report sending limitations in approval acceptance report.
