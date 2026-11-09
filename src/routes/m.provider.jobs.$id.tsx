@@ -10,6 +10,7 @@ import {
   STATUS_LABEL,
   stageIndex,
   statusLabel,
+  canonicalProviderStatus,
   type JobStatus,
 } from "@/lib/job-lifecycle";
 import { openNavigation } from "@/mobile/maps";
@@ -105,7 +106,7 @@ function ProviderJobDetail() {
     );
   }
 
-  const action = NEXT_ACTION[j.status as JobStatus];
+  const action = NEXT_ACTION[canonicalProviderStatus(j.status) as JobStatus];
   const step = stageIndex(j.status) - 1;
 
   return (

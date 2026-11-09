@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { MapPin, MessageSquare, Phone, Navigation, CheckCircle2, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProviderJobsMap } from "@/components/provider-jobs-map";
-import { LIFECYCLE, NEXT_ACTION, STATUS_LABEL, stageIndex, type JobStatus } from "@/lib/job-lifecycle";
+import { LIFECYCLE, NEXT_ACTION, STATUS_LABEL, stageIndex, canonicalProviderStatus, type JobStatus } from "@/lib/job-lifecycle";
 import { EmptyState, Panel } from "./dashboard-kit";
 import type { Booking } from "./use-provider-data";
 import { DisputePanel } from "@/components/dispute-panel";
@@ -41,7 +41,7 @@ export function ActiveJobsSection({ jobs }: { jobs: Booking[] }) {
 
       {jobs.map((j) => {
         const stepIndex = stageIndex(j.status) - 1;
-        const action = NEXT_ACTION[j.status as JobStatus];
+        const action = NEXT_ACTION[canonicalProviderStatus(j.status) as JobStatus];
         const maps = j.lat && j.lng
           ? `https://www.google.com/maps/dir/?api=1&destination=${j.lat},${j.lng}`
           : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(j.address)}`;

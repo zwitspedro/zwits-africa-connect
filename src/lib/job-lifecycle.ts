@@ -59,9 +59,10 @@ export const NEXT_ACTION: Partial<Record<JobStatus, { label: string; next: JobSt
   in_progress: { label: "Complete job", next: "completed" },
 };
 
-export const stageIndex = (status: string) => LIFECYCLE.indexOf(status as JobStatus);
+export const canonicalProviderStatus = (status: string) => status === "provider_arriving" ? "travelling" : status;
+export const stageIndex = (status: string) => LIFECYCLE.indexOf(canonicalProviderStatus(status) as JobStatus);
 
-export const isOpen = (status: string) => OPEN_STATUSES.includes(status as JobStatus);
+export const isOpen = (status: string) => OPEN_STATUSES.includes(canonicalProviderStatus(status) as JobStatus);
 
 export const statusLabel = (status: string) =>
-  STATUS_LABEL[status as JobStatus] ?? String(status).replace(/_/g, " ");
+  STATUS_LABEL[canonicalProviderStatus(status) as JobStatus] ?? String(status).replace(/_/g, " ");
