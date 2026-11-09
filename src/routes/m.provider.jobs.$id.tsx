@@ -14,6 +14,7 @@ import {
 } from "@/lib/job-lifecycle";
 import { openNavigation } from "@/mobile/maps";
 import { CashReceivedButton } from "@/components/provider/cash-received-button";
+import { DisputePanel } from "@/components/dispute-panel";
 import { requireOnline } from "@/mobile/offline";
 import {
   AppBar,
@@ -42,10 +43,14 @@ function ProviderJobDetail() {
   const job = useQuery({
     queryKey: ["m", "provider-job", id],
     queryFn: async () => {
+      if (!user) return null;
+      const { data: provider } = await supabase.from("providers").select("id").eq("user_id", user.id).maybeSingle();
+      if (!provider) return null;
       const { data, error } = await supabase
         .from("bookings")
         .select("*")
         .eq("id", id)
+        .eq("provider_id", provider.id)
         .maybeSingle();
       if (error) throw error;
       return data;
@@ -60,7 +65,7 @@ function ProviderJobDetail() {
       const { error } = await supabase
         .from("bookings")
         .update(patch as any)
-        .eq("id", id);
+        .eq("id", id).select("id").single();
       if (error) throw error;
     },
     onSuccess: () => {
@@ -187,7 +192,7 @@ function ProviderJobDetail() {
           </Section>
         )}
 
-        {j.status === "completed" && j.payment_status !== "paid" && (
+        {j.status === "completed" && j.payment_method === "cash" && j.payment_status !== "paid" && (
           <Section title="Payment">
             <Card>
               <p className="text-sm text-muted-foreground">Collected {money(j.price ?? j.budget)} in cash? Record it to close the job.</p>
@@ -196,9 +201,12 @@ function ProviderJobDetail() {
           </Section>
         )}
 
+        {j.status === "completed" && j.payment_status === "paid" && <Section title="Payment"><p className="text-sm">Cash received · commission recorded</p></Section>}
+        <Section><DisputePanel bookingId={id} status={j.status}/></Section>
+
         {action && (
           <div className="sticky bottom-24 px-4">
-            <PrimaryButton loading={advance.isPending} onClick={() => advance.mutate(action.next)}>
+            <PrimaryButton loading={advance.isPending} onClick={() => { if (action.next !== "completed" || window.confirm("Mark this job completed? Record cash received next.")) advance.mutate(action.next); }}>
               {action.label}
             </PrimaryButton>
           </div>

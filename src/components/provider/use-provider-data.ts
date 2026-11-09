@@ -8,6 +8,7 @@ import { isOpen } from "@/lib/job-lifecycle";
 import { getMyWallet, listMyLedger } from "@/lib/wallet.functions";
 import { getProviderReadiness } from "@/lib/provider-status.functions";
 import { buildProviderOnboarding } from "./use-provider-onboarding";
+import { estimateCommission } from "@/lib/provider-job-money";
 
 export type Booking = any;
 
@@ -21,7 +22,7 @@ export function useProviderData() {
       const { data, error } = await supabase
         .from("providers")
         .select(PROVIDER_SAFE_COLUMNS)
-        .eq("user_id", user!.id)
+        .eq("user_id", user?.id ?? "")
         .maybeSingle();
       if (error) throw error;
       if (!data) return null;
@@ -44,7 +45,7 @@ export function useProviderData() {
       const { data, error } = await supabase
         .from("profiles")
         .select("display_name, avatar_url, phone")
-        .eq("user_id", user!.id)
+        .eq("user_id", user?.id ?? "")
         .maybeSingle();
       if (error) throw error;
       return data;
@@ -58,7 +59,7 @@ export function useProviderData() {
       const { data, error } = await supabase
         .from("bookings")
         .select("*")
-        .eq("provider_id", provider!.id)
+        .eq("provider_id", provider?.id ?? "")
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data ?? [];
@@ -70,7 +71,7 @@ export function useProviderData() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("commission_rates")
-        .select("category,percent,min_fee,active")
+        .select("category,percent,min_fee,max_fee,active")
         .eq("active", true);
       if (error) throw error;
       return data ?? [];
@@ -84,7 +85,7 @@ export function useProviderData() {
       const { data, error } = await supabase
         .from("ratings")
         .select("id, rating, review, created_at")
-        .eq("provider_id", provider!.id)
+        .eq("provider_id", provider?.id ?? "")
         .order("created_at", { ascending: false })
         .limit(50);
       if (error) throw error;
@@ -99,7 +100,7 @@ export function useProviderData() {
       const { data, error } = await supabase
         .from("job_offers")
         .select("id, status, offered_at, responded_at")
-        .eq("provider_user_id", user!.id)
+        .eq("provider_user_id", user?.id ?? "")
         .order("offered_at", { ascending: false })
         .limit(300);
       if (error) throw error;
@@ -128,7 +129,7 @@ export function useProviderData() {
       const { data, error } = await supabase
         .from("provider_document_audits")
         .select("id, doc_key, file_name, status, created_at, errors")
-        .eq("provider_user_id", user!.id)
+        .eq("provider_user_id", user?.id ?? "")
         .order("created_at", { ascending: false })
         .limit(60);
       if (error) throw error;
@@ -143,7 +144,7 @@ export function useProviderData() {
       const { data, error } = await supabase
         .from("provider_onboarding")
         .select("*")
-        .eq("user_id", user!.id)
+        .eq("user_id", user?.id ?? "")
         .maybeSingle();
       if (error) throw error;
       return data;
@@ -157,7 +158,7 @@ export function useProviderData() {
       const { data, error } = await supabase
         .from("vehicles")
         .select("*")
-        .eq("user_id", user!.id)
+        .eq("user_id", user?.id ?? "")
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data ?? [];
@@ -171,7 +172,7 @@ export function useProviderData() {
       const { data, error } = await supabase
         .from("provider_withdrawals")
         .select("*")
-        .eq("provider_user_id", user!.id)
+        .eq("provider_user_id", user?.id ?? "")
         .order("created_at", { ascending: false })
         .limit(30);
       if (error) throw error;
@@ -203,19 +204,20 @@ export function useProviderData() {
     queryFn: () => fetchReadiness({ data: undefined }),
   });
 
-  const jobs: Booking[] = jobsQuery.data ?? [];
+  const accounts = useQuery({ queryKey: ["provider-job-accounts", user?.id], enabled: !!user, queryFn: async () => { const { data, error } = await supabase.rpc("provider_job_accounts"); if (error) throw error; return data; } });
+  const jobs: Booking[] = (jobsQuery.data ?? []).map(j => ({ ...j, account: accounts.data?.find(a => a.booking_id === j.id) }));
   const rates = ratesQuery.data ?? [];
 
   const derived = useMemo(() => {
     const rateByCategory = new Map(rates.map((r: any) => [r.category, r]));
     const feeFor = (category: string, price: number) => {
-      const r: any = rateByCategory.get(category);
-      if (!r) return 0;
-      return (price * Number(r.percent)) / 100 + Number(r.min_fee);
+      const r: any = rateByCategory.get(category) ?? rateByCategory.get("default");
+      return estimateCommission(price, r);
     };
+    const jobFeeFor = (j: Booking) => j.account ? Number(j.account.commission) : feeFor(j.category, Number(j.price ?? j.budget ?? 0));
     const netFor = (j: Booking) => {
-      const price = Number(j.price) || 0;
-      return price - feeFor(j.category, price);
+      const price = j.account ? Number(j.account.gross) : Number(j.price ?? j.budget ?? 0);
+      return price - jobFeeFor(j);
     };
 
     const active = jobs.filter((j) => isOpen(j.status));
@@ -223,7 +225,7 @@ export function useProviderData() {
     const cancelled = jobs.filter((j) => j.status === "cancelled");
 
     const gross = completed.reduce((s, j) => s + (Number(j.price) || 0), 0);
-    const fees = completed.reduce((s, j) => s + feeFor(j.category, Number(j.price) || 0), 0);
+    const fees = completed.reduce((s, j) => s + jobFeeFor(j), 0);
     const net = gross - fees;
     const released = completed.filter((j) => j.customer_confirmed_at).reduce((s, j) => s + netFor(j), 0);
     const pending = net - released;
@@ -282,6 +284,7 @@ export function useProviderData() {
       completed,
       cancelled,
       feeFor,
+      jobFeeFor,
       netFor,
       rateByCategory,
       earnings: { gross, fees, net, released, pending, today, week, month, trend },

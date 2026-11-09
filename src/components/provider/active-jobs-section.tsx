@@ -9,6 +9,7 @@ import { ProviderJobsMap } from "@/components/provider-jobs-map";
 import { LIFECYCLE, NEXT_ACTION, STATUS_LABEL, stageIndex, type JobStatus } from "@/lib/job-lifecycle";
 import { EmptyState, Panel } from "./dashboard-kit";
 import type { Booking } from "./use-provider-data";
+import { DisputePanel } from "@/components/dispute-panel";
 
 const TIMELINE = LIFECYCLE.filter((s) => s !== "pending").map((s) => ({ key: s, label: STATUS_LABEL[s] }));
 
@@ -19,7 +20,7 @@ export function ActiveJobsSection({ jobs }: { jobs: Booking[] }) {
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
       const patch: Record<string, unknown> = { status };
       if (status === "completed") patch.completed_at = new Date().toISOString();
-      const { error } = await supabase.from("bookings").update(patch as any).eq("id", id);
+      const { data, error } = await supabase.from("bookings").update(patch as any).eq("id", id).select("id").single();
       if (error) throw error;
     },
     onSuccess: () => {
@@ -121,13 +122,14 @@ export function ActiveJobsSection({ jobs }: { jobs: Booking[] }) {
               {action && (
                 <ActionButton
                   variant={action.next === "completed" ? "positive" : "primary"}
-                  onClick={() => updateStatus.mutate({ id: j.id, status: action.next })}
+                  onClick={() => { if (action.next !== "completed" || window.confirm("Mark the work completed? Record cash received in Completed jobs afterwards.")) updateStatus.mutate({ id: j.id, status: action.next }); }}
                 >
                   {action.label}
                 </ActionButton>
               )}
             </div>
 
+            <DisputePanel bookingId={j.id} status={j.status} />
           </Panel>
         );
       })}
