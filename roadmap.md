@@ -1,4 +1,6 @@
 # Current request
+- [ ] Enhance executive admin navigation, search, overview, analytics and live operational previews using existing records.
+- [ ] Verify signed-in admin flows, permissions, date filters and mobile layout; deliver requirement-by-requirement report.
 - [x] Add provider profile page linked from dashboard with contact, bank and payment preference editing.
 - [x] Verify signed-in profile and payment saves with existing account details, read-back after refresh and mobile layout; unavailable payout preferences remain disabled.
 - [x] Verify cash checkout from homepage search without dispatching to real providers; corrected unknown price display.
