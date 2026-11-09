@@ -38,7 +38,7 @@ import { OnboardingPanel } from "@/components/provider/onboarding-panel";
 import { RoleGate } from "@/components/portal/role-gate";
 
 export const Route = createFileRoute("/_authenticated/provider/dashboard")({
-  validateSearch: (search: Record<string, unknown>) => ({ section: typeof search.section === "string" ? search.section : undefined }),
+  validateSearch: (search: Record<string, unknown>): { section?: string } => ({ section: typeof search.section === "string" ? search.section : undefined }),
   head: () => ({
     meta: [
       { title: "Provider dashboard — Zwits" },

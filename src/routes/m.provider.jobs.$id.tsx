@@ -41,7 +41,8 @@ function ProviderJobDetail() {
   const navigate = useNavigate();
 
   const job = useQuery({
-    queryKey: ["m", "provider-job", id],
+    queryKey: ["m", "provider-job", id, user?.id],
+    enabled: !!user,
     queryFn: async () => {
       if (!user) return null;
       const { data: provider } = await supabase.from("providers").select("id").eq("user_id", user.id).maybeSingle();
@@ -75,7 +76,7 @@ function ProviderJobDetail() {
     onError: (e: any) => toast.error(e.message ?? "Could not update the job"),
   });
 
-  if (job.isLoading) {
+  if (!user || job.isPending) {
     return (
       <>
         <AppBar title="Job" back />
