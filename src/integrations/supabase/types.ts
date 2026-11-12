@@ -2418,6 +2418,7 @@ export type Database = {
         }
         Returns: string
       }
+      provider_cash_reconciliation: { Args: never; Returns: Json }
       provider_job_accounts: {
         Args: never
         Returns: {

@@ -31,6 +31,7 @@ export function DirectAccountEditor({ userId }: { userId: string }) {
     <fieldset disabled={row.isPending || row.isError || save.isPending} className="grid gap-4">
       <label className="grid gap-2 text-sm">Account holder name<input required minLength={2} maxLength={120} value={holder} onChange={e=>setHolder(e.target.value)} className="min-h-12 rounded-md border border-input bg-background px-3" /></label>
       <label className="grid gap-2 text-sm">Personal EcoCash number<input type="tel" maxLength={24} value={phone} onChange={e=>setPhone(e.target.value)} className="min-h-12 rounded-md border border-input bg-background px-3" /></label>
+      <p className="text-xs text-muted-foreground">Use your registered EcoCash number and account holder name. Never enter your PIN, password or one-time code. Automated Zwits payouts are not connected.</p>
       <label className="grid gap-2 text-sm">Bank name<input maxLength={120} value={bank} onChange={e=>setBank(e.target.value)} className="min-h-12 rounded-md border border-input bg-background px-3" /></label>
       <label className="grid gap-2 text-sm">Bank account number<input maxLength={80} value={account} onChange={e=>setAccount(e.target.value)} className="min-h-12 rounded-md border border-input bg-background px-3" /></label>
       <label className="flex items-start gap-3 text-sm"><input type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)} className="mt-1 size-4" />I own these accounts and agree to share these details with customers on my accepted bookings.</label>

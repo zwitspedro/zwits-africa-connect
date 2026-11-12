@@ -1,4 +1,5 @@
 # Current request
+- [x] Add ledger-backed cash received, commission and cash-in-hand comparison; rule tests and signed-in desktop/mobile comparison passed; real-account receipt totals not changed or physically verified. EcoCash details remain PIN-free; outbound payouts blocked pending connection.
 - [ ] Connect real provider EcoCash payout destinations and verified outbound transfers; awaiting the approved disbursement service’s official API documentation and secure credentials.
 - [ ] Exercise genuine cash work through customer/provider screens and wallet; awaiting identified customer/provider accounts, actual job details, agreed price and genuine completion/receipt confirmation.
 - [x] Finish driver verification application, private ID/vehicle evidence and atomic admin decisions; disposable approval/rejection browser journeys, authorization checks, mobile layout and tests passed.

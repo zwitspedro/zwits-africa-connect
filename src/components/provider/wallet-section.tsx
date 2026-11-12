@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { requestWithdrawal } from "@/lib/wallet.functions";
 import { Panel, StatCard, EmptyState } from "./dashboard-kit";
 import type { ProviderData } from "./use-provider-data";
+import { CashReconciliation } from './cash-reconciliation';
 
 const METHODS = [
   { id: "bank_transfer", label: "Bank transfer", hint: "Coming soon", live: false },
@@ -68,6 +69,7 @@ export function WalletSection({ data }: { data: ProviderData }) {
 
   return (
     <div className="grid gap-4">
+      <CashReconciliation />
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
         <StatCard
           label={available < 0 ? "Balance (commission owed)" : "Available balance"}

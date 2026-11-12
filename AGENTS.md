@@ -25,3 +25,4 @@
 - Keep admin dispatch controls in authenticated, job-locked RPCs with optimistic versions and atomic audit/notices; store approvals and holds separately from the existing lifecycle to preserve participant acceptance and financial integrity.
 - Reuse booking-scoped current-location upserts and admin-authorized bounded tracking reads, with Realtime invalidation and polling fallback; timestamps describe device reports, not refresh time.
 - Snapshot driver verification applications and lock submitted evidence/vehicles; owner submissions and admin decisions use authorized atomic RPCs so approval, audit and notices agree.
+- Derive cash reconciliation from settled booking ledger entries, separating personal transfers; cash counted is a local comparison and never modifies receipts or wallet balances.

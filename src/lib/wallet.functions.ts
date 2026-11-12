@@ -2,6 +2,12 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+export const getCashReconciliation = createServerFn({ method: 'GET' }).middleware([requireSupabaseAuth]).handler(async ({ context }) => {
+  const { data, error } = await context.supabase.rpc('provider_cash_reconciliation');
+  if (error) throw new Error('Cash reconciliation unavailable');
+  return data as { cash_received: number; cash_commission: number; direct_received: number; direct_commission: number; cash_jobs: number };
+});
+
 const PageSchema = z.object({
   page: z.number().int().min(0).max(500).default(0),
   pageSize: z.number().int().min(1).max(100).default(25),
