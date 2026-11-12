@@ -1,0 +1,6 @@
+import {z} from 'zod';
+export const assignmentJob=z.object({kind:z.enum(['booking','delivery']),id:z.string().uuid(),assignee:z.string().uuid(),expected:z.string().datetime({offset:true}),key:z.string().uuid()});
+export const bulkAssignmentSchema=z.object({jobs:z.array(assignmentJob).min(1).max(25),reason:z.string().trim().min(5).max(1000),preview:z.boolean()}).refine(v=>new Set(v.jobs.map(j=>j.kind+':'+j.id)).size===v.jobs.length,'Duplicate jobs');
+export const replacementSchema=z.object({id:z.string().uuid(),replacement:z.string().uuid(),expected:z.string().datetime({offset:true}),key:z.string().uuid(),reason:z.string().trim().min(5).max(1000),location:z.string().trim().max(300).optional()});
+export const checkAssignmentSchema=z.object({kind:z.enum(['booking','delivery']),id:z.string().uuid(),assignee:z.string().uuid(),start:z.string().datetime({offset:true}).optional(),end:z.string().datetime({offset:true}).optional()});
+export type AssignmentCheck={ok:boolean;name?:string;load?:number;capacity?:number;conflicts?:{reason:string;job?:string;existingStart?:string;existingEnd?:string;proposedStart?:string;proposedEnd?:string}[];limitation?:string;id?:string;error?:string;offered?:boolean};

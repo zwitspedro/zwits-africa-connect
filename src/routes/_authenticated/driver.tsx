@@ -9,6 +9,7 @@ import { PortalShell } from "@/components/portal/portal-shell";
 import { Panel, StatCard } from "@/components/provider/dashboard-kit";
 import { useDriverData } from "@/components/driver/use-driver-data";
 import { DeliveryOffers } from "@/components/driver/delivery-offers";
+import { ReassignmentRequests } from "@/components/driver/reassignment-requests";
 import { ActiveDelivery } from "@/components/driver/active-delivery";
 import { DriverEarnings } from "@/components/driver/driver-earnings";
 import { VehicleSection } from "@/components/driver/vehicle-section";
@@ -124,6 +125,7 @@ function DriverPortal() {
           </Button>
         </header>
 
+        <ReassignmentRequests/>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <StatCard label="Deliveries today" value={metrics.todayCount} />
           <StatCard label="Distance" value={`${metrics.todayKm} km`} />

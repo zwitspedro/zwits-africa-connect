@@ -1,0 +1,9 @@
+# Dispatch v3.1 audit and implementation boundaries
+
+- Existing manual assignment creates offers, not accepted work; acceptance, versions, holds, actor audit and notices are authoritative PostgreSQL operations.
+- Driver replacement is incomplete because accepted/collected jobs cannot return to pending and custody has no acknowledgement record. Preserve delivery lifecycle and current `driver_id`; add a pending replacement/handover record, changing responsibility only after replacement acceptance and both custodians' acknowledgement when collected.
+- Bulk holds/priorities already work; missing per-job assignee selection and eligibility preview. Reuse existing manual-offer transaction, with bounded individual outcomes and stable retry keys.
+- Booking schedule has a start only; deliveries have neither explicit start nor end. Driver declared working hours and provider working-day/leave rules exist. Capacity counts do not reserve pending manual offers consistently or serialize all assignment paths by assignee.
+- Add optional actual commitment end times (never estimated travel durations), delivery schedule start, and shared server checks on offers, accepted assignments and schedule edits. Reject confirmed overlapping intervals; conservatively reject ambiguous scheduled overlap when end is missing. Unscheduled delivery work remains the existing capacity-limited queue, explicitly without a timing guarantee.
+- New custody rows are participant/admin readable only, mutation through authorized RPCs. No new roles, no changes to finances, no terminal reopen, no duplicate job state machine.
+- Verify with disposable accounts/jobs only; test replacement rejection, accepted pre-collection replacement, collected handover, capacity, overlap, mixed bulk results, idempotency and authorization; preserve prior UI and lifecycle tests.

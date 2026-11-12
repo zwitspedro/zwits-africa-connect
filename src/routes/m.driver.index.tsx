@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { ReassignmentRequests } from '@/components/driver/reassignment-requests';
 import { Status } from "@/components/ui/status";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -69,6 +70,7 @@ function DriverDashboard() {
         }
       />
       <Screen>
+        <ReassignmentRequests/>
         <PullToRefresh onRefresh={async () => void (await qc.invalidateQueries())}>
           <Section>
             <Card>

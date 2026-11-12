@@ -1,0 +1,12 @@
+import {useQuery,useMutation,useQueryClient} from '@tanstack/react-query';
+import {useServerFn} from '@tanstack/react-start';
+import {toast} from 'sonner';
+import {listDriverReplacements,respondDriverReplacement} from '@/lib/dispatch-assignment.functions';
+import {Button} from '@/components/ui/button';
+export function ReassignmentRequests(){
+ const q=useQuery({queryKey:['driver-replacements'],queryFn:()=>listDriverReplacements({data:{}}),refetchInterval:15000}),respond=useServerFn(respondDriverReplacement),qc=useQueryClient();
+ const m=useMutation({mutationFn:(data:{id:string;decision:'accept'|'reject'|'handover'})=>respond({data}),onSuccess:r=>{if(!r.ok){toast.error(r.conflicts?.map(c=>c.reason).join('; ')||'Replacement unavailable');return;}toast.success('Replacement decision recorded');void qc.invalidateQueries();},onError:e=>toast.error(e.message)});
+ if(q.error)return <p role="alert" className="text-danger">Replacement requests unavailable.<Button variant="outline" onClick={()=>void q.refetch()}>Retry</Button></p>;
+ if(!q.data?.rows.length)return null;
+ return <section className="border-y border-border py-5"><h2 className="font-display text-lg">Driver replacements & handovers</h2>{q.data.rows.map(r=><article key={r.id} className="border-b border-border py-4"><p className="text-sm font-semibold">Delivery {r.delivery_id.slice(0,8)} · {r.status.replaceAll('_',' ')}</p><p className="mt-2 text-sm">{r.reason}</p><p className="mt-2 break-all text-xs">Current custodian: {r.previous_driver} · Replacement: {r.replacement_driver}</p>{r.requires_handover&&<><p className="mt-2 text-sm">Handover location: {r.handover_location}</p><p className="mt-1 text-xs">Current custodian acknowledgement: {r.previous_ack_at||'Pending'} · Replacement acknowledgement: {r.replacement_ack_at||'Pending'}</p></>}<div className="mt-3 flex flex-wrap gap-2">{r.status==='awaiting_replacement'&&r.replacement_driver===q.data?.userId&&<><Button disabled={m.isPending} onClick={()=>m.mutate({id:r.id,decision:'accept'})}>Accept replacement</Button><Button variant="outline" disabled={m.isPending} onClick={()=>m.mutate({id:r.id,decision:'reject'})}>Reject replacement</Button></>}{r.status==='awaiting_handover'&&<Button disabled={m.isPending||(r.previous_driver===q.data?.userId?!!r.previous_ack_at:!!r.replacement_ack_at)} onClick={()=>{if(window.confirm('Confirm the actual parcel handover at the recorded location?'))m.mutate({id:r.id,decision:'handover'});}}>Acknowledge parcel handover</Button>}</div></article>)}</section>;
+}

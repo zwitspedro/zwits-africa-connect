@@ -1,0 +1,6 @@
+DO $$ DECLARE s text; BEGIN
+s:=pg_get_functiondef('public.admin_request_driver_reassignment(uuid,uuid,timestamptz,uuid,text,text)'::regprocedure);
+s:=replace(s,'INSERT INTO public.admin_job_actions(action_key','UPDATE public.deliveries SET updated_at=clock_timestamp() WHERE id=_id; INSERT INTO public.admin_job_actions(action_key');EXECUTE s;
+s:=pg_get_functiondef('public.respond_driver_reassignment(uuid,text)'::regprocedure);
+s:=replace(s,'UPDATE public.delivery_offers SET status=''lost'',responded_at=now() WHERE delivery_id=jid AND status IN (''accepted'',''offered'');','UPDATE public.delivery_offers SET status=''lost'',responded_at=now() WHERE delivery_id=jid AND status IN (''accepted'',''offered''); PERFORM public.log_admin_action(''reassignment_completed'',''delivery'',jid,jsonb_build_object(''request'',r.id,''authorised_by'',r.actor,''previous_driver'',r.previous_driver,''replacement_driver'',r.replacement_driver,''reason'',r.reason,''handover_location'',r.handover_location,''previous_ack_at'',r.previous_ack_at,''replacement_ack_at'',r.replacement_ack_at,''handover_at'',now()));');EXECUTE s;
+END $$;

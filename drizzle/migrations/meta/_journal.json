@@ -155,6 +155,34 @@
       "when": 1794514614161,
       "tag": "0021_dispatch_v3_operational_overview",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1794515762764,
+      "tag": "0022_dispatch_assignment_schedule_and_custody",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1794515807452,
+      "tag": "0023_dispatch_schedule_validation_integration",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1794516036177,
+      "tag": "0024_dispatch_batch_preview_and_schedule_visibility",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1794516427404,
+      "tag": "0025_dispatch_reassignment_version_and_offer_history",
+      "breakpoints": true
     }
   ]
 }

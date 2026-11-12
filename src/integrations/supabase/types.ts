@@ -333,6 +333,7 @@ export type Database = {
           price: number | null
           provider_id: string | null
           scheduled_for: string | null
+          scheduled_until: string | null
           status: Database["public"]["Enums"]["booking_status"]
           updated_at: string
         }
@@ -362,6 +363,7 @@ export type Database = {
           price?: number | null
           provider_id?: string | null
           scheduled_for?: string | null
+          scheduled_until?: string | null
           status?: Database["public"]["Enums"]["booking_status"]
           updated_at?: string
         }
@@ -391,6 +393,7 @@ export type Database = {
           price?: number | null
           provider_id?: string | null
           scheduled_for?: string | null
+          scheduled_until?: string | null
           status?: Database["public"]["Enums"]["booking_status"]
           updated_at?: string
         }
@@ -580,6 +583,8 @@ export type Database = {
           proof_photo_url: string | null
           recipient_name: string | null
           recipient_phone: string | null
+          scheduled_for: string | null
+          scheduled_until: string | null
           service_tier: string
           status: string
           updated_at: string
@@ -609,6 +614,8 @@ export type Database = {
           proof_photo_url?: string | null
           recipient_name?: string | null
           recipient_phone?: string | null
+          scheduled_for?: string | null
+          scheduled_until?: string | null
           service_tier?: string
           status?: string
           updated_at?: string
@@ -638,6 +645,8 @@ export type Database = {
           proof_photo_url?: string | null
           recipient_name?: string | null
           recipient_phone?: string | null
+          scheduled_for?: string | null
+          scheduled_until?: string | null
           service_tier?: string
           status?: string
           updated_at?: string
@@ -725,6 +734,71 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "delivery_offers_delivery_id_fkey"
+            columns: ["delivery_id"]
+            isOneToOne: false
+            referencedRelation: "deliveries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delivery_reassignments: {
+        Row: {
+          accepted_at: string | null
+          action_key: string
+          actor: string
+          created_at: string
+          decided_at: string | null
+          delivery_id: string
+          handover_at: string | null
+          handover_location: string | null
+          id: string
+          previous_ack_at: string | null
+          previous_driver: string
+          reason: string
+          replacement_ack_at: string | null
+          replacement_driver: string
+          requires_handover: boolean
+          status: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          action_key: string
+          actor: string
+          created_at?: string
+          decided_at?: string | null
+          delivery_id: string
+          handover_at?: string | null
+          handover_location?: string | null
+          id?: string
+          previous_ack_at?: string | null
+          previous_driver: string
+          reason: string
+          replacement_ack_at?: string | null
+          replacement_driver: string
+          requires_handover: boolean
+          status?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          action_key?: string
+          actor?: string
+          created_at?: string
+          decided_at?: string | null
+          delivery_id?: string
+          handover_at?: string | null
+          handover_location?: string | null
+          id?: string
+          previous_ack_at?: string | null
+          previous_driver?: string
+          reason?: string
+          replacement_ack_at?: string | null
+          replacement_driver?: string
+          requires_handover?: boolean
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_reassignments_delivery_id_fkey"
             columns: ["delivery_id"]
             isOneToOne: false
             referencedRelation: "deliveries"
@@ -2267,6 +2341,10 @@ export type Database = {
         Args: { _offer_id: string; _user_id: string }
         Returns: Json
       }
+      admin_bulk_assign: {
+        Args: { _jobs: Json; _preview?: boolean; _reason: string }
+        Returns: Json
+      }
       admin_customer_directory: {
         Args: { _from?: string; _page?: number; _term?: string; _to?: string }
         Returns: Json
@@ -2316,6 +2394,17 @@ export type Database = {
         }
         Returns: Json
       }
+      admin_request_driver_reassignment: {
+        Args: {
+          _expected: string
+          _id: string
+          _key: string
+          _location?: string
+          _reason: string
+          _replacement: string
+        }
+        Returns: Json
+      }
       admin_resolve_dispute: {
         Args: { _id: string; _resolution: string; _status: string }
         Returns: Json
@@ -2326,6 +2415,10 @@ export type Database = {
       }
       admin_review_provider: {
         Args: { _id: string; _reason: string; _status: string }
+        Returns: Json
+      }
+      admin_withdraw_driver_reassignment: {
+        Args: { _id: string; _reason: string }
         Returns: Json
       }
       available_provider_counts: {
@@ -2362,6 +2455,16 @@ export type Database = {
       delivery_transition_allowed: {
         Args: { _new: string; _old: string }
         Returns: boolean
+      }
+      dispatch_assignment_check: {
+        Args: {
+          _assignee: string
+          _end?: string
+          _id: string
+          _kind: string
+          _start?: string
+        }
+        Returns: Json
       }
       dispatch_job_blocked: {
         Args: { _id: string; _kind: string }
@@ -2497,6 +2600,10 @@ export type Database = {
       }
       respond_delivery_offer_atomic: {
         Args: { _action: string; _offer_id: string }
+        Returns: Json
+      }
+      respond_driver_reassignment: {
+        Args: { _decision: string; _id: string }
         Returns: Json
       }
       settle_booking: {
