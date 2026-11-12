@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { MAX_WAVES, OFFER_WINDOW_SECONDS, WAVE_SIZE, haversineKm } from "./delivery-config";
+import { isDispatchDriverApproved } from './delivery-eligibility';
 
 type Admin = SupabaseClient<any, "public", any>;
 
@@ -53,14 +54,14 @@ async function pickWaveDrivers(db: Admin, delivery: DeliveryRow, wave: number) {
   const { data, error } = await db
     .from("driver_profiles")
     .select("user_id, available, verification_status, rating_avg, deliveries_completed")
-    .neq("verification_status", "revoked")
+    .eq("verification_status", "approved")
     .order("rating_avg", { ascending: false })
     .order("deliveries_completed", { ascending: false });
   if (error) throw new Error(error.message);
 
   // Every wave applies the same eligibility rules — offline drivers are never
   // offered work, no matter how late the wave.
-  const pool = (data ?? []).filter((d: any) => d.available);
+  const pool = (data ?? []).filter((d: any) => isDispatchDriverApproved(d.verification_status,d.available));
 
   const { data: existing } = await db
     .from("delivery_offers")

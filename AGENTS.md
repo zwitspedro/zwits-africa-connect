@@ -26,3 +26,5 @@
 - Reuse booking-scoped current-location upserts and admin-authorized bounded tracking reads, with Realtime invalidation and polling fallback; timestamps describe device reports, not refresh time.
 - Snapshot driver verification applications and lock submitted evidence/vehicles; owner submissions and admin decisions use authorized atomic RPCs so approval, audit and notices agree.
 - Derive cash reconciliation from settled booking ledger entries, separating personal transfers; cash counted is a local comparison and never modifies receipts or wallet balances.
+- Keep dispatch queue metrics and contact search in an admin-only PostgreSQL projection; revoke client view access to prevent contact leakage and false page-sized totals.
+- Execute bounded dispatch batches as individual authorized, versioned RPC transactions with per-job outcomes; one failure must not conceal other results or bypass lifecycle controls.

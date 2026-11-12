@@ -1,0 +1,7 @@
+import { useQuery } from '@tanstack/react-query';
+import { getDispatchEvidence } from '@/lib/admin-dispatch.functions';
+import { Button } from '@/components/ui/button';
+export function DispatchEvidence({id}:{id:string}){
+ const q=useQuery({queryKey:['admin-dispatch-evidence',id],queryFn:()=>getDispatchEvidence({data:{id}}),staleTime:240000});
+ return <section className="mt-6 border-t border-border pt-5"><h2 className="font-display text-lg">Delivery completion evidence</h2>{q.isPending?<p className="mt-3 text-sm">Loading evidence…</p>:q.error?<p role="alert" className="mt-3 text-sm text-danger">Evidence unavailable.<Button variant="outline" onClick={()=>void q.refetch()}>Retry</Button></p>:q.data?.url?<><p className="mt-3 text-xs text-muted-foreground">Recorded completion: {q.data.deliveredAt?new Date(q.data.deliveredAt).toLocaleString('en-ZW',{timeZone:'Africa/Harare'}):'Not recorded'}</p><a href={q.data.url} target="_blank" rel="noreferrer" className="mt-3 block"><img src={q.data.url} alt="Recorded delivery proof" className="max-h-96 max-w-full object-contain"/></a></>:<p className="mt-3 text-sm text-muted-foreground">No delivery proof recorded. Completion has not been independently verified.</p>}</section>;
+}

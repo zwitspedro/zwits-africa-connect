@@ -141,6 +141,7 @@ export type Database = {
           job_id: string
           kind: string
           manual_dispatch: boolean
+          priority: string
           updated_at: string
         }
         Insert: {
@@ -149,6 +150,7 @@ export type Database = {
           job_id: string
           kind: string
           manual_dispatch?: boolean
+          priority?: string
           updated_at?: string
         }
         Update: {
@@ -157,6 +159,7 @@ export type Database = {
           job_id?: string
           kind?: string
           manual_dispatch?: boolean
+          priority?: string
           updated_at?: string
         }
         Relationships: []
@@ -2225,7 +2228,38 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      dispatch_operational_jobs: {
+        Row: {
+          address: string | null
+          assignee_id: string | null
+          assignee_name: string | null
+          business: boolean | null
+          category: string | null
+          completed_at: string | null
+          created_at: string | null
+          customer_email: string | null
+          customer_id: string | null
+          customer_name: string | null
+          customer_phone: string | null
+          description: string | null
+          dispatch_state: string | null
+          held: boolean | null
+          id: string | null
+          kind: string | null
+          lat: number | null
+          live_offer: boolean | null
+          lng: number | null
+          manual_dispatch: boolean | null
+          payment_status: string | null
+          pending_change: boolean | null
+          price: number | null
+          priority: string | null
+          scheduled_for: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       accept_direct_booking: { Args: { _booking_id: string }; Returns: Json }
@@ -2256,6 +2290,17 @@ export type Database = {
       }
       admin_dispatch_directory: { Args: { _filters?: Json }; Returns: Json }
       admin_dispatch_locations: { Args: never; Returns: Json }
+      admin_dispatch_priority: {
+        Args: {
+          _expected: string
+          _id: string
+          _key: string
+          _kind: string
+          _priority: string
+          _reason: string
+        }
+        Returns: Json
+      }
       admin_period_metrics: {
         Args: { _from: string; _to: string }
         Returns: Json

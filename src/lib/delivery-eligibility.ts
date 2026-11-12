@@ -1,0 +1,1 @@
+export function isDispatchDriverApproved(status:string,available:boolean){return status==='approved'&&available;}

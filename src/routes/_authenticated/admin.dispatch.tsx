@@ -1,34 +1,13 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
-import { useState } from 'react';
-import { Search, ChevronLeft, ChevronRight, Package, Wrench, RefreshCw } from 'lucide-react';
+import { DispatchBoard } from '@/components/admin/dispatch-board';
 import { listDispatchJobs } from '@/lib/admin-dispatch.functions';
 import { dispatchFilters, type DispatchFilters } from '@/lib/admin-dispatch-schema';
 import { AdminShell } from '@/components/admin/admin-shell';
 import { RoleGate } from '@/components/portal/role-gate';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Status } from '@/components/ui/status';
 import { adminHead } from '@/lib/admin-period';
-import { DispatchTracking } from '@/components/admin/dispatch-tracking';
-const options=(filters:DispatchFilters)=>queryOptions({queryKey:['admin-dispatch',filters],queryFn:()=>listDispatchJobs({data:filters}),staleTime:15000});
+const options=(filters:DispatchFilters)=>queryOptions({queryKey:['admin-dispatch',filters],queryFn:()=>listDispatchJobs({data:filters}),staleTime:15000,refetchInterval:30000});
 export const Route=createFileRoute('/_authenticated/admin/dispatch')({ssr:false,validateSearch:(input):Partial<DispatchFilters>=>dispatchFilters.parse(input),loaderDeps:({search})=>dispatchFilters.parse(search),loader:({context,deps})=>context.queryClient.ensureQueryData(options(deps)),head:()=>adminHead('Dispatch & job control','Oversee Zwits service jobs and deliveries, assignments and customer-approved changes.'),component:DispatchPage});
-const views=[['all','All jobs'],['unassigned','Unassigned'],['awaiting_acceptance','Awaiting acceptance'],['assigned','Assigned'],['accepted','Accepted'],['awaiting_collection','Awaiting collection'],['in_transit','In transit'],['completed','Completed'],['failed','Failed / unfulfilled'],['cancelled','Cancelled'],['intervention','Intervention']] as const;
-function DispatchPage(){const filters=dispatchFilters.parse(Route.useSearch()),navigate=Route.useNavigate(),q=useSuspenseQuery(options(filters));const [form,setForm]=useState(filters);
- const update=(key:keyof DispatchFilters,value:string)=>setForm(f=>({...f,[key]:value}));
- return <RoleGate role="admin"><AdminShell><section className="px-4 py-8 sm:px-6"><div className="flex flex-wrap items-start gap-4"><div className="mr-auto"><p className="text-xs font-semibold uppercase text-primary-text">Operations</p><h1 className="mt-2 font-display text-2xl">Dispatch & job control</h1><p className="mt-2 text-sm text-muted-foreground">{q.data.total} matching jobs</p></div><Button asChild variant="outline"><Link to="/admin/dispatch-drivers">Driver operations</Link></Button><Button variant="outline" size="icon" aria-label="Refresh dispatch" onClick={()=>q.refetch()}><RefreshCw className="size-4"/></Button></div>
- <DispatchTracking/>
- <form className="mt-6 grid gap-3 border-y border-border py-5 sm:grid-cols-2 xl:grid-cols-4" onSubmit={e=>{e.preventDefault();void navigate({search:{...form,page:0}});}}>
- <label className="grid gap-2 text-xs">Search<Input value={form.term} onChange={e=>update('term',e.target.value)} placeholder="Full job reference, address or service"/></label>
- <label className="grid gap-2 text-xs">Job type<select className="min-h-12 rounded-md border border-input bg-background px-3 text-sm" value={form.kind} onChange={e=>update('kind',e.target.value)}><option value="all">Services & deliveries</option><option value="booking">Service bookings</option><option value="delivery">Deliveries</option></select></label>
- <label className="grid gap-2 text-xs">Status<select className="min-h-12 rounded-md border border-input bg-background px-3 text-sm" value={form.view} onChange={e=>update('view',e.target.value)}>{views.map(([v,l])=><option key={v} value={v}>{l}</option>)}</select></label>
- <label className="grid gap-2 text-xs">Service category<Input value={form.category} onChange={e=>update('category',e.target.value)} placeholder="Category or delivery tier"/></label>
- <label className="grid gap-2 text-xs">Customer<Input value={form.customer} onChange={e=>update('customer',e.target.value)} placeholder="Name or customer ID"/></label>
- <label className="grid gap-2 text-xs">Driver / provider<Input value={form.assignee} onChange={e=>update('assignee',e.target.value)} placeholder="Name or assignment ID"/></label>
- <label className="grid gap-2 text-xs">Created from<Input type="date" value={form.from} onChange={e=>update('from',e.target.value)}/></label>
- <label className="grid gap-2 text-xs">Created through<Input type="date" value={form.to} onChange={e=>update('to',e.target.value)}/></label>
- <div className="flex flex-wrap gap-2 sm:col-span-2 xl:col-span-4"><Button type="submit"><Search className="size-4"/>Apply filters</Button><Button variant="outline" type="button" onClick={()=>{const reset=dispatchFilters.parse({});setForm(reset);void navigate({search:reset});}}>Clear</Button></div></form>
- <div className="mt-5 divide-y divide-border">{q.data.rows.map(r=><article key={`${r.kind}-${r.id}`} className="grid gap-3 py-5 md:grid-cols-[minmax(0,1fr)_180px_150px]"><div className="min-w-0"><div className="flex items-center gap-2 text-xs text-muted-foreground">{r.kind==='booking'?<Wrench className="size-4"/>:<Package className="size-4"/>}<span>{r.category} · {r.id.slice(0,8).toUpperCase()}</span></div><Link className="mt-2 block break-words font-semibold text-primary-text" to={r.kind==='booking'?'/admin/bookings/$id':'/admin/deliveries/$id'} params={{id:r.id}}>{r.address}</Link><p className="mt-2 text-xs text-muted-foreground">{r.customer_name} · {new Date(r.created_at).toLocaleString('en-ZW',{timeZone:'Africa/Harare'})}</p></div><div className="text-sm"><p>{r.assignee_name||'Unassigned'}</p><p className="mt-1 text-xs text-muted-foreground">{r.dispatch_state?.replaceAll('_',' ')}</p></div><div><Status status={r.status}/>{(r.held||r.pending_change)&&<p className="mt-2 text-xs text-destructive">{r.held?'On hold':'Approval pending'}</p>}<p className="mt-2 text-sm">{r.price==null?'Price awaiting agreement':`$${Number(r.price).toFixed(2)}`} · {r.payment_status}</p></div></article>)}{!q.data.rows.length&&<p className="py-12 text-sm text-muted-foreground">No jobs match these filters.</p>}</div>
- <div className="mt-6 flex items-center justify-between border-t border-border pt-4"><Button variant="outline" disabled={filters.page===0} onClick={()=>void navigate({search:{...filters,page:filters.page-1}})}><ChevronLeft className="size-4"/>Previous</Button><span className="text-xs">Page {filters.page+1}</span><Button variant="outline" disabled={(filters.page+1)*25>=q.data.total} onClick={()=>void navigate({search:{...filters,page:filters.page+1}})}>Next<ChevronRight className="size-4"/></Button></div>
- </section></AdminShell></RoleGate>;
+function DispatchPage(){const filters=dispatchFilters.parse(Route.useSearch()),navigate=Route.useNavigate(),q=useSuspenseQuery(options(filters));
+ return <RoleGate role="admin"><AdminShell><DispatchBoard filters={filters} data={q.data} navigate={search=>void navigate({search})} refresh={()=>void q.refetch()} fetching={q.isFetching}/></AdminShell></RoleGate>;
 }

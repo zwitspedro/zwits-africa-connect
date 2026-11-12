@@ -1,4 +1,7 @@
 # Current request
+- [x] Audit Dispatch Control Centre v3 and deliver verified overview/search/views, priority transaction, bounded batch controls, recorded-coordinate map and acceptance report; 24 rule tests and signed-in disposable-priority journey passed.
+- [ ] Complete remaining v3 accepted-job custody/replacement, business parent orders/bulk assignment, schedule conflicts/calendar, granular permissions and analytics; NOT IMPLEMENTED, requirements and gaps recorded in docs/DISPATCH_V3_ACCEPTANCE.md.
+- [ ] Run privileged dispatch SQL regression and full concurrent driver/evidence/mixed-result batch journeys; SQL sandbox role cannot execute restricted RPCs, so permissions were preserved and browser priority was tested instead.
 - [x] Add ledger-backed cash received, commission and cash-in-hand comparison; rule tests and signed-in desktop/mobile comparison passed; real-account receipt totals not changed or physically verified. EcoCash details remain PIN-free; outbound payouts blocked pending connection.
 - [ ] Connect real provider EcoCash payout destinations and verified outbound transfers; awaiting the approved disbursement service’s official API documentation and secure credentials.
 - [ ] Exercise genuine cash work through customer/provider screens and wallet; awaiting identified customer/provider accounts, actual job details, agreed price and genuine completion/receipt confirmation.
