@@ -1,4 +1,6 @@
 # Current request
+- [ ] Connect real provider EcoCash payout destinations and verified outbound transfers; awaiting the approved disbursement service’s official API documentation and secure credentials.
+- [ ] Exercise genuine cash work through customer/provider screens and wallet; awaiting identified customer/provider accounts, actual job details, agreed price and genuine completion/receipt confirmation.
 - [x] Finish driver verification application, private ID/vehicle evidence and atomic admin decisions; disposable approval/rejection browser journeys, authorization checks, mobile layout and tests passed.
 - [x] Add live provider tracking in the dispatch centre; populated admin map/timestamps, mobile layout, freshness tests and rollback permissions/upsert verified.
 - [ ] Verify moving-device provider-to-admin realtime updates; needs an isolated provider device/location session, not fabricated live locations on real jobs.
