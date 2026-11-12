@@ -134,6 +134,13 @@
       "when": 1794229009296,
       "tag": "0018_admin_live_provider_tracking",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1794512768696,
+      "tag": "0019_driver_verification_applications",
+      "breakpoints": true
     }
   ]
 }

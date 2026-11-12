@@ -4,6 +4,8 @@ import { BadgeCheck, Car, ChevronRight, LogOut, Settings, Star, Wallet } from "l
 import { supabase } from "@/integrations/supabase/client";
 import { useDriverData } from "@/components/driver/use-driver-data";
 import { clearOfflineCache } from "@/mobile/offline";
+import { VehicleSection } from '@/components/driver/vehicle-section';
+import { DriverSettings } from '@/components/driver/driver-settings';
 import {
   AppBar,
   Card,
@@ -101,7 +103,7 @@ function DriverProfile() {
                             {v.make} {v.model}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {v.plate_number} · {v.vehicle_type}
+                            {v.plate} · {v.vehicle_type}
                           </p>
                         </div>
                       </div>
@@ -111,6 +113,7 @@ function DriverProfile() {
               )}
             </Section>
 
+            {d.user && <Section title="Driver application"><DriverSettings userId={d.user.id} email={d.user.email} profile={profile} avatarUrl={d.userProfile.data?.avatar_url}/><VehicleSection userId={d.user.id} profile={profile} vehicles={vehicles}/></Section>}
             <Section title="Account">
               <Card className="divide-y divide-border/60 p-0">
                 <Link to="/driver" className="flex min-h-14 items-center gap-3 px-4">

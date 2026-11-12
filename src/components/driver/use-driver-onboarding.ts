@@ -1,4 +1,4 @@
-export type OnboardingStepKey = "vehicle" | "profile" | "online";
+export type OnboardingStepKey = "vehicle" | "profile" | "verification" | "online";
 
 export type OnboardingStep = {
   key: OnboardingStepKey;
@@ -21,7 +21,8 @@ export function buildDriverOnboarding({
   profile: any;
   online: boolean;
 }): { steps: OnboardingStep[]; completed: number; total: number; next: OnboardingStepKey | null } {
-  const vehicleDone = vehicles.length > 0 && !!vehicles[0]?.plate && !!profile?.licence_url;
+  const vehicleDone = vehicles.length > 0 && !!vehicles[0]?.plate && !!profile?.licence_url && !!profile?.id_document_url && !!profile?.vehicle_doc_url;
+  const verified = profile?.verification_status === 'approved';
   const profileDone =
     !!profile?.full_name?.trim() &&
     !!profile?.phone?.trim() &&
@@ -45,11 +46,14 @@ export function buildDriverOnboarding({
       locked: false,
     },
     {
+      key: 'verification', title: 'Admin verification', hint: 'Submit your ID and vehicle application for approval', done: verified, locked: false,
+    },
+    {
       key: "online",
       title: "Go online",
       hint: "Join the dispatch queue and start receiving jobs",
       done: online,
-      locked: !(vehicleDone && profileDone),
+      locked: !(vehicleDone && profileDone && verified),
     },
   ];
 

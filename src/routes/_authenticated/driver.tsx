@@ -64,15 +64,16 @@ function DriverPortal() {
     profile: profile.data,
     online,
   });
-  const setupDone = onboarding.steps[0]!.done && onboarding.steps[1]!.done;
+  const setupDone = !!onboarding.steps[0]?.done && !!onboarding.steps[1]?.done && profile.data?.verification_status === 'approved';
 
   const toggleOnline = useMutation({
     mutationFn: async (next: boolean) => {
+      if (!user) throw new Error('Sign in first');
       if (next && !setupDone) throw new Error("Finish your vehicle and profile setup first");
       const { error } = await supabase
         .from("driver_profiles")
         .upsert(
-          { user_id: user!.id, available: next, ...(next ? { onboarding_completed_at: new Date().toISOString() } : {}) },
+          { user_id: user.id, available: next, ...(next ? { onboarding_completed_at: new Date().toISOString() } : {}) },
           { onConflict: "user_id" },
         );
       if (error) throw error;
@@ -86,7 +87,7 @@ function DriverPortal() {
   });
 
   const goStep = (k: OnboardingStepKey) => {
-    if (k === "vehicle") setSection("vehicle");
+    if (k === "vehicle" || k === 'verification') setSection("vehicle");
     else if (k === "profile") setSection("settings");
     else {
       setSection("home");

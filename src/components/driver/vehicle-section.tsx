@@ -5,16 +5,14 @@ import { Check, FileUp, Trash2, Truck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { EmptyState, Panel } from "@/components/provider/dashboard-kit";
 import { VEHICLE_TYPES } from "@/lib/delivery-config";
+import { secureUpload, MB } from '@/lib/secure-upload';
+import { VerificationApplication } from './verification-application';
+import { Button } from '@/components/ui/button';
 
 const field = "w-full rounded-xl border border-border bg-background px-3 py-3 text-sm outline-none focus:border-primary";
 
 async function uploadDoc(userId: string, key: string, file: File) {
-  const ext = file.name.split(".").pop() ?? "jpg";
-  const path = `${userId}/${key}-${Date.now()}.${ext}`;
-  const { error } = await supabase.storage
-    .from("provider-verification")
-    .upload(path, file, { upsert: true, contentType: file.type });
-  if (error) throw error;
+  const { path } = await secureUpload(file, { bucket: 'provider-verification', userId, prefix: key, allowed: ['image/jpeg','image/png','image/webp','application/pdf'], maxBytes: 5 * MB });
   return path;
 }
 
@@ -86,7 +84,7 @@ export function VehicleSection({
   });
 
   const saveDocs = useMutation({
-    mutationFn: async (files: { licence?: File | null; vehicleDoc?: File | null }) => {
+    mutationFn: async (files: { licence?: File | null; vehicleDoc?: File | null; idDoc?: File | null }) => {
       const patch: Record<string, any> = {
         user_id: userId,
         insurance_provider: insurance.insurance_provider || null,
@@ -94,6 +92,7 @@ export function VehicleSection({
       };
       if (files.licence) patch['licence_url'] = await uploadDoc(userId, "licence", files.licence);
       if (files.vehicleDoc) patch['vehicle_doc_url'] = await uploadDoc(userId, "vehicle-doc", files.vehicleDoc);
+      if (files.idDoc) patch['id_document_url'] = await uploadDoc(userId, 'id', files.idDoc);
       const { error } = await supabase.from("driver_profiles").upsert(patch, { onConflict: "user_id" });
       if (error) throw error;
     },
@@ -106,8 +105,10 @@ export function VehicleSection({
 
   const [licence, setLicence] = useState<File | null>(null);
   const [vehicleDoc, setVehicleDoc] = useState<File | null>(null);
+  const [idDoc, setIdDoc] = useState<File | null>(null);
 
-  const ready = vehicles.length > 0 && !!profile?.licence_url;
+  const ready = vehicles.length > 0 && !!profile?.licence_url && !!profile?.id_document_url && !!profile?.vehicle_doc_url;
+  const pending = profile?.verification_status === 'pending';
 
   return (
     <div className="space-y-4">
@@ -132,13 +133,13 @@ export function VehicleSection({
                     {v.capacity_kg ? ` · ${v.capacity_kg}kg` : ""}
                   </p>
                 </div>
-                <button
+                <Button variant="ghost" disabled={pending || remove.isPending}
                   onClick={() => remove.mutate(v.id)}
                   className="rounded-lg p-2 text-muted-foreground transition hover:bg-muted hover:text-destructive"
                   aria-label="Remove vehicle"
                 >
                   <Trash2 className="size-4" />
-                </button>
+                </Button>
               </li>
             ))}
           </ul>
@@ -192,17 +193,20 @@ export function VehicleSection({
             />
           </label>
         </div>
-        <button
-          disabled={add.isPending}
+        <Button
+          disabled={add.isPending || pending}
           onClick={() => add.mutate()}
           className="mt-4 min-h-12 w-full rounded-2xl bg-primary px-6 text-sm font-bold text-primary-foreground disabled:opacity-50"
         >
           {add.isPending ? "Saving…" : "Save vehicle"}
-        </button>
+        </Button>
       </Panel>
 
       <Panel title="Driver documents" description="Driver's licence and insurance details">
-        <div className="grid gap-3 sm:grid-cols-2">
+        <fieldset disabled={pending} className="grid gap-3 sm:grid-cols-2">
+          <label className="text-xs text-muted-foreground">National ID document {profile?.id_document_url && <span className="text-success">· uploaded</span>}
+            <input type="file" accept="image/jpeg,image/png,image/webp,application/pdf" onChange={e => setIdDoc(e.target.files?.[0] ?? null)} className={`${field} mt-1`} />
+          </label>
           <label className="text-xs text-muted-foreground">
             Driver&apos;s licence {profile?.licence_url && <span className="text-success">· uploaded</span>}
             <input
@@ -239,25 +243,26 @@ export function VehicleSection({
               onChange={(e) => setInsurance({ ...insurance, insurance_expiry: e.target.value })}
             />
           </label>
-        </div>
-        <button
-          disabled={saveDocs.isPending}
-          onClick={() => saveDocs.mutate({ licence, vehicleDoc })}
+        </fieldset>
+        <Button
+          disabled={saveDocs.isPending || pending}
+          onClick={() => saveDocs.mutate({ licence, vehicleDoc, idDoc })}
           className="mt-4 min-h-12 w-full rounded-2xl bg-primary px-6 text-sm font-bold text-primary-foreground disabled:opacity-50"
         >
           {saveDocs.isPending ? "Saving…" : "Save documents"}
-        </button>
+        </Button>
       </Panel>
+      <VerificationApplication profile={profile} />
 
       {onDone && (
-        <button
+        <Button
           onClick={onDone}
           disabled={!ready}
           className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl border border-primary/40 bg-primary/10 px-6 text-sm font-bold text-primary-text disabled:opacity-50"
         >
           <Check className="size-4" /> {ready ? "Save & continue" : "Add a vehicle and licence to continue"}
           {!ready && <FileUp className="size-4" />}
-        </button>
+        </Button>
       )}
     </div>
   );

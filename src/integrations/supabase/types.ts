@@ -842,6 +842,7 @@ export type Database = {
           updated_at: string
           user_id: string
           vehicle_doc_url: string | null
+          verification_application_id: string | null
           verification_status: string
           work_end: string | null
           work_start: string | null
@@ -869,6 +870,7 @@ export type Database = {
           updated_at?: string
           user_id: string
           vehicle_doc_url?: string | null
+          verification_application_id?: string | null
           verification_status?: string
           work_end?: string | null
           work_start?: string | null
@@ -896,12 +898,71 @@ export type Database = {
           updated_at?: string
           user_id?: string
           vehicle_doc_url?: string | null
+          verification_application_id?: string | null
           verification_status?: string
           work_end?: string | null
           work_start?: string | null
           zone_radius_km?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "driver_profiles_verification_application_id_fkey"
+            columns: ["verification_application_id"]
+            isOneToOne: false
+            referencedRelation: "driver_verification_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      driver_verification_applications: {
+        Row: {
+          details: Json
+          document_paths: Json
+          driver_profile_id: string
+          id: string
+          review_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          submitted_at: string
+          user_id: string
+          vehicle_snapshot: Json
+        }
+        Insert: {
+          details: Json
+          document_paths: Json
+          driver_profile_id: string
+          id?: string
+          review_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submitted_at?: string
+          user_id: string
+          vehicle_snapshot: Json
+        }
+        Update: {
+          details?: Json
+          document_paths?: Json
+          driver_profile_id?: string
+          id?: string
+          review_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submitted_at?: string
+          user_id?: string
+          vehicle_snapshot?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "driver_verification_applications_driver_profile_id_fkey"
+            columns: ["driver_profile_id"]
+            isOneToOne: false
+            referencedRelation: "driver_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       email_send_log: {
         Row: {
@@ -2214,6 +2275,10 @@ export type Database = {
         Args: { _id: string; _resolution: string; _status: string }
         Returns: Json
       }
+      admin_review_driver: {
+        Args: { _application: string; _reason: string; _status: string }
+        Returns: Json
+      }
       admin_review_provider: {
         Args: { _id: string; _reason: string; _status: string }
         Returns: Json
@@ -2403,6 +2468,10 @@ export type Database = {
           gross: number
           provider_earnings: number
         }[]
+      }
+      submit_driver_verification: {
+        Args: { _identity: string; _licence: string }
+        Returns: Json
       }
       update_delivery_progress_atomic: {
         Args: { _id: string; _proof?: string; _status: string }

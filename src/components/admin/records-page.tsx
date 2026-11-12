@@ -35,6 +35,7 @@ function Records({kind,title,initialStatus,from,to}:{kind:RecordKind;title:strin
  <dl className="mt-3 grid grid-cols-2 gap-3 text-xs sm:grid-cols-4">{Object.entries(r).filter(([k])=>!['name','description','full_name','display_name','status','verification_status'].includes(k)).map(([k,v])=><div key={k} className="min-w-0"><dt className="text-muted-foreground">{k.replaceAll('_',' ')}</dt><dd className="mt-1 break-all">{v==null?'—':String(v)}</dd></div>)}</dl>
  {kind==='bookings'&&<Button asChild variant="outline" className="mt-3"><Link to="/admin/bookings/$id" params={{id:r.id}} search={{}}>Open booking</Link></Button>}
  {kind==='deliveries'&&<Button asChild variant="outline" className="mt-3"><Link to="/admin/deliveries/$id" params={{id:r.id}} search={{}}>Open delivery</Link></Button>}
+ {kind==='drivers'&&<Button asChild variant="outline" className="mt-3"><Link to="/admin/dispatch-drivers/$id" params={{id:r.id}}>Review driver</Link></Button>}
  {kind==='wallets'&&r.provider_id&&<Button asChild variant="outline" className="mt-3"><Link to="/admin/reconciliation/provider/$providerId" params={{providerId:r.provider_id}} search={{from:undefined,to:undefined}}>Inspect ledger</Link></Button>}
  </li>)}</ul>
  {!q.data?.rows.length&&<p className="py-8 text-muted-foreground">No matching records.</p>}
