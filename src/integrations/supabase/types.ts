@@ -569,6 +569,10 @@ export type Database = {
           dropoff_address: string
           dropoff_lat: number | null
           dropoff_lng: number | null
+          duration_basis: string | null
+          duration_minutes: number | null
+          duration_recorded_at: string | null
+          duration_recorded_by: string | null
           id: string
           location_notes: string | null
           notes: string | null
@@ -600,6 +604,10 @@ export type Database = {
           dropoff_address: string
           dropoff_lat?: number | null
           dropoff_lng?: number | null
+          duration_basis?: string | null
+          duration_minutes?: number | null
+          duration_recorded_at?: string | null
+          duration_recorded_by?: string | null
           id?: string
           location_notes?: string | null
           notes?: string | null
@@ -631,6 +639,10 @@ export type Database = {
           dropoff_address?: string
           dropoff_lat?: number | null
           dropoff_lng?: number | null
+          duration_basis?: string | null
+          duration_minutes?: number | null
+          duration_recorded_at?: string | null
+          duration_recorded_by?: string | null
           id?: string
           location_notes?: string | null
           notes?: string | null
@@ -2353,6 +2365,10 @@ export type Database = {
         Args: { _id: string; _outcome: string; _reason: string }
         Returns: Json
       }
+      admin_delivery_alternatives: {
+        Args: { _assignee: string; _id: string }
+        Returns: Json
+      }
       admin_dispatch_action: {
         Args: {
           _action: string
@@ -2367,6 +2383,10 @@ export type Database = {
         Returns: Json
       }
       admin_dispatch_directory: { Args: { _filters?: Json }; Returns: Json }
+      admin_dispatch_insights: {
+        Args: { _driver?: string; _from: string; _to: string }
+        Returns: Json
+      }
       admin_dispatch_locations: { Args: never; Returns: Json }
       admin_dispatch_priority: {
         Args: {
@@ -2381,6 +2401,16 @@ export type Database = {
       }
       admin_period_metrics: {
         Args: { _from: string; _to: string }
+        Returns: Json
+      }
+      admin_record_delivery_duration: {
+        Args: {
+          _basis: string
+          _expected: string
+          _id: string
+          _minutes: number
+          _reason: string
+        }
         Returns: Json
       }
       admin_register_provider_document: {

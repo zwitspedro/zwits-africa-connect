@@ -2,7 +2,7 @@ import { z } from 'zod';
 export const dispatchFilters = z.object({
   kind: z.enum(['all','booking','delivery']).default('all'),
   view: z.enum(['all','active','unassigned','awaiting_acceptance','awaiting_driver','awaiting_provider','assigned','accepted','awaiting_collection','in_transit','scheduled','delayed','completed','completed_today','failed','cancelled','intervention']).default('all'),
-  layout: z.enum(['list','table','kanban','map','agenda']).default('list'),
+  layout: z.enum(['list','table','kanban','map','agenda','calendar','custody','performance']).default('list'),
   priority: z.enum(['all','low','normal','high','urgent']).default('all'),
   business: z.enum(['all','business']).default('all'),
   scheduledFrom: z.string().default(''), scheduledTo: z.string().default(''),

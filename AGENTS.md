@@ -30,3 +30,4 @@
 - Execute bounded dispatch batches as individual authorized, versioned RPC transactions with per-job outcomes; one failure must not conceal other results or bypass lifecycle controls.
 - Keep accepted delivery responsibility unchanged until replacement acceptance and, after collection, both custodians acknowledge; retain immutable authorization/history separately from the delivery lifecycle.
 - Serialize commitment checks through assignee row locks on offer and assignment paths; reserve manual offers and use actual optional commitment windows, never invented travel durations.
+- Derive dispatch custody and performance from existing delivery/history records through admin-only projections; recorded duration sources drive checked alternatives without claiming travel predictions or verified payouts.
