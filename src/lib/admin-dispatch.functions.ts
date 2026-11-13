@@ -73,7 +73,8 @@ export const getDispatchEvidence = createServerFn({method:'GET'}).middleware([re
  if(error||!job)throw new Error('Delivery unavailable');
  const path=job.proof_photo_url;
  if(!path)return {url:null,deliveredAt:job.delivered_at,status:job.status};
- if(!job.driver_id||!path.startsWith(`${job.driver_id}/`)||path.includes('..')||path.startsWith('https:'))throw new Error('Evidence ownership cannot be verified');
+ const { isDeliveryProofPath } = await import('./delivery-proof');
+ if(!job.driver_id||!isDeliveryProofPath(path,job.driver_id,data.id))throw new Error('Evidence ownership cannot be verified');
  const {data:signed,error:signError}=await supabaseAdmin.storage.from('job-photos').createSignedUrl(path,300);
  if(signError)throw new Error('Delivery evidence unavailable');
  return {url:signed.signedUrl,deliveredAt:job.delivered_at,status:job.status};

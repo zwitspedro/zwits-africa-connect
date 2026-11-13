@@ -10,6 +10,7 @@
 - The entry route may load the existing compact Z mark only; no photographic media, maps, auth or provider data belong on the initial screen.
 - Keep the shared Z mark request-agnostic; opt into its pulse from existing matching/delivery state or a separate query-activity observer so the entry stays data-light.
 - Cash bookings settle to the provider wallet as commission owed (earning offset by cash held); only platform-collected money becomes withdrawable.
+- Confirm delivery cash through the assigned-driver atomic receipt RPC using the existing ledger; scope post-pickup proof to driver and delivery, and return stored settlement totals on replay so cash held is never credited twice.
 - Snapshot direct-payment destinations on accepted bookings and authorize receipt only to the assigned provider; personal transfers settle like cash to avoid duplicate withdrawals.
 - Share active payment validation across creation and payment initiation; credential presence alone never enables an unimplemented rail.
 

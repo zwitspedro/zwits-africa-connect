@@ -2481,6 +2481,10 @@ export type Database = {
         Returns: Json
       }
       confirm_cash_booking: { Args: { _booking_id: string }; Returns: Json }
+      confirm_cash_delivery: {
+        Args: { _delivery_id: string; _reason?: string }
+        Returns: Json
+      }
       confirm_direct_booking: { Args: { _booking_id: string }; Returns: Json }
       delete_email: {
         Args: { message_id: number; queue_name: string }

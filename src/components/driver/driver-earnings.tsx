@@ -4,8 +4,25 @@ import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis } from "recharts";
 import { EmptyState, Panel, StatCard } from "@/components/provider/dashboard-kit";
 import { DRIVER_COMMISSION, driverPayout } from "@/lib/delivery-config";
 import type { DeliveryRow } from "./use-driver-data";
+import { useServerFn } from '@tanstack/react-start';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { confirmDeliveryPayment } from '@/lib/payments.functions';
+import { Button } from '@/components/ui/button';
+import { Banknote } from 'lucide-react';
+import { toast } from 'sonner';
 
 export function DriverEarnings({ completed, metrics }: { completed: DeliveryRow[]; metrics: any }) {
+  const confirm = useServerFn(confirmDeliveryPayment);
+  const qc = useQueryClient();
+  const receipt = useMutation({
+    mutationFn: (deliveryId: string) => confirm({ data: { deliveryId } }),
+    onSuccess: () => {
+      toast.success('Cash receipt recorded');
+      qc.invalidateQueries({ queryKey: ['driver-deliveries'] });
+      qc.invalidateQueries({ queryKey: ['provider-wallet'] });
+    },
+    onError: (error) => toast.error(error.message),
+  });
   const series = useMemo(() => {
     const buckets = new Map<string, number>();
     for (const d of completed) {
@@ -63,9 +80,17 @@ export function DriverEarnings({ completed, metrics }: { completed: DeliveryRow[
                     {d.distance_km != null && ` · ${d.distance_km} km`}
                   </p>
                 </div>
-                <span className="shrink-0 text-sm font-semibold tabular-nums text-success">
-                  +${driverPayout(d.price).toFixed(2)}
-                </span>
+                <div className="flex shrink-0 flex-col items-end gap-2">
+                  <span className="text-sm font-semibold tabular-nums text-success">
+                    +${driverPayout(d.price).toFixed(2)}
+                  </span>
+                  {d.payment_method === 'cash' && d.payment_status !== 'paid' && (
+                    <Button variant="outline" disabled={receipt.isPending} onClick={() => {
+                      if (window.confirm('Confirm that you personally received the customer’s cash?')) receipt.mutate(d.id);
+                    }}><Banknote aria-hidden="true" />Confirm cash received</Button>
+                  )}
+                  {d.payment_method === 'cash' && d.payment_status === 'paid' && <span className="text-xs text-muted-foreground">Cash receipt recorded</span>}
+                </div>
               </li>
             ))}
           </ul>

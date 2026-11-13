@@ -21,6 +21,8 @@ export type DeliveryRow = {
   price: number | null;
   distance_km: number | null;
   status: string;
+  payment_method: string | null;
+  payment_status: string;
   created_at: string;
   delivered_at: string | null;
 };
@@ -32,10 +34,11 @@ export function useDriverData() {
     queryKey: ["driver-profile", user?.id],
     enabled: !!user,
     queryFn: async () => {
+      if (!user) return null;
       const { data, error } = await supabase
         .from("driver_profiles")
         .select("*")
-        .eq("user_id", user!.id)
+        .eq("user_id", user.id)
         .maybeSingle();
       if (error) throw error;
       return data;
@@ -46,10 +49,11 @@ export function useDriverData() {
     queryKey: ["driver-user-profile", user?.id],
     enabled: !!user,
     queryFn: async () => {
+      if (!user) return null;
       const { data, error } = await supabase
         .from("profiles")
         .select("display_name, avatar_url, phone")
-        .eq("user_id", user!.id)
+        .eq("user_id", user.id)
         .maybeSingle();
       if (error) throw error;
       return data;
@@ -60,10 +64,11 @@ export function useDriverData() {
     queryKey: ["driver-vehicles", user?.id],
     enabled: !!user,
     queryFn: async () => {
+      if (!user) return [];
       const { data, error } = await supabase
         .from("vehicles")
         .select("*")
-        .eq("user_id", user!.id)
+        .eq("user_id", user.id)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data ?? [];
@@ -75,10 +80,11 @@ export function useDriverData() {
     enabled: !!user,
     refetchInterval: 15000,
     queryFn: async () => {
+      if (!user) return [];
       const { data, error } = await supabase
         .from("deliveries")
         .select("*")
-        .eq("driver_id", user!.id)
+        .eq("driver_id", user.id)
         .order("created_at", { ascending: false })
         .limit(200);
       if (error) throw error;
