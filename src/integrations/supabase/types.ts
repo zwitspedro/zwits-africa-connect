@@ -2383,6 +2383,10 @@ export type Database = {
         Returns: Json
       }
       admin_dispatch_directory: { Args: { _filters?: Json }; Returns: Json }
+      admin_dispatch_financials: {
+        Args: { _driver?: string; _from: string; _page?: number; _to: string }
+        Returns: Json
+      }
       admin_dispatch_insights: {
         Args: { _driver?: string; _from: string; _to: string }
         Returns: Json

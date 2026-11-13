@@ -1,4 +1,6 @@
 # Current request
+- [x] Audit V3.2 financial history and add read-only driver wallets/jobs/withdrawals/ledger/payments; 28 tests and signed-in desktop/mobile checks passed; report in docs/DISPATCH_FINANCIAL_V32_RECONCILIATION.md.
+- [ ] Reconcile three historical paid bookings without payment/ledger evidence, verify populated driver finances and correct driver cash settlement offset; blocked by missing receipt evidence/driver financial records and requires separately scoped settlement correction, no historical payouts fabricated.
 - [x] Add and verify dispatch custody, daily driver calendar/conflicts, sourced duration recording and checked alternatives; performance counts and bulk comparisons passed; populated payout history remains unverified (no genuine payout fixtures), details in docs/DISPATCH_INSIGHTS_ACCEPTANCE.md.
 - [x] Implement and verify dispatch v3.1 replacement acceptance/two-custodian handover, checked bulk offers and interval conflict prevention; 28 unit tests, disposable browser/integration workflows and board regressions passed; limitations in docs/DISPATCH_V31_ACCEPTANCE.md.
 - [x] Audit Dispatch Control Centre v3 and deliver verified overview/search/views, priority transaction, bounded batch controls, recorded-coordinate map and acceptance report; 24 rule tests and signed-in disposable-priority journey passed.
