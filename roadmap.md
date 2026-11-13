@@ -1,5 +1,5 @@
 # Current request
-- [ ] Audit and correct dispatch presentation at 360/390/430/768/1024/1440px; verify connected navigation, job controls, maps, calendar, custody and financial views without changing backend workflows.
+- [x] Audit and correct dispatch presentation at 360/390/430/768/1024/1440px; 48 rendered view checks, six-width signed-in form/navigation checks and 28 rule tests passed; no backend changes. Populated reassignment/conflicts/payouts and physical Android remain unverified, documented in docs/DISPATCH_RESPONSIVE_ACCEPTANCE.md.
 - [x] Audit V3.2 financial history and add read-only driver wallets/jobs/withdrawals/ledger/payments; 28 tests and signed-in desktop/mobile checks passed; report in docs/DISPATCH_FINANCIAL_V32_RECONCILIATION.md.
 - [ ] Reconcile three historical paid bookings without payment/ledger evidence, verify populated driver finances and correct driver cash settlement offset; blocked by missing receipt evidence/driver financial records and requires separately scoped settlement correction, no historical payouts fabricated.
 - [x] Add and verify dispatch custody, daily driver calendar/conflicts, sourced duration recording and checked alternatives; performance counts and bulk comparisons passed; populated payout history remains unverified (no genuine payout fixtures), details in docs/DISPATCH_INSIGHTS_ACCEPTANCE.md.

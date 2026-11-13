@@ -104,7 +104,7 @@
 /* Dispatch-only operational sizing; no workflow or global control changes. */
 .dispatch-presentation :where(input, select, textarea), .dispatch-dialog :where(input, select, textarea) { min-width: 0; max-width: 100%; }
 .dispatch-presentation .maplibregl-ctrl-group button { width: 48px; height: 48px; }
-.dispatch-presentation .maplibregl-ctrl-group { background: var(--surface-elevated); }
+.dispatch-presentation .maplibregl-ctrl-group { background: var(--primary); }
 .dispatch-dialog { overflow-wrap: anywhere; padding: 24px 16px; }
 .dispatch-dialog > * { min-width: 0; }
 .dispatch-dialog h2 { padding-right: 48px; line-height: 1.4; }
