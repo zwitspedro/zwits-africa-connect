@@ -37,3 +37,4 @@
 - Keep dispatch job and performance tables and weekly calendars desktop-only with equivalent stacked mobile records; reuse the same data and action handlers so presentation never changes operational checks.
 - Read driver finance through owner-scoped paged ledger/history queries; derive display totals from posted settlement references and preserve wallet lifetime gross so job prices never masquerade as confirmed payouts.
 - Run delivery financial acceptance postings only on the fixed disposable Unix-socket database; render exported rows through a test-only earnings harness so acceptance evidence never becomes live immutable financial history.
+- Keep cumulative-debt delivery posting in an owner-only invoker-rights helper called by validated settlement; never widen general wallet posting or withdrawal balance exceptions.

@@ -2,7 +2,7 @@
 Start a disposable Postgres on /tmp/dispatch-integrity/pg:55439; run this script.
 All fixture rows are confined to that disposable server. Destroy its data directory after testing.
 """
-import json,uuid,concurrent.futures
+import json,uuid,concurrent.futures,sys
 from pathlib import Path
 import psycopg2
 DSN='host=/tmp/dispatch-integrity/pg port=55439 user=zwits_test dbname=integrity_test'
@@ -11,6 +11,7 @@ db=connect();db.set_client_encoding('UTF8');db.autocommit=True
 with db.cursor() as c:
  c.execute(Path('tests/fixtures/delivery-integrity-schema.sql').read_text())
  c.execute(Path('drizzle/migrations/0028_delivery_integrity_cash_atomic_repairs.sql').read_text())
+ if len(sys.argv)>1: c.execute(Path(sys.argv[1]).read_text())
 customer,driver,other=[str(uuid.uuid4()) for _ in range(3)]
 checks=[]
 def query(sql,args=(),conn=db):

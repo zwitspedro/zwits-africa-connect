@@ -2590,6 +2590,10 @@ export type Database = {
         }
         Returns: number
       }
+      post_delivery_settlement_internal: {
+        Args: { _commission: number; _gross: number; _id: string }
+        Returns: undefined
+      }
       post_wallet_transaction: {
         Args: {
           _allow_negative?: boolean
