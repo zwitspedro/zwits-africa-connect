@@ -24,7 +24,7 @@ function TrackingMap({ rows, now }: {rows: DispatchLocation[]; now: number}) {
       if (row.lat == null || row.lng == null) return;
       const freshness = locationFreshness(row.updated_at, now);
       const element = document.createElement('div');
-      element.className = `grid size-8 place-items-center rounded-full border-2 border-background font-bold ${freshness === 'live' ? 'bg-success text-background' : 'bg-warning text-background'}`;
+      element.className = `grid size-12 place-items-center rounded-full border-2 border-background font-bold ${freshness === 'live' ? 'bg-success text-background' : 'bg-warning text-background'}`;
       element.textContent = freshness === 'live' ? '●' : '!';
       const label = `${row.provider_name} · ${freshness === 'live' ? 'Live' : 'Stale'} · ${row.booking_id.slice(0,8)}`;
       element.setAttribute('aria-label', label);
@@ -57,7 +57,7 @@ export function DispatchTracking() {
   const rows = q.data?.rows ?? [];
   const live = rows.filter(r => locationFreshness(r.updated_at,now) === 'live').length;
   return <section className="mt-6 border-y border-border py-6" aria-label="Live provider tracking">
-    <div className="mb-4 flex flex-wrap items-center gap-3"><div className="mr-auto"><h2 className="flex items-center gap-2 text-lg font-semibold"><MapPin className="size-5 text-primary-text"/>Live provider tracking</h2><p className="mt-1 text-xs text-muted-foreground">{connection} · {live} live · {rows.length-live} stale / missing · Auto-refresh 15s</p></div><Button variant="outline" size="icon" aria-label="Refresh provider locations" disabled={q.isFetching} onClick={() => void q.refetch()}><RefreshCw className="size-4"/></Button></div>
+    <div className="mb-4 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 sm:flex"><div className="min-w-0 sm:mr-auto"><h2 className="flex items-center gap-2 text-lg font-semibold"><MapPin className="size-5 text-primary-text"/>Live provider tracking</h2><p className="mt-1 text-xs text-muted-foreground">{connection} · {live} live · {rows.length-live} stale / missing · Auto-refresh 15s</p></div><Button variant="outline" size="icon" aria-label="Refresh provider locations" disabled={q.isFetching} onClick={() => void q.refetch()}><RefreshCw className="size-4"/></Button></div>
     {q.isError && <p role="alert" className="mb-4 text-sm text-danger">Location updates unavailable. Last known positions may be outdated.</p>}
     <TrackingMap rows={rows} now={now}/>
     <p className="mt-3 text-xs text-muted-foreground">Stale after 60 seconds · Times in Harare · Device location permission required</p>

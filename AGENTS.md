@@ -32,3 +32,5 @@
 - Serialize commitment checks through assignee row locks on offer and assignment paths; reserve manual offers and use actual optional commitment windows, never invented travel durations.
 - Derive dispatch custody and performance from existing delivery/history records through admin-only projections; recorded duration sources drive checked alternatives without claiming travel predictions or verified payouts.
 - Keep dispatch financial history read-only and ledger-backed, with paginated records and separate current wallet snapshots; missing settlements and payout evidence must remain explicit rather than synthesized.
+
+- Keep dispatch job and performance tables and weekly calendars desktop-only with equivalent stacked mobile records; reuse the same data and action handlers so presentation never changes operational checks.

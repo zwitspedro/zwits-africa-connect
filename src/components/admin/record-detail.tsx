@@ -2,7 +2,7 @@ import { Link } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 import { useServerFn } from '@tanstack/react-start';
 import { getAdminRecord } from '@/lib/admin-records.functions';
-import { SiteShell } from '@/components/site-shell';
+import { AdminShell } from './admin-shell';
 import { RoleGate } from '@/components/portal/role-gate';
 import { Button } from '@/components/ui/button';
 import { Status } from '@/components/ui/status';
@@ -11,7 +11,7 @@ import { DispatchEvidence } from './dispatch-evidence';
 export function RecordDetail({kind,id}:{kind:'booking'|'delivery';id:string}) {return <RoleGate role="admin"><Detail kind={kind} id={id}/></RoleGate>}
 function Detail({kind,id}:{kind:'booking'|'delivery';id:string}) {
  const fetch=useServerFn(getAdminRecord),q=useQuery({queryKey:['admin-record',kind,id],queryFn:()=>fetch({data:{kind,id}})});
- return <SiteShell><section className="mx-auto max-w-5xl px-4 py-8 sm:px-6"><h1 className="font-display text-2xl capitalize">{kind} investigation</h1><p className="mt-2 break-all text-xs text-muted-foreground">{id}</p>
+ return <AdminShell><section className="dispatch-presentation mx-auto max-w-5xl px-4 py-8 sm:px-6"><h1 className="font-display text-2xl capitalize">{kind} investigation</h1><p className="mt-2 break-all text-xs text-muted-foreground">{id}</p>
  {q.isLoading?<p className="py-8">Loading…</p>:q.error?<p role="alert" className="py-8 text-destructive">Record history unavailable. <Button variant="outline" onClick={()=>q.refetch()}>Retry</Button></p>:q.data&&<>
  <DispatchControls kind={kind} id={id}/>
  {kind==='delivery'&&<DispatchEvidence id={id}/>}
@@ -21,5 +21,5 @@ function Detail({kind,id}:{kind:'booking'|'delivery';id:string}) {
  <h2 className="mt-8 border-t border-border pt-5 font-display text-lg">Disputes</h2>{q.data.disputes.map(d=><p key={d.id} className="mt-3 text-sm">{d.reason} · {d.status} · {d.resolution}</p>)}{!q.data.disputes.length&&<p className="mt-3 text-sm text-muted-foreground">No disputes.</p>}
  {kind==='booking'&&<Button variant="outline" asChild className="mt-6"><Link to="/admin/reconciliation/booking/$bookingId" params={{bookingId:id}}>Financial reconciliation</Link></Button>}
  </>}
- </section></SiteShell>;
+ </section></AdminShell>;
 }

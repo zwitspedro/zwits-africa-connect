@@ -100,3 +100,13 @@
 .entry-title { font-family: var(--font-sans); font-size: var(--type-heading-xl); line-height: 1.2; font-weight: 800; }
 @media (min-width: 768px) { .entry-wordmark { font-size: var(--type-display-xl); } .entry-title { font-size: var(--type-display-m); } }
 @media (max-width: 639px) { h1.text-5xl, h1.text-6xl, h1.text-7xl { font-size: var(--type-display-m); } }
+
+/* Dispatch-only operational sizing; no workflow or global control changes. */
+.dispatch-presentation :where(input, select, textarea), .dispatch-dialog :where(input, select, textarea) { min-width: 0; max-width: 100%; }
+.dispatch-presentation .maplibregl-ctrl-group button { width: 48px; height: 48px; }
+.dispatch-presentation .maplibregl-ctrl-group { background: var(--surface-elevated); }
+.dispatch-dialog { overflow-wrap: anywhere; padding: 24px 16px; }
+.dispatch-dialog > * { min-width: 0; }
+.dispatch-dialog h2 { padding-right: 48px; line-height: 1.4; }
+.dispatch-dialog :where(p, dd, summary) { overflow-wrap: anywhere; }
+@media (min-width: 640px) { .dispatch-dialog { padding: 24px; } }
