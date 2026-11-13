@@ -75,12 +75,6 @@ export const WAVE_SIZE = 8;
 /** Waves before we give up. */
 export const MAX_WAVES = 3;
 
-/** Platform take on each delivery. */
-export const DRIVER_COMMISSION = 0.15;
-export function driverPayout(price: number | null | undefined) {
-  return Math.round((Number(price ?? 0) * (1 - DRIVER_COMMISSION)) * 100) / 100;
-}
-
 export const VEHICLE_TYPES = [
   { value: "bike", label: "Motorbike" },
   { value: "car", label: "Car" },

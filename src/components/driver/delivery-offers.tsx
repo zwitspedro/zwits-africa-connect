@@ -7,7 +7,7 @@ import { MapPin, Package, Navigation, Timer } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { EmptyState } from "@/components/provider/dashboard-kit";
-import { TIERS, driverPayout, type ServiceTier } from "@/lib/delivery-config";
+import { TIERS, type ServiceTier } from "@/lib/delivery-config";
 import { listMyDeliveryOffers, respondToDeliveryOffer } from "@/lib/delivery.functions";
 
 type Offer = {
@@ -126,7 +126,7 @@ function OfferCard({ offer, onRespond, busy }: { offer: Offer; onRespond: (a: "a
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
           {offer.delivery.distanceKm != null && <span>{offer.delivery.distanceKm} km</span>}
           <span className="capitalize">{offer.delivery.parcelSize} parcel</span>
-          <span className="font-semibold text-success">You earn ${driverPayout(offer.delivery.price).toFixed(2)}</span>
+          <span className="font-semibold">Job value {offer.delivery.price == null ? 'Not recorded' : `$${Number(offer.delivery.price).toFixed(2)}`} · Before commission</span>
         </div>
 
         {offer.delivery.notes && <p className="text-xs text-muted-foreground">“{offer.delivery.notes}”</p>}

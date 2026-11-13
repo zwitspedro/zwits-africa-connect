@@ -35,7 +35,7 @@ function DriverDashboard() {
       const { error } = await supabase
         .from("driver_profiles")
         .update({ available: online })
-        .eq("user_id", d.user!.id);
+        .eq("user_id", d.user?.id ?? '');
       if (error) throw error;
       return online;
     },
@@ -103,7 +103,7 @@ function DriverDashboard() {
           <Section title="Today">
             <div className="grid grid-cols-2 gap-3">
               <StatTile label="Deliveries" value={d.metrics.todayCount} icon={Package} />
-              <StatTile label="Earnings" value={money(d.metrics.todayEarnings)} icon={Wallet} />
+              <StatTile label="Settled net" value={d.metrics.todayEarnings == null ? (d.finance.isError ? 'Unavailable' : '…') : money(d.metrics.todayEarnings)} icon={Wallet} />
               <StatTile label="Distance" value={`${d.metrics.todayKm} km`} icon={RouteIcon} />
               <StatTile
                 label="Rating"
@@ -115,7 +115,7 @@ function DriverDashboard() {
 
           <Section title="Lifetime">
             <div className="grid grid-cols-2 gap-3">
-              <StatTile label="Total earned" value={money(d.metrics.totalEarnings)} icon={Wallet} />
+              <StatTile label="Gross earned" value={d.metrics.totalEarnings == null ? (d.finance.isError ? 'Unavailable' : '…') : money(d.metrics.totalEarnings)} icon={Wallet} />
               <StatTile label="Completed" value={d.metrics.totalCount} icon={Gauge} />
             </div>
           </Section>

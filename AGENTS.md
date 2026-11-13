@@ -35,3 +35,4 @@
 - Keep dispatch financial history read-only and ledger-backed, with paginated records and separate current wallet snapshots; missing settlements and payout evidence must remain explicit rather than synthesized.
 
 - Keep dispatch job and performance tables and weekly calendars desktop-only with equivalent stacked mobile records; reuse the same data and action handlers so presentation never changes operational checks.
+- Read driver finance through owner-scoped paged ledger/history queries; derive display totals from posted settlement references and preserve wallet lifetime gross so job prices never masquerade as confirmed payouts.

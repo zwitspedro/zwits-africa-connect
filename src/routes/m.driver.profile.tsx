@@ -81,11 +81,11 @@ function DriverProfile() {
                 />
                 <StatTile label="Deliveries" value={d.metrics.totalCount} />
                 <StatTile
-                  label="Total earned"
-                  value={money(d.metrics.totalEarnings)}
+                  label="Lifetime gross"
+                  value={d.metrics.totalEarnings == null ? (d.finance.isError ? 'Unavailable' : '…') : money(d.metrics.totalEarnings)}
                   icon={Wallet}
                 />
-                <StatTile label="Today" value={money(d.metrics.todayEarnings)} />
+                <StatTile label="Today's settled net" value={d.metrics.todayEarnings == null ? (d.finance.isError ? 'Unavailable' : '…') : money(d.metrics.todayEarnings)} />
               </div>
             </Section>
 

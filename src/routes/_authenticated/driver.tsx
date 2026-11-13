@@ -57,7 +57,7 @@ function DriverRoute() {
 function DriverPortal() {
   const [section, setSection] = useState<Key>("home");
   const qc = useQueryClient();
-  const { user, profile, userProfile, vehicles, active, completed, metrics } = useDriverData();
+  const { user, profile, userProfile, vehicles, active, completed, metrics, finance } = useDriverData();
   const online = !!profile.data?.available;
 
   const onboarding = buildDriverOnboarding({
@@ -99,8 +99,8 @@ function DriverPortal() {
   return (
     <PortalShell role="driver" nav={NAV} current={section} onChange={setSection} mobileKeys={["home", "jobs", "route", "earnings"]}>
       <div className="space-y-5">
-        <header className="flex flex-wrap items-start justify-between gap-3">
-          <div>
+        <header className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 sm:flex sm:justify-between">
+          <div className="min-w-0">
             <h1 className="font-display text-2xl font-bold">Zwits driver</h1>
             <p className="mt-1 text-sm text-muted-foreground">
               {online
@@ -129,7 +129,7 @@ function DriverPortal() {
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <StatCard label="Deliveries today" value={metrics.todayCount} />
           <StatCard label="Distance" value={`${metrics.todayKm} km`} />
-          <StatCard label="Today's earnings" value={`$${metrics.todayEarnings.toFixed(2)}`} accent="positive" />
+          <StatCard label="Today's settled net" value={metrics.todayEarnings == null ? (finance.isError ? 'Unavailable' : '…') : `$${Number(metrics.todayEarnings).toFixed(2)}`} accent="positive" />
           <StatCard label="Rating" value={metrics.rating ? Number(metrics.rating).toFixed(1) : "—"} accent="gold" />
         </div>
 
@@ -163,7 +163,7 @@ function DriverPortal() {
 
         {section === "route" && <ActiveDelivery active={active} />}
 
-        {section === "earnings" && <DriverEarnings completed={completed} metrics={metrics} />}
+        {section === "earnings" && <DriverEarnings completed={completed} finance={finance} />}
 
         {section === "vehicle" && user && (
           <VehicleSection

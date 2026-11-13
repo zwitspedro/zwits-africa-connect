@@ -8,7 +8,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { MapPin, Navigation, PackageCheck, Truck, Phone } from "lucide-react";
 import { EmptyState, Panel } from "@/components/provider/dashboard-kit";
-import { DELIVERY_STATUS_LABELS, driverPayout } from "@/lib/delivery-config";
+import { DELIVERY_STATUS_LABELS } from "@/lib/delivery-config";
 import { updateDeliveryStatus } from "@/lib/delivery.functions";
 import type { DeliveryRow } from "./use-driver-data";
 
@@ -26,6 +26,7 @@ export function ActiveDelivery({ active }: { active: DeliveryRow[] }) {
     onSuccess: (_r, v) => {
       toast.success(v.status === "picked_up" ? "Marked as picked up" : "Delivery completed");
       qc.invalidateQueries({ queryKey: ["driver-deliveries"] });
+      qc.invalidateQueries({ queryKey: ['driver-finance'] });
     },
     onError: (e: any) => toast.error(e.message ?? "Could not update"),
   });
@@ -66,7 +67,7 @@ export function ActiveDelivery({ active }: { active: DeliveryRow[] }) {
           <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
             {current.distance_km != null && <span>{current.distance_km} km</span>}
             <span className="capitalize">{current.parcel_size} parcel</span>
-            <span className="font-semibold text-success">Payout ${driverPayout(current.price).toFixed(2)}</span>
+            <span className="font-semibold">Job value {current.price == null ? 'Not recorded' : `$${Number(current.price).toFixed(2)}`} · Not settled</span>
           </div>
 
           {(current.recipient_name || current.recipient_phone) && (
